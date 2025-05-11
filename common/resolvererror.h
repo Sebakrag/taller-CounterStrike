@@ -13,7 +13,7 @@ private:
 public:
     explicit ResolverError(int gai_errno);
 
-    virtual const char* what() const noexcept;
+    const char* what() const noexcept override;
 
     /*
      * Siempre que heredemos debemos hacer a nuestros
@@ -21,6 +21,6 @@ public:
      *
      * Esto garantiza que será llamado.
      * */
-    virtual ~ResolverError();
+    ~ResolverError() override;
 };
 #endif  // RESOLVER_ERROR_H
