@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 project(taller_tp
     VERSION 1.0
-    HOMEPAGE_URL "https://github.com/URL-HERE"
+    HOMEPAGE_URL "https://github.com/Sebakrag/taller-CounterStrike"
     LANGUAGES CXX
     )
 
@@ -54,6 +54,11 @@ target_include_directories(taller_common PUBLIC .)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
 if(TALLER_CLIENT OR TALLER_EDITOR)
     include(FetchContent)
+
+    SET(SDL2PP_WITH_IMAGE YES)
+    SET(SDL2PP_WITH_TTF YES)
+    SET(SDL2PP_WITH_MIXER YES)
+
     FetchContent_Declare(
         SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
@@ -103,7 +108,8 @@ endif()
 # ---------------
 if(TALLER_CLIENT)
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_client)
+    add_executable(taller_client
+            client/connection_info.cpp)
 
     # Make them depend on taller_common lib
     add_dependencies(taller_client taller_common SDL2pp::SDL2pp)
@@ -116,9 +122,10 @@ if(TALLER_CLIENT)
 
     # add libSDL2pp's headers
     target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+    target_include_directories(taller_client PRIVATE ${SDL2_IMAGE_SOURCE_DIR}/include)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp SDL2_image)
 endif()
 
 if(TALLER_SERVER)

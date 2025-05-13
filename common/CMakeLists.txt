@@ -13,4 +13,6 @@ target_sources(taller_common
         liberror.h
         resolvererror.h
         threads.h
+        queue.h
+        constants.h
     )

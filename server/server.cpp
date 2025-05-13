@@ -1,9 +1,9 @@
 #include "server.h"
 
 #include <iostream>
+#include <utility>
 
-Server::Server(const std::string& port)
-    : port(port), srv(port.c_str()) {}
+Server::Server(const std::string& port): port(port), srv(port.c_str()) {}
 
 void Server::run() {
     std::cout << "Server listening port " << port << std::endl;
@@ -14,7 +14,7 @@ void Server::run() {
 
             std::cout << "New client connected. " << std::endl;
 
-            auto *handler = new ClientHandler(std::move(peer));
+            auto* handler = new ClientHandler(std::move(peer));
             handler->start();
             handlers.push_back(handler);
         }
@@ -23,7 +23,7 @@ void Server::run() {
         std::cerr << "Critical server error: " << e.what() << std::endl;
     }
 
-    for (auto* handler : handlers) {
+    for (auto* handler: handlers) {
         handler->join();
         delete handler;
     }

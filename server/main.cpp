@@ -1,8 +1,9 @@
 
 #include <iostream>
+
 #include "server.h"
 
-int main(const int argc, char* argv[]) {
+int main(const int argc, const char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
         return 1;

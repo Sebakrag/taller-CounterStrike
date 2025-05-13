@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "common/socket.h"
+
 #include "client_handler.h"
 
 class Server {
@@ -19,7 +20,6 @@ public:
     void run();
 
     ~Server() = default;
-
 };
 
 #endif

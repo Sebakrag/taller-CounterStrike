@@ -1,8 +1,9 @@
 #include "client_handler.h"
-#include <iostream>
 
-ClientHandler::ClientHandler(Socket peer)
-    : peer(std::move(peer)){}
+#include <iostream>
+#include <utility>
+
+ClientHandler::ClientHandler(Socket peer): peer(std::move(peer)) {}
 
 void ClientHandler::run() {
     try {
