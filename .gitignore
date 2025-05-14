@@ -32,7 +32,8 @@ tags.*
 *.exe
 *.out
 *.app
-client
+
+
 
 # Mac
 .DS_Store

@@ -6,6 +6,8 @@ target_sources(taller_common
         liberror.cpp
         resolvererror.cpp
 
+        game_info.cpp
+        protocol.cpp
     PUBLIC
     # .h files
         socket.h
@@ -13,4 +15,9 @@ target_sources(taller_common
         liberror.h
         resolvererror.h
         threads.h
+
+        constants_protocol.h
+        game_info.h
+        protocol.h
+        types.h
     )
