@@ -6,50 +6,43 @@
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_image.h>
 
+#include "client/dtos/matchInfo.h"
+#include "client/model/Game.h"
+
 using namespace SDL2pp;
 
 GameMatchAppState::GameMatchAppState() {}
 
+// Todas las configuraciones iniciales de la partida las tiene que recibir el constructor
+// de GameMatchAppState, que provienen del MainMenuState, cuando el usuario
+// selecciona la partida a la que se quiere unir o cuando crea una.
+// Esta info que recibe corresponde a la info estatica de la que el profe nos hablaba.
+// GameMatchAppState::GameMatchAppState(const match_info_t match_info) {}
+// match_info_t {
+//     const window_config_t win_config;
+//     const std::string map_scene; // filename del mapa a utilizar?
+//     const std::list<players_info_t> players;  // pensar si es la mejor forma.
+// };
+// La informacion de si la ventana se abre en fullscreen o no viene dada en el archivo
+// de configuracion con el que se inicia el server. Lo mismo para la resolucion.
+// Por lo tanto, por mas que suene antuitivo, esa info la tenemos que recibir del server.
+// Personalmente me gustaria que eso lo decida el propio usuario que va a jugar.
+// (Preguntar esto ultimo).
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
-        // Aca estaria el codigo de la grafica del juego en si y el game loop propiamente dicho.
-        SDL sdl(SDL_INIT_VIDEO);
-        SDLImage sdl_image(IMG_INIT_PNG | IMG_INIT_JPG);
-        SDLTTF sdl_ttf;
-
-        // Cuando recibamos info del server podemos cambiar el nombre de la ventana por:
-        // "Counter Strike - <nombre_partida>".
-        // La informacion de si la ventana se abre en fullscreen o no viene dada en el archivo
-        // de configuracion con el que se inicia el server. Lo mismo para la resolucion.
-        // Por lo tanto, por mas que suene antuitivo, esa info la tenemos que recibir del server.
-        // Personalmente me gustaria que eso lo decida el propio usuario que va a jugar.
-        // (Preguntar esto ultimo).
-        Window window("Counter Strike", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 400,
-                      SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
-
-        Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
-        // La imagen del escenario que vamos a utilizar la debo recibir del server (pongo una
-        // provisoria).
+        const window_config_t win_config(
+                640, 400, SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
         const std::string map_image = "client/assets/backgrounds/temp_map.png";
-        // const std::string map_image = "client/assets/backgrounds/menu_background.jpg";
-        Texture match_background(renderer, map_image);
+        const match_info_t match_info("Partidita", win_config, map_image);
+        Game game(match_info, IMG_INIT_PNG | IMG_INIT_JPG);
 
-        // GameWorld world(match_background);
-        // bool running = true;
-        // while (running) {
-        //     running = handle_events();
-        //     //update();
-        //     // render(renderer, world);
-        // }
+        while (game.running()) {
+            game.handle_events();
+            game.update();
+            game.render();
 
-        for (int i = 0; i < 500; ++i) {
-            renderer.Clear();
-            renderer.Copy(match_background, Rect(0 + i, 0 + i, 640, 400));
-            renderer.Present();
-            usleep(1 / 30);
+            usleep(1 / 30);  // adjust frame_rate
         }
-
-        SDL_Delay(5000);
 
         return AppStateCode::MAIN_MENU;
     } catch (const Exception& e) {
@@ -62,31 +55,5 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         return AppStateCode::MAIN_MENU;
     }
 }
-
-bool GameMatchAppState::handle_events() {
-    SDL_Event e;
-    while (SDL_PollEvent(&e)) {
-        switch (e.type) {
-            case SDL_QUIT: {
-                return false;
-            }
-            case SDL_KEYDOWN: {
-                auto& keyEvent = reinterpret_cast<SDL_KeyboardEvent&>(e);
-                switch (keyEvent.keysym.sym) {
-                    case SDLK_LEFT:
-
-                        break;
-                    case SDLK_RIGHT:
-
-                        break;
-                }
-            }  // end SDL_KEYDOWN
-        }      // end switch(e.type)
-
-    }  // end while(SDL_PollEvent)
-
-    return true;
-}
-
 
 GameMatchAppState::~GameMatchAppState() {}

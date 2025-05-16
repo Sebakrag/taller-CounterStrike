@@ -4,9 +4,6 @@
 #include "AppState.h"
 
 class GameMatchAppState: public AppState {
-private:
-    bool handle_events();
-
 public:
     GameMatchAppState();
 
