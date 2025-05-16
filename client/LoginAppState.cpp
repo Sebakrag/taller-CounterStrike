@@ -1,5 +1,6 @@
 #include "LoginAppState.h"
 
+#include <iostream>  // Eliminar una vez tengamos la parte grafica.
 
 LoginAppState::LoginAppState() {
     // Here we can initialize some music. This applies only if we
@@ -9,12 +10,13 @@ LoginAppState::LoginAppState() {
 }
 
 // std::optional<AppStateCode> LoginAppState::update() {
-struct state_result_t {
-    std::optional<AppStateCode> app_state_code;
-    Client client;
-};
+// struct state_result_t {
+//     std::optional<AppStateCode> app_state_code;
+//     Client client;
+// };
 
-state_result_t LoginAppState::update() {
+// state_result_t LoginAppState::update() {
+std::optional<AppStateCode> LoginAppState::update() {
     std::optional<AppStateCode> new_app_state;
 
     // Parte grafica:
@@ -24,10 +26,13 @@ state_result_t LoginAppState::update() {
     // Con un boton "connect".
 
     // Con los datos tomando (nombre, y la direccion IP)
-    Client client(dir_ip, port, usr_name);
+    // Client client(dir_ip, port, usr_name);
+    std::cout << "Ya me logueeeee!" << std::endl;
+    new_app_state = AppStateCode::GAME_MATCH;  // Para pasar directo al juego y probarlo.
 
 
-    return {new_app_state, std::move(client)};
+    // return {new_app_state, std::move(client)};
+    return new_app_state;
 }
 
 LoginAppState::~LoginAppState() {

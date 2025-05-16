@@ -8,8 +8,10 @@ private:
     const std::string hostname;
     const std::string port;
     const std::string usr_name;
+
 public:
-    connection_info_t(const std::string& hostname, const std::string& port, const std::string& usr_name);
+    connection_info_t(const std::string& hostname, const std::string& port,
+                      const std::string& usr_name);
 
     const std::string get_hostname();
     const std::string get_port();
@@ -17,4 +19,4 @@ public:
 };
 
 
-#endif //CONNECTION_INFO_H
+#endif  // CONNECTION_INFO_H

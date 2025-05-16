@@ -3,7 +3,7 @@
 
 #include "AppState.h"
 
-class MainMenuAppState : public AppState {
+class MainMenuAppState: public AppState {
 public:
     MainMenuAppState();
 
@@ -12,4 +12,4 @@ public:
     ~MainMenuAppState() override;
 };
 
-#endif //MAINMENUAPPSTATE_H
+#endif  // MAINMENUAPPSTATE_H

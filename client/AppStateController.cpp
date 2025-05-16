@@ -1,16 +1,14 @@
 #include "AppStateController.h"
 
-#include "LoginAppState.h"
-#include "MainMenuAppState.h"
-#include "GameMatchAppState.h"
+#include <iostream>  //ELIMINAR
 #include <optional>
 #include <stdexcept>
 
-#include <iostream> //ELIMINAR
+#include "GameMatchAppState.h"
+#include "LoginAppState.h"
+#include "MainMenuAppState.h"
 
-AppStateController::AppStateController() {
-    current_state = new LoginAppState();
-}
+AppStateController::AppStateController() { current_state = new LoginAppState(); }
 
 void AppStateController::update() {
     auto maybe_new_state = current_state->update();

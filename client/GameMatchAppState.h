@@ -3,7 +3,10 @@
 
 #include "AppState.h"
 
-class GameMatchAppState : public AppState {
+class GameMatchAppState: public AppState {
+private:
+    bool handle_events();
+
 public:
     GameMatchAppState();
 
@@ -12,4 +15,4 @@ public:
     ~GameMatchAppState() override;
 };
 
-#endif //GAMEMATCHAPPSTATE_H
+#endif  // GAMEMATCHAPPSTATE_H

@@ -19,4 +19,4 @@ public:
     ~AppStateController();
 };
 
-#endif //APPSTATECONTROLLER_H
+#endif  // APPSTATECONTROLLER_H

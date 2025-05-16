@@ -3,7 +3,7 @@
 
 #include "AppState.h"
 
-class LoginAppState : public AppState {
+class LoginAppState: public AppState {
 public:
     LoginAppState();
 
@@ -13,4 +13,4 @@ public:
 };
 
 
-#endif //LOGINAPPSTATE_H
+#endif  // LOGINAPPSTATE_H

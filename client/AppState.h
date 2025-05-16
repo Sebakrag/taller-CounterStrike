@@ -2,6 +2,7 @@
 #define APPSTATE_H
 
 #include <optional>
+
 #include "AppStateCode.h"
 
 class AppState {
@@ -14,7 +15,6 @@ public:
     // virtual void enter() = 0;
     // virtual void leave() = 0;
     virtual std::optional<AppStateCode> update() = 0;
-
 };
 
-#endif //APPSTATE_H
+#endif  // APPSTATE_H

@@ -1,5 +1,7 @@
 #include "MainMenuAppState.h"
 
+#include <iostream>  // Elimar una vez que tengamos la parte grafica con QT.
+
 MainMenuAppState::MainMenuAppState() {
     // inicilizar musica
 }
@@ -13,6 +15,8 @@ std::optional<AppStateCode> MainMenuAppState::update() {
     // - Unirse Partida
     // - Salir
     // Obvio que vamos a tener que atrapar los eventos y manejarlos segun corresponda.
+    std::cout << "Volvi al menu!" << std::endl;
+    new_app_state = AppStateCode::QUIT;
 
     return new_app_state;
 }
