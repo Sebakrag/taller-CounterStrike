@@ -30,8 +30,8 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
         // La imagen del escenario que vamos a utilizar la debo recibir del server (pongo una
         // provisoria).
-        const std::string map_image = "client/assets/temp_map.png";
-        // const std::string map_image = "client/assets/menu_background.jpg";
+        const std::string map_image = "client/assets/backgrounds/temp_map.png";
+        // const std::string map_image = "client/assets/backgrounds/menu_background.jpg";
         Texture match_background(renderer, map_image);
 
         // GameWorld world(match_background);

@@ -1,9 +1,8 @@
 #include <exception>
 #include <iostream>
 
+#include "app-state/AppStateController.h"
 #include "common/constants.h"
-
-#include "AppStateController.h"
 
 int main() {
     try {
