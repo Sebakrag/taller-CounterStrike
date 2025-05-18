@@ -21,6 +21,7 @@ struct PlayerInfo {
     // estado {quieto, caminando, atacando, recibiendo daño, muriendo, agarrando, etc}
 };
 
+// faltan agregar cosas.
 class GameInfo {
 public:
     const GamePhase gamePhase;

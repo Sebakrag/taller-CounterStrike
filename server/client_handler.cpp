@@ -1,14 +1,99 @@
 #include "client_handler.h"
-#include <iostream>
 
-ClientHandler::ClientHandler(Socket peer)
-    : peer(std::move(peer)){}
+#include <iostream>
+#include <list>
+#include <utility>
+
+#include "server_protocol.h"
+
+// ClientHandler::ClientHandler(Socket peer)
+//     : peer(std::move(peer)){}
+
+
+ClientHandler::ClientHandler(ServerProtocol&& serverProtocol, const std::string& username,
+                             GameManager& gameManager):
+        username(username),
+        protocol(std::move(serverProtocol)),
+        status(InMenu),
+        gameManager(gameManager) {
+    protocol.sendInitMsg();
+    start();
+}
 
 void ClientHandler::run() {
     try {
-        std::cout << "Handler started. Waiting clients message...\n";
-
+        while (should_keep_running() && status != Disconnected) {
+            while (status == InMenu) {
+                MenuAction menuAction = protocol.recvMenuAction();
+                handleMenuActions(menuAction);
+            }
+            while (status == InLobby) {
+                LobbyAction lobbyAction = protocol.recvLobbyAction();
+                handleLobbyActions(lobbyAction);
+            }
+            if (status == InGame) {
+                // algo asi:
+                // sender y receiver start
+                //  match.start();
+                // sender y receiver join()
+            }
+        }
     } catch (const std::exception& e) {
         std::cerr << "ClientHandler error: " << e.what() << std::endl;
+    }
+}
+
+void ClientHandler::kill() {
+    protocol.shutDown(2);
+    status = Disconnected;
+    stop();
+}
+
+std::string ClientHandler::getUsername() { return username; }
+
+void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
+    bool aux = false;
+    switch (menuAction.type) {
+        case MenuActionType::Create:
+            aux = gameManager.createMatch(menuAction.name_match, username);
+            protocol.sendConfirmation(aux);
+            break;
+        case MenuActionType::Join:
+            aux = gameManager.JoinMatch(menuAction.name_match, username);
+            protocol.sendConfirmation(aux);
+            break;
+        case MenuActionType::List: {
+            std::list<std::string> matchs_list = gameManager.listMatchs();
+            std::string msg;
+            for (const auto& match: matchs_list) {
+                msg += match + "\n";
+            }
+            protocol.sendMessage(TypeMessage::ListMatchs, msg);
+            break;
+        }
+        case MenuActionType::Exit:
+            status = Disconnected;
+            break;
+        default:
+            break;
+    }
+    if (aux) {
+        std::cout << username << " entro al lobby" << std::endl;
+        status = InLobby;
+        //...protocol.sendTilemap(...);
+    }
+}
+
+void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
+    switch (lobbyAction) {
+        case LobbyAction::QuitMatch:
+            status = InMenu;
+            break;
+        case LobbyAction::StartMatch:
+            status = InGame;
+            break;
+        case LobbyAction::ListPlayers:
+
+            break;
     }
 }

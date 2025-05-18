@@ -14,7 +14,7 @@ target_sources(taller_common
         resolver.h
         liberror.h
         resolvererror.h
-        threads.h
+        thread.h
 
         constants_protocol.h
         game_info.h

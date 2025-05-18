@@ -2,29 +2,24 @@
 
 #include <iostream>
 
-Server::Server(const std::string& port)
-    : port(port), srv(port.c_str()) {}
+#include "acceptor.h"
+#include "game_manager.h"
+
+Server::Server(const std::string& port): port(port), gameManager() {}
+
 
 void Server::run() {
-    std::cout << "Server listening port " << port << std::endl;
+    Acceptor acceptor(port, gameManager);
+    acceptor.start();
 
-    try {
-        while (true) {
-            Socket peer = srv.accept();
-
-            std::cout << "New client connected. " << std::endl;
-
-            auto *handler = new ClientHandler(std::move(peer));
-            handler->start();
-            handlers.push_back(handler);
+    std::string input;
+    while (true) {
+        std::getline(std::cin, input);
+        if (input == "q" || input == "Q") {
+            acceptor.stop();
+            // acceptor.kill();
+            acceptor.join();
+            break;
         }
-
-    } catch (const std::exception& e) {
-        std::cerr << "Critical server error: " << e.what() << std::endl;
-    }
-
-    for (auto* handler : handlers) {
-        handler->join();
-        delete handler;
     }
 }

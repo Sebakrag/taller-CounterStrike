@@ -26,7 +26,7 @@ enum MenuActionType { Exit, Create, Join, List };
 struct MenuAction {
     const MenuActionType type;
     const std::string name_match;
-    const int id_scenary;
+    const int id_scenary = 0;
 
     explicit MenuAction(MenuActionType type, const std::string& name_match = "",
                         int id_scenary = 0):

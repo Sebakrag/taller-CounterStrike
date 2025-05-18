@@ -1,21 +1,25 @@
 #ifndef CLIENT_PROTOCOL_H_
 #define CLIENT_PROTOCOL_H_
 
+#include <list>
 #include <string>
+#include <vector>
 
+#include "../common/game_info.h"
 #include "../common/protocol.h"
 #include "../common/socket.h"
 
 
 class ClientProtocol: public Protocol_ {
 private:
-    Socket socket;
+    //    Socket socket;
     std::string username;
 
 public:
     ClientProtocol(const std::string& hostname, const std::string& servame,
                    const std::string& username);
 
+    void sendUserName(const std::string& username);
     /**
      * Se utiliza para enviar los mensajes de:
      * - Crear una partida.
@@ -49,8 +53,6 @@ public:
      * Envía las acciones que quiere realizar el jugador en el juego.
      * (comprar arma, moverse, disparar, etc.).
      *
-     * El server NO enviará ninguna confirmación.
-     *
      * Si se intenta enviar uno de estos mensajes cuando el cliente
      * no esté en el juego, el server simplemente los ignorará.
      */
@@ -62,9 +64,11 @@ public:
      */
     bool recvConfirmation();
 
-    std::string recvListMatchs();
+    std::vector<std::string> recvListMatchs();
 
-    std::string recvListPlayers();
+    std::vector<std::string> recvListPlayers();
+
+    GameInfo recvGameInfo();
 };
 
 #endif  // CLIENT_PROTOCOL_H_

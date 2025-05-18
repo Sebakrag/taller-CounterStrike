@@ -1,11 +1,19 @@
 target_sources(taller_server
     PRIVATE
     # .cpp files
-        main.cpp
-        server.cpp
+        acceptor.cpp
         client_handler.cpp
+        game_manager.cpp
+        main.cpp
+        server_protocol.cpp
+        server.cpp
+
     PUBLIC
     # .h files
-        server.h
+        acceptor.h
         client_handler.h
+        game_manager.h
+        match.h
+        server_protocol.h
+        server.h
     )

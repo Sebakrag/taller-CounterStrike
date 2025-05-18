@@ -5,11 +5,20 @@
 #include <string>
 #include <vector>
 
+#include "socket.h"
 #include "types.h"
 
 // no me deja ponerle el nombre Protocol ! Segun chat es porque está definido en la libreria de QT
 class Protocol_ {
 protected:
+    Socket socket;
+
+    // constructor para el ClientProtocol
+    explicit Protocol_(const std::string& hostname, const std::string& servname);
+
+    // constructor para el ServerProtocol
+    explicit Protocol_(Socket&& socketClient);
+
     /**
      * Inserta un numero de 2 bytes en formato big-endian dentro del array.
      */
@@ -17,6 +26,9 @@ protected:
 
     // Inserta cada caracter del string (1 byte por caracter) en el array
     void insertStringBytes(const std::string& string, std::vector<uint8_t>& array);
+
+    // recibe 2 bytes por el socket, casteando al endianness local
+    uint16_t recvLength();
 
     // Codificadores. Devuelven el byte correspondiente al valor del enum.
     uint8_t encodeTypeWeapon(const TypeWeapon& typeWeapon);
@@ -33,6 +45,7 @@ protected:
     GameActionType decodeGameActionType(uint8_t byte);
 
 public:
+    void shutDown(int how);
 };
 
 #endif  // PROTOCOL_H_

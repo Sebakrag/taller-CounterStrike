@@ -4,14 +4,18 @@
 #include <string>
 #include <vector>
 
-#include "common/socket.h"
+#include "../common/socket.h"
+
+#include "acceptor.h"
 #include "client_handler.h"
 
 class Server {
 private:
     std::string port;
-    Socket srv;
-    std::vector<ClientHandler*> handlers;
+    GameManager gameManager;
+    // Acceptor acceptor;
+    // Socket srv;
+    // std::vector<ClientHandler*> handlers;
 
 public:
     explicit Server(const std::string& port);
@@ -19,7 +23,6 @@ public:
     void run();
 
     ~Server() = default;
-
 };
 
 #endif

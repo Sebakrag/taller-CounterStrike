@@ -3,11 +3,31 @@
 #include <algorithm>
 #include <cstdint>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 #include <arpa/inet.h>
 
 #include "constants_protocol.h"
+#include "socket.h"
+
+
+// constructor para el ClientProtocol
+Protocol_::Protocol_(const std::string& hostname, const std::string& servname):
+        socket(hostname.c_str(), servname.c_str()) {}
+
+// constructor para el ServerProtocol
+Protocol_::Protocol_(Socket&& socketClient): socket(std::move(socketClient)) {}
+
+uint16_t Protocol_::recvLength() {
+    uint16_t length;
+    int r = socket.recvall(&length, sizeof(uint16_t));
+    if (r != 2) {
+        throw std::runtime_error("Error al recibir el length.");
+    }
+    length = ntohs(length);  // convierto de big endian al endianness local
+    return length;
+}
 
 
 void Protocol_::insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array) {
@@ -185,3 +205,5 @@ GameActionType Protocol_::decodeGameActionType(uint8_t byte) {
                     "Error. Tipo de acción de juego desconocida. No se puede decodificar");
     }
 }
+
+void Protocol_::shutDown(int how) { socket.shutdown(how); }
