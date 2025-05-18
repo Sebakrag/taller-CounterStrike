@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "client_protocol.h"
+
 enum Status { Disconnected, InMenu, InLobby, InGame };
 
 // Clase para probar la conexion. Determinar despues si sirve o no
@@ -17,29 +18,28 @@ class Client {
 public:
     Client(const std::string& ip, const std::string& port, const std::string& user_name);
 
+    // estos loop NO IRÍAN.
     void mainLoop();
     void menuLoop();
     void lobbyLoop();
 
-    // TO DO: traducir los nombres de las funciones
+    void ExitGame();
+    void CreateMatch(const std::string& match_name);
+    void JoinMatch(const std::string& match_name);
+    void refreshMatchList();
 
-    void SalirDelJuego();
-    void CrearPartida(const std::string& nombre_partida);
-    void UnirseAPartida(const std::string& nombre_partida);
-    void refrescarListaDePartidas();
+    void LeaveMatch();  // returns to menu
+    void StartMatch();
+    void refreshPlayerList();
 
-    void AbandonarPartida();  // regresa al menú
-    void IniciarPartida();
-    void refrescarListaJugadores();
+    void BuyWeapon();
+    void buyAmmo();
+    void Walk();
+    void Attack();
+    void SwitchWeapon();
+    void PickUp();
 
-    void ComprarArma();
-    void comprarMuniciones();
-    void Caminar();
-    void Atacar();
-    void CambiarArma();
-    void Agarrar();
-
-    void refrescarEstadoJuego();
+    void refreshGameState();
 };
 
 #endif  // CLIENT_H_

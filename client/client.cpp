@@ -41,14 +41,14 @@ void Client::menuLoop() {
         std::getline(std::cin, msj_usuario);
         if (msj_usuario.substr(0, 6) == "crear ") {
             std::string nombre_partida = msj_usuario.substr(6, msj_usuario.length());
-            CrearPartida(nombre_partida);
+            CreateMatch(nombre_partida);
         } else if (msj_usuario.substr(0, 7) == "unirse ") {
             std::string nombre_partida = msj_usuario.substr(7, msj_usuario.length());
-            UnirseAPartida(nombre_partida);
+            JoinMatch(nombre_partida);
         } else if (msj_usuario == "listar") {
-            refrescarListaDePartidas();
+            refreshMatchList();
         } else if (msj_usuario == "salir") {
-            SalirDelJuego();
+            ExitGame();
         }
     }
 }
@@ -62,22 +62,22 @@ void Client::lobbyLoop() {
     while (status == InLobby) {
         std::getline(std::cin, msj_usuario);
         if (msj_usuario == "actualizar") {
-            refrescarListaJugadores();
+            refreshPlayerList();
         } else if (msj_usuario == "abandonar") {
-            AbandonarPartida();
+            LeaveMatch();
         } else if (msj_usuario == "iniciar") {
-            IniciarPartida();
+            StartMatch();
         }
     }
 }
 
-void Client::SalirDelJuego() {
+void Client::ExitGame() {
     status = Disconnected;
     protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
 }
 
-void Client::CrearPartida(const std::string& nombre_partida) {
-    protocol.sendMenuAction(MenuAction(MenuActionType::Create, nombre_partida, 0));
+void Client::CreateMatch(const std::string& match_name) {
+    protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, 0));
     bool created = protocol.recvConfirmation();
     if (created) {
         std::cout << "La partida se creó correctamente." << std::endl;
@@ -88,8 +88,8 @@ void Client::CrearPartida(const std::string& nombre_partida) {
     }
 }
 
-void Client::UnirseAPartida(const std::string& nombre_partida) {
-    protocol.sendMenuAction(MenuAction(MenuActionType::Join, nombre_partida));
+void Client::JoinMatch(const std::string& match_name) {
+    protocol.sendMenuAction(MenuAction(MenuActionType::Join, match_name));
     bool united = protocol.recvConfirmation();
     if (united) {
         std::cout << "Te uniste a la partida!" << std::endl;
@@ -100,7 +100,7 @@ void Client::UnirseAPartida(const std::string& nombre_partida) {
     }
 }
 
-void Client::refrescarListaDePartidas() {
+void Client::refreshMatchList() {
     protocol.sendMenuAction(MenuAction(MenuActionType::List));
     std::vector<std::string> lista_partidas = protocol.recvListMatchs();
 
@@ -111,17 +111,17 @@ void Client::refrescarListaDePartidas() {
 }
 
 // in Lobby.
-void Client::AbandonarPartida() {
+void Client::LeaveMatch() {
     protocol.sendLobbyAction(LobbyAction::QuitMatch);
     status = InMenu;
 }
 
-void Client::IniciarPartida() {
+void Client::StartMatch() {
     std::cerr << "Todavia no se puede. " << std::endl;
     // YOUR CODE
 }
 
-void Client::refrescarListaJugadores() {
+void Client::refreshPlayerList() {
     protocol.sendLobbyAction(LobbyAction::ListPlayers);
     std::vector<PlayerInfoLobby> players = protocol.recvListPlayers();
 
@@ -133,30 +133,30 @@ void Client::refrescarListaJugadores() {
 
 
 // in Game.
-void Client::ComprarArma() {
+void Client::BuyWeapon() {
     // YOUR CODE
 }
 
-void Client::comprarMuniciones() {
+void Client::buyAmmo() {
     // YOUR CODE
 }
 
-void Client::Caminar() {
+void Client::Walk() {
     // YOUR CODE
 }
 
-void Client::Atacar() {
+void Client::Attack() {
     // YOUR CODE
 }
 
-void Client::CambiarArma() {
+void Client::SwitchWeapon() {
     // YOUR CODE
 }
 
-void Client::Agarrar() {
+void Client::PickUp() {
     // YOUR CODE
 }
 
-void Client::refrescarEstadoJuego() {
+void Client::refreshGameState() {
     // YOUR CODE
 }
