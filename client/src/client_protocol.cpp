@@ -1,4 +1,5 @@
-#include "client_protocol.h"
+#include "../include/client_protocol.h"
+#include "../../common/constants_protocol.h"
 
 #include <cstdint>
 #include <iostream>
@@ -9,7 +10,6 @@
 
 #include <arpa/inet.h>
 
-#include "../common/constants_protocol.h"
 
 ClientProtocol::ClientProtocol(const std::string& hostname, const std::string& servname,
                                const std::string& username):

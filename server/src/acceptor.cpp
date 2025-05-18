@@ -1,10 +1,10 @@
-#include "acceptor.h"
+#include "../include/acceptor.h"
 
 #include <utility>
 
-#include "client_handler.h"
-#include "game_manager.h"
-#include "server_protocol.h"
+#include "../include/client_handler.h"
+#include "../include/game_manager.h"
+#include "../include/server_protocol.h"
 
 
 Acceptor::Acceptor(const std::string& port, GameManager& gameManager):

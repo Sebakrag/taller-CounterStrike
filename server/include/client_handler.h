@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "../common/socket.h"
-#include "../common/thread.h"
+#include "../../common/socket.h"
+#include "../../common/thread.h"
 
 #include "game_manager.h"
 #include "server_protocol.h"

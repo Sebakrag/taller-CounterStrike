@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "../common/game_info.h"
-#include "../common/protocol.h"
-#include "../common/socket.h"
+#include "../../common/game_info.h"
+#include "../../common/protocol.h"
+#include "../../common/socket.h"
 
 
 class ClientProtocol: public Protocol_ {

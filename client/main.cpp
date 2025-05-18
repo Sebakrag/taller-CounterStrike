@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "client.h"
+#include "include/client.h"
 
 //#include <SDL2/SDL.h>
 //#include <SDL2pp/SDL2pp.hh>

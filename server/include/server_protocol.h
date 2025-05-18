@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "../common/game_info.h"
-#include "../common/protocol.h"
-#include "../common/socket.h"
+#include "../../common/game_info.h"
+#include "../../common/protocol.h"
+#include "../../common/socket.h"
 
 enum TypeMessage { ListMatchs, ListPlayers };
 

@@ -1,9 +1,9 @@
-#include "server.h"
+#include "../include/server.h"
 
 #include <iostream>
 
-#include "acceptor.h"
-#include "game_manager.h"
+#include "../include/acceptor.h"
+#include "../include/game_manager.h"
 
 Server::Server(const std::string& port): port(port), gameManager() {}
 

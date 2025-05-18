@@ -1,11 +1,11 @@
-#include "client.h"
+#include "../include/client.h"
 
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
 #include <string>
 
-#include "client_protocol.h"
+#include "../include/client_protocol.h"
 
 Client::Client(const std::string& ip, const std::string& port, const std::string& user_name):
         protocol(ip.c_str(), port.c_str(), user_name) {

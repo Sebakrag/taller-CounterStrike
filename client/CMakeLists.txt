@@ -2,11 +2,11 @@ target_sources(taller_client
     PRIVATE
     # .cpp files
     main.cpp
-    client_protocol.cpp
-    client.cpp
+    src/client_protocol.cpp
+    src/client.cpp
 
     PUBLIC
     # .h files
-    client_protocol.h
-    client.h
+    include/client_protocol.h
+    include/client.h
     )

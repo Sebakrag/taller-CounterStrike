@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "../common/thread.h"
+#include "../../common/thread.h"
 
 class GameManager;  // forward declaration
 
