@@ -24,6 +24,8 @@ public:
 
     void sendMessage(TypeMessage typeMenssage, const std::string& msg);
 
+    void sendListPlayers(std::vector<PlayerInfoLobby> playersInMatch);
+
     void sendGameInfo(const GameInfo& gameInfo);
 
     std::string recvUsername();

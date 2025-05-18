@@ -66,7 +66,8 @@ public:
 
     std::vector<std::string> recvListMatchs();
 
-    std::vector<std::string> recvListPlayers();
+
+    std::vector<PlayerInfoLobby> recvListPlayers();
 
     GameInfo recvGameInfo();
 };

@@ -4,6 +4,7 @@ target_sources(taller_server
         acceptor.cpp
         client_handler.cpp
         game_manager.cpp
+        match.cpp
         main.cpp
         server_protocol.cpp
         server.cpp

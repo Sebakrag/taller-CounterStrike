@@ -6,7 +6,7 @@
 
 enum class Weapon { None, Glock, Ak47, M3, Awp };
 enum class TypeWeapon { Primary, Secondary, Knife, Bomb };
-
+enum class Team { Terrorist, CounterTerrorist };
 enum class GamePhase { Preparation, Combat, EndOfMatch };
 
 struct Vector2 {
@@ -18,6 +18,12 @@ struct Vector2 {
     Vector2(const Vector2& other): x(other.x), y(other.y) {}
 };
 
+struct PlayerInfoLobby {
+    std::string username;
+    Team team;
+
+    PlayerInfoLobby(std::string username, Team team): username(username), team(team){};
+};
 // DTOs
 //--------
 // menu.

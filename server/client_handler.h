@@ -1,6 +1,8 @@
 #pragma once
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "../common/socket.h"
 #include "../common/thread.h"
@@ -15,7 +17,8 @@ private:
     std::string username;
     ServerProtocol protocol;
     Status status;
-
+    bool isHostMatch = false;
+    std::shared_ptr<Match> myMatch;
     GameManager& gameManager;
 
 public:

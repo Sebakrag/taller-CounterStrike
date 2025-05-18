@@ -41,6 +41,20 @@ void ServerProtocol::sendMessage(TypeMessage typeMessage, const std::string& msg
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
+void ServerProtocol::sendListPlayers(std::vector<PlayerInfoLobby> playersInMatch) {
+    std::vector<uint8_t> buffer;
+    buffer.push_back(BYTE_PLAYERS_LIST);
+    int size = playersInMatch.size();
+    insertBigEndian16(size, buffer);
+
+    for (int i = 0; i < size; i++) {
+        insertBigEndian16(playersInMatch[i].username.length(), buffer);
+        insertStringBytes(playersInMatch[i].username, buffer);
+        buffer.push_back(encodeTeam(playersInMatch[i].team));
+    }
+    socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
+}
+
 void ServerProtocol::sendGameInfo(const GameInfo& gameInfo) {
     // Implementación de sendGameInfo
     if (gameInfo.gamePhase == GamePhase::EndOfMatch) {

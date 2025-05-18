@@ -3,6 +3,7 @@
 
 #include <list>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -12,8 +13,9 @@
 
 // monitor que gestiona la lista de partidas.
 class GameManager {
-    // std::map<std::string , Match> matchs;
-    std::list<std::string> matchs;  // CAMBIAR
+    std::map<std::string, std::shared_ptr<Match>> matchs;
+    bool server_closed = false;
+    // std::list<std::string> matchs;  // CAMBIAR
     std::mutex m;
 
 public:
@@ -29,6 +31,12 @@ public:
 
     std::list<std::string> listMatchs();
 
+    /**
+     *
+     * Lanza una excepción si la partida no existe o si el usuario no está en la partida.
+     *
+     */
+    std::shared_ptr<Match> getMatch(const std::string& matchName, const std::string& username);
 
 private:
     // void reapMatchs();

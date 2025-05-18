@@ -122,6 +122,16 @@ uint8_t Protocol_::encodeGameActionType(const GameActionType& gameActionType) {
     }
 }
 
+uint8_t Protocol_::encodeTeam(const Team& team) {
+    switch (team) {
+        case Team::Terrorist:
+            return BYTE_TEAM_TERRORIST;
+        case Team::CounterTerrorist:
+            return BYTE_TEAM_COUNTERTERRORIST;
+        default:
+            throw std::invalid_argument("Team inválido");
+    }
+}
 // Decodificadores.
 //------------------
 
@@ -205,5 +215,14 @@ GameActionType Protocol_::decodeGameActionType(uint8_t byte) {
                     "Error. Tipo de acción de juego desconocida. No se puede decodificar");
     }
 }
-
+Team Protocol_::decodeTeam(uint8_t byte) {
+    switch (byte) {
+        case BYTE_TEAM_TERRORIST:
+            return Team::Terrorist;
+        case BYTE_TEAM_COUNTERTERRORIST:
+            return Team::CounterTerrorist;
+        default:
+            throw std::invalid_argument("Byte inválido para Team");
+    }
+}
 void Protocol_::shutDown(int how) { socket.shutdown(how); }

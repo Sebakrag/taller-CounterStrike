@@ -36,6 +36,7 @@ protected:
     uint8_t encodeMenuActionType(const MenuActionType& gameActionType);
     uint8_t encodeLobbyAction(const LobbyAction& lobbyAction);
     uint8_t encodeGameActionType(const GameActionType& gameActionType);
+    uint8_t encodeTeam(const Team&);
 
     // Decodificadores. Devuelven el valor del enum correspondiente al byte.
     TypeWeapon decodeTypeWeapon(uint8_t byte);
@@ -43,6 +44,7 @@ protected:
     MenuActionType decodeMenuActionType(uint8_t byte);
     LobbyAction decodeLobbyAction(uint8_t byte);
     GameActionType decodeGameActionType(uint8_t byte);
+    Team decodeTeam(uint8_t);
 
 public:
     void shutDown(int how);

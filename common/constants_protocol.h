@@ -14,6 +14,9 @@
 #define BYTE_TYPE_KNIFE 0X13
 #define BYTE_TYPE_BOMB 0x14
 
+#define BYTE_TEAM_TERRORIST 0x01
+#define BYTE_TEAM_COUNTERTERRORIST 0x02
+
 // Acciones del cliente:
 //--------------------------
 // MenuActions

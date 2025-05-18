@@ -123,10 +123,11 @@ void Client::IniciarPartida() {
 
 void Client::refrescarListaJugadores() {
     protocol.sendLobbyAction(LobbyAction::ListPlayers);
-    auto lista = protocol.recvListPlayers();
+    std::vector<PlayerInfoLobby> players = protocol.recvListPlayers();
 
-    for (std::string& jugador: lista) {
-        std::cout << jugador << std::endl;
+    std::cout << "Players en la sala: " << std::endl;
+    for (auto& jugador: players) {
+        std::cout << " - " << jugador.username << std::endl;
     }
 }
 

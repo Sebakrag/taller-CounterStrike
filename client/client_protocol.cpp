@@ -126,9 +126,33 @@ std::vector<std::string> ClientProtocol::recvListMatchs() {
     return matchNames;
 }
 
-std::vector<std::string> ClientProtocol::recvListPlayers() {
-    std::vector<std::string> list;
-    std::cout << "NO ESTÁ IMPLMENTADO! ClientProtocol::recvListPlayers()" << std::endl;
+/**
+0xC2 <uint16_t cantidad_jugadores> {
+    <uint8_t length_nombre>
+    <char[nombre]>
+    <uint8_t equipo>
+} × N jugadores
+ */
+std::vector<PlayerInfoLobby> ClientProtocol::recvListPlayers() {
+    std::vector<PlayerInfoLobby> list;
+
+    uint8_t byte = 0;
+    socket.recvall(&byte, sizeof(uint8_t));
+    if (byte != BYTE_PLAYERS_LIST) {
+        throw std::runtime_error("Se recibió un byte inesperado");
+    }
+    uint16_t quantity_players = recvLength();
+
+    int i = 0;
+    while (i < quantity_players) {
+        uint16_t length = recvLength();
+        std::string name;
+        name.resize(length);
+        socket.recvall(name.data(), sizeof(uint8_t) * length);
+        socket.recvall(&byte, sizeof(uint8_t));
+        list.push_back(PlayerInfoLobby(name, decodeTeam(byte)));
+        i++;
+    }
     return list;
 }
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <list>
+#include <string>
 #include <utility>
 
 #include "server_protocol.h"
@@ -32,6 +33,7 @@ void ClientHandler::run() {
                 handleLobbyActions(lobbyAction);
             }
             if (status == InGame) {
+                // YOUR CODE
                 // algo asi:
                 // sender y receiver start
                 //  match.start();
@@ -57,6 +59,8 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         case MenuActionType::Create:
             aux = gameManager.createMatch(menuAction.name_match, username);
             protocol.sendConfirmation(aux);
+            if (aux)
+                isHostMatch = true;
             break;
         case MenuActionType::Join:
             aux = gameManager.JoinMatch(menuAction.name_match, username);
@@ -73,6 +77,9 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         }
         case MenuActionType::Exit:
             status = Disconnected;
+            if (isHostMatch) {
+                // elegir otro anfitrion o destruir partida y mandar a todos al menu.
+            }
             break;
         default:
             break;
@@ -80,6 +87,7 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
     if (aux) {
         std::cout << username << " entro al lobby" << std::endl;
         status = InLobby;
+        myMatch = gameManager.getMatch(menuAction.name_match, username);
         //...protocol.sendTilemap(...);
     }
 }
@@ -90,10 +98,20 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             status = InMenu;
             break;
         case LobbyAction::StartMatch:
-            status = InGame;
+            if (isHostMatch) {
+                status = InGame;
+                protocol.sendConfirmation(true);
+            } else {
+                protocol.sendConfirmation(false);
+            }
             break;
         case LobbyAction::ListPlayers:
-
+            std::vector<std::string> playersInMatch = myMatch->getPlayers();
+            std::vector<PlayerInfoLobby> playersInfo;
+            for (const auto& player: playersInMatch) {
+                playersInfo.push_back(PlayerInfoLobby(player, Team::Terrorist));
+            }
+            protocol.sendListPlayers(playersInfo);
             break;
     }
 }

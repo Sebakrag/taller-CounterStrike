@@ -16,9 +16,11 @@ struct PlayerInfo {
     int pos_x;
     int pos_y;
     Vector2 direction;  // a dónde está mirando el player
-    Weapon weapon_selected;
+    TypeWeapon weapon_selected;
     int ammo_weapon;
     // estado {quieto, caminando, atacando, recibiendo daño, muriendo, agarrando, etc}
+    // skin ?
+    // team ?
 };
 
 // faltan agregar cosas.
@@ -27,7 +29,7 @@ public:
     const GamePhase gamePhase;
     const std::vector<PlayerInfo> players;
 
-    GameInfo(GamePhase gamePhase, const std::vector<PlayerInfo>& players);
+    explicit GameInfo(GamePhase gamePhase, const std::vector<PlayerInfo>& players);
 };
 
 #endif  // GAME_INFO_H_
