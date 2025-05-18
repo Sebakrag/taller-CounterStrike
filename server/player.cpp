@@ -30,7 +30,7 @@ void Player::setEquippedWeapon(WeaponType type) {
     equippedWeapon = type;
 }
 
-int Player::attack(/*int targetX, int targetY*/) {
+int Player::attack(int targetX, int targetY) {
     if (state == PlayerState::DEAD) return -1;
 
     switch (equippedWeapon) {
@@ -48,6 +48,18 @@ int Player::attack(/*int targetX, int targetY*/) {
 int Player::getX() const { return posX; }
 
 int Player::getY() const { return posY; }
+
+int Player::getId() const { return id; }
+
+PlayerType Player::getType() const { return type; }
+
+int Player::getHealth() const { return health; }
+
+WeaponType Player::getEquippedWeapon() const { return equippedWeapon; }
+
+FireWeapon* Player::getPrimaryWeapon() const { return primaryWeapon; }
+
+FireWeapon* Player::getSecondaryWeapon() const { return secondaryWeapon; }
 
 bool Player::isAlive() const { return state == PlayerState::ALIVE; }
 

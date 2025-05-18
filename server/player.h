@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "weapon_knife.h"
+#include "weapon/weapon_knife.h"
 #include "weapon/fire_weapon.h"
 #include "enums/weapon_type.h"
 #include "enums/player_type.h"
@@ -30,10 +30,16 @@ public:
     void receiveDamage(const int dmg);
     void setPrimaryWeapon(FireWeapon* weapon);
     void setEquippedWeapon(WeaponType type);
-    int attack(/*int targetX, int targetY*/);
+    int attack(int targetX, int targetY);
 
     int getX() const;
     int getY() const;
+    int getId() const;
+    PlayerType getType() const;
+    int getHealth() const;
+    WeaponType getEquippedWeapon() const;
+    FireWeapon* getPrimaryWeapon() const;
+    FireWeapon* getSecondaryWeapon() const;
     bool isAlive() const;
 };
 

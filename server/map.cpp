@@ -26,6 +26,11 @@ bool Map::isWalkable(const int x, const int y) const {
     return map[y][x] == 0;
 }
 
+bool Map::isBombSite(int x, int y) const {
+    return (x == 1 && y == 1);
+}
+
+
 void Map::show() const {
     for (const auto& row : map) {
         for (const int cell : row) {

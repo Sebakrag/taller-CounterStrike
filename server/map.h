@@ -11,6 +11,7 @@ private:
 public:
     explicit Map();
     bool isWalkable(const int x, const int y) const;
+    bool isBombSite(int x, int y) const;
     void show() const;
 };
 
