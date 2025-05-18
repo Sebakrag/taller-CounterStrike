@@ -1,7 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include "enums/action_type.h"
+#include "../enums/action_type.h"
 #include <map>
 #include <string>
 

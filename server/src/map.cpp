@@ -1,4 +1,4 @@
-#include "map.h"
+#include "../include/map.h"
 #include <iostream>
 
 Map::Map() {

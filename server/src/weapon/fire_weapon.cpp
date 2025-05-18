@@ -1,4 +1,4 @@
-#include "fire_weapon.h"
+#include "../../include/weapon/fire_weapon.h"
 
 FireWeapon::FireWeapon(const int damage, const float price, const int bullets, const int rateOfFire)
     : Weapon(damage), price(price), bullets(bullets), rateOfFire(rateOfFire) {}

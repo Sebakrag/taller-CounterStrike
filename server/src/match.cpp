@@ -1,4 +1,4 @@
-#include "match.h"
+#include "../include/match.h"
 #include <iostream>
 
 Match::Match() : phase(MatchPhase::WAITING), roundsPlayed(0) {};

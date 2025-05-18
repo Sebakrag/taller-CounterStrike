@@ -1,4 +1,4 @@
-#include "action.h"
+#include "../include/action.h"
 
 Action::Action(const ActionType type, std::map<std::string, int> params)
     : type(type), params(std::move(params)) {}

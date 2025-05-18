@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
-#include "enums/player_type.h"
-#include "enums/weapon_type.h"
+#include "../enums/player_type.h"
+#include "../enums/weapon_type.h"
 
 struct PlayerInfo {
     int id;

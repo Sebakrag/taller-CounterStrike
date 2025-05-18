@@ -1,4 +1,4 @@
-#include "player.h"
+#include "../include/player.h"
 
 Player::Player(const int id, const PlayerType type)
     : id(id), type(type), posX(0), posY(0), health(100),

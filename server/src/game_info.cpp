@@ -1,4 +1,4 @@
-#include "game_info.h"
+#include "../include/game_info.h"
 #include <sstream>
 
 std::string GameInfo::toDebugString() const {

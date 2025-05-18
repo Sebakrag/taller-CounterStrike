@@ -3,9 +3,9 @@
 
 #include "weapon/weapon_knife.h"
 #include "weapon/fire_weapon.h"
-#include "enums/weapon_type.h"
-#include "enums/player_type.h"
-#include "enums/player_state.h"
+#include "../enums/weapon_type.h"
+#include "../enums/player_type.h"
+#include "../enums/player_state.h"
 
 class Player {
 private:

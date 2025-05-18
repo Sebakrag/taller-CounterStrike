@@ -2,11 +2,11 @@
 #define MATCH_H
 
 #include <vector>
-#include "player.h"
+#include "../player.h"
 #include "map.h"
 #include "action.h"
 #include "game_info.h"
-#include "enums/match_phase.h"
+#include "../enums/match_phase.h"
 
 class Match {
 private:
