@@ -1,7 +1,7 @@
 #include <exception>
 #include <iostream>
 
-#include "app-state/AppStateController.h"
+#include "include/app-state/AppStateController.h"
 #include "common/constants.h"
 
 int main() {

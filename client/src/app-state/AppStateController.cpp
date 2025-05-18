@@ -1,12 +1,12 @@
-#include "AppStateController.h"
+#include "client/include/app-state/AppStateController.h"
 
 #include <iostream>  //ELIMINAR
 #include <optional>
 #include <stdexcept>
 
-#include "GameMatchAppState.h"
-#include "LoginAppState.h"
-#include "MainMenuAppState.h"
+#include "client/include/app-state/GameMatchAppState.h"
+#include "client/include/app-state/LoginAppState.h"
+#include "client/include/app-state/MainMenuAppState.h"
 
 AppStateController::AppStateController() { current_state = new LoginAppState(); }
 
@@ -19,6 +19,7 @@ void AppStateController::update() {
 
 void AppStateController::transition_to(const AppStateCode& new_state) {
     delete current_state;
+    current_state = nullptr;
 
     switch (new_state) {
         case AppStateCode::MAIN_MENU: {
