@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "../include/client.h"
 #include "../include/client_protocol.h"
 
 Client::Client(const std::string& ip, const std::string& port, const std::string& user_name):
@@ -17,6 +18,7 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
     }
     std::cout << "Bienvenido " << user_name << ". Ya estás conectado al servidor." << std::endl;
     status = InMenu;
+    // recvDatos();
 }
 
 void Client::mainLoop() {
@@ -26,6 +28,9 @@ void Client::mainLoop() {
         }
         if (status == InLobby) {
             lobbyLoop();
+        }
+        if (status == InGame) {
+            //   gameLoop();
         }
     }
 }
@@ -117,7 +122,13 @@ void Client::LeaveMatch() {
 }
 
 void Client::StartMatch() {
-    std::cerr << "Todavia no se puede. " << std::endl;
+    protocol.sendLobbyAction(LobbyAction::StartMatch);
+    bool ok = protocol.recvConfirmation();
+    if (ok) {
+        std::cout << "Empezó la partida" << std::endl;
+    } else {
+        std::cout << "No empezó la partida. No sos el anfitrion." << std::endl;
+    }
     // YOUR CODE
 }
 
@@ -126,8 +137,8 @@ void Client::refreshPlayerList() {
     std::vector<PlayerInfoLobby> players = protocol.recvListPlayers();
 
     std::cout << "Players en la sala: " << std::endl;
-    for (auto& jugador: players) {
-        std::cout << " - " << jugador.username << std::endl;
+    for (const auto& p: players) {
+        std::cout << " - " << p.username << std::endl;
     }
 }
 

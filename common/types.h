@@ -16,14 +16,23 @@ struct Vector2 {
     Vector2(): x(0), y(0) {}
     explicit Vector2(float x, float y): x(x), y(y) {}
     Vector2(const Vector2& other): x(other.x), y(other.y) {}
+    Vector2& operator=(const Vector2& other) {
+        if (this != &other) {
+            x = other.x;
+            y = other.y;
+        }
+        return *this;
+    }
 };
 
 struct PlayerInfoLobby {
     std::string username;
     Team team;
 
-    PlayerInfoLobby(std::string username, Team team): username(username), team(team){};
+    PlayerInfoLobby() {}
+    explicit PlayerInfoLobby(std::string username, Team team): username(username), team(team) {}
 };
+
 // DTOs
 //--------
 // menu.
@@ -46,14 +55,13 @@ enum class LobbyAction { QuitMatch, StartMatch, ListPlayers };
 enum GameActionType { Null, BuyWeapon, BuyAmmo, Attack, Walk, ChangeWeapon, PickUp };
 
 struct GameAction {
-    const GameActionType type = Null;
-    const Weapon weapon = Weapon::None;  // rellenar si se quiere comprar una.
-    const TypeWeapon typeWeapon =
-            TypeWeapon::Knife;  // rellenar si se quiere cambiar o comprar municion.
-    const int count_ammo = 0;   // rellenar si quiere comprar municion
-    const Vector2 direction;
+    GameActionType type = Null;
+    Weapon weapon = Weapon::None;               // rellenar si se quiere comprar una.
+    TypeWeapon typeWeapon = TypeWeapon::Knife;  // rellenar si se quiere cambiar o comprar municion.
+    int count_ammo = 0;                         // rellenar si quiere comprar municion
+    Vector2 direction;
 
-
+    GameAction() {}
     explicit GameAction(GameActionType type, Weapon weapon = Weapon::Glock):
             type(type), weapon(weapon) {}
 
@@ -61,6 +69,14 @@ struct GameAction {
             type(type), typeWeapon(typeWeapon), count_ammo(count_ammo) {}
 
     explicit GameAction(GameActionType type, Vector2 direction): type(type), direction(direction) {}
+};
+
+struct PlayerAction {
+    std::string player_username;
+    GameAction gameAction;
+
+    explicit PlayerAction(const std::string& player_username, const GameAction& gameAction):
+            player_username(player_username), gameAction(gameAction) {}
 };
 
 

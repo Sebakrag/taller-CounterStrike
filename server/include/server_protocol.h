@@ -2,6 +2,7 @@
 #define SERVER_PROTOCOL_H_
 
 #include <string>
+#include <vector>
 
 #include "../../common/game_info.h"
 #include "../../common/protocol.h"
@@ -24,7 +25,7 @@ public:
 
     void sendMessage(TypeMessage typeMenssage, const std::string& msg);
 
-    void sendListPlayers(std::vector<PlayerInfoLobby> playersInMatch);
+    void sendListPlayers(const std::vector<PlayerInfoLobby>& playersInMatch);
 
     void sendGameInfo(const GameInfo& gameInfo);
 

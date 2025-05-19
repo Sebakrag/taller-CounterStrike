@@ -1,5 +1,4 @@
 #include "../include/client_protocol.h"
-#include "../../common/constants_protocol.h"
 
 #include <cstdint>
 #include <iostream>
@@ -9,6 +8,8 @@
 #include <vector>
 
 #include <arpa/inet.h>
+
+#include "../../common/constants_protocol.h"
 
 
 ClientProtocol::ClientProtocol(const std::string& hostname, const std::string& servname,
@@ -27,7 +28,6 @@ void ClientProtocol::sendUserName(const std::string& username) {
 
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
-
 
 void ClientProtocol::sendMenuAction(const MenuAction& action) {
     std::vector<uint8_t> buffer;
@@ -64,17 +64,12 @@ void ClientProtocol::sendGameAction(const GameAction& gameAction) {
 
     if (gameAction.type == BuyWeapon) {
         buffer.push_back(encodeWeapon(gameAction.weapon));
-    } else if (gameAction.type == BuyAmmo) {
+    } else if (gameAction.type == BuyAmmo || gameAction.type == ChangeWeapon) {
         buffer.push_back(encodeTypeWeapon(gameAction.typeWeapon));
         insertBigEndian16(gameAction.count_ammo, buffer);
-    } else if (gameAction.type == Attack) {
-        // insertar 2 bytes para float x
-        // insertar 2 bytes para float y
-    } else if (gameAction.type == Walk) {
-        // insertar 2 bytes para float x
-        // insertar 2 bytes para float y
-    } else if (gameAction.type == ChangeWeapon) {
-        buffer.push_back(encodeTypeWeapon(gameAction.typeWeapon));
+    } else if (gameAction.type == Attack || gameAction.type == Walk) {
+        insertFloatNormalized3Bytes(gameAction.direction.x, buffer);
+        insertFloatNormalized3Bytes(gameAction.direction.y, buffer);
     }
 
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
@@ -106,7 +101,7 @@ std::vector<std::string> ClientProtocol::recvListMatchs() {
     }
 
     // recibo el length
-    uint16_t length = recvLength();
+    uint16_t length = recvBigEndian16();
 
     // recibo el string
     message.resize(length);
@@ -141,11 +136,11 @@ std::vector<PlayerInfoLobby> ClientProtocol::recvListPlayers() {
     if (byte != BYTE_PLAYERS_LIST) {
         throw std::runtime_error("Se recibió un byte inesperado");
     }
-    uint16_t quantity_players = recvLength();
+    uint16_t quantity_players = recvBigEndian16();
 
     int i = 0;
     while (i < quantity_players) {
-        uint16_t length = recvLength();
+        uint16_t length = recvBigEndian16();
         std::string name;
         name.resize(length);
         socket.recvall(name.data(), sizeof(uint8_t) * length);

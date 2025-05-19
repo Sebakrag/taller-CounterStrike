@@ -2,7 +2,10 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
+#include <iostream>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -19,14 +22,14 @@ Protocol_::Protocol_(const std::string& hostname, const std::string& servname):
 // constructor para el ServerProtocol
 Protocol_::Protocol_(Socket&& socketClient): socket(std::move(socketClient)) {}
 
-uint16_t Protocol_::recvLength() {
-    uint16_t length;
-    int r = socket.recvall(&length, sizeof(uint16_t));
+uint16_t Protocol_::recvBigEndian16() {
+    uint16_t number;
+    int r = socket.recvall(&number, sizeof(uint16_t));
     if (r != 2) {
-        throw std::runtime_error("Error al recibir el length.");
+        throw std::runtime_error("Error al recibir el number.");
     }
-    length = ntohs(length);  // convierto de big endian al endianness local
-    return length;
+    number = ntohs(number);  // convierto de big endian al endianness local
+    return number;
 }
 
 
@@ -43,6 +46,45 @@ void Protocol_::insertStringBytes(const std::string& string, std::vector<uint8_t
     std::copy(string.begin(), string.end(), std::back_inserter(array));
 }
 
+void Protocol_::insertFloatNormalized3Bytes(float value, std::vector<uint8_t>& array) {
+    if (value > 1.0f)
+        value = 1.0f;
+    if (value < -1.0f)
+        value = -1.0f;
+
+    // 1. Signo
+    uint8_t sign = 0;  // positivo
+    if (value < 0.0f)
+        sign = 1;  // negativo
+
+    array.push_back(sign);
+
+    // 2. numero .
+    uint16_t n = static_cast<uint16_t>(std::abs(value) *
+                                       DECIMAL_SCALE);  // corro la coma 4 lugares a la derecha.
+
+    // cargo la parte entera del numero obtenido
+    insertBigEndian16(n, array);
+}
+
+float Protocol_::recvFloatNormalized() {
+    float value = 0;
+    uint8_t sign = 0;
+    int r = socket.recvall(&sign, sizeof(uint8_t));
+    if (r != 1) {
+        throw std::runtime_error("Error al recibir el signo del float.");
+    }
+    uint16_t mantissa = recvBigEndian16();
+
+    value = static_cast<float>(mantissa) / DECIMAL_SCALE;
+
+    if (sign == 1) {
+        value = value * (-1);
+    }
+    std::cout << "Valor recibido: " << std::to_string(value) << std::endl;
+
+    return value;
+}
 
 uint8_t Protocol_::encodeTypeWeapon(const TypeWeapon& typeWeapon) {
     switch (typeWeapon) {

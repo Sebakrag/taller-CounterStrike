@@ -12,7 +12,6 @@
 
 class ClientProtocol: public Protocol_ {
 private:
-    //    Socket socket;
     std::string username;
 
 public:

@@ -8,6 +8,7 @@
 #include "socket.h"
 #include "types.h"
 
+#define DECIMAL_SCALE 10000  // 4 cifras significativas
 // no me deja ponerle el nombre Protocol ! Segun chat es porque está definido en la libreria de QT
 class Protocol_ {
 protected:
@@ -27,8 +28,20 @@ protected:
     // Inserta cada caracter del string (1 byte por caracter) en el array
     void insertStringBytes(const std::string& string, std::vector<uint8_t>& array);
 
-    // recibe 2 bytes por el socket, casteando al endianness local
-    uint16_t recvLength();
+    /**
+     * Inserta un numero float entre -1 y 1 utilizando 3 bytes.
+     * 1 byte para el signo. (0=positivo, 1=negativo).
+     * 2 bytes para el numero, tomando las primeras cinco cifras
+     * (uno de parte entera y cuatro de la parte decimal)
+     */
+    void insertFloatNormalized3Bytes(float value, std::vector<uint8_t>& array);
+
+    // recibe 2 bytes (que representan un numero entero) por el socket, casteando al endianness
+    // local
+    uint16_t recvBigEndian16();
+
+    // recibe 3 bytes (correspondiente a un float) por el socket, casteando al endianness local
+    float recvFloatNormalized();
 
     // Codificadores. Devuelven el byte correspondiente al valor del enum.
     uint8_t encodeTypeWeapon(const TypeWeapon& typeWeapon);

@@ -41,7 +41,7 @@ void ServerProtocol::sendMessage(TypeMessage typeMessage, const std::string& msg
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
-void ServerProtocol::sendListPlayers(std::vector<PlayerInfoLobby> playersInMatch) {
+void ServerProtocol::sendListPlayers(const std::vector<PlayerInfoLobby>& playersInMatch) {
     std::vector<uint8_t> buffer;
     buffer.push_back(BYTE_PLAYERS_LIST);
     int size = playersInMatch.size();
@@ -69,7 +69,7 @@ std::string ServerProtocol::recvUsername() {
     if (byte != BYTE_INIT_MSG) {
         throw std::runtime_error("El byte recibido no es el esperado.");
     }
-    uint16_t length = recvLength();
+    uint16_t length = recvBigEndian16();
     std::string message;
     message.resize(length);
 
@@ -86,7 +86,7 @@ MenuAction ServerProtocol::recvMenuAction() {
     std::string name = "";
     int id_scenary = 0;
     if (type == Create || type == Join) {
-        uint16_t length = recvLength();
+        uint16_t length = recvBigEndian16();
         name.resize(length);
         socket.recvall(name.data(), sizeof(uint8_t) * length);
 
@@ -100,13 +100,30 @@ MenuAction ServerProtocol::recvMenuAction() {
 
 
 LobbyAction ServerProtocol::recvLobbyAction() {
-    // Implementación de recvLobbyAction
     uint8_t byte = 0;
     socket.recvall(&byte, sizeof(uint8_t));
     return decodeLobbyAction(byte);
 }
 
 GameAction ServerProtocol::recvGameAction() {
-    // Implementación de recvGameAction
-    return GameAction(Null);
+    GameAction gameAction;
+    uint8_t byte = 0;
+
+    socket.recvall(&byte, sizeof(uint8_t));
+    GameActionType type = decodeGameActionType(byte);
+    gameAction.type = type;
+    if (type == BuyWeapon) {
+        socket.recvall(&byte, sizeof(uint8_t));
+        gameAction.weapon = decodeWeapon(byte);
+    } else if (type == BuyAmmo || type == ChangeWeapon) {
+        socket.recvall(&byte, 1);
+        gameAction.typeWeapon = decodeTypeWeapon(byte);
+        gameAction.count_ammo = recvBigEndian16();
+    } else if (type == Attack || type == Walk) {
+        float dir_x = recvFloatNormalized();
+        float dir_y = recvFloatNormalized();
+        gameAction.direction = Vector2(dir_x, dir_y);
+    }
+
+    return gameAction;
 }
