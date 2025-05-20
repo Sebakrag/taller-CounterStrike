@@ -1,8 +1,9 @@
 #include "../include/match.h"
 
 #include <algorithm>
+#include <iostream>
 
-Match::Match(const std::string& username): playerHost(username) {}
+Match::Match() {}
 
 bool Match::addPlayer(const std::string& username) {
     players.push_back(username);
@@ -16,22 +17,9 @@ void Match::removePlayer(const std::string& username) {
     }
 }
 
-bool Match::isAvailable() {
-    // TODO: implementar lógica para verificar si hay espacio
-    return true;
-}
 
 std::vector<std::string> Match::getPlayers() { return players; }
 
-Match::~Match() {
-    // TODO: implementar limpieza de recursos
+void Match::processAction(const PlayerAction& action) {
+    std::cout << "Acá ejecuto la accion de " << action.player_username << std::endl;
 }
-
-void Match::run() {
-    // TODO: implementar lógica principal del juego
-    while (should_keep_running()) {
-        // Lógica del juego
-    }
-}
-
-void Match::start() { Thread::start(); }

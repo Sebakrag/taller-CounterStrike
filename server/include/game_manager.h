@@ -8,36 +8,43 @@
 #include <string>
 #include <vector>
 
-#include "match.h"
+#include "../../common/game_info.h"
+#include "../../common/queue.h"
 
+#include "match.h"
+#include "match_room.h"
 
 // monitor que gestiona la lista de partidas.
 class GameManager {
-    std::map<std::string, std::shared_ptr<Match>> matchs;
-    bool server_closed = false;
-    // std::list<std::string> matchs;  // CAMBIAR
+    std::map<std::string, MatchRoom> lobbies;                    // partidas NO iniciadas.
+    std::map<std::string, std::shared_ptr<GameLoop>> gameLoops;  // partidas activas
+
     std::mutex m;
 
+    bool server_closed = false;
+
 public:
-    //    GameManager(lista de escenarios)
+    //    GameManager(lista de escenarios, configuraciones, etc) // redefinir el constructor despues
+
     // devuelve true si pudo crear la partida correctamente
     bool createMatch(const std::string& matchName, const std::string& username);
 
     // devuelve true si pudo unirse a la partida correctamente
     bool JoinMatch(const std::string& matchName, const std::string& username);
 
-    // borra la partida. solo el usuario creador puede hacerlo.
-    bool deleteMatch(const std::string& matchName, const std::string& username);
+    // devuelve true si pudo salir de la partida correctamente
+    bool QuitMatch(const std::string& matchName, const std::string& username);
 
     std::list<std::string> listMatchs();
 
-    /**
-     *
-     * Lanza una excepción si la partida no existe o si el usuario no está en la partida.
-     *
-     */
-    std::shared_ptr<Match> getMatch(const std::string& matchName, const std::string& username);
+    bool startMatch(const std::string& username, const std::string& matchName);
 
+    std::vector<PlayerInfoLobby> getPlayersInMatch(const std::string& matchName);
+
+    /**
+     * Lanza una excepción si la partida no existe o si el usuario no está en la partida.
+     */
+    // MatchRoom& getMatchRoom(const std::string& matchName, const std::string& username);
 private:
     // void reapMatchs();
 };

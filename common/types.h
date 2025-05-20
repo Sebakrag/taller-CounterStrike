@@ -75,6 +75,7 @@ struct PlayerAction {
     std::string player_username;
     GameAction gameAction;
 
+    PlayerAction() {}
     explicit PlayerAction(const std::string& player_username, const GameAction& gameAction):
             player_username(player_username), gameAction(gameAction) {}
 };

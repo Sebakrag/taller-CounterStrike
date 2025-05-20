@@ -5,18 +5,13 @@
 #include <string>
 #include <utility>
 
-#include "../include/server_protocol.h"
-
-// ClientHandler::ClientHandler(Socket peer)
-//     : peer(std::move(peer)){}
-
-
 ClientHandler::ClientHandler(ServerProtocol&& serverProtocol, const std::string& username,
                              GameManager& gameManager):
         username(username),
         protocol(std::move(serverProtocol)),
         status(InMenu),
-        gameManager(gameManager) {
+        gameManager(gameManager),
+        receiver(username, protocol, queueActionsPlayers) {
     protocol.sendInitMsg();
     start();
 }
@@ -33,6 +28,8 @@ void ClientHandler::run() {
                 handleLobbyActions(lobbyAction);
             }
             if (status == InGame) {
+                receiver.start();
+                receiver.join();
                 // YOUR CODE
                 // algo asi:
                 // sender y receiver start
@@ -59,8 +56,6 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         case MenuActionType::Create:
             aux = gameManager.createMatch(menuAction.name_match, username);
             protocol.sendConfirmation(aux);
-            if (aux)
-                isHostMatch = true;
             break;
         case MenuActionType::Join:
             aux = gameManager.JoinMatch(menuAction.name_match, username);
@@ -77,9 +72,6 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         }
         case MenuActionType::Exit:
             status = Disconnected;
-            if (isHostMatch) {
-                // elegir otro anfitrion o destruir partida y mandar a todos al menu.
-            }
             break;
         default:
             break;
@@ -87,7 +79,7 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
     if (aux) {
         std::cout << username << " entro al lobby" << std::endl;
         status = InLobby;
-        myMatch = gameManager.getMatch(menuAction.name_match, username);
+        myMatch = menuAction.name_match;
         //...protocol.sendTilemap(...);
     }
 }
@@ -95,22 +87,20 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
 void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
     switch (lobbyAction) {
         case LobbyAction::QuitMatch:
+            gameManager.QuitMatch(myMatch, username);
+            myMatch = "";
             status = InMenu;
             break;
-        case LobbyAction::StartMatch:
-            if (isHostMatch) {
+        case LobbyAction::StartMatch: {
+            bool ok = gameManager.startMatch(username, myMatch);
+            if (ok) {
                 status = InGame;
-                protocol.sendConfirmation(true);
-            } else {
-                protocol.sendConfirmation(false);
             }
+            protocol.sendConfirmation(ok);
             break;
+        }
         case LobbyAction::ListPlayers:
-            std::vector<std::string> playersInMatch = myMatch->getPlayers();
-            std::vector<PlayerInfoLobby> playersInfo;
-            for (const auto& player: playersInMatch) {
-                playersInfo.push_back(PlayerInfoLobby(player, Team::Terrorist));
-            }
+            std::vector<PlayerInfoLobby> playersInfo = gameManager.getPlayersInMatch(myMatch);
             protocol.sendListPlayers(playersInfo);
             break;
     }

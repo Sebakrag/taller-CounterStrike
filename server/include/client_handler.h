@@ -4,10 +4,12 @@
 #include <string>
 #include <vector>
 
+#include "../../common/queue.h"
 #include "../../common/socket.h"
 #include "../../common/thread.h"
 
 #include "game_manager.h"
+#include "receiver.h"
 #include "server_protocol.h"
 
 enum Status { Disconnected, InMenu, InLobby, InGame };
@@ -17,12 +19,13 @@ private:
     std::string username;
     ServerProtocol protocol;
     Status status;
-    bool isHostMatch = false;
-    std::shared_ptr<Match> myMatch;
+    std::string myMatch;
     GameManager& gameManager;
+    Queue<GameInfo> senderQueue;
+    Queue<PlayerAction> queueActionsPlayers;  // Esto no iría acá
+    Receiver receiver;
 
 public:
-    // ClientHandler(Socket peer);
     ClientHandler(ServerProtocol&& serverProtocol, const std::string& username,
                   GameManager& gameManager);
 

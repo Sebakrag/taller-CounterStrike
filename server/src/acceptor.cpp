@@ -6,7 +6,6 @@
 #include "../include/game_manager.h"
 #include "../include/server_protocol.h"
 
-
 Acceptor::Acceptor(const std::string& port, GameManager& gameManager):
         skt_server(port.c_str()), gameManager(gameManager) {}
 
