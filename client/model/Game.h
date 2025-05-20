@@ -3,36 +3,23 @@
 
 #include <string>
 
-#include <SDL2pp/SDL2pp.hh>
-
 #include "client/dtos/matchInfo.h"
 
+#include "Graphics.h"
 #include "Map.h"
-
-#define GAME_NAME "Counter Strike"
-
-using SDL2pp::Renderer;
-using SDL2pp::SDL;
-using SDL2pp::SDLImage;
-using SDL2pp::SDLTTF;
-using SDL2pp::Window;
+#include "World.h"
 
 class Game {
 private:
     const std::string match_name;
-
-    SDL sdl;
-    SDLImage sdl_image;
-    SDLTTF sdl_ttf;
-
-    Window window;
-    Renderer renderer;
-    Map map;
+    Graphics graphics;
+    // Map map;
+    World world;
 
     bool is_running;
-
-    Window create_window(const match_info_t& match_info) const;
-    Renderer create_renderer(Window& window);
+    void handle_events();
+    void update(float dt);
+    void render();
 
 public:
     ////////////////////////////////////////////////////////////
@@ -40,14 +27,10 @@ public:
     /// are created here too.
     ///
     /// \param[in] match_info structure containing the configuration for the game match.
-    /// \param[in] img_flags Flags to pass to IMG_Init()
     ////////////////////////////////////////////////////////////
-    Game(const match_info_t& match_info, const uint32_t img_flags);
+    explicit Game(const match_info_t& match_info);
 
-    void handle_events();
-    void update();
-    void render();
-    bool running() const;
+    void game_loop();
 
     ~Game();
 };

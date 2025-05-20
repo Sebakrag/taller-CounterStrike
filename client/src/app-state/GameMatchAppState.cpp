@@ -4,12 +4,9 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
-#include <SDL_image.h>
 
 #include "client/dtos/matchInfo.h"
 #include "client/model/Game.h"
-
-using namespace SDL2pp;
 
 GameMatchAppState::GameMatchAppState() {}
 
@@ -34,18 +31,12 @@ std::optional<AppStateCode> GameMatchAppState::update() {
                 640, 400, SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
         const std::string map_image = "client/assets/backgrounds/temp_map.png";
         const match_info_t match_info("Partidita", win_config, map_image);
-        Game game(match_info, IMG_INIT_PNG | IMG_INIT_JPG);
+        Game game(match_info);
 
-        while (game.running()) {
-            game.handle_events();
-            game.update();
-            game.render();
-
-            usleep(1 / 30);  // adjust frame_rate
-        }
+        game.game_loop();
 
         return AppStateCode::MAIN_MENU;
-    } catch (const Exception& e) {
+    } catch (const SDL2pp::Exception& e) {
         std::cerr << "Fatal error: " << e.what() << ", SDL error: " << e.GetSDLError() << std::endl;
         // Deberia lanzar otro tipo de excepcion para manejar en el AppStateController?
         // Quizas puedo retornar al cliente al lobby si ocurre un problema al iniciar la

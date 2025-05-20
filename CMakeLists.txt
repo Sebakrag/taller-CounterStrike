@@ -109,7 +109,21 @@ endif()
 if(TALLER_CLIENT)
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client
-            client/model/Map.h)
+            client/model/Map.h
+            client/model/ECS/Entity.h
+            client/model/ECS/EntityManager.h
+            client/model/ECS/System.h
+            client/model/ECS/ComponentManager.h
+            client/model/ECS/ComponentStorage.h
+            client/model/Graphics.h
+            client/model/Graphics.cpp
+            client/model/World.h
+            client/model/World.cpp
+            client/model/ECS/systems/InputSystem.h
+            client/model/ECS/systems/InputSystem.cpp
+            client/model/ECS/components/InputComponent.h
+            client/model/ECS/systems/RenderSystem.h
+            client/model/ECS/systems/RenderSystem.cpp)
 
     # Make them depend on taller_common lib
     add_dependencies(taller_client taller_common SDL2pp::SDL2pp)

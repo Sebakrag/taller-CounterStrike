@@ -2,29 +2,12 @@
 
 #include <SDL2/SDL.h>
 
-Game::Game(const match_info_t& match_info, const uint32_t img_flags):
+Game::Game(const match_info_t& match_info):
         match_name(match_info.get_name()),
-        sdl(SDL_INIT_VIDEO),
-        sdl_image(img_flags),
-        sdl_ttf(),
-        window(create_window(match_info)),
-        renderer(create_renderer(window)),
+        graphics(match_info.get_window_config(), match_name),
         // aca hay que inicializar todos los objetos del juego: mapa, jugadores... algo mas?
-        map(renderer, match_info.get_map_scene(), window),
+        // map(renderer, match_info.get_map_scene(), window),
         is_running(true) {}
-
-Window Game::create_window(const match_info_t& match_info) const {
-    const std::string win_title = std::string(GAME_NAME) + " - " + match_name;
-    const window_config_t config = match_info.get_window_config();
-    return Window(win_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, config.get_widht(),
-                  config.get_height(), config.get_flags());
-}
-
-Renderer Game::create_renderer(Window& window) {
-    Renderer ren(window, -1, SDL_RENDERER_ACCELERATED);
-    ren.SetDrawColor(255, 255, 255, 255);
-    return ren;
-}
 
 void Game::handle_events() {
     SDL_Event e;
@@ -40,28 +23,29 @@ void Game::handle_events() {
                     case SDLK_ESCAPE:
                         is_running = false;
                         break;
-                    case SDLK_LEFT:
-
-                        break;
-                    case SDLK_RIGHT:
-
-                        break;
                 }
             }  // end SDL_KEYDOWN
         }      // end switch(e.type)
-    }          // end while(SDL_PollEvent)
+
+        world.forward_event(e);
+    }  // end while(SDL_PollEvent)
 }
 
-void Game::update() { map.update(); }
+void Game::update(float dt) { world.update(dt); }
 
-void Game::render() {
-    renderer.Clear();
-    // Aca creamos la imagen renderizada aniadiendo capas.
-    map.render();
-    renderer.Present();
+void Game::render() { graphics.render(world); }
+
+void Game::game_loop() {
+    float dt = 0;
+    while (is_running) {
+        // handle_server_messages(); // receive info from the server and handle it.
+        handle_events();
+        update(dt);  // I could have a SendUpdateToServerSystem that is responsible for sending the
+                     // update of our local_player to the server.
+        render();
+
+        usleep(1 / 30);  // adjust frame_rate
+    }
 }
-
-
-bool Game::running() const { return is_running; }
 
 Game::~Game() {}

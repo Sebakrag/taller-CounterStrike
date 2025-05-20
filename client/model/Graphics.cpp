@@ -1,0 +1,31 @@
+#include "Graphics.h"
+
+#include <SDL2/SDL.h>
+#include <SDL_image.h>
+
+#define GAME_NAME "Counter Strike"
+
+Graphics::Graphics(const window_config_t& config, const std::string& match_name):
+        sdl(SDL_INIT_VIDEO),
+        sdl_image(IMG_INIT_PNG | IMG_INIT_JPG),
+        sdl_ttf(),
+        window(create_window(config, match_name)),
+        renderer(create_renderer(window)) {}
+
+Window Graphics::create_window(const window_config_t& config, const std::string& match_name) const {
+    const std::string win_title = std::string(GAME_NAME) + " - " + match_name;
+    return Window(win_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, config.get_widht(),
+                  config.get_height(), config.get_flags());
+}
+
+Renderer Graphics::create_renderer(Window& window) {
+    Renderer ren(window, -1, SDL_RENDERER_ACCELERATED);
+    ren.SetDrawColor(255, 255, 255, 255);
+    return ren;
+}
+
+void Graphics::render(World& world) {
+    renderer.Clear();
+    world.render(renderer);
+    renderer.Present();
+}

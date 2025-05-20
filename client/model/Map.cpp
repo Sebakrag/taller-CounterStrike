@@ -1,7 +1,7 @@
 #include "Map.h"
 
 using SDL2pp::Optional;
-;
+
 
 Map::Map(Renderer& ren, const std::string& map_scene, const Window& win):
         renderer(ren),
