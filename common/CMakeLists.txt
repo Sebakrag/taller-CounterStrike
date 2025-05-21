@@ -8,6 +8,8 @@ target_sources(taller_common
 
         game_info.cpp
         protocol.cpp
+        tile.cpp
+        tile_map.cpp
     PUBLIC
     # .h files
         socket.h
@@ -20,4 +22,6 @@ target_sources(taller_common
         game_info.h
         protocol.h
         types.h
+        tile.h
+        tile_map.h
     )
