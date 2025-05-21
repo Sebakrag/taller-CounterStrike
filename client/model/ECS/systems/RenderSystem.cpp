@@ -13,9 +13,9 @@ void RenderSystem::update(Renderer& ren, ComponentManager& cm) {
 
     std::cout << "[Shooting]: " << static_cast<int>(input->shooting) << "\n"
               << "[switch-weapon]: " << static_cast<int>(input->switch_weapon) << "\n"
-              << "[x]: " << input->x << "\n"
-              << "[y]: " << input->y << "\n"
+              << "[vec2D]: " << input->move_dir << "\n"
               << std::endl;
+    input->reset();
     ren.SetDrawColor(0, 0, 0, 0);
     ren.DrawLine(200, 200, 350, 400);
     ren.SetDrawColor(255, 255, 255, 255);

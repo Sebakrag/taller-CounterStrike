@@ -5,8 +5,8 @@
 
 class System {
 public:
-    virtual void update(float delta_time, ComponentManager& cm) = 0;
     virtual ~System() = default;
+    virtual void update(float delta_time, ComponentManager& cm) = 0;
 };
 
 

@@ -10,8 +10,8 @@
 #include "ECS/ComponentManager.h"
 #include "ECS/EntityManager.h"
 #include "ECS/System.h"
-#include "ECS/systems/InputSystem.h"
 #include "ECS/systems/RenderSystem.h"
+#include "utils/InputHandler.h"
 
 using SDL2pp::Renderer;
 
@@ -21,7 +21,7 @@ private:
     ComponentManager comp_mgr;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
-    InputSystem input_sys;
+    InputHandler input_handler;
     RenderSystem ren_sys;
 
     std::vector<std::unique_ptr<System>> comp_systems;

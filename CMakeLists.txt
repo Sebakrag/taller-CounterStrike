@@ -119,11 +119,14 @@ if(TALLER_CLIENT)
             client/model/Graphics.cpp
             client/model/World.h
             client/model/World.cpp
-            client/model/ECS/systems/InputSystem.h
-            client/model/ECS/systems/InputSystem.cpp
+            client/model/utils/InputHandler.h
+            client/model/utils/InputHandler.cpp
             client/model/ECS/components/InputComponent.h
             client/model/ECS/systems/RenderSystem.h
-            client/model/ECS/systems/RenderSystem.cpp)
+            client/model/ECS/systems/RenderSystem.cpp
+            client/model/utils/Vec2D.h
+            client/model/utils/Vec2D.cpp
+            client/model/ECS/components/PositionComponent.h)
 
     # Make them depend on taller_common lib
     add_dependencies(taller_client taller_common SDL2pp::SDL2pp)
