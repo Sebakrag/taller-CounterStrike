@@ -6,8 +6,8 @@
 
 #include "types.h"
 
-// Acá están todos los data que va a recibir la interfaz grafica
-// en cada frame.
+// Acá están todos los datos que va a recibir la interfaz grafica
+// en cada frame. Son los qque enviará el gameloop del server en cada iteración.
 
 struct PlayerInfo {
     std::string username;  // id
@@ -26,10 +26,16 @@ struct PlayerInfo {
 // faltan agregar cosas.
 class GameInfo {
 public:
-    const GamePhase gamePhase;
-    const std::vector<PlayerInfo> players;
+    GamePhase gamePhase;
+    std::vector<PlayerInfo> players;
 
     explicit GameInfo(GamePhase gamePhase, const std::vector<PlayerInfo>& players);
+
+    GameInfo(const GameInfo&);
+    // GameInfo(const GameInfo&) = default;
+
+
+    GameInfo& operator=(const GameInfo&);
 };
 
 #endif  // GAME_INFO_H_

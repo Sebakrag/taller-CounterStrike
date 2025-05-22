@@ -20,6 +20,8 @@ int main(int argc, const char* argv[]) try {
     std::string username = argv[3];
 
     Client client(hostname, servname, username);
+    auto& queueActions = client.getSendeQueue();
+    queueActions.push(GameAction(GameActionType::BuyWeapon, Weapon::Ak47));
     client.mainLoop();
 
 } catch (std::exception& e) {

@@ -15,14 +15,9 @@ struct Vector2 {
 
     Vector2(): x(0), y(0) {}
     explicit Vector2(float x, float y): x(x), y(y) {}
-    Vector2(const Vector2& other): x(other.x), y(other.y) {}
-    Vector2& operator=(const Vector2& other) {
-        if (this != &other) {
-            x = other.x;
-            y = other.y;
-        }
-        return *this;
-    }
+
+    Vector2(const Vector2&) = default;
+    Vector2& operator=(const Vector2&) = default;
 };
 
 struct PlayerInfoLobby {
@@ -69,6 +64,10 @@ struct GameAction {
             type(type), typeWeapon(typeWeapon), count_ammo(count_ammo) {}
 
     explicit GameAction(GameActionType type, Vector2 direction): type(type), direction(direction) {}
+
+    GameAction(const GameAction&) = default;
+
+    GameAction& operator=(const GameAction&) = default;
 };
 
 struct PlayerAction {
@@ -79,6 +78,5 @@ struct PlayerAction {
     explicit PlayerAction(const std::string& player_username, const GameAction& gameAction):
             player_username(player_username), gameAction(gameAction) {}
 };
-
 
 #endif  // TYPES_H_

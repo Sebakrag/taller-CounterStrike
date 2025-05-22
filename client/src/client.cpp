@@ -5,11 +5,13 @@
 #include <stdexcept>
 #include <string>
 
-#include "../include/client.h"
 #include "../include/client_protocol.h"
 
+
 Client::Client(const std::string& ip, const std::string& port, const std::string& user_name):
-        protocol(ip.c_str(), port.c_str(), user_name) {
+        protocol(ip.c_str(), port.c_str(), user_name),
+        sender(protocol, send_queue),
+        receiver(protocol, recv_queue) {
     protocol.sendUserName(user_name);
     bool ok = protocol.recvConfirmation();
     if (!ok) {
@@ -30,7 +32,8 @@ void Client::mainLoop() {
             lobbyLoop();
         }
         if (status == InGame) {
-            //   gameLoop();
+            sender.join();
+            receiver.join();
         }
     }
 }
@@ -67,7 +70,7 @@ void Client::lobbyLoop() {
     while (status == InLobby) {
         std::getline(std::cin, msj_usuario);
         if (msj_usuario == "actualizar") {
-            refreshPlayerList();
+            refreshPlayersList();
         } else if (msj_usuario == "abandonar") {
             LeaveMatch();
         } else if (msj_usuario == "iniciar") {
@@ -126,13 +129,15 @@ void Client::StartMatch() {
     bool ok = protocol.recvConfirmation();
     if (ok) {
         std::cout << "Empezó la partida" << std::endl;
+        status = InGame;
+        sender.start();
+        receiver.start();
     } else {
         std::cout << "No empezó la partida. No sos el anfitrion." << std::endl;
     }
-    // YOUR CODE
 }
 
-void Client::refreshPlayerList() {
+void Client::refreshPlayersList() {
     protocol.sendLobbyAction(LobbyAction::ListPlayers);
     std::vector<PlayerInfoLobby> players = protocol.recvListPlayers();
 
@@ -142,32 +147,9 @@ void Client::refreshPlayerList() {
     }
 }
 
+Client::~Client() {}
 
-// in Game.
-void Client::BuyWeapon() {
-    // YOUR CODE
-}
+Status Client::getStatus() { return status; }
 
-void Client::buyAmmo() {
-    // YOUR CODE
-}
-
-void Client::Walk() {
-    // YOUR CODE
-}
-
-void Client::Attack() {
-    // YOUR CODE
-}
-
-void Client::SwitchWeapon() {
-    // YOUR CODE
-}
-
-void Client::PickUp() {
-    // YOUR CODE
-}
-
-void Client::refreshGameState() {
-    // YOUR CODE
-}
+Queue<GameAction>& Client::getSendeQueue() { return send_queue; }
+Queue<GameInfo>& Client::getReceiverQueue() { return recv_queue; }
