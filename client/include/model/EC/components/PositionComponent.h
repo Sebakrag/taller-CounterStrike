@@ -1,14 +1,17 @@
 #ifndef POSITIONCOMPONENT_H
 #define POSITIONCOMPONENT_H
 
-#include "client/model/utils/Vec2D.h"
+#include "client/include/model/utils/Vec2D.h"
 
-struct PositionComponent {
-public:
+class PositionComponent {
+private:
     Vec2D position;
 
+public:
     PositionComponent() = default;
     PositionComponent(const float x, const float y);
+
+    void init(const float x, const float y);
 };
 
-#endif //POSITIONCOMPONENT_H
+#endif  // POSITIONCOMPONENT_H

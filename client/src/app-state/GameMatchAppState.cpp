@@ -6,7 +6,7 @@
 #include <SDL2pp/SDL2pp.hh>
 
 #include "client/dtos/matchInfo.h"
-#include "client/model/Game.h"
+#include "client/include/model/Game.h"
 
 GameMatchAppState::GameMatchAppState() {}
 
@@ -16,9 +16,10 @@ GameMatchAppState::GameMatchAppState() {}
 // Esta info que recibe corresponde a la info estatica de la que el profe nos hablaba.
 // GameMatchAppState::GameMatchAppState(const match_info_t match_info) {}
 // match_info_t {
-//     const window_config_t win_config;
-//     const std::string map_scene; // filename del mapa a utilizar?
-//     const std::list<players_info_t> players;  // pensar si es la mejor forma.
+//     const std::string name;
+//     const uint32_t server_entity_id;  // Esto indica el id del jugador identificado por el
+//     server. const window_config_t win_config; const std::string map_scene; // filename del mapa a
+//     utilizar? const std::list<players_info_t> players;  // pensar si es la mejor forma.
 // };
 // La informacion de si la ventana se abre en fullscreen o no viene dada en el archivo
 // de configuracion con el que se inicia el server. Lo mismo para la resolucion.
@@ -27,10 +28,11 @@ GameMatchAppState::GameMatchAppState() {}
 // (Preguntar esto ultimo).
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
+        constexpr int SERVER_ENTITY_ID = 1;
         const window_config_t win_config(
                 640, 400, SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
         const std::string map_image = "client/assets/backgrounds/temp_map.png";
-        const match_info_t match_info("Partidita", win_config, map_image);
+        const match_info_t match_info("Partidita", SERVER_ENTITY_ID, win_config, map_image);
         Game game(match_info);
 
         game.game_loop();

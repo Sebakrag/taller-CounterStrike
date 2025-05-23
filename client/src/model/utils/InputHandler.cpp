@@ -1,8 +1,8 @@
-#include "InputHandler.h"
+#include "client/include/model/utils/InputHandler.h"
 
 #include <iostream>
 
-#include "client/model/ECS/components/InputComponent.h"
+#include "client/include/model/EC/components/InputComponent.h"
 
 InputHandler::InputHandler(const Entity local_player): local_player(local_player) {}
 
@@ -11,8 +11,6 @@ void InputHandler::handle_event(const SDL_Event& e, ComponentManager& cm) {
         auto* input = cm.getComponent<InputComponent>(local_player);
         if (input == nullptr)
             return;
-
-        // input->reset();
 
         switch (e.type) {
             case SDL_KEYDOWN: {

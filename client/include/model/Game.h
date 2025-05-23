@@ -11,6 +11,7 @@
 
 class Game {
 private:
+    // Client& client;   // This is the connection with the server.
     const std::string match_name;
     Graphics graphics;
     // Map map;
@@ -29,6 +30,8 @@ public:
     /// \param[in] match_info structure containing the configuration for the game match.
     ////////////////////////////////////////////////////////////
     explicit Game(const match_info_t& match_info);
+
+    // Game(const match_info_t& match_info, Client& client);
 
     void game_loop();
 

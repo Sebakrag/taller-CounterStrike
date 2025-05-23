@@ -7,10 +7,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 
-#include "ECS/ComponentManager.h"
-#include "ECS/EntityManager.h"
-#include "ECS/System.h"
-#include "ECS/systems/RenderSystem.h"
+#include "EC/ComponentManager.h"
+#include "EC/EntityManager.h"
 #include "utils/InputHandler.h"
 
 using SDL2pp::Renderer;
@@ -22,14 +20,13 @@ private:
 
     Entity local_player;  // This is the actual player that interacts with his own program.
     InputHandler input_handler;
-    RenderSystem ren_sys;
-
-    std::vector<std::unique_ptr<System>> comp_systems;
-
-    std::vector<std::unique_ptr<System>> build_systems();
+    // RenderComponent ren_comp;
 
 public:
-    World();
+    /// ///
+    /// @param server_local_player_id ID that the server gives to our local_player.
+    /// ///
+    explicit World(const ServerEntityID& server_local_player_id);
 
     void update(float dt);
     void forward_event(const SDL_Event& e);

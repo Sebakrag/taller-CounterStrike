@@ -3,8 +3,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "client/model/ECS/ComponentManager.h"
-#include "client/model/ECS/Entity.h"
+#include "client/include/model/EC/ComponentManager.h"
+#include "client/include/model/EC/Entity.h"
 
 class InputHandler {
 private:

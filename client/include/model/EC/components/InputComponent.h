@@ -1,7 +1,7 @@
 #ifndef INPUTCOMPONENT_H
 #define INPUTCOMPONENT_H
 
-#include "client/model/utils/Vec2D.h"
+#include "client/include/model/utils/Vec2D.h"
 
 struct InputComponent {
 public:
@@ -12,7 +12,7 @@ public:
     InputComponent() = default;
 
     void reset() {
-        move_dir.reset();
+        move_dir.set(0, 0);
         shooting = false;
         switch_weapon = false;
     }

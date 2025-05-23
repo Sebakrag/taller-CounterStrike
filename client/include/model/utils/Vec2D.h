@@ -7,6 +7,7 @@ class Vec2D {
 private:
     float x;
     float y;
+
 public:
     Vec2D();
     Vec2D(const float x, const float y);
@@ -21,8 +22,8 @@ public:
     Vec2D& operator*=(const Vec2D& vec);
     Vec2D& operator/=(const Vec2D& vec);
 
-    void reset();
+    void set(const float x, const float y);
     friend std::ostream& operator<<(std::ostream& stream, const Vec2D& vec);
 };
 
-#endif //VEC2D_H
+#endif  // VEC2D_H
