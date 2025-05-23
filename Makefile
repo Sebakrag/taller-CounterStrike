@@ -1,4 +1,4 @@
-.PHONY: all test clean editor client common server build
+.PHONY: all test clean clean-all clean-local editor client common server build
 
 compile-debug:
 	mkdir -p build/
@@ -8,7 +8,18 @@ compile-debug:
 run-tests: compile-debug
 	./build/taller_tests
 
-all: clean run-tests
+all: clean-local run-tests
 
-clean:
-	rm -Rf build/
+# 🔸 Limpieza liviana: borra binarios y objetos, pero no las libs externas
+clean: clean-local
+
+clean-local:
+	find build/ -type f -name '*.o' -delete
+	find build/ -type f -executable -delete
+	rm -f build/*.a
+	rm -f build/*.so
+	rm -f build/*.out
+
+# 🔴 Limpieza total: borra TODO, incluyendo FetchContent (SDL, GoogleTest, etc)
+clean-all:
+	rm -rf build/
