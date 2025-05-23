@@ -1,6 +1,7 @@
 #ifndef GAME_INFO_H_
 #define GAME_INFO_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -32,10 +33,10 @@ public:
     explicit GameInfo(GamePhase gamePhase, const std::vector<PlayerInfo>& players);
 
     GameInfo(const GameInfo&);
-    // GameInfo(const GameInfo&) = default;
-
 
     GameInfo& operator=(const GameInfo&);
+
+    std::vector<uint8_t> toBytes() const;
 };
 
 #endif  // GAME_INFO_H_

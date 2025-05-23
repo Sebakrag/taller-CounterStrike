@@ -20,19 +20,19 @@ private:
     std::string name_match;
     std::string player_host;
     Match match;
-    std::shared_ptr<Queue<PlayerAction>> queueActionsPlayers;
     // Por cada jugador: <username, senderQueue>
     std::map<std::string, std::shared_ptr<Queue<GameInfo>>> players;
 
 public:
-    MatchRoom(const std::string& name_match, const std::string& username_host);
+    MatchRoom(const std::string& name_match, const std::string& username_host,
+              std::shared_ptr<Queue<GameInfo>> playerQueue);
 
-    bool addPlayer(const std::string& username);
+    bool addPlayer(const std::string& username, std::shared_ptr<Queue<GameInfo>> playerQueue);
 
     void removePlayer(const std::string& username);
 
     // Crea y devuelve el GameLoop.
-    // std::shared_ptr<GameLoop> createGameLoop();
+    std::shared_ptr<GameLoop> createGameLoop();
 
     bool isAvailable();
 
@@ -48,6 +48,8 @@ public:
     MatchRoom(const MatchRoom&) = delete;
     MatchRoom& operator=(const MatchRoom&) = delete;
 
+
+    // metodos static para inicializar constantes.
 private:
     static bool initialized;
     static size_t AMOUNT_PLAYERS;

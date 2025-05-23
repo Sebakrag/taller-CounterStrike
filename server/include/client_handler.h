@@ -10,6 +10,7 @@
 
 #include "game_manager.h"
 #include "receiver.h"
+#include "sender.h"
 #include "server_protocol.h"
 
 enum Status { Disconnected, InMenu, InLobby, InGame };
@@ -21,9 +22,9 @@ private:
     Status status;
     std::string myMatch;
     GameManager& gameManager;
-    Queue<GameInfo> senderQueue;
-    Queue<PlayerAction> queueActionsPlayers;  // Esto no iría acá
-    Receiver receiver;
+    std::shared_ptr<Queue<GameInfo>> senderQueue;
+    Sender sender;
+    Receiver* receiver;  // uso puntero para no tener que inicializarla en el constructor.
 
 public:
     ClientHandler(ServerProtocol&& serverProtocol, const std::string& username,

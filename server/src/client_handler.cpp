@@ -11,7 +11,8 @@ ClientHandler::ClientHandler(ServerProtocol&& serverProtocol, const std::string&
         protocol(std::move(serverProtocol)),
         status(InMenu),
         gameManager(gameManager),
-        receiver(username, protocol, queueActionsPlayers) {
+        senderQueue(std::make_shared<Queue<GameInfo>>()),
+        sender(protocol, senderQueue) {
     protocol.sendInitMsg();
     start();
 }
@@ -28,23 +29,27 @@ void ClientHandler::run() {
                 handleLobbyActions(lobbyAction);
             }
             if (status == InGame) {
-                receiver.start();
-                receiver.join();
-                // YOUR CODE
-                // algo asi:
-                // sender y receiver start
-                //  match.start();
-                // sender y receiver join()
+                receiver->start();
+                sender.start();
+                sender.join();
+                receiver->join();
             }
         }
     } catch (const std::exception& e) {
-        std::cerr << "ClientHandler error: " << e.what() << std::endl;
+        std::cerr << "ClientHandler: " << e.what() << std::endl;
     }
 }
 
 void ClientHandler::kill() {
     protocol.shutDown(2);
     status = Disconnected;
+    if (status == InGame) {
+        sender.kill();
+        receiver->kill();
+        sender.join();
+        receiver->join();
+        delete receiver;
+    }
     stop();
 }
 
@@ -54,11 +59,11 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
     bool aux = false;
     switch (menuAction.type) {
         case MenuActionType::Create:
-            aux = gameManager.createMatch(menuAction.name_match, username);
+            aux = gameManager.createMatch(menuAction.name_match, username, senderQueue);
             protocol.sendConfirmation(aux);
             break;
         case MenuActionType::Join:
-            aux = gameManager.JoinMatch(menuAction.name_match, username);
+            aux = gameManager.JoinMatch(menuAction.name_match, username, senderQueue);
             protocol.sendConfirmation(aux);
             break;
         case MenuActionType::List: {
@@ -95,6 +100,7 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             bool ok = gameManager.startMatch(username, myMatch);
             if (ok) {
                 status = InGame;
+                receiver = new Receiver(username, protocol, gameManager.getActionsQueue(myMatch));
             }
             protocol.sendConfirmation(ok);
             break;

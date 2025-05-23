@@ -9,6 +9,7 @@ target_sources(taller_server
         src/match_room.cpp
         src/match.cpp
         src/receiver.cpp
+        src/sender.cpp
         src/server_protocol.cpp
         src/server.cpp
 
@@ -21,6 +22,7 @@ target_sources(taller_server
         include/match_room.h
         include/match.h
         include/receiver.h
+        include/sender.h
         include/server_protocol.h
         include/server.h
         include/types.h

@@ -152,7 +152,15 @@ std::vector<PlayerInfoLobby> ClientProtocol::recvListPlayers() {
 }
 
 GameInfo ClientProtocol::recvGameInfo() {
-    GameInfo gameInfo(GamePhase::Preparation, std::vector<PlayerInfo>());
-    std::cout << "NO ESTÁ IMPLMENTADO! ClientProtocol::recvGameInfo()" << std::endl;
-    return gameInfo;
+    uint8_t byte = 0;
+    socket.recvall(&byte, sizeof(uint8_t));
+    if (byte == BYTE_GAME_INFO) {
+        // El buffer no va a tener tamaño fijo.
+        //  usar recvsme()
+    } else {
+        throw std::runtime_error("Error. Byte incorrecto");
+    }
+    // YOUR CODE
+    // std::cout << "NO ESTÁ IMPLMENTADO! ClientProtocol::recvGameInfo()" << std::endl;
+    return GameInfo(GamePhase::Preparation, std::vector<PlayerInfo>());
 }

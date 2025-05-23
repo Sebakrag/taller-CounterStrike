@@ -1,8 +1,6 @@
 #include "../include/server_protocol.h"
 
 #include <cstdint>
-#include <iostream>
-#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -56,11 +54,8 @@ void ServerProtocol::sendListPlayers(const std::vector<PlayerInfoLobby>& players
 }
 
 void ServerProtocol::sendGameInfo(const GameInfo& gameInfo) {
-    // Implementación de sendGameInfo
-    if (gameInfo.gamePhase == GamePhase::EndOfMatch) {
-        std::cout << "nada." << std::endl;
-    }
-    throw std::runtime_error("sendGameInfo() no está implementado.");
+    std::vector<uint8_t> buffer = gameInfo.toBytes();
+    socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
 std::string ServerProtocol::recvUsername() {

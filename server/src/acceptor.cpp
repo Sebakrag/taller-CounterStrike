@@ -40,7 +40,7 @@ void Acceptor::run() {
 
     } catch (const std::exception& e) {
         reapDeadClients();
-        std::cerr << "Critical server error: " << e.what() << std::endl;
+        std::cerr << "Acceptor: " << e.what() << std::endl;
     }
     killAll();
 }

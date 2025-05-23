@@ -26,8 +26,11 @@ private:
     std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers;
 
 public:
-    GameLoop(Match&& match, std::shared_ptr<Queue<PlayerAction>> queueActionsPlayers,
-             std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers);
+    GameLoop(Match&& match, std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers);
+
+    std::shared_ptr<Queue<PlayerAction>> getActionsQueue();
+
+    void kill();
 
 private:
     void run() override;

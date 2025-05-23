@@ -17,6 +17,7 @@ void Server::run() {
     while (true) {
         std::getline(std::cin, input);
         if (input == "q" || input == "Q") {
+            gameManager.killAllMatchs();
             acceptor.stop();
             // acceptor.kill();
             acceptor.join();

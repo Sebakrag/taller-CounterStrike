@@ -27,10 +27,12 @@ public:
     //    GameManager(lista de escenarios, configuraciones, etc) // redefinir el constructor despues
 
     // devuelve true si pudo crear la partida correctamente
-    bool createMatch(const std::string& matchName, const std::string& username);
+    bool createMatch(const std::string& matchName, const std::string& username,
+                     std::shared_ptr<Queue<GameInfo>> playerQueue);
 
     // devuelve true si pudo unirse a la partida correctamente
-    bool JoinMatch(const std::string& matchName, const std::string& username);
+    bool JoinMatch(const std::string& matchName, const std::string& username,
+                   std::shared_ptr<Queue<GameInfo>> playerQueue);
 
     // devuelve true si pudo salir de la partida correctamente
     bool QuitMatch(const std::string& matchName, const std::string& username);
@@ -41,12 +43,14 @@ public:
 
     std::vector<PlayerInfoLobby> getPlayersInMatch(const std::string& matchName);
 
-    /**
-     * Lanza una excepción si la partida no existe o si el usuario no está en la partida.
-     */
-    // MatchRoom& getMatchRoom(const std::string& matchName, const std::string& username);
+    std::shared_ptr<Queue<PlayerAction>> getActionsQueue(const std::string& matchName);
+
+    void killAllMatchs();
+
 private:
-    // void reapMatchs();
+    // void reapDeadGameloops();
+
+    void deleteMatchRoom(const std::string& matchName);
 };
 
 #endif  // GAME_MANAGER_H_

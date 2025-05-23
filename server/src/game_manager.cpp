@@ -9,7 +9,8 @@
     // YOUR CODE
 }
 */
-bool GameManager::createMatch(const std::string& matchName, const std::string& username) {
+bool GameManager::createMatch(const std::string& matchName, const std::string& username,
+                              std::shared_ptr<Queue<GameInfo>> playerQueue) {
     // chequeo que no sea un nombre sin caracteres
     if (matchName.empty() || std::all_of(matchName.begin(), matchName.end(), ::isspace)) {
         return false;
@@ -19,14 +20,15 @@ bool GameManager::createMatch(const std::string& matchName, const std::string& u
     if (server_closed || lobbies.find(matchName) != lobbies.end()) {  // si la partida ya existe
         return false;
     }
-    lobbies.try_emplace(matchName, matchName, username);
+    lobbies.try_emplace(matchName, matchName, username, playerQueue);
 
     std::cout << username << " creó la partida " << matchName << std::endl;
 
     return true;
 }
 
-bool GameManager::JoinMatch(const std::string& matchName, const std::string& username) {
+bool GameManager::JoinMatch(const std::string& matchName, const std::string& username,
+                            std::shared_ptr<Queue<GameInfo>> playerQueue) {
     std::lock_guard<std::mutex> lock(m);
 
     if (server_closed)
@@ -37,7 +39,7 @@ bool GameManager::JoinMatch(const std::string& matchName, const std::string& use
         return false;
     }
 
-    it->second.addPlayer(username);
+    it->second.addPlayer(username, playerQueue);
     std::cout << username << " se unió a partida " << matchName << std::endl;
     return true;
 }
@@ -75,8 +77,12 @@ bool GameManager::startMatch(const std::string& username, const std::string& mat
         return false;
     }
     if (it->second.containsPlayer(username) && it->second.isPlayerHost(username)) {
-        std::cout << "Acá comenzaría la partida. Todavía no disponible" << std::endl;
-        return false;
+        std::cout << "Inicia Partida." << std::endl;
+        auto gameloop = it->second.createGameLoop();
+        gameloop->start();
+        gameLoops.try_emplace(matchName, std::move(gameloop));
+        lobbies.erase(matchName);
+        return true;
     }
     std::cout << "No comenzó la partida porque no es el anfitrión." << std::endl;
     return false;
@@ -90,14 +96,17 @@ std::vector<PlayerInfoLobby> GameManager::getPlayersInMatch(const std::string& m
     return it->second.getPlayersInRoom();
 }
 
-/*
-MatchRoom& GameManager::getMatchRoom(const std::string& matchName, const std::string& username) {
-    auto it = lobbies.find(matchName);
-    if (it == lobbies.end() ||
-        it->second.isAvailable() == false) {  // no existe la partida o ya inició
-        throw std::runtime_error("Partida no existe o ya comenzó");
-    }
-
-    return it->second;
+std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {
+    std::lock_guard<std::mutex> lock(m);
+    return gameLoops.at(matchName)->getActionsQueue();
+    // return lobbies.at(matchName).getActionsQueue();
 }
-*/
+
+void GameManager::killAllMatchs() {
+    std::lock_guard<std::mutex> lock(m);
+    for (auto& [matchName, gameLoop]: gameLoops) {
+        gameLoop->kill();
+        gameLoop->join();
+    }
+    gameLoops.clear();
+}

@@ -1,6 +1,7 @@
 #ifndef RECEIVER_H_
 #define RECEIVER_H_
 
+#include <memory>
 #include <string>
 
 #include "../../common/queue.h"
@@ -17,12 +18,12 @@ class Receiver: public Thread {
 private:
     std::string username;
     ServerProtocol& protocol;
-    Queue<PlayerAction>& queueActionsPlayers;  // recurso compartido
+    std::shared_ptr<Queue<PlayerAction>> queueActionsPlayers;  // recurso compartido
     bool running;
 
 public:
     Receiver(const std::string& username, ServerProtocol& protocol,
-             Queue<PlayerAction>& queueActionsPlayers);
+             std::shared_ptr<Queue<PlayerAction>>);
 
     void run() override;
 

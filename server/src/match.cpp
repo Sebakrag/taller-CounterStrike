@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 Match::Match() {}
 
@@ -22,4 +23,9 @@ std::vector<std::string> Match::getPlayers() { return players; }
 
 void Match::processAction(const PlayerAction& action) {
     std::cout << "Acá ejecuto la accion de " << action.player_username << std::endl;
+}
+
+GameInfo Match::generateGameInfo() const {
+    std::vector<PlayerInfo> playersInfo;
+    return GameInfo(GamePhase::Preparation, playersInfo);
 }
