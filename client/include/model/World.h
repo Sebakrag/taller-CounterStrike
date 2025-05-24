@@ -9,6 +9,7 @@
 
 #include "EC/ComponentManager.h"
 #include "EC/EntityManager.h"
+#include "client/dtos/EntitySnapshot.h"
 #include "utils/InputHandler.h"
 
 using SDL2pp::Renderer;
@@ -17,6 +18,7 @@ class World {
 private:
     EntityManager entt_mgr;
     ComponentManager comp_mgr;
+    ComponentUpdater comp_updater;  // TODO: Next thing to implement...
 
     Entity local_player;  // This is the actual player that interacts with his own program.
     InputHandler input_handler;
@@ -28,7 +30,8 @@ public:
     /// ///
     explicit World(const ServerEntityID& server_local_player_id);
 
-    void update(float dt);
+    void handle_game_snapshot(const std::vector<EntitySnapshot>& snapshots);
+    void update(float dt, const std::vector<EntitySnapshot>& snapshots);
     void forward_event(const SDL_Event& e);
     void render(Renderer& ren);
 };

@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "client/dtos/EntitySnapshot.h"
+
 #include "Entity.h"
 
 using ServerEntityID = uint32_t;
@@ -16,7 +18,7 @@ private:
     std::unordered_map<ServerEntityID, Entity> server_entt_id_to_entity;
 
 public:
-    Entity create_entity(const ServerEntityID& serv_entt_id);
+    Entity create_entity(const EntitySnapshot& snap);
 
     ///
     /// @brief Destroy the entity that corresponds to the id received from the server.

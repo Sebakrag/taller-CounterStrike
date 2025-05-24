@@ -12,6 +12,7 @@ public:
     PositionComponent(const float x, const float y);
 
     void init(const float x, const float y);
+    void update(const float x, const float y);
 };
 
 #endif  // POSITIONCOMPONENT_H

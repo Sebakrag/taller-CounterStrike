@@ -70,8 +70,8 @@ private:
     std::array<T, MAX_ENTITIES> pool;
     std::bitset<MAX_ENTITIES>
             in_use;  // each position it's a flag indicating if the component is available.
-    std::array<Entity, MAX_ENTITIES> entity_to_pool_index;  // Entity -> pool index
-    std::array<Entity, MAX_ENTITIES> entities;  // index -> Entity (sirve solo para iterar)
+    std::array<Entity, MAX_ENTITIES> entity_to_pool_index{};  // Entity -> pool index
+    std::array<Entity, MAX_ENTITIES> entities{};  // index -> Entity (sirve solo para iterar)
 };
 
 #endif  // COMPONENTPOOL_H
