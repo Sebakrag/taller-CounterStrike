@@ -1,26 +1,21 @@
 #ifndef MATCHINFO_H
 #define MATCHINFO_H
 
-#include <cstdint>
 #include <string>
 
+#include "EntitySnapshot.h"
 #include "windowConfig.h"
 
 struct match_info_t {
-private:
+public:
     const std::string name;
-    const uint32_t server_entity_id;  // Esto indica el id del jugador identificado por el server.
+    const EntitySnapshot first_snap;  // Representa el snapshot inicial del local_player
     const window_config_t win_config;
     const std::string map_scene;  // filename del mapa a utilizar?
     // const std::list<players_info_t> players;  // pensar si es la mejor forma.
-public:
-    match_info_t(const std::string& name, const uint32_t server_entity_id,
-                 const window_config_t& win_config, const std::string& map_scene);
 
-    const std::string get_name() const;
-    uint32_t get_server_entity_id() const;
-    const window_config_t get_window_config() const;
-    const std::string get_map_scene() const;
+    match_info_t(const std::string& name, const EntitySnapshot& first_snap,
+                 const window_config_t& win_config, const std::string& map_scene);
 };
 
 #endif  // MATCHINFO_H

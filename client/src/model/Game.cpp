@@ -3,11 +3,11 @@
 #include <SDL2/SDL.h>
 
 Game::Game(const match_info_t& match_info):
-        match_name(match_info.get_name()),
-        graphics(match_info.get_window_config(), match_name),
+        match_name(match_info.name),
+        graphics(match_info.win_config, match_name),
         // aca hay que inicializar todos los objetos del juego: mapa, jugadores... algo mas?
-        // map(renderer, match_info.get_map_scene(), window),
-        world(match_info.get_server_entity_id()),
+        // map(renderer, match_info.map_scene, window),
+        world(match_info.first_snap),
         is_running(true) {}
 
 void Game::handle_events() {
@@ -57,6 +57,7 @@ void Game::game_loop() {
         // handle_server_messages(); // receive info from the server and parse it into components.
         update(dt);  // I could have a SendUpdateToServerSystem that is responsible for sending the
                      // update of our local_player to the server.
+                     // More than "update", I should send the event that the player produce.
         render();
 
         usleep(1 / 30);  // adjust frame_rate

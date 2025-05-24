@@ -17,7 +17,7 @@ GameMatchAppState::GameMatchAppState() {}
 // GameMatchAppState::GameMatchAppState(const match_info_t match_info) {}
 // match_info_t {
 //     const std::string name;
-//     const uint32_t server_entity_id;  // Esto indica el id del jugador identificado por el
+//     const EntitySnapshot first_snap;  // Representa el snapshot inicial del local_player
 //     server. const window_config_t win_config; const std::string map_scene; // filename del mapa a
 //     utilizar? const std::list<players_info_t> players;  // pensar si es la mejor forma.
 // };
@@ -29,10 +29,17 @@ GameMatchAppState::GameMatchAppState() {}
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         constexpr int SERVER_ENTITY_ID = 1;
+        float pos_x = 20, pos_y = 50, angle = 0, money = 500;
+        int hp = 100;  // health
+        const SpriteType sprite_type = SpriteType::SEAL_FORCE;
+        const EntityType entt_type = EntityType::ANTI_TERRORIST;
+        const bool is_alive = true;
+        const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
+                                        entt_type, hp, money, is_alive);
         const window_config_t win_config(
                 640, 400, SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
         const std::string map_image = "client/assets/backgrounds/temp_map.png";
-        const match_info_t match_info("Partidita", SERVER_ENTITY_ID, win_config, map_image);
+        const match_info_t match_info("Partidita", first_snap, win_config, map_image);
         Game game(match_info);
 
         game.game_loop();

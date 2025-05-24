@@ -1,13 +1,13 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <memory>
 #include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 
 #include "EC/ComponentManager.h"
+#include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
 #include "client/dtos/EntitySnapshot.h"
 #include "utils/InputHandler.h"
@@ -18,20 +18,20 @@ class World {
 private:
     EntityManager entt_mgr;
     ComponentManager comp_mgr;
-    ComponentUpdater comp_updater;  // TODO: Next thing to implement...
+    ComponentUpdater comp_updater;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
     InputHandler input_handler;
-    // RenderComponent ren_comp;
+    // RenderComponent ren_comp;  // I believe this is not necessary anymore.
 
 public:
     /// ///
-    /// @param server_local_player_id ID that the server gives to our local_player.
+    /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// ///
-    explicit World(const ServerEntityID& server_local_player_id);
+    explicit World(const EntitySnapshot& firstLocalPlayerSnap);
 
     void handle_game_snapshot(const std::vector<EntitySnapshot>& snapshots);
-    void update(float dt, const std::vector<EntitySnapshot>& snapshots);
+    void update(float dt);
     void forward_event(const SDL_Event& e);
     void render(Renderer& ren);
 };

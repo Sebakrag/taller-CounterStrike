@@ -12,11 +12,13 @@ target_sources(taller_client
         src/model/Map.cpp
         src/model/Graphics.cpp
         src/model/World.cpp
+        src/model/EC/ComponentUpdater.cpp
         src/model/EC/EntityManager.cpp
         src/model/EC/components/PositionComponent.cpp
         src/model/utils/InputHandler.cpp
         src/model/utils/Vec2D.cpp
         # dtos:
+        dtos/EntitySnapshot.cpp
         dtos/matchInfo.cpp
         dtos/windowConfig.cpp
         PUBLIC
@@ -37,11 +39,13 @@ target_sources(taller_client
         include/model/EC/EntityManager.h
         include/model/EC/ComponentManager.h
         include/model/EC/ComponentPool.h
+        include/model/EC/ComponentUpdater.h
         include/model/EC/components/InputComponent.h
         include/model/EC/components/PositionComponent.h
         include/model/utils/InputHandler.h
         include/model/utils/Vec2D.h
         # dtos:
+        dtos/EntitySnapshot.h
         dtos/matchInfo.h
         dtos/windowConfig.h
     )
