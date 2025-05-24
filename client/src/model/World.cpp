@@ -3,6 +3,7 @@
 #include <iostream>
 
 World::World(const EntitySnapshot& firstLocalPlayerSnap):
+        entt_mgr(comp_mgr),
         comp_updater(entt_mgr, comp_mgr),
         local_player(entt_mgr.create_entity(firstLocalPlayerSnap)),
         input_handler(local_player) {}

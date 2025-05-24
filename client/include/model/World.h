@@ -16,8 +16,8 @@ using SDL2pp::Renderer;
 
 class World {
 private:
-    EntityManager entt_mgr;
     ComponentManager comp_mgr;
+    EntityManager entt_mgr;
     ComponentUpdater comp_updater;
 
     Entity local_player;  // This is the actual player that interacts with his own program.

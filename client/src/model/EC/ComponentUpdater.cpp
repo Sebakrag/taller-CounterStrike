@@ -3,7 +3,9 @@
 #include "client/include/model/EC/components/PositionComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
-        entt_mgr(em), comp_mgr(cm), old_entities(INITIAL_OLD_ENTITIES_SIZE) {}
+        entt_mgr(em), comp_mgr(cm) {
+    old_entities.reserve(INITIAL_OLD_ENTITIES_SIZE);
+}
 
 void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots) {
     if (old_entities.capacity() < snapshots.size()) {

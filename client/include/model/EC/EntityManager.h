@@ -6,18 +6,23 @@
 
 #include "client/dtos/EntitySnapshot.h"
 
+#include "ComponentManager.h"
 #include "Entity.h"
+#include "EntityFactory.h"
 
 using ServerEntityID = uint32_t;
 
-// Probably this could end up being the entity factory.
 class EntityManager {
 private:
     Entity next_id = 1;
     std::unordered_set<Entity> free_ids;
     std::unordered_map<ServerEntityID, Entity> server_entt_id_to_entity;
 
+    EntityFactory entt_factory;
+
 public:
+    explicit EntityManager(ComponentManager& cm);
+
     Entity create_entity(const EntitySnapshot& snap);
 
     ///

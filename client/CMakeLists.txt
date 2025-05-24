@@ -1,7 +1,7 @@
 target_sources(taller_client
-    PRIVATE
-    # .cpp files
-    main.cpp
+        PRIVATE
+        # .cpp files
+        main.cpp
         # app-sates:
         src/app-state/AppStateController.cpp
         src/app-state/LoginAppState.cpp
@@ -13,6 +13,7 @@ target_sources(taller_client
         src/model/Graphics.cpp
         src/model/World.cpp
         src/model/EC/ComponentUpdater.cpp
+        src/model/EC/EntityFactory.cpp
         src/model/EC/EntityManager.cpp
         src/model/EC/components/PositionComponent.cpp
         src/model/utils/InputHandler.cpp
@@ -22,7 +23,7 @@ target_sources(taller_client
         dtos/matchInfo.cpp
         dtos/windowConfig.cpp
         PUBLIC
-    # .h files
+        # .h files
         # app-sates:
         include/app-state/AppState.h
         include/app-state/AppStateCode.h
@@ -36,7 +37,9 @@ target_sources(taller_client
         include/model/Map.h
         include/model/World.h
         include/model/EC/Entity.h
+        include/model/EC/EntityFactory.h
         include/model/EC/EntityManager.h
+        include/model/EC/EntityType.h
         include/model/EC/ComponentManager.h
         include/model/EC/ComponentPool.h
         include/model/EC/ComponentUpdater.h
@@ -48,4 +51,4 @@ target_sources(taller_client
         dtos/EntitySnapshot.h
         dtos/matchInfo.h
         dtos/windowConfig.h
-    )
+)

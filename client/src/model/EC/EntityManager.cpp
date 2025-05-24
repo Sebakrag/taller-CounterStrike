@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+EntityManager::EntityManager(ComponentManager& cm): entt_factory(cm) {}
+
 Entity EntityManager::create_entity(const EntitySnapshot& snap) {
     Entity new_entt;
     if (!free_ids.empty()) {
@@ -15,27 +17,11 @@ Entity EntityManager::create_entity(const EntitySnapshot& snap) {
     }
 
     server_entt_id_to_entity[snap.server_entt_id] = new_entt;
-    // create_specific_entity(snap); // Probably we can delegate this creation to a factory instead
+    entt_factory.create_specific_entity(
+            new_entt, snap);  // Probably we can delegate this creation to a factory instead
     // of making EntityManager responsible for this.
     return new_entt;
 }
-
-// void EntityManager::create_specific_entity(const EntitySnapshot& snap) {
-//     switch (snap.entt_type) {
-//         case TERRORIST: {
-//             create_terrorist_entt();
-//             break;
-//         }
-//         case ANTI_TERRORIST: {
-//             create_anti_terrorist_entt();
-//             break;
-//         }
-//         case BULLET: {
-//             create_bullet_entt();
-//             break;
-//         }
-//     }
-// }
 
 void EntityManager::destroy_entity_immediately(const ServerEntityID& serv_entt_id) {
     auto it = server_entt_id_to_entity.find(serv_entt_id);
