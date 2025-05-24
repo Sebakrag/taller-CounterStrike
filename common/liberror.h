@@ -28,9 +28,9 @@ public:
      *  */
     LibError(int error_code, const char* fmt, ...) noexcept;
 
-    virtual const char* what() const noexcept;
+    const char* what() const noexcept override;
 
-    virtual ~LibError();
+    ~LibError() override;
 };
 
 #endif  // LIB_ERROR_H

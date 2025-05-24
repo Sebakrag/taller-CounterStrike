@@ -8,7 +8,7 @@
 
 int main() try {
     // Initialize SDL library
-    SDL sdl(SDL_INIT_VIDEO);
+    /*SDL sdl(SDL_INIT_VIDEO);
 
     // Create main window: 640x480 dimensions, resizable, "SDL2pp demo" title
     Window window("SDL2pp demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480,
@@ -24,7 +24,7 @@ int main() try {
     renderer.Present();
 
     // 5 second delay
-    SDL_Delay(5000);
+    SDL_Delay(5000);*/
 
     // Here all resources are automatically released and library deinitialized
     return 0;
