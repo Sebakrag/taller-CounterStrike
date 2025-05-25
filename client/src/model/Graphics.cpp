@@ -3,6 +3,8 @@
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
+#include "client/include/model/utils/TextureManager.h"
+
 #define GAME_NAME "Counter Strike"
 
 Graphics::Graphics(const window_config_t& config, const std::string& match_name):
@@ -10,7 +12,9 @@ Graphics::Graphics(const window_config_t& config, const std::string& match_name)
         sdl_image(IMG_INIT_PNG | IMG_INIT_JPG),
         sdl_ttf(),
         window(create_window(config, match_name)),
-        renderer(create_renderer(window)) {}
+        renderer(create_renderer(window)) {
+    TextureManager::init(renderer);
+}
 
 Window Graphics::create_window(const window_config_t& config, const std::string& match_name) const {
     const std::string win_title = std::string(GAME_NAME) + " - " + match_name;

@@ -16,7 +16,10 @@ target_sources(taller_client
         src/model/EC/EntityFactory.cpp
         src/model/EC/EntityManager.cpp
         src/model/EC/components/PositionComponent.cpp
+        src/model/EC/components/SpriteComponent.cpp
         src/model/utils/InputHandler.cpp
+        src/model/utils/SpriteMetadaProvider.cpp
+        src/model/utils/TextureManager.cpp
         src/model/utils/Vec2D.cpp
         # dtos:
         dtos/EntitySnapshot.cpp
@@ -24,6 +27,7 @@ target_sources(taller_client
         dtos/windowConfig.cpp
         PUBLIC
         # .h files
+        client_constants.h
         # app-sates:
         include/app-state/AppState.h
         include/app-state/AppStateCode.h
@@ -45,7 +49,10 @@ target_sources(taller_client
         include/model/EC/ComponentUpdater.h
         include/model/EC/components/InputComponent.h
         include/model/EC/components/PositionComponent.h
+        include/model/EC/components/SpriteComponent.h
         include/model/utils/InputHandler.h
+        include/model/utils/SpriteMetadataProvider.h
+        include/model/utils/TextureManager.h
         include/model/utils/Vec2D.h
         # dtos:
         dtos/EntitySnapshot.h
