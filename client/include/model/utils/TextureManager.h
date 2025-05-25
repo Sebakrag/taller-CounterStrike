@@ -16,12 +16,13 @@ using SDL2pp::Texture;
 class TextureManager {
 private:
     static std::unordered_map<SpriteType, std::shared_ptr<Texture>> textures;
-    TextureManager() = delete;  // cannot be instantiated
 
     static void loadTexture(Renderer& ren, SpriteType type, const std::string& path,
                             const Color& colorKey);
 
 public:
+    TextureManager() = delete;  // cannot be instantiated
+
     static void init(Renderer& ren);
 
     static std::shared_ptr<Texture> getTexture(SpriteType type);
