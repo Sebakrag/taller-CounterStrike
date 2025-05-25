@@ -5,7 +5,7 @@
 
 // Paths
 
-#define PLAYER_PATH std::string("client/assets/player")
+#define PLAYER_PATH std::string("/assets/player")
 
 #define PHOENIX_IMG PLAYER_PATH + "/t_phoenix.bmp"
 #define L377_KREW_IMG PLAYER_PATH + "/t_L377_krew.bmp"
@@ -15,5 +15,8 @@
 #define GERMAN_GSG_9_IMG PLAYER_PATH + "/ct_german_csg_9.bmp"
 #define UK_SAS_IMG PLAYER_PATH + "/ct_uk_sas.bmp"
 #define FRENCH_GIGN_IMG PLAYER_PATH + "/ct_french_gign.bmp"
+
+#define TILE1 "assets/tiles/tile001.bmp"//suelo
+#define TILE2 "assets/tiles/tile002.bmp"//pared o caja
 
 #endif  // CLIENTCONSTANTS_H
