@@ -10,7 +10,10 @@
 #include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
 #include "client/dtos/EntitySnapshot.h"
+#include "client/dtos/MapInfo.h"
 #include "utils/InputHandler.h"
+
+#include "Map.h"
 
 using SDL2pp::Renderer;
 
@@ -20,6 +23,8 @@ private:
     EntityManager entt_mgr;
     ComponentUpdater comp_updater;
 
+    Map map;
+
     Entity local_player;  // This is the actual player that interacts with his own program.
     InputHandler input_handler;
     // RenderComponent ren_comp;  // I believe this is not necessary anymore.
@@ -27,8 +32,9 @@ private:
 public:
     /// ///
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
+    /// @param mapInfo contains the info of the map selected by the creator of the game match.
     /// ///
-    explicit World(const EntitySnapshot& firstLocalPlayerSnap);
+    World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo);
 
     void handle_game_snapshot(const std::vector<EntitySnapshot>& snapshots);
     void update(float dt);

@@ -1,27 +1,29 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <string>
+#include <memory>
+#include <vector>
 
 #include <SDL2pp/SDL2pp.hh>
+
+#include "client/dtos/MapInfo.h"
 
 using SDL2pp::Rect;
 using SDL2pp::Renderer;
 using SDL2pp::Texture;
-using SDL2pp::Window;
 
 class Map {
 private:
-    Renderer& renderer;
-    Texture texture;
-    Rect srcRect, dstRect;
-    int cnt;
+    std::vector<std::vector<Rect>> srcTileMap;
+    std::shared_ptr<Texture> tileSetTexture;
+    const int width;
+    const int height;
+    Rect onMapRect;
 
 public:
-    Map(Renderer& ren, const std::string& map_scene, const Window& win);
+    explicit Map(const MapInfo& mapInfo);
 
-    void update();
-    void render();
+    void render(Renderer& ren);
 
     Map(Map&& other) noexcept = default;
     Map& operator=(Map&& other) noexcept = delete;

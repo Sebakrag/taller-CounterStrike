@@ -56,6 +56,7 @@ target_sources(taller_client
         include/model/utils/Vec2D.h
         # dtos:
         dtos/EntitySnapshot.h
+        dtos/MapInfo.h
         dtos/matchInfo.h
         dtos/windowConfig.h
 )

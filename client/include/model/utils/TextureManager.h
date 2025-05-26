@@ -17,6 +17,7 @@ class TextureManager {
 private:
     static std::unordered_map<SpriteType, std::shared_ptr<Texture>> textures;
 
+    static void loadTexture(Renderer& ren, SpriteType type, const std::string& path);
     static void loadTexture(Renderer& ren, SpriteType type, const std::string& path,
                             const Color& colorKey);
 

@@ -17,9 +17,7 @@ Entity EntityManager::create_entity(const EntitySnapshot& snap) {
     }
 
     server_entt_id_to_entity[snap.server_entt_id] = new_entt;
-    entt_factory.create_specific_entity(
-            new_entt, snap);  // Probably we can delegate this creation to a factory instead
-    // of making EntityManager responsible for this.
+    entt_factory.create_specific_entity(new_entt, snap);
     return new_entt;
 }
 

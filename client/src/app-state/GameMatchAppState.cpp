@@ -1,5 +1,6 @@
 #include "client/include/app-state/GameMatchAppState.h"
 
+#include <random>
 #include <string>
 
 #include <SDL2/SDL.h>
@@ -29,17 +30,40 @@ GameMatchAppState::GameMatchAppState() {}
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         constexpr int SERVER_ENTITY_ID = 1;
-        float pos_x = 20, pos_y = 50, angle = 0, money = 500;
-        int hp = 100;  // health
-        const SpriteType sprite_type = SpriteType::SEAL_FORCE;
-        const EntityType entt_type = EntityType::ANTI_TERRORIST;
-        const bool is_alive = true;
+        constexpr float pos_x = 20, pos_y = 50, angle = 0, money = 500;
+        constexpr int hp = 100;  // health
+        constexpr auto sprite_type = SpriteType::SEAL_FORCE;
+        constexpr auto entt_type = EntityType::ANTI_TERRORIST;
+        constexpr bool is_alive = true;
         const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
                                         entt_type, hp, money, is_alive);
         const window_config_t win_config(
                 640, 400, SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
-        const std::string map_image = "client/assets/backgrounds/temp_map.png";
-        const match_info_t match_info("Partidita", first_snap, win_config, map_image);
+
+        // Creo un map tileMap random:
+        // const int w = 20;
+        // const int h = 40;
+        // std::vector<std::vector<int>> tileMap(h);
+        // for (int y = 0; y < h; ++y) {
+        //     for (int x = 0; x < w; ++x) {
+        //         tileMap[y][x] = (rand() % 5) + 1;   // numeros enteros del 1 al 5;
+        //     }
+        // }
+        constexpr int w = 20;
+        constexpr int h = 40;
+        std::vector<std::vector<int>> tileMap(h, std::vector<int>(w));
+        std::random_device rd;                        // fuente de entropía
+        std::mt19937 gen(rd());                       // motor de generación
+        std::uniform_int_distribution<> dist(1, 46);  // distribución uniforme
+
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                tileMap[y][x] = dist(gen);
+            }
+        }
+        const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
+
+        const match_info_t match_info("Partidita", first_snap, win_config, map_info);
         Game game(match_info);
 
         game.game_loop();

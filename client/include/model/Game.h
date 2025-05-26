@@ -14,7 +14,6 @@ private:
     // Client& client;   // This is the connection with the server.
     const std::string match_name;
     Graphics graphics;
-    // Map map;
     World world;
 
     bool is_running;

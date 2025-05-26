@@ -5,9 +5,7 @@
 Game::Game(const match_info_t& match_info):
         match_name(match_info.name),
         graphics(match_info.win_config, match_name),
-        // aca hay que inicializar todos los objetos del juego: mapa, jugadores... algo mas?
-        // map(renderer, match_info.map_scene, window),
-        world(match_info.first_snap),
+        world(match_info.first_snap, match_info.map_info),
         is_running(true) {}
 
 void Game::handle_events() {
