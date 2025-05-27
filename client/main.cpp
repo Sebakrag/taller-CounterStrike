@@ -4,10 +4,9 @@
 
 #include "include/client.h"
 
-//#include <SDL2/SDL.h>
-//#include <SDL2pp/SDL2pp.hh>
 
 // using namespace SDL2pp;
+
 
 // ejemplo para correr: ./client localhost 8080 usuario1
 int main(int argc, const char* argv[]) try {
@@ -20,8 +19,8 @@ int main(int argc, const char* argv[]) try {
     std::string username = argv[3];
 
     Client client(hostname, servname, username);
-    auto& queueActions = client.getSendeQueue();
-    queueActions.push(GameAction(GameActionType::BuyWeapon, Weapon::Ak47));
+    //auto& queueActions = client.getSendeQueue();
+    //queueActions.push(GameAction(GameActionType::BuyWeapon, Weapon::Ak47));
     client.mainLoop();
 
 } catch (std::exception& e) {
