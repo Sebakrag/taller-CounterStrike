@@ -20,6 +20,7 @@ private:
     std::string name_match;
     std::string player_host;
     Match match;
+    bool started = false;
     // Por cada jugador: <username, senderQueue>
     std::map<std::string, std::shared_ptr<Queue<GameInfo>>> players;
 
@@ -42,7 +43,7 @@ public:
 
     bool isPlayerHost(const std::string& username) const;
 
-    std::vector<PlayerInfoLobby> getPlayersInRoom();
+    MatchRoomInfo getMatchRoomInfo();
 
     // No se puede copiar.
     MatchRoom(const MatchRoom&) = delete;

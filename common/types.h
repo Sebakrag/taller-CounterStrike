@@ -28,6 +28,15 @@ struct PlayerInfoLobby {
     explicit PlayerInfoLobby(std::string username, Team team): username(username), team(team) {}
 };
 
+struct MatchRoomInfo {
+    bool matchStarted;
+    std::vector<PlayerInfoLobby> players;
+
+    MatchRoomInfo() {}
+    explicit MatchRoomInfo(const std::vector<PlayerInfoLobby>& players, bool matchStarted = false):
+            matchStarted(matchStarted), players(players) {}
+};
+
 // DTOs
 //--------
 // menu.

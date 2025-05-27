@@ -41,7 +41,7 @@ public:
     // Acciones en el lobby (antes de empezar la partida)
     void LeaveMatch();  // regresa la menú principal
     void StartMatch();
-    void refreshPlayersList();
+    void refreshMatchRoom();
 
     ~Client();
 

@@ -20,7 +20,6 @@ class GameManager {
     std::map<std::string, std::shared_ptr<GameLoop>> gameLoops;  // partidas activas
 
     std::mutex m;
-
     bool server_closed = false;
 
 public:
@@ -41,7 +40,7 @@ public:
 
     bool startMatch(const std::string& username, const std::string& matchName);
 
-    std::vector<PlayerInfoLobby> getPlayersInMatch(const std::string& matchName);
+    MatchRoomInfo getMatchRoomInfo(const std::string& matchName);
 
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue(const std::string& matchName);
 

@@ -66,7 +66,9 @@ public:
     std::vector<std::string> recvListMatchs();
 
 
-    std::vector<PlayerInfoLobby> recvListPlayers();
+    // recibe la lista de jugadores en la sala
+    // y si la partida comenzó
+    MatchRoomInfo recvUpdateMatchRoom();
 
     GameInfo recvGameInfo();
 };

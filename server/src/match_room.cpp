@@ -26,12 +26,12 @@ MatchRoom::MatchRoom(const std::string& name_match, const std::string& username_
 bool MatchRoom::addPlayer(const std::string& username,
                           std::shared_ptr<Queue<GameInfo>> playerQueue) {
     // Si ya existe, no agrega
-    if (players.find(username) != players.end()) {
+    if (players.find(username) != players.end() || !isAvailable()) {
         return false;
     }
 
     players[username] = playerQueue;
-    bool addedToMatch = match.addPlayer(username);  // suponiendo addPlayer pública en Match
+    bool addedToMatch = match.addPlayer(username);
 
     return addedToMatch;
 }
@@ -47,13 +47,7 @@ void MatchRoom::removePlayer(const std::string& username) {
     }
 }
 
-/*std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
-    // Ejemplo básico, asumiendo constructor GameLoop que recibe queues y match
-    return std::make_shared<GameLoop>(queueActionsPlayers, players, match);
-}
-*/
-
-bool MatchRoom::isAvailable() { return players.size() < AMOUNT_PLAYERS; }
+bool MatchRoom::isAvailable() { return players.size() < AMOUNT_PLAYERS && !started; }
 
 bool MatchRoom::isEmpty() { return players.empty(); }
 
@@ -63,12 +57,13 @@ bool MatchRoom::containsPlayer(const std::string& username) const {
 
 bool MatchRoom::isPlayerHost(const std::string& username) const { return username == player_host; }
 
-std::vector<PlayerInfoLobby> MatchRoom::getPlayersInRoom() {
+MatchRoomInfo MatchRoom::getMatchRoomInfo() {
     std::vector<PlayerInfoLobby> infos;
     for (const auto& [username, queuePtr]: players) {
         infos.push_back(PlayerInfoLobby(username, Team::Terrorist));  // team hardcodeado
     }
-    return infos;
+
+    return MatchRoomInfo(infos, started);
 }
 
 std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
@@ -77,6 +72,6 @@ std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
     for (const auto& pair: players) {
         playerQueues.push_back(pair.second);
     }
-
+    started = true;
     return std::make_shared<GameLoop>(std::move(match), playerQueues);
 }

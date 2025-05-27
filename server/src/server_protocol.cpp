@@ -1,6 +1,7 @@
 #include "../include/server_protocol.h"
 
 #include <cstdint>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -39,17 +40,22 @@ void ServerProtocol::sendMessage(TypeMessage typeMessage, const std::string& msg
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
-void ServerProtocol::sendListPlayers(const std::vector<PlayerInfoLobby>& playersInMatch) {
+void ServerProtocol::sendMatchRoomInfo(const MatchRoomInfo& info) {
     std::vector<uint8_t> buffer;
     buffer.push_back(BYTE_PLAYERS_LIST);
-    int size = playersInMatch.size();
+    int size = info.players.size();
     insertBigEndian16(size, buffer);
 
     for (int i = 0; i < size; i++) {
-        insertBigEndian16(playersInMatch[i].username.length(), buffer);
-        insertStringBytes(playersInMatch[i].username, buffer);
-        buffer.push_back(encodeTeam(playersInMatch[i].team));
+        insertBigEndian16(info.players[i].username.length(), buffer);
+        insertStringBytes(info.players[i].username, buffer);
+        buffer.push_back(encodeTeam(info.players[i].team));
     }
+    if (info.matchStarted)
+        buffer.push_back(BYTE_TRUE);
+    else
+        buffer.push_back(BYTE_FALSE);
+
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 

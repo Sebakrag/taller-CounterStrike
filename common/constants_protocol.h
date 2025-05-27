@@ -43,6 +43,9 @@
 #define BYTE_OK 0X06
 #define BYTE_FAIL 0X15
 
+#define BYTE_TRUE 0X01
+#define BYTE_FALSE 0X00
+
 #define BYTE_TILE_MAP 0xC0
 #define BYTE_MATCH_LIST 0xC1    // server envía al cliente
 #define BYTE_PLAYERS_LIST 0xC2  // server envía al cliente

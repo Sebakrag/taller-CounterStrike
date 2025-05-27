@@ -106,8 +106,12 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             break;
         }
         case LobbyAction::ListPlayers:
-            std::vector<PlayerInfoLobby> playersInfo = gameManager.getPlayersInMatch(myMatch);
-            protocol.sendListPlayers(playersInfo);
+            auto info = gameManager.getMatchRoomInfo(myMatch);
+            if (info.matchStarted) {
+                status = InGame;
+                receiver = new Receiver(username, protocol, gameManager.getActionsQueue(myMatch));
+            }
+            protocol.sendMatchRoomInfo(info);
             break;
     }
 }

@@ -127,8 +127,9 @@ std::vector<std::string> ClientProtocol::recvListMatchs() {
     <char[nombre]>
     <uint8_t equipo>
 } × N jugadores
+<uint8t started> (0 false, 1 true)
  */
-std::vector<PlayerInfoLobby> ClientProtocol::recvListPlayers() {
+MatchRoomInfo ClientProtocol::recvUpdateMatchRoom() {
     std::vector<PlayerInfoLobby> list;
 
     uint8_t byte = 0;
@@ -138,17 +139,21 @@ std::vector<PlayerInfoLobby> ClientProtocol::recvListPlayers() {
     }
     uint16_t quantity_players = recvBigEndian16();
 
-    int i = 0;
-    while (i < quantity_players) {
+    for (int i = 0; i < quantity_players; i++) {
         uint16_t length = recvBigEndian16();
         std::string name;
         name.resize(length);
-        socket.recvall(name.data(), sizeof(uint8_t) * length);
-        socket.recvall(&byte, sizeof(uint8_t));
+        socket.recvall(name.data(), sizeof(uint8_t) * length);  // nombre
+        socket.recvall(&byte, sizeof(uint8_t));                 // team
         list.push_back(PlayerInfoLobby(name, decodeTeam(byte)));
-        i++;
     }
-    return list;
+    // recibo el booleano
+    bool started = false;
+    socket.recvall(&byte, sizeof(uint8_t));
+    if (byte == BYTE_TRUE)
+        started = true;
+
+    return MatchRoomInfo(list, started);
 }
 
 GameInfo ClientProtocol::recvGameInfo() {

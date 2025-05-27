@@ -81,19 +81,19 @@ bool GameManager::startMatch(const std::string& username, const std::string& mat
         auto gameloop = it->second.createGameLoop();
         gameloop->start();
         gameLoops.try_emplace(matchName, std::move(gameloop));
-        lobbies.erase(matchName);
+        // lobbies.erase(matchName);
         return true;
     }
     std::cout << "No comenzó la partida porque no es el anfitrión." << std::endl;
     return false;
 }
 
-std::vector<PlayerInfoLobby> GameManager::getPlayersInMatch(const std::string& matchName) {
+MatchRoomInfo GameManager::getMatchRoomInfo(const std::string& matchName) {
     auto it = lobbies.find(matchName);
     if (it == lobbies.end()) {  // no existe la partida
         throw std::runtime_error("No existe la partida.");
     }
-    return it->second.getPlayersInRoom();
+    return it->second.getMatchRoomInfo();
 }
 
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {

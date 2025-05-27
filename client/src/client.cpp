@@ -70,7 +70,7 @@ void Client::lobbyLoop() {
     while (status == InLobby) {
         std::getline(std::cin, msj_usuario);
         if (msj_usuario == "actualizar") {
-            refreshPlayersList();
+            refreshMatchRoom();
         } else if (msj_usuario == "abandonar") {
             LeaveMatch();
         } else if (msj_usuario == "iniciar") {
@@ -137,13 +137,17 @@ void Client::StartMatch() {
     }
 }
 
-void Client::refreshPlayersList() {
+void Client::refreshMatchRoom() {
     protocol.sendLobbyAction(LobbyAction::ListPlayers);
-    std::vector<PlayerInfoLobby> players = protocol.recvListPlayers();
-
+    MatchRoomInfo info = protocol.recvUpdateMatchRoom();
     std::cout << "Players en la sala: " << std::endl;
-    for (const auto& p: players) {
+    for (const auto& p: info.players) {
         std::cout << " - " << p.username << std::endl;
+    }
+    if (info.matchStarted) {
+        status = InGame;
+        sender.start();
+        receiver.start();
     }
 }
 
