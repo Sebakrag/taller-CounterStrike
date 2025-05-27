@@ -1,4 +1,19 @@
 #include "../include/match.h"
+
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+/*
+void Match::processAction(const PlayerAction& action) {
+    std::cout << "Acá ejecuto la accion de " << action.player_username << std::endl;
+}
+
+GameInfo Match::generateGameInfo() const {
+    std::vector<PlayerInfo> playersInfo;
+    return GameInfo(GamePhase::Preparation, playersInfo);
+}
+*/
 #include <iostream>
 
 Match::Match() : phase(MatchPhase::WAITING), roundsPlayed(0) {};
@@ -6,6 +21,22 @@ Match::Match() : phase(MatchPhase::WAITING), roundsPlayed(0) {};
 void Match::addPlayer(Player&& player) {
     players.emplace_back(std::move(player));
 }
+
+bool Match::addPlayer(const std::string& username) {
+    //players.push_back(username);
+    return true;
+}
+
+void Match::removePlayer(const std::string& username) {
+    auto it = std::find(players.begin(), players.end(), username);
+    if (it != players.end()) {
+        players.erase(it);
+    }
+}
+
+
+std::vector<std::string> Match::getPlayers() { return players; }
+
 
 Player* Match::getPlayer(const int playerId) {
     for (auto& p : players) {
