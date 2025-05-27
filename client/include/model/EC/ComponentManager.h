@@ -14,7 +14,7 @@ private:
 
     template <typename Component>
     ComponentPool<Component>* getPool() {
-        std::type_index index(typeid(Component));
+        const std::type_index index(typeid(Component));
         if (!pools_map.contains(index)) {
             pools_map[index] = std::make_unique<ComponentPool<Component>>();
         }

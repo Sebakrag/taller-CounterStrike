@@ -12,6 +12,7 @@
 #include "client/dtos/EntitySnapshot.h"
 #include "client/dtos/MapInfo.h"
 #include "utils/InputHandler.h"
+#include "utils/Vec2D.h"
 
 #include "Map.h"
 
@@ -40,6 +41,8 @@ public:
     void update(float dt);
     void forward_event(const SDL_Event& e);
     void render(Renderer& ren);
+    void moveLocalPlayer(
+            const Vec2D& dir);  // Esto hay que borrarlo una vez tengamos la conexion con el server.
 };
 
 #endif  // WORLD_H

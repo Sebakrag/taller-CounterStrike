@@ -4,9 +4,9 @@
 #include <string>
 
 #include "client/dtos/matchInfo.h"
+#include "utils/EventHandler.h"
 
 #include "Graphics.h"
-#include "Map.h"
 #include "World.h"
 
 class Game {
@@ -15,9 +15,10 @@ private:
     const std::string match_name;
     Graphics graphics;
     World world;
+    EventHandler eventHandler;
 
     bool is_running;
-    void handle_events();
+    // void handle_events();
     void update(float dt);
     void render();
 

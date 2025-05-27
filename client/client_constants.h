@@ -3,6 +3,11 @@
 
 #include <string>
 
+// Window config (esto debemos recibirlo desde el server ya que esta definido en el archivo de
+// config del server)
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 400
+
 // Paths
 
 #define PLAYER_PATH std::string("client/assets/player")

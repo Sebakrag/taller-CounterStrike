@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 
+#include "client/client_constants.h"
 #include "client/dtos/matchInfo.h"
 #include "client/include/model/Game.h"
 
@@ -30,7 +31,7 @@ GameMatchAppState::GameMatchAppState() {}
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         constexpr int SERVER_ENTITY_ID = 1;
-        constexpr float pos_x = 20, pos_y = 50, angle = 0, money = 500;
+        constexpr float pos_x = 0, pos_y = 0, angle = 0, money = 500;
         constexpr int hp = 100;  // health
         constexpr auto sprite_type = SpriteType::SEAL_FORCE;
         constexpr auto entt_type = EntityType::ANTI_TERRORIST;
@@ -38,18 +39,10 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
                                         entt_type, hp, money, is_alive);
         const window_config_t win_config(
-                640, 400, SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
+                SCREEN_WIDTH, SCREEN_HEIGHT,
+                SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
 
-        // Creo un map tileMap random:
-        // const int w = 20;
-        // const int h = 40;
-        // std::vector<std::vector<int>> tileMap(h);
-        // for (int y = 0; y < h; ++y) {
-        //     for (int x = 0; x < w; ++x) {
-        //         tileMap[y][x] = (rand() % 5) + 1;   // numeros enteros del 1 al 5;
-        //     }
-        // }
-        constexpr int w = 20;
+        constexpr int w = 50;
         constexpr int h = 40;
         std::vector<std::vector<int>> tileMap(h, std::vector<int>(w));
         std::random_device rd;                        // fuente de entropía

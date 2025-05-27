@@ -7,6 +7,7 @@
 #include <SDL2pp/SDL2pp.hh>
 
 #include "client/dtos/MapInfo.h"
+#include "utils/Vec2D.h"
 
 using SDL2pp::Rect;
 using SDL2pp::Renderer;
@@ -18,11 +19,14 @@ private:
     std::shared_ptr<Texture> tileSetTexture;
     const int width;
     const int height;
+    const int viewportW;  // ancho del area visible (camara)
+    const int viewportH;  // alto del area visible (camara)
     Rect onMapRect;
 
 public:
     explicit Map(const MapInfo& mapInfo);
 
+    void render(Renderer& ren, const Vec2D& posLocalPlayer);
     void render(Renderer& ren);
 
     Map(Map&& other) noexcept = default;

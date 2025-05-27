@@ -10,7 +10,7 @@ private:
 
 public:
     Vec2D();
-    Vec2D(const float x, const float y);
+    Vec2D(float x, float y);
 
     Vec2D& add(const Vec2D& vec);
     Vec2D& substract(const Vec2D& vec);
@@ -22,7 +22,11 @@ public:
     Vec2D& operator*=(const Vec2D& vec);
     Vec2D& operator/=(const Vec2D& vec);
 
-    void set(const float x, const float y);
+    void set(float x, float y);
+    void setX(float x);
+    void setY(float y);
+    float getX() const;
+    float getY() const;
     friend std::ostream& operator<<(std::ostream& stream, const Vec2D& vec);
 };
 
