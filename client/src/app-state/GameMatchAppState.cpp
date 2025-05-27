@@ -42,8 +42,8 @@ std::optional<AppStateCode> GameMatchAppState::update() {
                 SCREEN_WIDTH, SCREEN_HEIGHT,
                 SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
 
-        constexpr int w = 50;
-        constexpr int h = 40;
+        constexpr int w = 1000;
+        constexpr int h = 1000;
         std::vector<std::vector<int>> tileMap(h, std::vector<int>(w));
         std::random_device rd;                        // fuente de entropía
         std::mt19937 gen(rd());                       // motor de generación
