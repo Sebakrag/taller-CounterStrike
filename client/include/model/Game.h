@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "client/Client.h"
 #include "client/dtos/matchInfo.h"
 #include "utils/EventHandler.h"
 
@@ -11,14 +12,14 @@
 
 class Game {
 private:
-    // Client& client;   // This is the connection with the server.
+    Client& client;  // This is the connection with the server.
     const std::string match_name;
     Graphics graphics;
     World world;
     EventHandler eventHandler;
 
     bool is_running;
-    // void handle_events();
+    void handleServerMessages();
     void update(float dt);
     void render();
 
@@ -28,12 +29,14 @@ public:
     /// are created here too.
     ///
     /// \param[in] match_info structure containing the configuration for the game match.
+    /// \param[in] client class that has the connection with the server.
     ////////////////////////////////////////////////////////////
-    explicit Game(const match_info_t& match_info);
+    Game(const match_info_t& match_info, Client& client);
 
-    // Game(const match_info_t& match_info, Client& client);
-
-    void game_loop();
+    ///
+    /// \brief Initiate the game loop.
+    ///
+    void start();
 
     ~Game();
 };

@@ -57,9 +57,12 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
 
         const match_info_t match_info("Partidita", first_snap, win_config, map_info);
-        Game game(match_info);
 
-        game.game_loop();
+        Client client(first_snap);
+
+        Game game(match_info, client);
+
+        game.start();
 
         return AppStateCode::MAIN_MENU;
     } catch (const SDL2pp::Exception& e) {

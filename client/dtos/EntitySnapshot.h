@@ -20,9 +20,18 @@ struct EntitySnapshot {
     const bool
             is_alive;  // is alive or dead? (this could be useful for any entity, not just players)
 
-    EntitySnapshot(ServerEntityID server_entt_id, float pos_x, float pos_y, float angle,
-                   SpriteType sprite_type, EntityType entt_type, int hp, float money,
-                   bool is_alive);
+    EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x, const float pos_y,
+                   const float angle, const SpriteType sprite_type, const EntityType entt_type,
+                   const int hp, const float money, const bool is_alive):
+            server_entt_id(server_entt_id),
+            pos_x(pos_x),
+            pos_y(pos_y),
+            angle(angle),
+            sprite_type(sprite_type),
+            entt_type(entt_type),
+            hp(hp),
+            money(money),
+            is_alive(is_alive) {}
 };
 
 static_assert(std::is_trivially_destructible_v<EntitySnapshot>,

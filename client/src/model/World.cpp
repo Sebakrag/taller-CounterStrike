@@ -11,7 +11,7 @@ World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo)
         local_player(entt_mgr.create_entity(firstLocalPlayerSnap)),
         input_handler(local_player) {}
 
-void World::handle_game_snapshot(const std::vector<EntitySnapshot>& snapshots) {
+void World::handleGameSnapshot(const std::vector<EntitySnapshot>& snapshots) {
     comp_updater.syncEntities(snapshots);
     comp_updater.applySnapshotData();
 }
@@ -21,7 +21,7 @@ void World::update(float dt) {
     comp_updater.updateComponents();
 }
 
-void World::forward_event(const SDL_Event& e) { input_handler.handle_event(e, comp_mgr); }
+void World::forwardEvent(const SDL_Event& e) { input_handler.handle_event(e, comp_mgr); }
 
 void World::render(Renderer& ren) {
     const auto posLocalPlayer = comp_mgr.getComponent<PositionComponent>(local_player);
@@ -34,9 +34,4 @@ void World::render(Renderer& ren) {
     //  for (const auto comp : render_pool) {
     //      comp.update(ren);
     //  }
-}
-
-void World::moveLocalPlayer(const Vec2D& dir) {
-    const auto pos_comp = comp_mgr.getComponent<PositionComponent>(local_player);
-    pos_comp->move(dir);  // Esto lo tengo que borrar (es solo para probar).
 }

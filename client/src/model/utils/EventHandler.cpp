@@ -4,8 +4,7 @@
 
 #include "client/include/model/utils/Vec2D.h"
 
-EventHandler::EventHandler(World& world): world(world) {}
-
+EventHandler::EventHandler(Client& client): client(client) {}
 
 void EventHandler::handleEvents(bool& gameIsRunning) const {
     SDL_Event e;
@@ -40,9 +39,7 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
     }
 
     if ((direction.getX() != 0) || (direction.getY() != 0)) {
-        world.moveLocalPlayer(
-                direction);  // esto deberiamos borrarlo una vez tengamos la conexion con el server.
-        // client.move(direction);
+        client.move(direction);
     }
 
 

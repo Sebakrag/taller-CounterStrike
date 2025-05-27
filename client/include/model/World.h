@@ -12,7 +12,6 @@
 #include "client/dtos/EntitySnapshot.h"
 #include "client/dtos/MapInfo.h"
 #include "utils/InputHandler.h"
-#include "utils/Vec2D.h"
 
 #include "Map.h"
 
@@ -37,12 +36,10 @@ public:
     /// ///
     World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo);
 
-    void handle_game_snapshot(const std::vector<EntitySnapshot>& snapshots);
+    void handleGameSnapshot(const std::vector<EntitySnapshot>& snapshots);
     void update(float dt);
-    void forward_event(const SDL_Event& e);
+    void forwardEvent(const SDL_Event& e);
     void render(Renderer& ren);
-    void moveLocalPlayer(
-            const Vec2D& dir);  // Esto hay que borrarlo una vez tengamos la conexion con el server.
 };
 
 #endif  // WORLD_H

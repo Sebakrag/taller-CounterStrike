@@ -1,20 +1,22 @@
 #ifndef EVENTHANDLER_H
 #define EVENTHANDLER_H
 
-#include "client/include/model/World.h"
+#include "client/Client.h"
 
 class EventHandler {
 private:
-    // Client& client;
-    World& world;  // Por ahora le dejo una referencia al world para poder mover al jugador.
+    Client& client;
     // Una vez que tengamos la conexion con el servidor a traves del client, el world no creo
     // que lo necesitemos aca. (O si lo necesito para modificar la direccion a la que apunta?)
+    // No, me parece que estaria bueno que la rotacion de la camara tambien se envie al server
+    // para que la vision del jugador se informe a todos los jugadores al mismo tiempo (inclusive
+    // para el jugador local). Es decir, es una forma de sincronizar la vision entre todos los
+    // jugadores en cada frame.
     void handleKeyboardEvents(bool& gameIsRunning) const;
     // void handleMouseEvents();
 
 public:
-    // EventHandler(Client& client, World& world);
-    explicit EventHandler(World& world);
+    explicit EventHandler(Client& client);
 
     void handleEvents(bool& gameIsRunning) const;
 };

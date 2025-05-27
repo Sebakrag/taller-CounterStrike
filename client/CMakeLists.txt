@@ -2,6 +2,7 @@ target_sources(taller_client
         PRIVATE
         # .cpp files
         main.cpp
+        Client.cpp
         # app-sates:
         src/app-state/AppStateController.cpp
         src/app-state/LoginAppState.cpp
@@ -23,12 +24,12 @@ target_sources(taller_client
         src/model/utils/TextureManager.cpp
         src/model/utils/Vec2D.cpp
         # dtos:
-        dtos/EntitySnapshot.cpp
         dtos/matchInfo.cpp
         dtos/windowConfig.cpp
         PUBLIC
         # .h files
         client_constants.h
+        Client.h
         # app-sates:
         include/app-state/AppState.h
         include/app-state/AppStateCode.h
