@@ -36,8 +36,7 @@ public:
     /// ///
     World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo);
 
-    void handleGameSnapshot(const std::vector<EntitySnapshot>& snapshots);
-    void update(float dt);
+    void update(float dt, const std::vector<EntitySnapshot>& snapshots);
     void forwardEvent(const SDL_Event& e);
     void render(Renderer& ren);
 };

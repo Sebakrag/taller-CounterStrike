@@ -11,13 +11,12 @@ World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo)
         local_player(entt_mgr.create_entity(firstLocalPlayerSnap)),
         input_handler(local_player) {}
 
-void World::handleGameSnapshot(const std::vector<EntitySnapshot>& snapshots) {
+void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
+    std::cout << dt << std::endl;
+    // Quizas estoy 3 metodos pueden ser privados de ComponentUpdater, y los llamo dentro de un
+    // metodo publico comp_updater.update();
     comp_updater.syncEntities(snapshots);
     comp_updater.applySnapshotData();
-}
-
-void World::update(float dt) {
-    std::cout << dt << std::endl;
     comp_updater.updateComponents();
 }
 
