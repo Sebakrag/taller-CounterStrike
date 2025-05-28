@@ -1,6 +1,7 @@
 #include "client/include/model/EC/EntityFactory.h"
 
 #include "client/include/model/EC/components/PositionComponent.h"
+#include "client/include/model/EC/components/RenderComponent.h"
 #include "client/include/model/EC/components/SpriteComponent.h"
 
 
@@ -40,5 +41,7 @@ void EntityFactory::create_anti_terrorist_entt(const Entity& new_entt,
     pos_comp->init(snap.pos_x, snap.pos_y);
 
     const auto sprite_comp = comp_mgr.addComponent<SpriteComponent>(new_entt);
-    sprite_comp->init(snap.sprite_type, snap.pos_x, snap.pos_y);
+    sprite_comp->init(snap.sprite_type);
+
+    comp_mgr.addComponent<RenderComponent>(new_entt);
 }

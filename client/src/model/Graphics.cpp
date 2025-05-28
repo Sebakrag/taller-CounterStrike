@@ -8,8 +8,6 @@
 
 #define GAME_NAME "Counter Strike"
 
-using SDL2pp::Optional;
-
 Graphics::Graphics(const window_config_t& config, const std::string& match_name):
         sdl(SDL_INIT_VIDEO),
         sdl_image(IMG_INIT_PNG | IMG_INIT_JPG),
@@ -39,4 +37,9 @@ void Graphics::render(World& world) {
 
 void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect) {
     renderer.Copy(tex, srcRect, dstRect);
+}
+
+void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,
+                    const double angle, const Optional<Point>& center, const int flip) {
+    renderer.Copy(tex, srcRect, dstRect, angle, center, flip);
 }

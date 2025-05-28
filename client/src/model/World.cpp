@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "client/include/model/EC/components/PositionComponent.h"
+#include "client/include/model/EC/components/RenderComponent.h"
 
 World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo):
         entt_mgr(comp_mgr),
@@ -19,11 +20,17 @@ void World::render(Graphics& graphics) {
     const auto posLocalPlayer = comp_mgr.getComponent<PositionComponent>(local_player);
     std::cout << posLocalPlayer->getPosition() << std::endl;
     map.render(graphics, posLocalPlayer->getPosition());
-    // se renderizan los personajes, las armas y los objetos en si.
-    //  auto render_pool = comp_mgr.getPool<RenderComponent>();
-    //  for (const auto comp : render_pool) {
-    //      comp.update(graphics);
-    //  }
+
+    // se renderizan los personajes, las armas y los objetos en si:
+    comp_mgr.forEach<RenderComponent>([&](RenderComponent& renderComp, const Entity e) {
+        const auto sprite = comp_mgr.getComponent<SpriteComponent>(e);
+        const auto pos = comp_mgr.getComponent<PositionComponent>(e);
+
+        if (sprite && pos) {
+            renderComp.render(graphics, *sprite, *pos);
+        }
+    });
+
     // playerInventoryFrame.render(graphics); // Esto seria el frame que tiene la vida, la cant de
     // balas y la plata
 }

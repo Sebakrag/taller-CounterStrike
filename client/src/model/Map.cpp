@@ -46,7 +46,8 @@ void Map::render(Graphics& graphics, const Vec2D& posLocalPlayer) {
         for (int x = 0; x < viewportW; ++x) {
             onMapRect.SetX(TILE_SIZE * x);
             const Rect& scrRect = srcTileMap[startY + y][startX + x];
-            graphics.draw(*tileSetTexture, Optional{scrRect}, Optional{onMapRect});
+
+            graphics.draw(*tileSetTexture, Optional<Rect>(scrRect), Optional<Rect>(onMapRect));
         }
     }
 }

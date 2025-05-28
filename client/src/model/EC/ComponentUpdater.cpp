@@ -65,8 +65,9 @@ void ComponentUpdater::updateComponents() {
             pos->update(snap.pos_x, snap.pos_y);
         }
 
-        if (const auto spr = comp_mgr.getComponent<SpriteComponent>(e)) {
-            spr->update(snap.pos_x, snap.pos_y);
-        }
+        // Deberia crear un AnimationComponent para actualizar el sprite de forma correcta.
+        // if (const auto spr = comp_mgr.getComponent<SpriteComponent>(e)) {
+        //     spr->update(snap.pos_x, snap.pos_y);
+        // }
     }
 }

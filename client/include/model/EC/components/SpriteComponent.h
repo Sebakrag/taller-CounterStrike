@@ -14,16 +14,19 @@ class SpriteComponent {
 private:
     std::shared_ptr<Texture> texture;
     Rect spriteRect;
-    Rect onMapRect;
+    int frameWidth = 0;
+    int frameHeight = 0;
 
 public:
     SpriteComponent() = default;
 
-    void init(SpriteType type, float x, float y);
-
+    void init(SpriteType type);
+    void setFrame(int row, int col);
+    Rect getSpriteRect() const;
+    std::shared_ptr<Texture> getTexture() const;
+    int getWidth() const;
+    int getHeight() const;
     void setTexture(SpriteType type);
-
-    void update(const float x, const float y);
 };
 
 #endif  // SPRITECOMPONENT_H

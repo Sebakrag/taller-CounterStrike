@@ -7,7 +7,9 @@
 
 #include "client/dtos/windowConfig.h"
 
+using SDL2pp::NullOpt;
 using SDL2pp::Optional;
+using SDL2pp::Point;
 using SDL2pp::Rect;
 using SDL2pp::Renderer;
 using SDL2pp::SDL;
@@ -34,7 +36,10 @@ public:
     Graphics(const window_config_t& config, const std::string& match_name);
 
     void render(World& world);
-    void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect);
+    void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,
+              const Optional<Rect>& dstRect = NullOpt);
+    void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,
+              double angle, const Optional<Point>& center = NullOpt, int flip = 0);
 };
 
 #endif  // GRAPHICS_H
