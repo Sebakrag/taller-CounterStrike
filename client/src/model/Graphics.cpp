@@ -3,9 +3,12 @@
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
+#include "client/include/model/World.h"
 #include "client/include/model/utils/TextureManager.h"
 
 #define GAME_NAME "Counter Strike"
+
+using SDL2pp::Optional;
 
 Graphics::Graphics(const window_config_t& config, const std::string& match_name):
         sdl(SDL_INIT_VIDEO),
@@ -30,6 +33,10 @@ Renderer Graphics::create_renderer(Window& window) {
 
 void Graphics::render(World& world) {
     renderer.Clear();
-    world.render(renderer);
+    world.render(*this);
     renderer.Present();
+}
+
+void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect) {
+    renderer.Copy(tex, srcRect, dstRect);
 }

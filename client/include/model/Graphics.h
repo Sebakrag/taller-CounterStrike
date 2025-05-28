@@ -7,13 +7,16 @@
 
 #include "client/dtos/windowConfig.h"
 
-#include "World.h"
-
+using SDL2pp::Optional;
+using SDL2pp::Rect;
 using SDL2pp::Renderer;
 using SDL2pp::SDL;
 using SDL2pp::SDLImage;
 using SDL2pp::SDLTTF;
+using SDL2pp::Texture;
 using SDL2pp::Window;
+
+class World;
 
 class Graphics {
 private:
@@ -31,6 +34,7 @@ public:
     Graphics(const window_config_t& config, const std::string& match_name);
 
     void render(World& world);
+    void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect);
 };
 
 #endif  // GRAPHICS_H

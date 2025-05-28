@@ -1,6 +1,7 @@
 #include "client/include/model/Map.h"
 
 #include "client/client_constants.h"
+#include "client/include/model/Graphics.h"
 #include "client/include/model/utils/TextureManager.h"
 
 using SDL2pp::Optional;
@@ -33,7 +34,7 @@ Map::Map(const MapInfo& mapInfo):
     }
 }
 
-void Map::render(Renderer& ren, const Vec2D& posLocalPlayer) {
+void Map::render(Graphics& graphics, const Vec2D& posLocalPlayer) {
     int startX = static_cast<int>(posLocalPlayer.getX()) - (viewportW / 2);
     int startY = static_cast<int>(posLocalPlayer.getY()) - (viewportH / 2);
 
@@ -45,7 +46,7 @@ void Map::render(Renderer& ren, const Vec2D& posLocalPlayer) {
         for (int x = 0; x < viewportW; ++x) {
             onMapRect.SetX(TILE_SIZE * x);
             const Rect& scrRect = srcTileMap[startY + y][startX + x];
-            ren.Copy(*tileSetTexture, Optional{scrRect}, Optional{onMapRect});
+            graphics.draw(*tileSetTexture, Optional{scrRect}, Optional{onMapRect});
         }
     }
 }

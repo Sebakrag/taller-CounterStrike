@@ -16,9 +16,7 @@ void Game::start() {
     float dt = 0;
     while (is_running) {
         eventHandler.handleEvents(is_running);
-        update(dt);  // I could have a SendUpdateToServerSystem that is responsible for sending the
-                     // update of our local_player to the server.
-                     // More than "update", I should send the event that the player produce.
+        update(dt);
         render();
 
         usleep(1 / 30);  // adjust frame_rate

@@ -14,8 +14,6 @@ void EventHandler::handleEvents(bool& gameIsRunning) const {
             return;
         }
     }
-    // world.forward_event(e);  // Here we forward an event that it's something we can do without
-    // the permission of the server (for ex.: rotate the vision).
 
     handleKeyboardEvents(gameIsRunning);
     // handleMouseEvents();

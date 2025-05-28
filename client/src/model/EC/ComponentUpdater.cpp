@@ -1,10 +1,17 @@
 #include "client/include/model/EC/ComponentUpdater.h"
 
 #include "client/include/model/EC/components/PositionComponent.h"
+#include "client/include/model/EC/components/SpriteComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
     old_entities.reserve(INITIAL_OLD_ENTITIES_SIZE);
+}
+
+void ComponentUpdater::update(const std::vector<EntitySnapshot>& snapshots) {
+    syncEntities(snapshots);
+    // applySnapshotData();
+    updateComponents();
 }
 
 void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots) {
@@ -34,28 +41,32 @@ void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots
     }
 }
 
-// This method should be private. It doesn't make sense that we can call this without having
-// the old_entities container updated (we must call syncEntity before calling applySnapshotData).
-// Another option is to document this clearly and explain when should be used it.
 void ComponentUpdater::applySnapshotData() {
     // here I must use the old_entities container.
     for (const auto& [e, snap]: old_entities) {
         if (const auto pos = comp_mgr.getComponent<PositionComponent>(e)) {
             pos->init(snap.pos_x, snap.pos_y);
         }
-        // if (const auto spr = comp_mgr.getComponent<SpriteComponent>(e)) {
+        // Quizas que esta actualizacion del spritesheet esta demas. Si tengo que cambiar el
+        // spritesheet deberia hacerlo cuando se que la entidad muere, o cuando sucede algo
+        // extraordinario. No deberia recibirlo en todos los frames, pq en la mayoria de los casos
+        // parece ser algo estatico. if (const auto spr = comp_mgr.getComponent<SpriteComponent>(e))
+        // {
         //     spr->setTexture(snap.sprite_type);
         // }
     }
 }
 
 void ComponentUpdater::updateComponents() {
-    // comp_mgr.update<SpriteComponent>();
-    // updateSpriteComponents();
-}
+    // Here I can just use the old_entities vector (because all the new entities are already
+    // updated, since they were just created).
+    for (const auto& [e, snap]: old_entities) {
+        if (const auto pos = comp_mgr.getComponent<PositionComponent>(e)) {
+            pos->update(snap.pos_x, snap.pos_y);
+        }
 
-// void ComponentUpdater::updateSpriteComponents() {
-//     // comp_mgr.forEach<SpriteComponent>([](SpriteComponent& comp) {
-//     //     comp->update();
-//     // });
-// }
+        if (const auto spr = comp_mgr.getComponent<SpriteComponent>(e)) {
+            spr->update(snap.pos_x, snap.pos_y);
+        }
+    }
+}

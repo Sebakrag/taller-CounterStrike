@@ -4,7 +4,6 @@
 #include <vector>
 
 #include <SDL2/SDL.h>
-#include <SDL2pp/SDL2pp.hh>
 
 #include "EC/ComponentManager.h"
 #include "EC/ComponentUpdater.h"
@@ -15,7 +14,7 @@
 
 #include "Map.h"
 
-using SDL2pp::Renderer;
+class Graphics;
 
 class World {
 private:
@@ -37,8 +36,8 @@ public:
     World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo);
 
     void update(float dt, const std::vector<EntitySnapshot>& snapshots);
-    void forwardEvent(const SDL_Event& e);
-    void render(Renderer& ren);
+    void forwardEvent(const SDL_Event& e);  // TODO: delete.
+    void render(Graphics& graphics);
 };
 
 #endif  // WORLD_H

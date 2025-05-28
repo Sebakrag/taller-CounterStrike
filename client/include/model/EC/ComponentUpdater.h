@@ -23,9 +23,6 @@ private:
     std::vector<OldEntityEntry>
             old_entities;  // entities that weren't created in the current frame.
 
-public:
-    ComponentUpdater(EntityManager& em, ComponentManager& cm);
-
     ///
     /// @brief Synchronize all the entities that exists in the server (that comes in the snapshot).
     /// In order to do this, it creates or destroy entities as needed.
@@ -41,6 +38,11 @@ public:
     ///
     void applySnapshotData();
     void updateComponents();
+
+public:
+    ComponentUpdater(EntityManager& em, ComponentManager& cm);
+
+    void update(const std::vector<EntitySnapshot>& snapshots);
 };
 
 

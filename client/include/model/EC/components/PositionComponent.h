@@ -11,10 +11,10 @@ private:
 
 public:
     PositionComponent() = default;
-    PositionComponent(const float x, const float y);
+    PositionComponent(float x, float y);
 
-    void init(const float x, const float y);
-    void move(const Vec2D& dir);
+    void init(float x, float y);
+    void update(float x, float y);
 
     Vec2D getPosition() const;
 };

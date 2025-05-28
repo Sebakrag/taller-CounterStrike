@@ -19,7 +19,6 @@ private:
     EventHandler eventHandler;
 
     bool is_running;
-    void handleServerMessages();
     void update(float dt);
     void render();
 

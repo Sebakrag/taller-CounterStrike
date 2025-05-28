@@ -4,6 +4,6 @@ PositionComponent::PositionComponent(const float x, const float y): position(x, 
 
 void PositionComponent::init(const float x, const float y) { position.set(x, y); }
 
-void PositionComponent::move(const Vec2D& dir) { position += dir; }
+void PositionComponent::update(const float x, const float y) { position.set(x, y); }
 
 Vec2D PositionComponent::getPosition() const { return position; }

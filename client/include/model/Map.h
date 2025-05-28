@@ -10,8 +10,9 @@
 #include "utils/Vec2D.h"
 
 using SDL2pp::Rect;
-using SDL2pp::Renderer;
 using SDL2pp::Texture;
+
+class Graphics;
 
 class Map {
 private:
@@ -26,8 +27,7 @@ private:
 public:
     explicit Map(const MapInfo& mapInfo);
 
-    void render(Renderer& ren, const Vec2D& posLocalPlayer);
-    void render(Renderer& ren);
+    void render(Graphics& graphics, const Vec2D& posLocalPlayer);
 
     Map(Map&& other) noexcept = default;
     Map& operator=(Map&& other) noexcept = delete;

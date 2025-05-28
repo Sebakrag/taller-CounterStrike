@@ -18,8 +18,8 @@ void SpriteComponent::init(const SpriteType type, const float x, const float y) 
 
     onMapRect.SetW(spriteWidth);
     onMapRect.SetH(spriteHeight);
-    onMapRect.SetX(x);
-    onMapRect.SetY(y);
+    onMapRect.SetX(static_cast<int>(x));
+    onMapRect.SetY(static_cast<int>(y));
 }
 
 void SpriteComponent::setTexture(const SpriteType type) {
@@ -27,6 +27,6 @@ void SpriteComponent::setTexture(const SpriteType type) {
 }
 
 void SpriteComponent::update(const float x, const float y) {
-    onMapRect.SetX(x);
-    onMapRect.SetY(y);
+    onMapRect.SetX(static_cast<int>(x));
+    onMapRect.SetY(static_cast<int>(y));
 }

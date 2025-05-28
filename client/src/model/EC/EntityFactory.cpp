@@ -36,9 +36,9 @@ void EntityFactory::create_specific_entity(const Entity& new_entt,
 
 void EntityFactory::create_anti_terrorist_entt(const Entity& new_entt,
                                                const EntitySnapshot& snap) const {
-    auto pos_comp = comp_mgr.addComponent<PositionComponent>(new_entt);
+    const auto pos_comp = comp_mgr.addComponent<PositionComponent>(new_entt);
     pos_comp->init(snap.pos_x, snap.pos_y);
 
-    auto sprite_comp = comp_mgr.addComponent<SpriteComponent>(new_entt);
+    const auto sprite_comp = comp_mgr.addComponent<SpriteComponent>(new_entt);
     sprite_comp->init(snap.sprite_type, snap.pos_x, snap.pos_y);
 }
