@@ -8,15 +8,12 @@ World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo)
         entt_mgr(comp_mgr),
         comp_updater(entt_mgr, comp_mgr),
         map(mapInfo),
-        local_player(entt_mgr.create_entity(firstLocalPlayerSnap)),
-        input_handler(local_player) {}
+        local_player(entt_mgr.create_entity(firstLocalPlayerSnap)) {}
 
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
     std::cout << dt << std::endl;
     comp_updater.update(snapshots);
 }
-
-void World::forwardEvent(const SDL_Event& e) { input_handler.handle_event(e, comp_mgr); }
 
 void World::render(Graphics& graphics) {
     const auto posLocalPlayer = comp_mgr.getComponent<PositionComponent>(local_player);

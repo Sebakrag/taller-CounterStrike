@@ -19,7 +19,6 @@ target_sources(taller_client
         src/model/EC/components/PositionComponent.cpp
         src/model/EC/components/SpriteComponent.cpp
         src/model/utils/EventHandler.cpp
-        src/model/utils/InputHandler.cpp
         src/model/utils/SpriteMetadaProvider.cpp
         src/model/utils/TextureManager.cpp
         src/model/utils/Vec2D.cpp
@@ -49,11 +48,9 @@ target_sources(taller_client
         include/model/EC/ComponentManager.h
         include/model/EC/ComponentPool.h
         include/model/EC/ComponentUpdater.h
-        include/model/EC/components/InputComponent.h
         include/model/EC/components/PositionComponent.h
         include/model/EC/components/SpriteComponent.h
         include/model/utils/EventHandler.h
-        include/model/utils/InputHandler.h
         include/model/utils/SpriteMetadataProvider.h
         include/model/utils/TextureManager.h
         include/model/utils/Vec2D.h

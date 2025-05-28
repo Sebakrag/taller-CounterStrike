@@ -3,14 +3,11 @@
 
 #include <vector>
 
-#include <SDL2/SDL.h>
-
 #include "EC/ComponentManager.h"
 #include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
 #include "client/dtos/EntitySnapshot.h"
 #include "client/dtos/MapInfo.h"
-#include "utils/InputHandler.h"
 
 #include "Map.h"
 
@@ -25,7 +22,6 @@ private:
     Map map;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
-    InputHandler input_handler;
     // RenderComponent ren_comp;  // I believe this is not necessary anymore.
 
 public:
@@ -36,7 +32,6 @@ public:
     World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo);
 
     void update(float dt, const std::vector<EntitySnapshot>& snapshots);
-    void forwardEvent(const SDL_Event& e);  // TODO: delete.
     void render(Graphics& graphics);
 };
 
