@@ -3,19 +3,37 @@
 
 #define BYTE_INIT_MSG 0X01
 
+// codigos de los enums
+
+// Weapon { None, Glock, Ak47, M3, Awp };
 #define BYTE_WEAPON_NONE 0x00
 #define BYTE_WEAPON_GLOCK 0X01
 #define BYTE_WEAPON_AK_47 0X02
 #define BYTE_WEAPON_M3 0x03
 #define BYTE_WEAPON_AWP 0x04
 
+// TypeWeapon { Primary, Secondary, Knife, Bomb };
 #define BYTE_TYPE_PRIMARY 0X11
 #define BYTE_TYPE_SECONDARY 0x12
 #define BYTE_TYPE_KNIFE 0X13
 #define BYTE_TYPE_BOMB 0x14
 
+// Team { Terrorist, CounterTerrorist };
 #define BYTE_TEAM_TERRORIST 0x01
 #define BYTE_TEAM_COUNTERTERRORIST 0x02
+
+// GamePhase { Preparation, Combat, EndOfMatch };
+#define BYTE_PHASE_PREPARATION 0x20
+#define BYTE_PHASE_COMBAT 0x21
+#define BYTE_PHASE_END_OF_MATCH 0x22
+
+// PlayerState { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
+#define BYTE_STATE_IDLE 0xE1
+#define BYTE_STATE_WALKING 0xE2
+#define BYTE_STATE_ATTACKING 0xE3
+#define BYTE_STATE_TAKING_DAMAGE 0xE4
+#define BYTE_STATE_PICKING_UP 0xE5
+#define BYTE_STATE_DEAD 0xE6
 
 // Acciones del cliente:
 //--------------------------

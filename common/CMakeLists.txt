@@ -6,10 +6,12 @@ target_sources(taller_common
         liberror.cpp
         resolvererror.cpp
 
-        game_info.cpp
         protocol.cpp
         tile.cpp
         tile_map.cpp
+
+        game_info/player_info.cpp
+        game_info/game_info.cpp
     PUBLIC
     # .h files
         socket.h
@@ -19,9 +21,11 @@ target_sources(taller_common
         thread.h
 
         constants_protocol.h
-        game_info.h
         protocol.h
         types.h
         tile.h
         tile_map.h
+
+        game_info/player_info.h
+        game_info/game_info.h
     )

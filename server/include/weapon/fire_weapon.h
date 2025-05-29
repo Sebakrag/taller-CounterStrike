@@ -3,7 +3,7 @@
 
 #include "weapon.h"
 
-class FireWeapon : public Weapon {
+class FireWeapon: public Weapon_ {
 protected:
     float price;
     int bullets;

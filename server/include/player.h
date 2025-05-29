@@ -1,16 +1,16 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "weapon/weapon_knife.h"
+#include <string>
+
+#include "../../common/types.h"
 #include "weapon/fire_weapon.h"
-#include "../enums/weapon_type.h"
-#include "../enums/player_type.h"
-#include "../enums/player_state.h"
+#include "weapon/weapon_knife.h"
 
 class Player {
 private:
-    int id;
-    PlayerType type;
+    std::string name;  // id
+    Team team;
     int posX, posY;
     int health;
     PlayerState state;
@@ -18,26 +18,26 @@ private:
     WeaponKnife knife;
     FireWeapon* primaryWeapon;
     FireWeapon* secondaryWeapon;
-    WeaponType equippedWeapon;
+    TypeWeapon equippedWeapon;
 
     float money;
     int kills;
 
 public:
-    explicit Player(const int id, const PlayerType type);
+    explicit Player(const std::string& name, const Team playerTeam);
 
     void setPosition(const int x, const int y);
     void receiveDamage(const int dmg);
     void setPrimaryWeapon(FireWeapon* weapon);
-    void setEquippedWeapon(WeaponType type);
+    void setEquippedWeapon(TypeWeapon type);
     int attack(int targetX, int targetY);
 
     int getX() const;
     int getY() const;
-    int getId() const;
-    PlayerType getType() const;
+    std::string getId() const;
+    Team getTeam() const;
     int getHealth() const;
-    WeaponType getEquippedWeapon() const;
+    TypeWeapon getEquippedWeapon() const;
     FireWeapon* getPrimaryWeapon() const;
     FireWeapon* getSecondaryWeapon() const;
     bool isAlive() const;
@@ -45,4 +45,3 @@ public:
 
 
 #endif
-

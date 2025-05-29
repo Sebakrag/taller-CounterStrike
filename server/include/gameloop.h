@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "../../common/game_info.h"
+#include "../../common/game_info/game_info.h"
 #include "../../common/queue.h"
 #include "../../common/thread.h"
 #include "../../common/types.h"

@@ -160,12 +160,14 @@ GameInfo ClientProtocol::recvGameInfo() {
     uint8_t byte = 0;
     socket.recvall(&byte, sizeof(uint8_t));
     if (byte == BYTE_GAME_INFO) {
+        socket.recvall(&byte, sizeof(uint8_t));
+        GamePhase phase = decodeGamePhase(byte);
         // El buffer no va a tener tamaño fijo.
         //  usar recvsme()
+
+        // YOUR CODE
+        return GameInfo(phase, 1, std::vector<PlayerInfo>());
     } else {
         throw std::runtime_error("Error. Byte incorrecto");
     }
-    // YOUR CODE
-    // std::cout << "NO ESTÁ IMPLMENTADO! ClientProtocol::recvGameInfo()" << std::endl;
-    return GameInfo(GamePhase::Preparation, std::vector<PlayerInfo>());
 }

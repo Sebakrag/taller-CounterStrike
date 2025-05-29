@@ -30,15 +30,11 @@ target_sources(taller_server
         include/sender.h
         include/server_protocol.h
         include/server.h
-        include/types.h
+        include/types2.h
         include/player.h
         include/map.h
         include/weapon/weapon_knife.h
         include/weapon/weapon.h
         include/weapon/fire_weapon.h
         include/weapon/weapon_ak47.h
-        include/enums/player_type.h
-        include/enums/player_state.h
-        include/enums/weapon_type.h
-        include/enums/match_phase.h
 )

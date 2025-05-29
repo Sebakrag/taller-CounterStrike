@@ -3,18 +3,18 @@
 
 #include <string>
 #include <vector>
-#include "../player.h"
+
 #include "map.h"
-#include "action.h"
-#include "game_info.h"
-#include "../enums/match_phase.h"
-#include "types.h"
+#include "player.h"
+//#include "game_info.h"
+#include "../../common/game_info/game_info.h"
+#include "../../common/types.h"
 
 class Match {
 private:
     std::vector<Player> players;
     Map map;
-    MatchPhase phase;
+    GamePhase phase;
     int roundsPlayed;
     bool bombPlanted;
     int bombPosX, bombPosY;
@@ -23,22 +23,22 @@ private:
     double roundTimer;
     const double ROUND_DURATION = 120.0;
     bool roundOver;
-    PlayerType roundWinner;
+    Team roundWinner;
 
 public:
-    explicit Match();
+    Match();
 
     void addPlayer(Player&& player);
-    bool addPlayer(const std::string& username);
-    void removePlayer(const std::string& username);
-    bool movePlayer(const int playerId, const int dx, const int dy);
-    Player* getPlayer(const int playerId);
+    bool addPlayer(const std::string& playerName);
+    void removePlayer(const std::string& playerName);
+    bool movePlayer(const std::string& playerName, const int dx, const int dy);
+    Player* getPlayer(const std::string& playerName);
     void processAction(const PlayerAction& action);
     void updateState(double elapsedTime);
-    void processPlant(const int playerId);
-    void processDefuse(const int playerId);
+    void processPlant(const std::string& playerName);
+    void processDefuse(const std::string& playerName);
     void checkRoundEnd();
-    GameInfo generateGameInfo(const int playerId) const;
+    GameInfo generateGameInfo(const std::string& playerName) const;
     GameInfo generateGameInfo() const;
 
     void showPlayers() const;

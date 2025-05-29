@@ -1,10 +1,20 @@
 #include "../include/player.h"
 
-Player::Player(const int id, const PlayerType type)
-    : id(id), type(type), posX(0), posY(0), health(100),
-      state(PlayerState::ALIVE), primaryWeapon(nullptr),
-      secondaryWeapon(nullptr), equippedWeapon(WeaponType::KNIFE),
-      money(800), kills(0) {}
+#include <iostream>
+#include <string>
+
+Player::Player(const std::string& name, const Team team):
+        name(name),
+        team(team),
+        posX(0),
+        posY(0),
+        health(100),
+        state(PlayerState::Idle),
+        primaryWeapon(nullptr),
+        secondaryWeapon(nullptr),
+        equippedWeapon(TypeWeapon::Knife),
+        money(800),
+        kills(0) {}
 
 
 void Player::setPosition(const int x, const int y) {
@@ -13,32 +23,32 @@ void Player::setPosition(const int x, const int y) {
 }
 
 void Player::receiveDamage(const int dmg) {
-    if (state == PlayerState::DEAD) return;
+    if (state == PlayerState::Dead)
+        return;
 
     health -= dmg;
     if (health <= 0) {
         health = 0;
-        state = PlayerState::DEAD;
+        state = PlayerState::Dead;
     }
 }
 
-void Player::setPrimaryWeapon(FireWeapon *weapon) {
-    primaryWeapon = weapon;
-}
+void Player::setPrimaryWeapon(FireWeapon* weapon) { primaryWeapon = weapon; }
 
-void Player::setEquippedWeapon(WeaponType type) {
-    equippedWeapon = type;
-}
+void Player::setEquippedWeapon(TypeWeapon type) { equippedWeapon = type; }
 
 int Player::attack(int targetX, int targetY) {
-    if (state == PlayerState::DEAD) return -1;
+    if (state == PlayerState::Dead)
+        return -1;
 
+    std::cout << "Player " << name << " attacking target at (" << targetX << ", " << targetY
+              << ")\n";
     switch (equippedWeapon) {
-        case WeaponType::KNIFE:
+        case TypeWeapon::Knife:
             return knife.use();
-        case WeaponType::PRIMARY:
+        case TypeWeapon::Primary:
             return primaryWeapon ? primaryWeapon->use() : -1;
-        case WeaponType::SECONDARY:
+        case TypeWeapon::Secondary:
             return secondaryWeapon ? secondaryWeapon->use() : -1;
         default:
             return -1;
@@ -49,22 +59,16 @@ int Player::getX() const { return posX; }
 
 int Player::getY() const { return posY; }
 
-int Player::getId() const { return id; }
+std::string Player::getId() const { return name; }
 
-PlayerType Player::getType() const { return type; }
+Team Player::getTeam() const { return team; }
 
 int Player::getHealth() const { return health; }
 
-WeaponType Player::getEquippedWeapon() const { return equippedWeapon; }
+TypeWeapon Player::getEquippedWeapon() const { return equippedWeapon; }
 
 FireWeapon* Player::getPrimaryWeapon() const { return primaryWeapon; }
 
 FireWeapon* Player::getSecondaryWeapon() const { return secondaryWeapon; }
 
-bool Player::isAlive() const { return state == PlayerState::ALIVE; }
-
-
-
-
-
-
+bool Player::isAlive() const { return state != PlayerState::Dead; }

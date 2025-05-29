@@ -99,7 +99,6 @@ MatchRoomInfo GameManager::getMatchRoomInfo(const std::string& matchName) {
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {
     std::lock_guard<std::mutex> lock(m);
     return gameLoops.at(matchName)->getActionsQueue();
-    // return lobbies.at(matchName).getActionsQueue();
 }
 
 void GameManager::killAllMatchs() {

@@ -5,7 +5,7 @@
 // structs para definir, se puede definir en otro lado
 #include <memory>
 
-#include "../../common/game_info.h"
+#include "../../common/game_info/game_info.h"
 #include "../../common/queue.h"
 
 struct PlayerCommunicationChannels {

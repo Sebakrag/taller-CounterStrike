@@ -27,6 +27,8 @@ void GameLoop::run() {
                 match.processAction(playerAction);
             }
 
+            match.updateState(1.0 / ITR_PER_SEC);
+
             // 2. envío el estado de juego a cada jugador
             for (auto queue: queuesPlayers) {
                 queue->try_push(match.generateGameInfo());

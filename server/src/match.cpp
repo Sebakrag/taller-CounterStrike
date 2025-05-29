@@ -4,49 +4,37 @@
 #include <iostream>
 #include <vector>
 
-/*
-void Match::processAction(const PlayerAction& action) {
-    std::cout << "Acá ejecuto la accion de " << action.player_username << std::endl;
-}
+Match::Match(): phase(GamePhase::Preparation), roundsPlayed(0) {}
 
-GameInfo Match::generateGameInfo() const {
-    std::vector<PlayerInfo> playersInfo;
-    return GameInfo(GamePhase::Preparation, playersInfo);
-}
-*/
-#include <iostream>
-
-Match::Match() : phase(MatchPhase::WAITING), roundsPlayed(0) {};
-
-void Match::addPlayer(Player&& player) {
-    players.emplace_back(std::move(player));
-}
+void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
 bool Match::addPlayer(const std::string& username) {
-    //players.push_back(username);
+    Player newPlayer(username, Team::Terrorist);
+    players.push_back(std::move(newPlayer));
     return true;
 }
 
 void Match::removePlayer(const std::string& username) {
-    auto it = std::find(players.begin(), players.end(), username);
-    if (it != players.end()) {
-        players.erase(it);
+    for (auto& p: players) {
+        if (p.getId() == username) {
+            // players.erase(std::find(players.begin(), players.end(), p));
+        }
     }
 }
 
 
-std::vector<std::string> Match::getPlayers() { return players; }
+// std::vector<std::string> Match::getPlayers() { return players; }
 
 
-Player* Match::getPlayer(const int playerId) {
-    for (auto& p : players) {
-        if (p.getId() == playerId)
+Player* Match::getPlayer(const std::string& playerName) {
+    for (auto& p: players) {
+        if (p.getId() == playerName)
             return &p;
     }
     return nullptr;
 }
 
-bool Match::movePlayer(const int playerId, const int dx, const int dy) {
+bool Match::movePlayer(const std::string& playerId, const int dx, const int dy) {
     Player* p = getPlayer(playerId);
     if (!p || !p->isAlive())
         return false;
@@ -61,37 +49,35 @@ bool Match::movePlayer(const int playerId, const int dx, const int dy) {
 
     return false;
 }
-
-void Match::processAction(const int playerId, const Action &action) {
-    Player* player = getPlayer(playerId);
+void Match::processAction(const PlayerAction& action) {
+    Player* player = getPlayer(action.player_username);
     if (!player || !player->isAlive())
         return;
 
-    switch (action.getType()) {
-        case ActionType::MOVE: {
-            const int dx = action.getParam("dx");
-            const int dy = action.getParam("dy");
-            movePlayer(playerId, dx, dy);
+    GameAction gameAction = action.gameAction;
+    switch (gameAction.type) {
+        case GameActionType::Walk: {
+            const int dx = gameAction.direction.x;
+            const int dy = gameAction.direction.y;
+            movePlayer(action.player_username, dx, dy);
             break;
         }
-        case ActionType::EQUIP: {
-            int weaponType = action.getParam("weaponType");
-            player->setEquippedWeapon(static_cast<WeaponType>(weaponType));
+        case GameActionType::ChangeWeapon: {
+            player->setEquippedWeapon(gameAction.typeWeapon);
             break;
         }
-        case ActionType::SHOOT: {
-            const int targetX = action.getParam("x");
-            const int targetY = action.getParam("y");
-            const int dmg = player->attack(targetX, targetY);
-            std::cout << "Player " << playerId << " shot with " << dmg << " damage\n";
+        case GameActionType::Attack: {
+            if (player->getEquippedWeapon() == TypeWeapon::Bomb) {
+                processPlant(action.player_username);
+            }
+            const int dmg = player->attack(gameAction.direction.x, gameAction.direction.y);
+            std::cout << "Player " << action.player_username << " shoot with " << dmg
+                      << " damage\n";
             break;
         }
-        case ActionType::PLANT:
-            processPlant(playerId);
-            break;
-        case ActionType::DEFUSE:
-            processDefuse(playerId);
-            break;
+        // case ActionType::DEFUSE:
+        //   processDefuse(playerId);
+        //   break;
         default:
             std::cout << "Accion no implementada\n";
             break;
@@ -108,7 +94,7 @@ void Match::updateState(double elapsedTime) {
         if (bombTimer <= 0) {
             std::cout << "La bomba exploto!\n";
             roundOver = true;
-            roundWinner = PlayerType::TERRORIST;
+            roundWinner = Team::Terrorist;
         }
     }
 
@@ -116,9 +102,9 @@ void Match::updateState(double elapsedTime) {
 }
 
 
-void Match::processPlant(const int playerId) {
-    Player* player = getPlayer(playerId);
-    if (!player || !player->isAlive() || player->getType() != PlayerType::TERRORIST)
+void Match::processPlant(const std::string& playerName) {
+    Player* player = getPlayer(playerName);
+    if (!player || !player->isAlive() || player->getTeam() != Team::Terrorist)
         return;
     if (bombPlanted)
         return;
@@ -133,12 +119,12 @@ void Match::processPlant(const int playerId) {
     bombPosY = y;
     bombTimer = TIME_TO_EXPLODE;
 
-    std::cout << "Player " << playerId << " planted the bomb at (" << x << ", " << y << ")\n";
+    std::cout << "Player " << playerName << " planted the bomb at (" << x << ", " << y << ")\n";
 }
 
-void Match::processDefuse(const int playerId) {
-    Player* player = getPlayer(playerId);
-    if (!player || !player->isAlive() || player->getType() != PlayerType::ANTITERRORIST)
+void Match::processDefuse(const std::string& playerName) {
+    Player* player = getPlayer(playerName);
+    if (!player || !player->isAlive() || player->getTeam() != Team::CounterTerrorist)
         return;
     if (!bombPlanted)
         return;
@@ -151,9 +137,9 @@ void Match::processDefuse(const int playerId) {
     bombPlanted = false;
     bombTimer = 0;
     roundOver = true;
-    roundWinner = PlayerType::ANTITERRORIST;
+    roundWinner = Team::CounterTerrorist;
 
-    std::cout << "Player " << playerId << " defused the bomb!\n";
+    std::cout << "Player " << playerName << " defused the bomb!\n";
 }
 
 void Match::checkRoundEnd() {
@@ -163,42 +149,43 @@ void Match::checkRoundEnd() {
     bool terroristsLeft = false;
     bool antiterroristsLeft = false;
 
-    for (const auto& p : players) {
-        if (!p.isAlive()) continue;
-        if (p.getType() == PlayerType::TERRORIST) terroristsLeft = true;
-        if (p.getType() == PlayerType::ANTITERRORIST) antiterroristsLeft = true;
+    for (const auto& p: players) {
+        if (!p.isAlive())
+            continue;
+        if (p.getTeam() == Team::Terrorist)
+            terroristsLeft = true;
+        if (p.getTeam() == Team::CounterTerrorist)
+            antiterroristsLeft = true;
     }
 
     if (!terroristsLeft) {
         roundOver = true;
-        roundWinner = PlayerType::ANTITERRORIST;
+        roundWinner = Team::CounterTerrorist;
         std::cout << "Todos los terroristas murieron. Ganan los antiterroristas. \n";
     } else if (!antiterroristsLeft) {
         roundOver = true;
-        roundWinner = PlayerType::TERRORIST;
+        roundWinner = Team::Terrorist;
         std::cout << "Todos los antiterroristas murieron. Ganan los terroristas. \n";
     } else if (roundTimer <= 0 && !bombPlanted) {
         roundOver = true;
-        roundWinner = PlayerType::ANTITERRORIST;
+        roundWinner = Team::CounterTerrorist;
         std::cout << "Se acabó el tiempo sin bomba. Ganan los antiterroristas. \n";
     }
 }
-
-GameInfo Match::generateGameInfo(const int playerId) const {
+/*
+GameInfo Match::generateGameInfo(const std::string& playerName) const {
     GameInfo info;
 
     for (const auto& p : players) {
-        if (p.getId() == playerId) {
+        if (p.getId() == playerName) {
             info.posX = p.getX();
             info.posY = p.getY();
             info.health = p.getHealth();
             info.equippedWeapon = p.getEquippedWeapon();
             info.bullets = p.getEquippedWeapon() == WeaponType::PRIMARY && p.getPrimaryWeapon() ?
                            p.getPrimaryWeapon()->getBullets() :
-                           (p.getEquippedWeapon() == WeaponType::SECONDARY && p.getSecondaryWeapon() ?
-                            p.getSecondaryWeapon()->getBullets() : 0);
-        } else {
-            info.otherPlayers.push_back(PlayerInfo{
+                           (p.getEquippedWeapon() == WeaponType::SECONDARY && p.getSecondaryWeapon()
+? p.getSecondaryWeapon()->getBullets() : 0); } else { info.otherPlayers.push_back(PlayerInfo{
                 p.getId(), p.getX(), p.getY(), p.isAlive(), p.getType()
             });
         }
@@ -211,12 +198,16 @@ GameInfo Match::generateGameInfo(const int playerId) const {
 
     return info;
 }
-
+*/
+GameInfo Match::generateGameInfo() const {
+    std::vector<PlayerInfo> playersInfo;
+    GameInfo gameInfo(this->phase, roundTimer, playersInfo);
+    return gameInfo;
+}
 void Match::showPlayers() const {
     std::cout << "Players in match:\n";
-    for (const auto& p : players) {
-        std::cout << " - Player " << p.getId()
-                  << " en (" << p.getX() << "," << p.getY() << ") "
+    for (const auto& p: players) {
+        std::cout << " - Player " << p.getId() << " en (" << p.getX() << "," << p.getY() << ") "
                   << (p.isAlive() ? "[VIVO]" : "[MUERTO]") << "\n";
     }
 }

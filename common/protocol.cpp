@@ -174,6 +174,39 @@ uint8_t Protocol_::encodeTeam(const Team& team) {
             throw std::invalid_argument("Team inválido");
     }
 }
+
+uint8_t Protocol_::encodeGamePhase(const GamePhase& gamePhase) {
+    switch (gamePhase) {
+        case GamePhase::Preparation:
+            return BYTE_PHASE_PREPARATION;
+        case GamePhase::Combat:
+            return BYTE_PHASE_COMBAT;
+        case GamePhase::EndOfMatch:
+            return BYTE_PHASE_END_OF_MATCH;
+        default:
+            throw std::runtime_error("Error. Fase de juego desconocida. No se puede codificar");
+    }
+}
+
+uint8_t Protocol_::encodePlayerState(const PlayerState& playerState) {
+    switch (playerState) {
+        case PlayerState::Idle:
+            return BYTE_STATE_IDLE;
+        case PlayerState::Walking:
+            return BYTE_STATE_WALKING;
+        case PlayerState::Attacking:
+            return BYTE_STATE_ATTACKING;
+        case PlayerState::TakingDamage:
+            return BYTE_STATE_TAKING_DAMAGE;
+        case PlayerState::PickingUp:
+            return BYTE_STATE_PICKING_UP;
+        case PlayerState::Dead:
+            return BYTE_STATE_DEAD;
+        default:
+            throw std::runtime_error(
+                    "Error. Estado del jugador desconocido. No se puede codificar");
+    }
+}
 // Decodificadores.
 //------------------
 
@@ -265,6 +298,38 @@ Team Protocol_::decodeTeam(uint8_t byte) {
             return Team::CounterTerrorist;
         default:
             throw std::invalid_argument("Byte inválido para Team");
+    }
+}
+GamePhase Protocol_::decodeGamePhase(uint8_t byte) {
+    switch (byte) {
+        case BYTE_PHASE_PREPARATION:
+            return GamePhase::Preparation;
+        case BYTE_PHASE_COMBAT:
+            return GamePhase::Combat;
+        case BYTE_PHASE_END_OF_MATCH:
+            return GamePhase::EndOfMatch;
+        default:
+            throw std::runtime_error("Error. Fase de juego desconocida. No se puede decodificar");
+    }
+}
+
+PlayerState Protocol_::decodePlayerState(uint8_t byte) {
+    switch (byte) {
+        case BYTE_STATE_IDLE:
+            return PlayerState::Idle;
+        case BYTE_STATE_WALKING:
+            return PlayerState::Walking;
+        case BYTE_STATE_ATTACKING:
+            return PlayerState::Attacking;
+        case BYTE_STATE_TAKING_DAMAGE:
+            return PlayerState::TakingDamage;
+        case BYTE_STATE_PICKING_UP:
+            return PlayerState::PickingUp;
+        case BYTE_STATE_DEAD:
+            return PlayerState::Dead;
+        default:
+            throw std::runtime_error(
+                    "Error. Estado del jugador desconocido. No se puede decodificar");
     }
 }
 void Protocol_::shutDown(int how) { socket.shutdown(how); }

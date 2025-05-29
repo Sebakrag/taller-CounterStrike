@@ -43,23 +43,27 @@ protected:
     // recibe 3 bytes (correspondiente a un float) por el socket, casteando al endianness local
     float recvFloatNormalized();
 
+public:
     // Codificadores. Devuelven el byte correspondiente al valor del enum.
-    uint8_t encodeTypeWeapon(const TypeWeapon& typeWeapon);
-    uint8_t encodeWeapon(const Weapon& weapon);
-    uint8_t encodeMenuActionType(const MenuActionType& gameActionType);
-    uint8_t encodeLobbyAction(const LobbyAction& lobbyAction);
-    uint8_t encodeGameActionType(const GameActionType& gameActionType);
-    uint8_t encodeTeam(const Team&);
+    static uint8_t encodeTypeWeapon(const TypeWeapon& typeWeapon);
+    static uint8_t encodeWeapon(const Weapon& weapon);
+    static uint8_t encodeMenuActionType(const MenuActionType& gameActionType);
+    static uint8_t encodeLobbyAction(const LobbyAction& lobbyAction);
+    static uint8_t encodeGameActionType(const GameActionType& gameActionType);
+    static uint8_t encodeTeam(const Team&);
+    static uint8_t encodeGamePhase(const GamePhase& gamePhase);
+    static uint8_t encodePlayerState(const PlayerState& playerState);
 
     // Decodificadores. Devuelven el valor del enum correspondiente al byte.
-    TypeWeapon decodeTypeWeapon(uint8_t byte);
-    Weapon decodeWeapon(uint8_t byte);
-    MenuActionType decodeMenuActionType(uint8_t byte);
-    LobbyAction decodeLobbyAction(uint8_t byte);
-    GameActionType decodeGameActionType(uint8_t byte);
-    Team decodeTeam(uint8_t);
+    static TypeWeapon decodeTypeWeapon(uint8_t byte);
+    static Weapon decodeWeapon(uint8_t byte);
+    static MenuActionType decodeMenuActionType(uint8_t byte);
+    static LobbyAction decodeLobbyAction(uint8_t byte);
+    static GameActionType decodeGameActionType(uint8_t byte);
+    static Team decodeTeam(uint8_t);
+    static GamePhase decodeGamePhase(uint8_t byte);
+    static PlayerState decodePlayerState(uint8_t byte);
 
-public:
     void shutDown(int how);
 };
 

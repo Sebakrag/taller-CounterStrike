@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../../common/game_info.h"
+#include "../../common/game_info/game_info.h"
 #include "../../common/protocol.h"
 #include "../../common/socket.h"
 

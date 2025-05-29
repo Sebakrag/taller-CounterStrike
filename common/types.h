@@ -9,6 +9,10 @@ enum class TypeWeapon { Primary, Secondary, Knife, Bomb };
 enum class Team { Terrorist, CounterTerrorist };
 enum class GamePhase { Preparation, Combat, EndOfMatch };
 
+enum class PlayerState { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
+
+enum class PlayerSkin { A, B, C, D, E, F, G, H };
+
 struct Vector2 {
     float x;
     float y;

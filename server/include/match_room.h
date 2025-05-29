@@ -10,7 +10,7 @@
 
 #include "gameloop.h"
 #include "match.h"
-#include "types.h"
+#include "types2.h"
 
 // Acá se van a crear las queues y el gameloop.
 // Cuando se cree el gameloop, la instancia de esta clase se debe destruir.
