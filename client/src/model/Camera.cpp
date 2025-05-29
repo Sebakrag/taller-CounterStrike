@@ -3,9 +3,12 @@
 #include "client/client_constants.h"
 
 
-Camera::Camera(const int windowWidth, const int windowHeight, const int mapWidth,
-               const int mapHeight):
-        viewportW(windowWidth), viewportH(windowHeight), mapWidth(mapWidth), mapHeight(mapHeight) {}
+Camera::Camera(const int windowWidth, const int windowHeight, const int mapWidthInTiles,
+               const int mapHeightInTiles):
+        viewportW(windowWidth),
+        viewportH(windowHeight),
+        mapWidth(mapWidthInTiles * TILE_SIZE),
+        mapHeight(mapHeightInTiles * TILE_SIZE) {}
 
 void Camera::follow(const Vec2D& targetPosition) {
     float newX = targetPosition.getX() - (static_cast<float>(viewportW) / 2.0f);

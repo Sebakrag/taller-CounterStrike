@@ -3,6 +3,7 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
+#include "client/include/model/Camera.h"
 #include "client/include/model/Graphics.h"
 
 #include "PositionComponent.h"
@@ -19,7 +20,7 @@ public:
     RenderComponent() = default;
 
     void render(Graphics& graphics, const SpriteComponent& sprComp,
-                const PositionComponent& posComp);
+                const PositionComponent& posComp, const Camera& camera);
 };
 
 #endif  // RENDERCOMPONENT_H

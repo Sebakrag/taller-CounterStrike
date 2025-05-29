@@ -11,10 +11,10 @@ class Camera {
 private:
     Vec2D offset;
     int viewportW, viewportH;  // in pixels.
-    int mapWidth, mapHeight;
+    int mapWidth, mapHeight;   // in pixels.
 
 public:
-    Camera(int windowWidth, int windowHeight, int mapWidth, int mapHeight);
+    Camera(int windowWidth, int windowHeight, int mapWidthInTiles, int mapHeightInTiles);
 
     void follow(const Vec2D& targetPosition);
     Vec2D getOffset() const;

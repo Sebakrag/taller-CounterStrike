@@ -8,12 +8,15 @@
 struct MapInfo {
     const std::vector<std::vector<int>> tileMap;
     const SpriteType tileSetType;
-    const int width;
-    const int height;
+    const int numTilesInX;
+    const int numTilesInY;
 
-    MapInfo(const std::vector<std::vector<int>>& tileMap, const SpriteType tileSetType, const int w,
-            const int h):
-            tileMap(tileMap), tileSetType(tileSetType), width(w), height(h) {}
+    MapInfo(const std::vector<std::vector<int>>& tileMap, const SpriteType tileSetType,
+            const int numTilesInX, const int numTilesInY):
+            tileMap(tileMap),
+            tileSetType(tileSetType),
+            numTilesInX(numTilesInX),
+            numTilesInY(numTilesInY) {}
 };
 
 #endif  // MAPINFO_H

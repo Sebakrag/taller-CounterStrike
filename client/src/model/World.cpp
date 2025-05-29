@@ -10,7 +10,7 @@ World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
         entt_mgr(comp_mgr),
         comp_updater(entt_mgr, comp_mgr),
         map(mapInfo),
-        camera(winConfig.width, winConfig.height, mapInfo.width, mapInfo.height),
+        camera(winConfig.width, winConfig.height, mapInfo.numTilesInX, mapInfo.numTilesInY),
         local_player(entt_mgr.create_entity(firstLocalPlayerSnap)) {}
 
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
@@ -31,9 +31,7 @@ void World::render(Graphics& graphics) {
         const auto pos = comp_mgr.getComponent<PositionComponent>(e);
 
         if (sprite && pos) {
-            Vec2D tmp = pos->getPosition().substract(camera.getOffset());
-            pos->update(tmp.getX(), tmp.getY());
-            renderComp.render(graphics, *sprite, *pos);
+            renderComp.render(graphics, *sprite, *pos, camera);
         }
     });
 

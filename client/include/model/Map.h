@@ -19,9 +19,8 @@ class Map {
 private:
     std::vector<std::vector<Rect>> srcTileMap;
     std::shared_ptr<Texture> tileSetTexture;
-    const int width;
-    const int height;
-    Rect onMapRect;
+    const int widthInTiles;
+    const int heightInTiles;
 
 public:
     explicit Map(const MapInfo& mapInfo);
