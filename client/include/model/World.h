@@ -8,7 +8,7 @@
 #include "EC/EntityManager.h"
 #include "client/dtos/EntitySnapshot.h"
 #include "client/dtos/MapInfo.h"
-#include "client/dtos/windowConfig.h"
+#include "client/dtos/WindowConfig.h"
 
 #include "Camera.h"
 #include "Map.h"
@@ -32,7 +32,7 @@ public:
     /// @param mapInfo contains the info of the map selected by the creator of the game match.
     /// ///
     World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
-          const window_config_t& winConfig);
+          const WindowConfig& winConfig);
 
     void update(float dt, const std::vector<EntitySnapshot>& snapshots);
     void render(Graphics& graphics);

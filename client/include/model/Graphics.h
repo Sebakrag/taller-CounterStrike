@@ -5,7 +5,7 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "client/dtos/windowConfig.h"
+#include "client/dtos/WindowConfig.h"
 
 using SDL2pp::NullOpt;
 using SDL2pp::Optional;
@@ -29,11 +29,11 @@ private:
     Window window;
     Renderer renderer;
 
-    Window create_window(const window_config_t& config, const std::string& match_name) const;
+    Window create_window(const WindowConfig& config, const std::string& match_name) const;
     Renderer create_renderer(Window& window);
 
 public:
-    Graphics(const window_config_t& config, const std::string& match_name);
+    Graphics(const WindowConfig& config, const std::string& match_name);
 
     void render(World& world);
     void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,

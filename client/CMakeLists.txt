@@ -59,6 +59,6 @@ target_sources(taller_client
         # dtos:
         dtos/EntitySnapshot.h
         dtos/MapInfo.h
-        dtos/matchInfo.h
-        dtos/windowConfig.h
+        dtos/MatchInfo.h
+        dtos/WindowConfig.h
 )

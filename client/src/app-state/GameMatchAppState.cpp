@@ -7,7 +7,7 @@
 #include <SDL2pp/SDL2pp.hh>
 
 #include "client/client_constants.h"
-#include "client/dtos/matchInfo.h"
+#include "client/dtos/MatchInfo.h"
 #include "client/include/model/Game.h"
 
 GameMatchAppState::GameMatchAppState() {}
@@ -16,18 +16,8 @@ GameMatchAppState::GameMatchAppState() {}
 // de GameMatchAppState, que provienen del MainMenuState, cuando el usuario
 // selecciona la partida a la que se quiere unir o cuando crea una.
 // Esta info que recibe corresponde a la info estatica de la que el profe nos hablaba.
-// GameMatchAppState::GameMatchAppState(const match_info_t match_info) {}
-// match_info_t {
-//     const std::string name;
-//     const EntitySnapshot first_snap;  // Representa el snapshot inicial del local_player
-//     server. const window_config_t win_config; const std::string map_scene; // filename del mapa a
-//     utilizar? const std::list<players_info_t> players;  // pensar si es la mejor forma.
-// };
-// La informacion de si la ventana se abre en fullscreen o no viene dada en el archivo
-// de configuracion con el que se inicia el server. Lo mismo para la resolucion.
-// Por lo tanto, por mas que suene antuitivo, esa info la tenemos que recibir del server.
-// Personalmente me gustaria que eso lo decida el propio usuario que va a jugar.
-// (Preguntar esto ultimo).
+// GameMatchAppState::GameMatchAppState(const MatchInfo& match_info) {}
+
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         constexpr int SERVER_ENTITY_ID = 1;
@@ -38,7 +28,7 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         constexpr bool is_alive = true;
         const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
                                         entt_type, hp, money, is_alive);
-        const window_config_t win_config(
+        const WindowConfig win_config(
                 SCREEN_WIDTH, SCREEN_HEIGHT,
                 SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
 
@@ -56,7 +46,7 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         }
         const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
 
-        const match_info_t match_info("Partidita", first_snap, win_config, map_info);
+        const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
 
         Client client(first_snap);
 

@@ -8,7 +8,7 @@
 
 #define GAME_NAME "Counter Strike"
 
-Graphics::Graphics(const window_config_t& config, const std::string& match_name):
+Graphics::Graphics(const WindowConfig& config, const std::string& match_name):
         sdl(SDL_INIT_VIDEO),
         sdl_image(IMG_INIT_PNG | IMG_INIT_JPG),
         sdl_ttf(),
@@ -17,7 +17,7 @@ Graphics::Graphics(const window_config_t& config, const std::string& match_name)
     TextureManager::init(renderer);
 }
 
-Window Graphics::create_window(const window_config_t& config, const std::string& match_name) const {
+Window Graphics::create_window(const WindowConfig& config, const std::string& match_name) const {
     const std::string win_title = std::string(GAME_NAME) + " - " + match_name;
     return Window(win_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, config.width,
                   config.height, config.flags);

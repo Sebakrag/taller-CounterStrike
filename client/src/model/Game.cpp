@@ -1,6 +1,6 @@
 #include "client/include/model/Game.h"
 
-Game::Game(const match_info_t& match_info, Client& client):
+Game::Game(const MatchInfo& match_info, Client& client):
         client(client),
         match_name(match_info.name),
         graphics(match_info.win_config, match_name),

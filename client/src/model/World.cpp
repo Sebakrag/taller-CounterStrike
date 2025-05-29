@@ -6,7 +6,7 @@
 #include "client/include/model/EC/components/RenderComponent.h"
 
 World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
-             const window_config_t& winConfig):
+             const WindowConfig& winConfig):
         entt_mgr(comp_mgr),
         comp_updater(entt_mgr, comp_mgr),
         map(mapInfo),

@@ -4,7 +4,7 @@
 #include <string>
 
 #include "client/Client.h"
-#include "client/dtos/matchInfo.h"
+#include "client/dtos/MatchInfo.h"
 #include "utils/EventHandler.h"
 
 #include "Graphics.h"
@@ -30,7 +30,7 @@ public:
     /// \param[in] match_info structure containing the configuration for the game match.
     /// \param[in] client class that has the connection with the server.
     ////////////////////////////////////////////////////////////
-    Game(const match_info_t& match_info, Client& client);
+    Game(const MatchInfo& match_info, Client& client);
 
     ///
     /// \brief Initiate the game loop.
