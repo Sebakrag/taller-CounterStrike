@@ -4,17 +4,13 @@
 #include <cstdint>
 
 struct window_config_t {
-private:
-    const int widht;
+public:
+    const int width;
     const int height;
     const uint32_t flags;
 
-public:
-    window_config_t(int w, int h, uint32_t flags);
-
-    int get_widht() const;
-    int get_height() const;
-    uint32_t get_flags() const;
+    window_config_t(const int w, const int h, const uint32_t flags):
+            width(w), height(h), flags(flags) {}
 };
 
 #endif  // WINDOWCONFIG_H

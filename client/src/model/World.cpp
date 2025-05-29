@@ -5,10 +5,12 @@
 #include "client/include/model/EC/components/PositionComponent.h"
 #include "client/include/model/EC/components/RenderComponent.h"
 
-World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo):
+World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
+             const window_config_t& winConfig):
         entt_mgr(comp_mgr),
         comp_updater(entt_mgr, comp_mgr),
         map(mapInfo),
+        camera(winConfig.width, winConfig.height, mapInfo.width, mapInfo.height),
         local_player(entt_mgr.create_entity(firstLocalPlayerSnap)) {}
 
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
@@ -19,7 +21,9 @@ void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
 void World::render(Graphics& graphics) {
     const auto posLocalPlayer = comp_mgr.getComponent<PositionComponent>(local_player);
     std::cout << posLocalPlayer->getPosition() << std::endl;
-    map.render(graphics, posLocalPlayer->getPosition());
+    camera.follow(posLocalPlayer->getPosition());
+
+    map.render(graphics, camera);
 
     // se renderizan los personajes, las armas y los objetos en si:
     comp_mgr.forEach<RenderComponent>([&](RenderComponent& renderComp, const Entity e) {
@@ -27,6 +31,8 @@ void World::render(Graphics& graphics) {
         const auto pos = comp_mgr.getComponent<PositionComponent>(e);
 
         if (sprite && pos) {
+            Vec2D tmp = pos->getPosition().substract(camera.getOffset());
+            pos->update(tmp.getX(), tmp.getY());
             renderComp.render(graphics, *sprite, *pos);
         }
     });

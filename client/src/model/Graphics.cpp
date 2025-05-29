@@ -19,8 +19,8 @@ Graphics::Graphics(const window_config_t& config, const std::string& match_name)
 
 Window Graphics::create_window(const window_config_t& config, const std::string& match_name) const {
     const std::string win_title = std::string(GAME_NAME) + " - " + match_name;
-    return Window(win_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, config.get_widht(),
-                  config.get_height(), config.get_flags());
+    return Window(win_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, config.width,
+                  config.height, config.flags);
 }
 
 Renderer Graphics::create_renderer(Window& window) {

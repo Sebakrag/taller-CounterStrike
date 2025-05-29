@@ -11,8 +11,6 @@ Map::Map(const MapInfo& mapInfo):
         tileSetTexture(TextureManager::getTexture(mapInfo.tileSetType)),
         width(mapInfo.width),
         height(mapInfo.height),
-        viewportW(SCREEN_WIDTH / TILE_SIZE),
-        viewportH(SCREEN_HEIGHT / TILE_SIZE),
         onMapRect(0, 0, TILE_SIZE, TILE_SIZE) {
     const int TILES_PER_ROW = (tileSetTexture->GetWidth() / TILE_SIZE);
 
@@ -34,16 +32,17 @@ Map::Map(const MapInfo& mapInfo):
     }
 }
 
-void Map::render(Graphics& graphics, const Vec2D& posLocalPlayer) {
-    int startX = static_cast<int>(posLocalPlayer.getX()) - (viewportW / 2);
-    int startY = static_cast<int>(posLocalPlayer.getY()) - (viewportH / 2);
+void Map::render(Graphics& graphics, const Camera& camera) {
+    const Rect view = camera.getViewport();
 
-    startX = std::max(0, std::min(startX, width - viewportW));
-    startY = std::max(0, std::min(startY, height - viewportH));
+    const int tilesInViewX = (view.GetW() / TILE_SIZE);
+    const int tilesInViewY = (view.GetH() / TILE_SIZE);
+    const int startX = view.GetX();
+    const int startY = view.GetY();
 
-    for (int y = 0; y < viewportH; ++y) {
+    for (int y = 0; y < tilesInViewY; ++y) {
         onMapRect.SetY(TILE_SIZE * y);
-        for (int x = 0; x < viewportW; ++x) {
+        for (int x = 0; x < tilesInViewX; ++x) {
             onMapRect.SetX(TILE_SIZE * x);
             const Rect& scrRect = srcTileMap[startY + y][startX + x];
 

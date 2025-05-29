@@ -9,6 +9,7 @@ target_sources(taller_client
         src/app-state/MainMenuAppState.cpp
         src/app-state/GameMatchAppState.cpp
         # model:
+        src/model/Camera.cpp
         src/model/Game.cpp
         src/model/Map.cpp
         src/model/Graphics.cpp
@@ -23,9 +24,7 @@ target_sources(taller_client
         src/model/utils/SpriteMetadaProvider.cpp
         src/model/utils/TextureManager.cpp
         src/model/utils/Vec2D.cpp
-        # dtos:
-        dtos/matchInfo.cpp
-        dtos/windowConfig.cpp
+
         PUBLIC
         # .h files
         client_constants.h
@@ -38,6 +37,7 @@ target_sources(taller_client
         include/app-state/MainMenuAppState.h
         include/app-state/GameMatchAppState.h
         # model:
+        include/model/Camera.h
         include/model/Game.h
         include/model/Graphics.h
         include/model/Map.h

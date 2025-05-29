@@ -4,7 +4,7 @@ Game::Game(const match_info_t& match_info, Client& client):
         client(client),
         match_name(match_info.name),
         graphics(match_info.win_config, match_name),
-        world(match_info.first_snap, match_info.map_info),
+        world(match_info.first_snap, match_info.map_info, match_info.win_config),
         eventHandler(client),
         is_running(true) {}
 
