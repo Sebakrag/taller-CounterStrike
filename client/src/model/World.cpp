@@ -35,6 +35,8 @@ void World::render(Graphics& graphics) {
         }
     });
 
+    // Renderizar el alpha blending (para simular el Field of View)
+
     // playerInventoryFrame.render(graphics); // Esto seria el frame que tiene la vida, la cant de
     // balas y la plata
 }
