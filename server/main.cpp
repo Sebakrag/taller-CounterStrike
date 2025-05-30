@@ -1,5 +1,8 @@
 
 #include <iostream>
+#include <string>
+#include <vector>
+
 #include "include/server.h"
 
 int main(const int argc, char* argv[]) {
@@ -13,6 +16,7 @@ int main(const int argc, char* argv[]) {
     try {
         Server server(port);
         server.run();
+
     } catch (const std::exception& e) {
         std::cerr << "Error starting the server: " << e.what() << std::endl;
         return 1;

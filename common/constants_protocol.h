@@ -35,6 +35,26 @@
 #define BYTE_STATE_PICKING_UP 0xE5
 #define BYTE_STATE_DEAD 0xE6
 
+// PlayerSkin { ... }
+#define BYTE_SKIN_TERRORIST_1 0x01
+#define BYTE_SKIN_TERRORIST_2 0x02
+#define BYTE_SKIN_TERRORIST_3 0x03
+#define BYTE_SKIN_TERRORIST_4 0x04
+#define BYTE_SKIN_COUNTERTERRORIST_1 0x05
+#define BYTE_SKIN_COUNTERTERRORIST_2 0x06
+#define BYTE_SKIN_COUNTERTERRORIST_3 0x07
+#define BYTE_SKIN_COUNTERTERRORIST_4 0x08
+
+
+// TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
+#define BYTE_ITEM_COIN 0x31
+#define BYTE_ITEM_GLOCK 0x32
+#define BYTE_ITEM_AK47 0x33
+#define BYTE_ITEM_M3 0x34
+#define BYTE_ITEM_AWP 0x35
+#define BYTE_ITEM_BOMB 0x36
+
+
 // Acciones del cliente:
 //--------------------------
 // MenuActions

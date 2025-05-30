@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -13,6 +14,7 @@
 
 #include "constants_protocol.h"
 #include "socket.h"
+#include "types.h"
 
 
 // constructor para el ClientProtocol
@@ -81,10 +83,37 @@ float Protocol_::recvFloatNormalized() {
     if (sign == 1) {
         value = value * (-1);
     }
-    std::cout << "Valor recibido: " << std::to_string(value) << std::endl;
+    //    std::cout << "Valor recibido: " << std::to_string(value) << std::endl;
 
     return value;
 }
+
+uint16_t Protocol_::getValueBigEndian16(uint8_t byte1, uint8_t byte2) {
+    uint16_t value;
+    uint8_t bytes[2] = {byte1, byte2};
+    std::memcpy(&value, bytes, sizeof(uint16_t));
+    value = ntohs(value);  // convierto de big endian al endianness local
+    return value;
+}
+float Protocol_::getFloatNormalized(uint8_t byte1, uint8_t byte2, uint8_t byte3) {
+    float value = 0;
+
+    uint16_t mantissa = getValueBigEndian16(byte2, byte3);
+
+    value = static_cast<float>(mantissa) / DECIMAL_SCALE;
+
+    if (byte1 == 1) {
+        value *= (-1);
+    }
+    return value;
+}
+// Codificadores
+uint8_t Protocol_::encodeBool(bool value) {
+    if (value)
+        return BYTE_TRUE;
+    return BYTE_FALSE;
+}
+
 
 uint8_t Protocol_::encodeTypeWeapon(const TypeWeapon& typeWeapon) {
     switch (typeWeapon) {
@@ -207,9 +236,58 @@ uint8_t Protocol_::encodePlayerState(const PlayerState& playerState) {
                     "Error. Estado del jugador desconocido. No se puede codificar");
     }
 }
-// Decodificadores.
-//------------------
 
+uint8_t Protocol_::encodePlayerSkin(const PlayerSkin& playerSkin) {
+    switch (playerSkin) {
+        case PlayerSkin::Terrorist1:
+            return BYTE_SKIN_TERRORIST_1;
+        case PlayerSkin::Terrorist2:
+            return BYTE_SKIN_TERRORIST_2;
+        case PlayerSkin::Terrorist3:
+            return BYTE_SKIN_TERRORIST_3;
+        case PlayerSkin::Terrorist4:
+            return BYTE_SKIN_TERRORIST_4;
+        case PlayerSkin::CounterTerrorist1:
+            return BYTE_SKIN_COUNTERTERRORIST_1;
+        case PlayerSkin::CounterTerrorist2:
+            return BYTE_SKIN_COUNTERTERRORIST_2;
+        case PlayerSkin::CounterTerrorist3:
+            return BYTE_SKIN_COUNTERTERRORIST_3;
+        case PlayerSkin::CounterTerrorist4:
+            return BYTE_SKIN_COUNTERTERRORIST_4;
+        default:
+            throw std::runtime_error("Error. Skin de jugador desconocida. No se puede codificar");
+    }
+}
+
+uint8_t Protocol_::encodeTypeItem(const TypeItem& typeItem) {
+    switch (typeItem) {
+        case TypeItem::Coin:
+            return BYTE_ITEM_COIN;
+        case TypeItem::Glock:
+            return BYTE_ITEM_GLOCK;
+        case TypeItem::Ak47:
+            return BYTE_ITEM_AK47;
+        case TypeItem::M3:
+            return BYTE_ITEM_M3;
+        case TypeItem::Awp:
+            return BYTE_ITEM_AWP;
+        case TypeItem::Bomb:
+            return BYTE_ITEM_BOMB;
+        default:
+            throw std::runtime_error("Error. Tipo de item desconocido. No se puede codificar");
+    }
+}
+// Decodificadores.
+//----------------------------------------------------------------------------------
+bool Protocol_::decodeBool(uint8_t byte) {
+    if (byte == BYTE_TRUE)
+        return true;
+    else if (byte == BYTE_FALSE)
+        return false;
+
+    throw std::runtime_error("Error. El byte no representa un booleano");
+}
 TypeWeapon Protocol_::decodeTypeWeapon(uint8_t byte) {
     switch (byte) {
         case BYTE_TYPE_PRIMARY:
@@ -328,8 +406,53 @@ PlayerState Protocol_::decodePlayerState(uint8_t byte) {
         case BYTE_STATE_DEAD:
             return PlayerState::Dead;
         default:
+            std::cout << "Byte desconocido: 0x" << std::hex << static_cast<int>(byte) << std::dec
+                      << std::endl;
             throw std::runtime_error(
                     "Error. Estado del jugador desconocido. No se puede decodificar");
     }
 }
+
+PlayerSkin Protocol_::decodePlayerSkin(uint8_t byte) {
+    switch (byte) {
+        case BYTE_SKIN_TERRORIST_1:
+            return PlayerSkin::Terrorist1;
+        case BYTE_SKIN_TERRORIST_2:
+            return PlayerSkin::Terrorist2;
+        case BYTE_SKIN_TERRORIST_3:
+            return PlayerSkin::Terrorist3;
+        case BYTE_SKIN_TERRORIST_4:
+            return PlayerSkin::Terrorist4;
+        case BYTE_SKIN_COUNTERTERRORIST_1:
+            return PlayerSkin::CounterTerrorist1;
+        case BYTE_SKIN_COUNTERTERRORIST_2:
+            return PlayerSkin::CounterTerrorist2;
+        case BYTE_SKIN_COUNTERTERRORIST_3:
+            return PlayerSkin::CounterTerrorist3;
+        case BYTE_SKIN_COUNTERTERRORIST_4:
+            return PlayerSkin::CounterTerrorist4;
+        default:
+            throw std::runtime_error("Error. Skin de jugador desconocida. No se puede decodificar");
+    }
+}
+
+TypeItem Protocol_::decodeTypeItem(uint8_t byte) {
+    switch (byte) {
+        case BYTE_ITEM_COIN:
+            return TypeItem::Coin;
+        case BYTE_ITEM_GLOCK:
+            return TypeItem::Glock;
+        case BYTE_ITEM_AK47:
+            return TypeItem::Ak47;
+        case BYTE_ITEM_M3:
+            return TypeItem::M3;
+        case BYTE_ITEM_AWP:
+            return TypeItem::Awp;
+        case BYTE_ITEM_BOMB:
+            return TypeItem::Bomb;
+        default:
+            throw std::runtime_error("Error. Tipo de item desconocido. No se puede decodificar");
+    }
+}
+
 void Protocol_::shutDown(int how) { socket.shutdown(how); }

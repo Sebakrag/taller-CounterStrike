@@ -25,13 +25,16 @@ struct PlayerInfo {
     PlayerInfo(const std::string& username, Team team, PlayerSkin skin, int pos_x, int pos_y,
                const Vector2& direction, TypeWeapon weapon, int health, int money, int ammo);
 
-private:
+    // private:
+    explicit PlayerInfo(const std::vector<uint8_t>& bytes);
+
     /**
      * primeros 2 bytes (en big endian) para el length del nombre.
      * <username>
      * <uint8_t Team>
      * <uint8_t PlayerSkin>
      * <uint8_t PlayerState>
+     *
      * <uint16_t pos_x>
      * <uint16_t pos_y>
      * <float direction.x>
@@ -41,7 +44,7 @@ private:
      * <uint16_t money>
      * <uint16_t ammo_weapon>
      */
-    std::vector<uint8_t> toBytes();
+    std::vector<uint8_t> toBytes() const;
 };
 
 #endif  // PLAYER_INFO_H_

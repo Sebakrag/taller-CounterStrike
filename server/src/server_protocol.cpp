@@ -63,6 +63,7 @@ void ServerProtocol::sendGameInfo(const GameInfo& gameInfo) {
     std::vector<uint8_t> buffer;
     buffer.push_back(BYTE_GAME_INFO);
     std::vector<uint8_t> gameInfoBytes = gameInfo.toBytes();
+    Protocol_::insertBigEndian16(gameInfoBytes.size(), buffer);
     buffer.insert(buffer.end(), gameInfoBytes.begin(), gameInfoBytes.end());
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }

@@ -20,22 +20,6 @@ protected:
     // constructor para el ServerProtocol
     explicit Protocol_(Socket&& socketClient);
 
-    /**
-     * Inserta un numero de 2 bytes en formato big-endian dentro del array.
-     */
-    void insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array);
-
-    // Inserta cada caracter del string (1 byte por caracter) en el array
-    void insertStringBytes(const std::string& string, std::vector<uint8_t>& array);
-
-    /**
-     * Inserta un numero float entre -1 y 1 utilizando 3 bytes.
-     * 1 byte para el signo. (0=positivo, 1=negativo).
-     * 2 bytes para el numero, tomando las primeras cinco cifras
-     * (uno de parte entera y cuatro de la parte decimal)
-     */
-    void insertFloatNormalized3Bytes(float value, std::vector<uint8_t>& array);
-
     // recibe 2 bytes (que representan un numero entero) por el socket, casteando al endianness
     // local
     uint16_t recvBigEndian16();
@@ -44,7 +28,27 @@ protected:
     float recvFloatNormalized();
 
 public:
+    /**
+     * Inserta un numero de 2 bytes en formato big-endian dentro del array.
+     */
+    static void insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array);
+
+    // Inserta cada caracter del string (1 byte por caracter) en el array
+    static void insertStringBytes(const std::string& string, std::vector<uint8_t>& array);
+
+    /**
+     * Inserta un numero float entre -1 y 1 utilizando 3 bytes.
+     * 1 byte para el signo. (0=positivo, 1=negativo).
+     * 2 bytes para el numero, tomando las primeras cinco cifras
+     * (uno de parte entera y cuatro de la parte decimal)
+     */
+    static void insertFloatNormalized3Bytes(float value, std::vector<uint8_t>& array);
+
+    static uint16_t getValueBigEndian16(uint8_t byte1, uint8_t byte2);
+    static float getFloatNormalized(uint8_t byte1, uint8_t byte2, uint8_t byte3);
+
     // Codificadores. Devuelven el byte correspondiente al valor del enum.
+    static uint8_t encodeBool(bool value);
     static uint8_t encodeTypeWeapon(const TypeWeapon& typeWeapon);
     static uint8_t encodeWeapon(const Weapon& weapon);
     static uint8_t encodeMenuActionType(const MenuActionType& gameActionType);
@@ -53,8 +57,11 @@ public:
     static uint8_t encodeTeam(const Team&);
     static uint8_t encodeGamePhase(const GamePhase& gamePhase);
     static uint8_t encodePlayerState(const PlayerState& playerState);
+    static uint8_t encodePlayerSkin(const PlayerSkin& playerSkin);
+    static uint8_t encodeTypeItem(const TypeItem&);
 
     // Decodificadores. Devuelven el valor del enum correspondiente al byte.
+    static bool decodeBool(uint8_t byte);
     static TypeWeapon decodeTypeWeapon(uint8_t byte);
     static Weapon decodeWeapon(uint8_t byte);
     static MenuActionType decodeMenuActionType(uint8_t byte);
@@ -63,6 +70,8 @@ public:
     static Team decodeTeam(uint8_t);
     static GamePhase decodeGamePhase(uint8_t byte);
     static PlayerState decodePlayerState(uint8_t byte);
+    static PlayerSkin decodePlayerSkin(uint8_t byte);
+    static TypeItem decodeTypeItem(uint8_t byte);
 
     void shutDown(int how);
 };

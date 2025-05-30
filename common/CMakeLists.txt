@@ -12,6 +12,9 @@ target_sources(taller_common
 
         game_info/player_info.cpp
         game_info/game_info.cpp
+        game_info/bullet_info.cpp
+        game_info/item_info.cpp
+
     PUBLIC
     # .h files
         socket.h
@@ -28,4 +31,6 @@ target_sources(taller_common
 
         game_info/player_info.h
         game_info/game_info.h
+        game_info/bullet_info.h
+        game_info/item_info.h
     )

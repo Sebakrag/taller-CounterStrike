@@ -160,13 +160,13 @@ GameInfo ClientProtocol::recvGameInfo() {
     uint8_t byte = 0;
     socket.recvall(&byte, sizeof(uint8_t));
     if (byte == BYTE_GAME_INFO) {
-        socket.recvall(&byte, sizeof(uint8_t));
-        GamePhase phase = decodeGamePhase(byte);
-        // El buffer no va a tener tamaño fijo.
-        //  usar recvsme()
+        int size = recvBigEndian16();
 
-        // YOUR CODE
-        return GameInfo(phase, 1, std::vector<PlayerInfo>());
+        std::vector<uint8_t> buffer(size);
+        socket.recvall(buffer.data(), sizeof(uint8_t) * size);
+        GameInfo gameInfo(buffer);
+
+        return gameInfo;
     } else {
         throw std::runtime_error("Error. Byte incorrecto");
     }

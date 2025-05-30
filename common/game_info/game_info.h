@@ -7,20 +7,12 @@
 
 #include "../types.h"
 
+#include "bullet_info.h"
+#include "item_info.h"
 #include "player_info.h"
 
 // Acá están todos los datos que va a recibir la interfaz grafica
 // en cada frame. Son los que enviará el gameloop del server en cada iteración.
-
-struct BulletInfo {
-    int pos_x;
-    int pos_y;
-    Vector2 direction;
-};
-struct ItemsInfo {  // drops (objetos recolectables)
-    int pos_x;
-    int pos_y;
-};
 
 class GameInfo {
 public:
@@ -32,7 +24,7 @@ public:
 
     std::vector<PlayerInfo> players;
     std::vector<BulletInfo> bullets;
-    std::vector<ItemsInfo> items;
+    std::vector<ItemInfo> items;
 
     GameInfo();
 
@@ -40,15 +32,16 @@ public:
 
     explicit GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, double timeLeft,
                       const std::vector<PlayerInfo>& players,
-                      const std::vector<BulletInfo>& bullets, const std::vector<ItemsInfo>& items);
+                      const std::vector<BulletInfo>& bullets, const std::vector<ItemInfo>& items);
 
-    // Constructor de copia
     GameInfo(const GameInfo& other);
-
-    // Operador de asignación
     GameInfo& operator=(const GameInfo& other);
 
+    explicit GameInfo(const std::vector<uint8_t>& bytes);
+
     std::vector<uint8_t> toBytes() const;
+
+    void print();
 };
 
 #endif  // GAME_INFO_H_

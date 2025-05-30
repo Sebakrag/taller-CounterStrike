@@ -11,7 +11,18 @@ enum class GamePhase { Preparation, Combat, EndOfMatch };
 
 enum class PlayerState { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
 
-enum class PlayerSkin { A, B, C, D, E, F, G, H };
+enum class PlayerSkin {
+    Terrorist1,
+    Terrorist2,
+    Terrorist3,
+    Terrorist4,
+    CounterTerrorist1,
+    CounterTerrorist2,
+    CounterTerrorist3,
+    CounterTerrorist4
+};
+
+enum class TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
 
 struct Vector2 {
     float x;
