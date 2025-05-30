@@ -23,6 +23,10 @@ void RenderComponent::render(Graphics& graphics, const SpriteComponent& sprComp,
     // Calculamos la posición de la entidad relativa a la cámara
     Vec2D screenPos = enttMapPos - camera.getOffset();
 
+    // Corregimos el posicionamiento para centrar el sprite
+    screenPos.setX(screenPos.getX() - static_cast<float>(width) / 2.0f);
+    screenPos.setY(screenPos.getY() - static_cast<float>(height) / 2.0f);
+
     Rect destRect(static_cast<int>(screenPos.getX()), static_cast<int>(screenPos.getY()), width,
                   height);
 
