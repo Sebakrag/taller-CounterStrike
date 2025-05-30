@@ -21,7 +21,7 @@ GameMatchAppState::GameMatchAppState() {}
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         constexpr int SERVER_ENTITY_ID = 1;
-        constexpr float pos_x = 500, pos_y = 500, angle = 0, money = 500;
+        constexpr float pos_x = 31000, pos_y = 31000, angle = 0, money = 500;
         constexpr int hp = 100;  // health
         constexpr auto sprite_type = SpriteType::GERMAN_GSG_9;
         constexpr auto entt_type = EntityType::ANTI_TERRORIST;
