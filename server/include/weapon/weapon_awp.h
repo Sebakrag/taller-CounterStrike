@@ -3,7 +3,7 @@
 
 #include "fire_weapon.h"
 
-class WeaponAwp : public FireWeapon {
+class WeaponAwp: public FireWeapon {
 public:
     WeaponAwp();
 };

@@ -1,13 +1,22 @@
 #include <exception>
 #include <iostream>
-#include <string>
 
-#include "include/client.h"
+#include "common/constants.h"
+#include "include/app-state/AppStateController.h"
 
+int main() {
+    try {
+        AppStateController app_sc;
+        app_sc.update();
 
-// using namespace SDL2pp;
-
-
+        std::cout << "AppStateController finish his job" << std::endl;
+        return SUCCESS;
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return ERROR;
+    }
+}
+/*
 // ejemplo para correr: ./client localhost 8080 usuario1
 int main(int argc, const char* argv[]) try {
     if (argc != 4) {
@@ -22,9 +31,5 @@ int main(int argc, const char* argv[]) try {
     //auto& queueActions = client.getSendeQueue();
     //queueActions.push(GameAction(GameActionType::BuyWeapon, Weapon::Ak47));
     client.mainLoop();
-
-} catch (std::exception& e) {
-    // If case of error, print it and exit with error
-    std::cerr << e.what() << std::endl;
-    return 1;
 }
+ **/

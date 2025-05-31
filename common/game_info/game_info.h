@@ -22,6 +22,8 @@ public:
     int bombY;
     double timeLeft;
 
+    // Podriamos reemplazar estos 3 vectores por un unico vector de la sig forma:
+    // std::vector<EntitySnapshot> entities;
     std::vector<PlayerInfo> players;
     std::vector<BulletInfo> bullets;
     std::vector<ItemInfo> items;

@@ -3,7 +3,7 @@
 
 #include "fire_weapon.h"
 
-class WeaponGlock : public FireWeapon {
+class WeaponGlock: public FireWeapon {
 public:
     WeaponGlock();
 };

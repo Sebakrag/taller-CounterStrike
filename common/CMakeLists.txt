@@ -15,6 +15,8 @@ target_sources(taller_common
         game_info/bullet_info.cpp
         game_info/item_info.cpp
 
+        utils/Vec2D.cpp
+
     PUBLIC
     # .h files
         socket.h
@@ -33,4 +35,10 @@ target_sources(taller_common
         game_info/game_info.h
         game_info/bullet_info.h
         game_info/item_info.h
+
+        utils/Vec2D.h
+        dtos/EntitySnapshot.h
+        dtos/MapInfo.h
+        dtos/MatchInfo.h
+        dtos/WindowConfig.h
     )
