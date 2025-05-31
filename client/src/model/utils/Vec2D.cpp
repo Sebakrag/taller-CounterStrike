@@ -1,5 +1,7 @@
 #include "client/include/model/utils/Vec2D.h"
 
+#include <cmath>
+#include <numbers>
 
 Vec2D::Vec2D(): x(0.0f), y(0.0f) {}
 
@@ -49,6 +51,24 @@ Vec2D Vec2D::operator*(const Vec2D& other) const { return {this->x * other.x, th
 
 Vec2D Vec2D::operator/(const Vec2D& other) const { return {this->x / other.x, this->y / other.y}; }
 
+Vec2D& Vec2D::normalize() {
+    float len = std::sqrt((this->x * this->x) + (this->y * this->y));
+    if (len != 0) {
+        this->x /= len;
+        this->y /= len;
+    }
+
+    return *this;
+}
+
+float Vec2D::calculateAngle() const {
+    float angle = std::atan2(this->y, this->x);  // En radianes
+    float degrees = angle * (180.0f / std::numbers::pi);
+    if (degrees < 0) {
+        degrees += 360.0f;
+    }
+    return degrees;
+}
 
 void Vec2D::set(const float x, const float y) {
     setX(x);

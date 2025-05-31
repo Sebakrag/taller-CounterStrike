@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+#include "dtos/AimInfo.h"
 #include "dtos/EntitySnapshot.h"
 #include "include/model/utils/Vec2D.h"
 
@@ -13,6 +14,7 @@ private:
     EntitySnapshot snap;
     float x;  // borrarlo una vez que tengamos la conexion con el server.
     float y;
+    float angle;
 
 public:
     explicit Client(const EntitySnapshot&
@@ -20,6 +22,8 @@ public:
 
     std::vector<EntitySnapshot> getGameSnapshot() const;
     void move(const Vec2D& direction);
+    void shoot(const AimInfo& aimInfo);
+    void rotate(const float angle);
 };
 
 

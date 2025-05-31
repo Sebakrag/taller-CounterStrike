@@ -5,7 +5,7 @@ Game::Game(const MatchInfo& match_info, Client& client):
         match_name(match_info.name),
         graphics(match_info.win_config, match_name),
         world(match_info.first_snap, match_info.map_info, match_info.win_config),
-        eventHandler(client),
+        eventHandler(client, world),
         is_running(true) {}
 
 void Game::update(float dt) { world.update(dt, client.getGameSnapshot()); }

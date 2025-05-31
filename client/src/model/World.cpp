@@ -40,3 +40,18 @@ void World::render(Graphics& graphics) {
     // playerInventoryFrame.render(graphics); // Esto seria el frame que tiene la vida, la cant de
     // balas y la plata
 }
+
+AimInfo World::getPlayerAimInfo(int mouseX, int mouseY) {
+    Vec2D mouseWorldPos(mouseX, mouseY);
+    // le sumo el offset de la camara para obtener las coordenadas del mouse
+    // relativas al mundo (o al mapa) en vez de las relativas a la pantalla.
+    mouseWorldPos += camera.getOffset();
+
+    const auto posLocalPlayer = comp_mgr.getComponent<PositionComponent>(local_player);
+
+    Vec2D aimDir = mouseWorldPos - posLocalPlayer->getPosition();
+    aimDir.normalize();
+    const float angle = aimDir.calculateAngle();
+
+    return {aimDir, angle};
+}

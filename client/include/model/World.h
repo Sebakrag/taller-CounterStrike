@@ -6,6 +6,7 @@
 #include "EC/ComponentManager.h"
 #include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
+#include "client/dtos/AimInfo.h"
 #include "client/dtos/EntitySnapshot.h"
 #include "client/dtos/MapInfo.h"
 #include "client/dtos/WindowConfig.h"
@@ -36,6 +37,7 @@ public:
 
     void update(float dt, const std::vector<EntitySnapshot>& snapshots);
     void render(Graphics& graphics);
+    AimInfo getPlayerAimInfo(int mouseX, int mouseY);
 };
 
 #endif  // WORLD_H

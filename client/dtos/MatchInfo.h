@@ -8,7 +8,6 @@
 #include "WindowConfig.h"
 
 struct MatchInfo {
-public:
     const std::string name;
     const EntitySnapshot first_snap;  // Representa el snapshot inicial del local_player
     const WindowConfig win_config;

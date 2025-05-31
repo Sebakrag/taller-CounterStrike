@@ -2,6 +2,7 @@
 #define EVENTHANDLER_H
 
 #include "client/Client.h"
+#include "client/include/model/World.h"
 
 class EventHandler {
 private:
@@ -12,11 +13,12 @@ private:
     // para que la vision del jugador se informe a todos los jugadores al mismo tiempo (inclusive
     // para el jugador local). Es decir, es una forma de sincronizar la vision entre todos los
     // jugadores en cada frame.
+    World& world;
     void handleKeyboardEvents(bool& gameIsRunning) const;
-    // void handleMouseEvents();
+    void handleMouseEvents(bool gameIsRunning) const;
 
 public:
-    explicit EventHandler(Client& client);
+    EventHandler(Client& client, World& world);
 
     void handleEvents(bool& gameIsRunning) const;
 };

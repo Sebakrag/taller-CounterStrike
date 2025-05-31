@@ -27,6 +27,13 @@ public:
     Vec2D operator*(const Vec2D& other) const;
     Vec2D operator/(const Vec2D& other) const;
 
+    Vec2D& normalize();
+    ///
+    /// @brief calculates the angle (in degrees) relative to the reference system
+    /// commonly used in graphics.
+    ///
+    float calculateAngle() const;
+
     void set(float x, float y);
     void setX(float x);
     void setY(float y);

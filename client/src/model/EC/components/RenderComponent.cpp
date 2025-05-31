@@ -30,7 +30,7 @@ void RenderComponent::render(Graphics& graphics, const SpriteComponent& sprComp,
     Rect destRect(static_cast<int>(screenPos.getX()), static_cast<int>(screenPos.getY()), width,
                   height);
 
-    const double rotAngle = 0.0;  // TODO: reemplazar por rotación del TransformComponent
+    const double rotAngle = 45.0;  // TODO: reemplazar por rotación del TransformComponent
 
     graphics.draw(*sprComp.getTexture(), Optional<Rect>(sprComp.getSpriteRect()),
                   Optional<Rect>(destRect), rotAngle);

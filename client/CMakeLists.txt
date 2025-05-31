@@ -57,6 +57,7 @@ target_sources(taller_client
         include/model/utils/TextureManager.h
         include/model/utils/Vec2D.h
         # dtos:
+        dtos/AimInfo.h
         dtos/EntitySnapshot.h
         dtos/MapInfo.h
         dtos/MatchInfo.h
