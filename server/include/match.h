@@ -9,6 +9,7 @@
 //#include "game_info.h"
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
+#include "physics_engine.h"
 
 class Match {
 private:
@@ -31,9 +32,9 @@ public:
     void addPlayer(Player&& player);
     bool addPlayer(const std::string& playerName);
     void removePlayer(const std::string& playerName);
-    bool movePlayer(const std::string& playerName, const int dx, const int dy);
+    bool movePlayer(const std::string& playerName, const float dx, const float dy, float deltaTime);
     Player* getPlayer(const std::string& playerName);
-    void processAction(const PlayerAction& action);
+    void processAction(const PlayerAction& action, const float deltaTime);
     void updateState(double elapsedTime);
     void processPlant(const std::string& playerName);
     void processDefuse(const std::string& playerName);
