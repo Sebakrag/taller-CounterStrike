@@ -4,8 +4,8 @@ using SDL2pp::Optional;
 using SDL2pp::Rect;
 
 void RenderComponent::render(Graphics& graphics, const SpriteComponent& sprComp,
-                             const PositionComponent& posComp, const Camera& camera) {
-    const Vec2D& enttMapPos = posComp.getPosition();  // Posición absoluta en el mapa.
+                             const TransformComponent& transComp, const Camera& camera) {
+    const Vec2D& enttMapPos = transComp.getPosition();  // Posición absoluta en el mapa.
 
     const int width = sprComp.getWidth();
     const int height = sprComp.getHeight();
@@ -30,7 +30,7 @@ void RenderComponent::render(Graphics& graphics, const SpriteComponent& sprComp,
     Rect destRect(static_cast<int>(screenPos.getX()), static_cast<int>(screenPos.getY()), width,
                   height);
 
-    const double rotAngle = 45.0;  // TODO: reemplazar por rotación del TransformComponent
+    const double rotAngle = static_cast<double>(transComp.getRotationAngle());
 
     graphics.draw(*sprComp.getTexture(), Optional<Rect>(sprComp.getSpriteRect()),
                   Optional<Rect>(destRect), rotAngle);

@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "client/include/model/EC/components/PositionComponent.h"
 #include "client/include/model/EC/components/RenderComponent.h"
+#include "client/include/model/EC/components/TransformComponent.h"
 
 World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
              const WindowConfig& winConfig):
@@ -19,19 +19,19 @@ void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
 }
 
 void World::render(Graphics& graphics) {
-    const auto posLocalPlayer = comp_mgr.getComponent<PositionComponent>(local_player);
-    std::cout << posLocalPlayer->getPosition() << std::endl;
-    camera.follow(posLocalPlayer->getPosition());
+    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
+    std::cout << tCompLocalPlayer->getPosition() << std::endl;
+    camera.follow(tCompLocalPlayer->getPosition());
 
     map.render(graphics, camera);
 
     // se renderizan los personajes, las armas y los objetos en si:
     comp_mgr.forEach<RenderComponent>([&](RenderComponent& renderComp, const Entity e) {
         const auto sprite = comp_mgr.getComponent<SpriteComponent>(e);
-        const auto pos = comp_mgr.getComponent<PositionComponent>(e);
+        const auto transform = comp_mgr.getComponent<TransformComponent>(e);
 
-        if (sprite && pos) {
-            renderComp.render(graphics, *sprite, *pos, camera);
+        if (sprite && transform) {
+            renderComp.render(graphics, *sprite, *transform, camera);
         }
     });
 
@@ -47,11 +47,11 @@ AimInfo World::getPlayerAimInfo(int mouseX, int mouseY) {
     // relativas al mundo (o al mapa) en vez de las relativas a la pantalla.
     mouseWorldPos += camera.getOffset();
 
-    const auto posLocalPlayer = comp_mgr.getComponent<PositionComponent>(local_player);
+    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
 
-    Vec2D aimDir = mouseWorldPos - posLocalPlayer->getPosition();
+    Vec2D aimDir = mouseWorldPos - tCompLocalPlayer->getPosition();
     aimDir.normalize();
-    const float angle = aimDir.calculateAngle();
+    const float angle = aimDir.calculateAngle(-90.0f);
 
     return {aimDir, angle};
 }

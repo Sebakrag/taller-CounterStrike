@@ -1,7 +1,7 @@
 #include "client/include/model/EC/ComponentUpdater.h"
 
-#include "client/include/model/EC/components/PositionComponent.h"
 #include "client/include/model/EC/components/SpriteComponent.h"
+#include "client/include/model/EC/components/TransformComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
@@ -44,8 +44,8 @@ void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots
 void ComponentUpdater::applySnapshotData() {
     // here I must use the old_entities container.
     for (const auto& [e, snap]: old_entities) {
-        if (const auto pos = comp_mgr.getComponent<PositionComponent>(e)) {
-            pos->init(snap.pos_x, snap.pos_y);
+        if (const auto transform = comp_mgr.getComponent<TransformComponent>(e)) {
+            transform->init(snap.pos_x, snap.pos_y, snap.angle);
         }
         // Quizas que esta actualizacion del spritesheet esta demas. Si tengo que cambiar el
         // spritesheet deberia hacerlo cuando se que la entidad muere, o cuando sucede algo
@@ -61,8 +61,8 @@ void ComponentUpdater::updateComponents() {
     // Here I can just use the old_entities vector (because all the new entities are already
     // updated, since they were just created).
     for (const auto& [e, snap]: old_entities) {
-        if (const auto pos = comp_mgr.getComponent<PositionComponent>(e)) {
-            pos->update(snap.pos_x, snap.pos_y);
+        if (const auto transform = comp_mgr.getComponent<TransformComponent>(e)) {
+            transform->update(snap.pos_x, snap.pos_y, snap.angle);
         }
 
         // Deberia crear un AnimationComponent para actualizar el sprite de forma correcta.

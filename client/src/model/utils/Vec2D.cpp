@@ -61,9 +61,10 @@ Vec2D& Vec2D::normalize() {
     return *this;
 }
 
-float Vec2D::calculateAngle() const {
+float Vec2D::calculateAngle(const float correctionDegrees) const {
     float angle = std::atan2(this->y, this->x);  // En radianes
     float degrees = angle * (180.0f / std::numbers::pi);
+    degrees -= correctionDegrees;
     if (degrees < 0) {
         degrees += 360.0f;
     }
