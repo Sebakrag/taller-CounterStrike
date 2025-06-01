@@ -11,9 +11,10 @@ class Player {
 private:
     std::string name;  // id
     Team team;
-    int posX, posY;
+    float posX, posY;
     int health;
     PlayerState state;
+    float speed = 5.0f;
 
     WeaponKnife knife;
     FireWeapon* primaryWeapon;
@@ -26,17 +27,20 @@ private:
 public:
     explicit Player(const std::string& name, const Team playerTeam);
 
-    void setPosition(const int x, const int y);
     void receiveDamage(const int dmg);
     void setPrimaryWeapon(FireWeapon* weapon);
     void setEquippedWeapon(TypeWeapon type);
-    int attack(int targetX, int targetY);
+    int attack(float targetX, float targetY);
 
-    int getX() const;
-    int getY() const;
+    float getX() const;
+    void setX(const float x);
+    float getY() const;
+    void setY(const float y);
     std::string getId() const;
     Team getTeam() const;
     int getHealth() const;
+    float getMoney() const;
+    float getSpeed() const;
     TypeWeapon getEquippedWeapon() const;
     FireWeapon* getPrimaryWeapon() const;
     FireWeapon* getSecondaryWeapon() const;

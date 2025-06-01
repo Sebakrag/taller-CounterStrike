@@ -9,7 +9,19 @@ Match::Match(): phase(GamePhase::Preparation), roundsPlayed(0) {}
 void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
 bool Match::addPlayer(const std::string& username) {
-    Player newPlayer(username, Team::Terrorist);
+    int terroristCount = 0;
+    int counterTerroristCount = 0;
+
+    for (const auto& p : players) {
+        if (p.getTeam() == Team::Terrorist)
+            terroristCount++;
+        else if (p.getTeam() == Team::CounterTerrorist)
+            counterTerroristCount++;
+    }
+
+    Team assignedTeam = (terroristCount <= counterTerroristCount) ? Team::Terrorist : Team::CounterTerrorist;
+
+    Player newPlayer(username, assignedTeam);
     players.push_back(std::move(newPlayer));
     return true;
 }
@@ -34,22 +46,19 @@ Player* Match::getPlayer(const std::string& playerName) {
     return nullptr;
 }
 
-bool Match::movePlayer(const std::string& playerId, const int dx, const int dy) {
-    Player* p = getPlayer(playerId);
+bool Match::movePlayer(const std::string& playerName, const float dx, const float dy, float deltaTime) {
+    Player* p = getPlayer(playerName);
     if (!p || !p->isAlive())
         return false;
 
-    const int newX = p->getX() + dx;
-    const int newY = p->getY() + dy;
-
-    if (map.isWalkable(newX, newY)) {
-        p->setPosition(newX, newY);
+    try {
+        PhysicsEngine::movePlayer(*p, dx, dy, deltaTime, map);
         return true;
+    } catch (...) {
+        return false;
     }
-
-    return false;
 }
-void Match::processAction(const PlayerAction& action) {
+void Match::processAction(const PlayerAction& action, const float deltaTime) {
     Player* player = getPlayer(action.player_username);
     if (!player || !player->isAlive())
         return;
@@ -57,9 +66,9 @@ void Match::processAction(const PlayerAction& action) {
     GameAction gameAction = action.gameAction;
     switch (gameAction.type) {
         case GameActionType::Walk: {
-            const int dx = gameAction.direction.getX();
-            const int dy = gameAction.direction.getY();
-            movePlayer(action.player_username, dx, dy);
+            const float dx = gameAction.direction.getX();
+            const float dy = gameAction.direction.getY();
+            movePlayer(action.player_username, dx, dy, deltaTime);
             break;
         }
         case GameActionType::ChangeWeapon: {
@@ -167,11 +176,11 @@ void Match::checkRoundEnd() {
         roundOver = true;
         roundWinner = Team::Terrorist;
         std::cout << "Todos los antiterroristas murieron. Ganan los terroristas. \n";
-    } else if (roundTimer <= 0 && !bombPlanted) {
+    } /*else if (roundTimer <= 0 && !bombPlanted) {
         roundOver = true;
         roundWinner = Team::CounterTerrorist;
         std::cout << "Se acabó el tiempo sin bomba. Ganan los antiterroristas. \n";
-    }
+    }*/
 }
 /*
 GameInfo Match::generateGameInfo(const std::string& playerName) const {
@@ -202,6 +211,23 @@ GameInfo Match::generateGameInfo(const std::string& playerName) const {
 */
 GameInfo Match::generateGameInfo() const {
     std::vector<PlayerInfo> playersInfo;
+
+    for (const auto& p : players) {
+        PlayerInfo info(
+            p.getId(),
+            p.getTeam(),
+            PlayerSkin::CounterTerrorist1,
+            p.getX(),
+            p.getY(),
+            Vector2(0,1),
+            p.getEquippedWeapon(),
+            p.getHealth(),
+            static_cast<int>(p.getMoney()),
+            p.getPrimaryWeapon() ? p.getPrimaryWeapon()->getBullets() : 0
+        );
+        playersInfo.push_back(info);
+    }
+
     GameInfo gameInfo(this->phase, roundTimer, playersInfo);
     return gameInfo;
 }
