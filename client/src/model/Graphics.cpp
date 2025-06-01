@@ -25,7 +25,7 @@ Window Graphics::create_window(const WindowConfig& config, const std::string& ma
 
 Renderer Graphics::create_renderer(Window& window) {
     Renderer ren(window, -1, SDL_RENDERER_ACCELERATED);
-    ren.SetDrawColor(255, 255, 255, 255);
+    ren.SetDrawColor(0, 0, 0, 255);
     return ren;
 }
 
