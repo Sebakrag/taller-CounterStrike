@@ -9,7 +9,7 @@ private:
     int width, height;
 
 public:
-    explicit Map();
+    Map();
     bool isWalkable(const int x, const int y) const;
     bool isBombSite(int x, int y) const;
     void show() const;

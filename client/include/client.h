@@ -2,9 +2,12 @@
 #define CLIENT_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "../../common/queue.h"
+#include "client/dtos/AimInfo.h"
+#include "common/dtos/EntitySnapshot.h"
+#include "common/queue.h"
 
 #include "client_protocol.h"
 #include "client_receiver.h"
@@ -15,39 +18,53 @@ enum Status { Disconnected, InMenu, InLobby, InGame };
 // Clase para probar la conexion. Determinar despues si sirve o no
 class Client {
 private:
-    ClientProtocol protocol;
-    Status status;
-    std::string match_name;
-    bool player_creator = false;
-    Queue<GameAction> send_queue;
-    Queue<GameInfo> recv_queue;
-    ClientSender sender;
-    ClientReceiver receiver;
+    // ClientProtocol protocol;
+    // Status status;
+    // std::string match_name;
+    // bool player_creator = false;
+    // Queue<GameAction> send_queue;
+    // Queue<GameInfo> recv_queue;
+    // ClientSender sender;
+    // ClientReceiver receiver;
+
+    // Borrar esto una vez tengamos conexion con el servidor (sirve para probar el renderizado).
+    EntitySnapshot snap;
+    float x;
+    float y;
+    float angle;
 
 public:
-    Client(const std::string& ip, const std::string& port, const std::string& user_name);
+    explicit Client(const EntitySnapshot& snap);  // TODO: eliminar esto.
+    // Client(const std::string& ip, const std::string& port, const std::string& user_name);
 
-    // estos loop NO IRÍAN ACÁ.
-    void mainLoop();
-    void menuLoop();
-    void lobbyLoop();
+    // // estos loop NO IRÍAN ACÁ.
+    // void mainLoop();
+    // void menuLoop();
+    // void lobbyLoop();
+    //
+    // // Acciones en el menu principal
+    // void ExitGame();
+    // void CreateMatch(const std::string& match_name);
+    // void JoinMatch(const std::string& match_name);
+    // void refreshMatchList();
+    //
+    // // Acciones en el lobby (antes de empezar la partida) -> No deberian ser privadas?
+    // void LeaveMatch();  // regresa la menú principal
+    // void StartMatch();
+    // void refreshMatchRoom();
 
-    // Acciones en el menu principal
-    void ExitGame();
-    void CreateMatch(const std::string& match_name);
-    void JoinMatch(const std::string& match_name);
-    void refreshMatchList();
-
-    // Acciones en el lobby (antes de empezar la partida)
-    void LeaveMatch();  // regresa la menú principal
-    void StartMatch();
-    void refreshMatchRoom();
+    // GameInfo getGameInfo() const;  // Este es el verdadero metodo.
+    // TODO: implementar GameInfo getGameInfo() const; y eliminar el siguiente:
+    std::vector<EntitySnapshot> getGameInfo() const;
+    void move(const Vec2D& direction);
+    void shoot(const AimInfo& aimInfo);
+    void rotate(const float angle);
 
     ~Client();
 
-    Status getStatus();
-    Queue<GameAction>& getSendeQueue();
-    Queue<GameInfo>& getReceiverQueue();
+    // Status getStatus();
+    // Queue<GameAction>& getSenderQueue();
+    // Queue<GameInfo>& getReceiverQueue();
 };
 
 #endif  // CLIENT_H_

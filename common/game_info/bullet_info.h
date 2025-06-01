@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "../protocol.h"
-#include "../types.h"
+#include "common/protocol.h"
+#include "common/types.h"
 
 #define SIZE_BULLET_INFO 13
 
@@ -14,10 +14,10 @@ struct BulletInfo {
     Weapon weapon;  // para diferenciar tipo de bala
     int pos_x;
     int pos_y;
-    Vector2 direction;
+    Vec2D direction;
 
     BulletInfo() = default;
-    BulletInfo(int id, Weapon weapon, int pos_x, int pos_y, Vector2 direction);
+    BulletInfo(int id, Weapon weapon, int pos_x, int pos_y, const Vec2D& direction);
     BulletInfo(const BulletInfo& other);
 
     BulletInfo& operator=(const BulletInfo& other);

@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "utils/Vec2D.h"
+
 enum class Weapon { None, Glock, Ak47, M3, Awp };
 enum class TypeWeapon { Primary, Secondary, Knife, Bomb };
 enum class Team { Terrorist, CounterTerrorist };
@@ -24,23 +26,12 @@ enum class PlayerSkin {
 
 enum class TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
 
-struct Vector2 {
-    float x;
-    float y;
-
-    Vector2(): x(0), y(0) {}
-    explicit Vector2(float x, float y): x(x), y(y) {}
-
-    Vector2(const Vector2&) = default;
-    Vector2& operator=(const Vector2&) = default;
-};
-
 struct PlayerInfoLobby {
     std::string username;
     Team team;
 
     PlayerInfoLobby() {}
-    explicit PlayerInfoLobby(std::string username, Team team): username(username), team(team) {}
+    PlayerInfoLobby(const std::string& username, const Team team): username(username), team(team) {}
 };
 
 struct MatchRoomInfo {
@@ -78,19 +69,18 @@ struct GameAction {
     Weapon weapon = Weapon::None;               // rellenar si se quiere comprar una.
     TypeWeapon typeWeapon = TypeWeapon::Knife;  // rellenar si se quiere cambiar o comprar municion.
     int count_ammo = 0;                         // rellenar si quiere comprar municion
-    Vector2 direction;
+    Vec2D direction;
 
     GameAction() {}
     explicit GameAction(GameActionType type, Weapon weapon = Weapon::Glock):
             type(type), weapon(weapon) {}
 
-    explicit GameAction(GameActionType type, TypeWeapon typeWeapon, int count_ammo = 0):
+    GameAction(GameActionType type, TypeWeapon typeWeapon, int count_ammo = 0):
             type(type), typeWeapon(typeWeapon), count_ammo(count_ammo) {}
 
-    explicit GameAction(GameActionType type, Vector2 direction): type(type), direction(direction) {}
+    GameAction(GameActionType type, const Vec2D& direction): type(type), direction(direction) {}
 
     GameAction(const GameAction&) = default;
-
     GameAction& operator=(const GameAction&) = default;
 };
 

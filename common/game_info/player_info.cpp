@@ -6,6 +6,8 @@
 #include <string>
 
 #include "../protocol.h"
+
+
 PlayerInfo::PlayerInfo():
         team(Team::Terrorist),
         skin(PlayerSkin()),
@@ -19,8 +21,8 @@ PlayerInfo::PlayerInfo():
         ammo_weapon(10) {}
 
 PlayerInfo::PlayerInfo(const std::string& username, Team team, PlayerSkin skin, int pos_x,
-                       int pos_y, const Vector2& direction, TypeWeapon weapon, int health,
-                       int money, int ammo):
+                       int pos_y, const Vec2D& direction, TypeWeapon weapon, int health, int money,
+                       int ammo):
         username(username),
         team(team),
         skin(skin),
@@ -36,7 +38,7 @@ PlayerInfo::PlayerInfo(const std::string& username, Team team, PlayerSkin skin, 
 
 std::vector<uint8_t> PlayerInfo::toBytes() const {
     std::vector<uint8_t> buffer;
-    int lengthName = username.length();
+    const int lengthName = static_cast<int>(username.length());
     Protocol_::insertBigEndian16(lengthName, buffer);
     Protocol_::insertStringBytes(username, buffer);
 
@@ -45,8 +47,8 @@ std::vector<uint8_t> PlayerInfo::toBytes() const {
     buffer.push_back(Protocol_::encodePlayerState(state));
     Protocol_::insertBigEndian16(pos_x, buffer);
     Protocol_::insertBigEndian16(pos_y, buffer);
-    Protocol_::insertFloatNormalized3Bytes(direction.x, buffer);
-    Protocol_::insertFloatNormalized3Bytes(direction.y, buffer);
+    Protocol_::insertFloatNormalized3Bytes(direction.getX(), buffer);
+    Protocol_::insertFloatNormalized3Bytes(direction.getY(), buffer);
     buffer.push_back(Protocol_::encodeTypeWeapon(weapon_selected));
     buffer.push_back(health);
     Protocol_::insertBigEndian16(money, buffer);
@@ -77,11 +79,11 @@ PlayerInfo::PlayerInfo(const std::vector<uint8_t>& bytes) {
     index += 2;
 
     // Leer dirección
-    // direction.x = Protocol_::getFloatNormalized(bytes, index);
-    direction.x = 0;
+    // direction.setX(Protocol_::getFloatNormalized(bytes, index));
+    direction.setX(0);
     index += 3;
-    // direction.y = Protocol_::recvFloatNormalized3Bytes(bytes, index);
-    direction.y = 1;
+    // direction.setY(Protocol_::recvFloatNormalized3Bytes(bytes, index));
+    direction.setY(1);
     index += 3;
 
     // Leer arma, salud, dinero y munición

@@ -33,8 +33,6 @@ tags.*
 *.out
 *.app
 
-
-
 # Mac
 .DS_Store
 .AppleDouble

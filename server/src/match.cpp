@@ -66,8 +66,8 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
     GameAction gameAction = action.gameAction;
     switch (gameAction.type) {
         case GameActionType::Walk: {
-            const float dx = gameAction.direction.x;
-            const float dy = gameAction.direction.y;
+            const float dx = gameAction.direction.getX();
+            const float dy = gameAction.direction.getY();
             movePlayer(action.player_username, dx, dy, deltaTime);
             break;
         }
@@ -79,7 +79,8 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             if (player->getEquippedWeapon() == TypeWeapon::Bomb) {
                 processPlant(action.player_username);
             }
-            const int dmg = player->attack(gameAction.direction.x, gameAction.direction.y);
+            const int dmg =
+                    player->attack(gameAction.direction.getX(), gameAction.direction.getY());
             std::cout << "Player " << action.player_username << " shoot with " << dmg
                       << " damage\n";
             break;

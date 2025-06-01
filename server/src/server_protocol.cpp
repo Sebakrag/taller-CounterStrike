@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "../../common/constants_protocol.h"
+#include "common/constants_protocol.h"
 
 ServerProtocol::ServerProtocol(Socket&& socketClient): Protocol_(std::move(socketClient)) {}
 
@@ -127,7 +127,7 @@ GameAction ServerProtocol::recvGameAction() {
     } else if (type == Attack || type == Walk) {
         float dir_x = recvFloatNormalized();
         float dir_y = recvFloatNormalized();
-        gameAction.direction = Vector2(dir_x, dir_y);
+        gameAction.direction = Vec2D(dir_x, dir_y);
     }
 
     return gameAction;
