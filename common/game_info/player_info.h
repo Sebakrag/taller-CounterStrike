@@ -7,7 +7,6 @@
 
 #include "../types.h"
 
-
 struct PlayerInfo {
     std::string username;  // id
     Team team;
@@ -15,7 +14,7 @@ struct PlayerInfo {
     PlayerState state;
     int pos_x;
     int pos_y;
-    Vector2 direction;  // a dónde está mirando el player
+    Vec2D direction;  // a dónde está mirando el player (Quizas es mejor que sea un angulo)
     TypeWeapon weapon_selected;
     int health;
     int money;
@@ -23,7 +22,7 @@ struct PlayerInfo {
 
     PlayerInfo();
     PlayerInfo(const std::string& username, Team team, PlayerSkin skin, int pos_x, int pos_y,
-               const Vector2& direction, TypeWeapon weapon, int health, int money, int ammo);
+               const Vec2D& direction, TypeWeapon weapon, int health, int money, int ammo);
 
     // private:
     explicit PlayerInfo(const std::vector<uint8_t>& bytes);

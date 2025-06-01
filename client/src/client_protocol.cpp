@@ -68,8 +68,8 @@ void ClientProtocol::sendGameAction(const GameAction& gameAction) {
         buffer.push_back(encodeTypeWeapon(gameAction.typeWeapon));
         insertBigEndian16(gameAction.count_ammo, buffer);
     } else if (gameAction.type == Attack || gameAction.type == Walk) {
-        insertFloatNormalized3Bytes(gameAction.direction.x, buffer);
-        insertFloatNormalized3Bytes(gameAction.direction.y, buffer);
+        insertFloatNormalized3Bytes(gameAction.direction.getX(), buffer);
+        insertFloatNormalized3Bytes(gameAction.direction.getY(), buffer);
     }
 
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());

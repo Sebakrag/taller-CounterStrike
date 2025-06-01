@@ -1,8 +1,6 @@
 #include "bullet_info.h"
 
-#include <vector>
-
-BulletInfo::BulletInfo(int id, Weapon weapon, int pos_x, int pos_y, Vector2 direction):
+BulletInfo::BulletInfo(int id, Weapon weapon, int pos_x, int pos_y, const Vec2D& direction):
         id(id), weapon(weapon), pos_x(pos_x), pos_y(pos_y), direction(direction) {}
 
 BulletInfo::BulletInfo(const BulletInfo& other):
@@ -36,8 +34,8 @@ BulletInfo::BulletInfo(const std::vector<uint8_t>& bytes) {
     pos_y = Protocol_::getValueBigEndian16(bytes[5], bytes[6]);
 
     // Direction (3 bytes cada componente)
-    direction.x = Protocol_::getFloatNormalized(bytes[7], bytes[8], bytes[9]);
-    direction.y = Protocol_::getFloatNormalized(bytes[10], bytes[11], bytes[12]);
+    direction.setX(Protocol_::getFloatNormalized(bytes[7], bytes[8], bytes[9]));
+    direction.setY(Protocol_::getFloatNormalized(bytes[10], bytes[11], bytes[12]));
 }
 
 std::vector<uint8_t> BulletInfo::toBytes() const {
@@ -54,8 +52,8 @@ std::vector<uint8_t> BulletInfo::toBytes() const {
     Protocol_::insertBigEndian16(pos_y, buffer);
 
     // Direction (3 bytes cada componente)
-    Protocol_::insertFloatNormalized3Bytes(direction.x, buffer);
-    Protocol_::insertFloatNormalized3Bytes(direction.y, buffer);
+    Protocol_::insertFloatNormalized3Bytes(direction.getX(), buffer);
+    Protocol_::insertFloatNormalized3Bytes(direction.getY(), buffer);
 
     return buffer;
 }
