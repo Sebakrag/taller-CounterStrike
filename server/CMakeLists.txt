@@ -14,6 +14,7 @@ target_sources(taller_server
         src/server.cpp
         src/player.cpp
         src/map.cpp
+        src/physics_engine.cpp
         src/weapon/weapon_knife.cpp
         src/weapon/fire_weapon.cpp
         src/weapon/weapon_ak47.cpp
@@ -33,6 +34,7 @@ target_sources(taller_server
         include/types2.h
         include/player.h
         include/map.h
+        include/physics_engine.h
         include/weapon/weapon_knife.h
         include/weapon/weapon.h
         include/weapon/fire_weapon.h
