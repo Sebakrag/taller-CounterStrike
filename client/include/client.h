@@ -66,8 +66,6 @@ public:
     ~Client();
 
     Status getStatus();
-    // Queue<GameAction>& getSenderQueue();
-    // Queue<GameInfo>& getReceiverQueue();
 };
 
 #endif  // CLIENT_H_

@@ -1,23 +1,24 @@
 #include "../include/physics_engine.h"
 
-void PhysicsEngine::movePlayer(Player &player, float dirX, float dirY, float deltaTime, const Map &map) {
+void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float deltaTime,
+                               const Map& map) {
     if (dirX == 0 && dirY == 0)
         return;
 
-    //Normalizamos la direccion
+    // Normalizamos la direccion
     const float length = std::sqrt((dirX * dirX) + (dirY * dirY));
     const float normDirX = dirX / length;
     const float normDirY = dirY / length;
 
-    //Calculamos el desplazamiento
+    // Calculamos el desplazamiento
     const float dx = normDirX * player.getSpeed() * deltaTime;
     const float dy = normDirY * player.getSpeed() * deltaTime;
 
-    //Nueva posición objetivo
+    // Nueva posición objetivo
     const float newX = player.getX() + dx;
     const float newY = player.getY() + dy;
 
-    //Validamos X e Y por separado para permitir movimiento en las esquinas
+    // Validamos X e Y por separado para permitir movimiento en las esquinas
     if (map.isWalkable(static_cast<int>(newX), static_cast<int>(player.getY())))
         player.setX(newX);
 
@@ -25,8 +26,10 @@ void PhysicsEngine::movePlayer(Player &player, float dirX, float dirY, float del
         player.setY(newY);
 }
 
-bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, float dirY, const Map &map, const Player &target, float maxDistance, float &impactDistance) {
-    //Normalizar la dirección
+bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, float dirY,
+                                  const Map& map, const Player& target, float maxDistance,
+                                  float& impactDistance) {
+    // Normalizar la dirección
     const float len = std::sqrt(dirX * dirX + dirY * dirY);
     if (len == 0.0f)
         return false;
@@ -39,7 +42,7 @@ bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, floa
     float distance = 0.0f;
 
     while (distance < maxDistance) {
-        //verificamos colision con el mapa
+        // verificamos colision con el mapa
         if (!map.isWalkable(static_cast<int>(x), static_cast<int>(y))) {
             return false;
         }
@@ -48,28 +51,22 @@ bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, floa
         const float dy = target.getY() - y;
         float distToTarget = std::sqrt(dx * dx + dy * dy);
 
-        if (distToTarget < 0.3f) { //radio del hitbox
+        if (distToTarget < 0.3f) {  // radio del hitbox
             impactDistance = distance;
             return true;
         }
 
         x += dirX * stepSize;
-        y+= dirY * stepSize;
+        y += dirY * stepSize;
         distance += stepSize;
     }
 
     return false;
 }
 
-std::vector<std::shared_ptr<Player> > PhysicsEngine::playersInAreaOfDamage(
-    float originX,
-    float originY,
-    float dirX,
-    float dirY,
-    float areaAngle,
-    float range,
-    const std::vector<std::shared_ptr<Player> > &players)
-{
+std::vector<std::shared_ptr<Player>> PhysicsEngine::playersInAreaOfDamage(
+        float originX, float originY, float dirX, float dirY, float areaAngle, float range,
+        const std::vector<std::shared_ptr<Player>>& players) {
     std::vector<std::shared_ptr<Player>> damagedPlayers;
 
     const float magDir = std::sqrt(dirX * dirX + dirY * dirY);
@@ -78,7 +75,7 @@ std::vector<std::shared_ptr<Player> > PhysicsEngine::playersInAreaOfDamage(
     dirX /= magDir;
     dirY /= magDir;
 
-    for (const auto& target : players) {
+    for (const auto& target: players) {
         if (!target->isAlive())
             continue;
 
@@ -109,7 +106,8 @@ std::vector<std::shared_ptr<Player> > PhysicsEngine::playersInAreaOfDamage(
 }
 
 
-float PhysicsEngine::calculatePrecisionByDistance(float distance, float maxRange, float basePrecision) {
+float PhysicsEngine::calculatePrecisionByDistance(float distance, float maxRange,
+                                                  float basePrecision) {
     if (maxRange <= 0.0f)
         return 0.0f;
 

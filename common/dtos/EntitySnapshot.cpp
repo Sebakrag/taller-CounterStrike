@@ -14,7 +14,7 @@ EntitySnapshot::EntitySnapshot(const ServerEntityID server_entt_id, const float 
         entt_type(entt_type) {
     if (entt_type != EntityType::DROP) {
         throw std::runtime_error(
-                "Fallo en el constructor de EntitySnapshot(). Se requiere EntityType::BULLET");
+                "Fallo en el constructor de EntitySnapshot(). Se requiere EntityType::DROP");
     }
 }
 

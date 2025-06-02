@@ -24,7 +24,7 @@ void GameLoop::run() {
             PlayerAction playerAction;
             while (queueActionsPlayers->try_pop(playerAction)) {
                 // habría que poner una condicion de temporizador o cantidad de iteraciones maxima
-                match.processAction(playerAction, 1.0f/ ITR_PER_SEC);
+                match.processAction(playerAction, 1.0f / ITR_PER_SEC);
             }
 
             match.updateState(1.0 / ITR_PER_SEC);

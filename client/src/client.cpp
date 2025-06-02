@@ -178,6 +178,3 @@ void Client::rotate(const float angle) { this->angle = angle; }
 Client::~Client() {}
 
 Status Client::getStatus() { return status; }
-
-// Queue<GameAction>& Client::getSenderQueue() { return send_queue; }
-// Queue<GameInfo>& Client::getReceiverQueue() { return recv_queue; }
