@@ -33,6 +33,7 @@ GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, 
         items(items) {}
 
 GameInfo::GameInfo(const GameInfo& other):
+        entities(other.entities),
         gamePhase(other.gamePhase),
         bombPlanted(other.bombPlanted),
         bombX(other.bombX),
@@ -44,6 +45,7 @@ GameInfo::GameInfo(const GameInfo& other):
 
 GameInfo& GameInfo::operator=(const GameInfo& other) {
     if (this != &other) {
+        entities = other.entities;
         gamePhase = other.gamePhase;
         bombPlanted = other.bombPlanted;
         bombX = other.bombX;
@@ -76,7 +78,6 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
 
         players.emplace_back(playerBytes);
         PlayerInfo& p = players.back();
-        std::cout << p.username << std::endl;
 
         EntitySnapshot entity(p.server_entt_id, p.pos_x, p.pos_y, p.direction.calculateAngle(),
                               SpriteType::ARTIC_AVENGER, EntityType::TERRORIST, p.health, p.money,

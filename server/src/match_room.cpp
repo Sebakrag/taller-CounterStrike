@@ -19,7 +19,8 @@ MatchRoom::MatchRoom(const std::string& name_match, const std::string& username_
                      std::shared_ptr<Queue<GameInfo>> playerQueue):
         name_match(name_match), player_host(username_host), match() {
     // Crear la cola para el cliente (GameInfo sender queue)
-    players[username_host] = playerQueue;
+    // players[username_host] = playerQueue;
+    addPlayer(username_host, playerQueue);
 }
 
 // Agrega jugador, crea su cola y actualiza el Match

@@ -38,6 +38,40 @@ struct EntitySnapshot {
             team(Team::CounterTerrorist),
             player_state(PlayerState::Idle) {}
 
+    // Constructor por copia
+    EntitySnapshot(const EntitySnapshot& other):
+            server_entt_id(other.server_entt_id),
+            pos_x(other.pos_x),
+            pos_y(other.pos_y),
+            angle(other.angle),
+            sprite_type(other.sprite_type),
+            entt_type(other.entt_type),
+            hp(other.hp),
+            money(other.money),
+            ammo(other.ammo),
+            is_alive(other.is_alive),
+            team(other.team),
+            player_state(other.player_state) {}
+
+    // Operador de asignación
+    EntitySnapshot& operator=(const EntitySnapshot& other) {
+        if (this != &other) {
+            server_entt_id = other.server_entt_id;
+            pos_x = other.pos_x;
+            pos_y = other.pos_y;
+            angle = other.angle;
+            sprite_type = other.sprite_type;
+            entt_type = other.entt_type;
+            hp = other.hp;
+            money = other.money;
+            ammo = other.ammo;
+            is_alive = other.is_alive;
+            team = other.team;
+            player_state = other.player_state;
+        }
+        return *this;
+    }
+
     // para un item (drop).
     explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,
                             const float pos_y, const SpriteType sprite_type,
@@ -47,7 +81,6 @@ struct EntitySnapshot {
     explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,
                             const float pos_y, const float angle, const SpriteType sprite_type,
                             const EntityType entt_type);
-
 
     // para un player.
     explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,
@@ -79,9 +112,9 @@ struct EntitySnapshot {
             hp(hp),
             money(money),
             is_alive(is_alive) {}
-    explicit EntitySnapshot(const std::vector<uint8_t>& bytes);
-
-    std::vector<uint8_t> toBytes() const;
+    // explicit EntitySnapshot(const std::vector<uint8_t>& bytes);
+    void print();  // para testear
+    // std::vector<uint8_t> toBytes() const;
 };
 
 static_assert(std::is_trivially_destructible_v<EntitySnapshot>,

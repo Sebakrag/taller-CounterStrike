@@ -6,8 +6,8 @@
 Player::Player(const std::string& name, const Team team):
         name(name),
         team(team),
-        posX(0),
-        posY(0),
+        posX(20),
+        posY(10),
         health(100),
         state(PlayerState::Idle),
         primaryWeapon(nullptr),

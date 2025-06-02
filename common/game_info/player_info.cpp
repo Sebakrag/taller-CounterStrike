@@ -72,7 +72,6 @@ PlayerInfo::PlayerInfo(const std::vector<uint8_t>& bytes) {
     index += 4;
     // Leer longitud del nombre y el nombre
     int lengthName = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    std::cout << "Length: " << std::to_string(lengthName) << std::endl;
     index += 2;
 
     username = std::string(bytes.begin() + index, bytes.begin() + index + lengthName);

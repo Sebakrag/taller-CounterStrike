@@ -152,6 +152,9 @@ std::vector<EntitySnapshot> Client::getGameInfo() {
     //
     // return v;
     GameInfo g = recv_queue.pop();
+    std::cout << "Cantidad de snapshots: " << g.getSnapshots().size() << std::endl;
+
+
     return g.getSnapshots();
 }
 

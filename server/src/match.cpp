@@ -215,6 +215,7 @@ GameInfo Match::generateGameInfo(const std::string& playerName) const {
 GameInfo Match::generateGameInfo() const {
     std::vector<PlayerInfo> playersInfo;
     unsigned int id = 0;  // temporal. debe ser un atributo de cada objeto
+                          // std::cout << "hay " << players.size() << " players" << std::endl;
     for (const auto& p: players) {
         id++;
 
