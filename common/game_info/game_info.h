@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "../dtos/EntitySnapshot.h"
 #include "../types.h"
 
 #include "bullet_info.h"
@@ -15,6 +16,10 @@
 // en cada frame. Son los que enviará el gameloop del server en cada iteración.
 
 class GameInfo {
+private:
+    std::vector<EntitySnapshot>
+            entities;  // TODO. Aplicar logica de generar el vector en cada constructor.
+
 public:
     GamePhase gamePhase;
     bool bombPlanted;
@@ -22,8 +27,6 @@ public:
     int bombY;
     double timeLeft;
 
-    // Podriamos reemplazar estos 3 vectores por un unico vector de la sig forma:
-    // std::vector<EntitySnapshot> entities;
     std::vector<PlayerInfo> players;
     std::vector<BulletInfo> bullets;
     std::vector<ItemInfo> items;
@@ -42,6 +45,9 @@ public:
     explicit GameInfo(const std::vector<uint8_t>& bytes);
 
     std::vector<uint8_t> toBytes() const;
+
+    // nota. por ahora solo funciona si se usa el constructor con el buffer.
+    std::vector<EntitySnapshot> getSnapshots();
 
     void print();
 };

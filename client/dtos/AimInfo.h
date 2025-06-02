@@ -1,7 +1,7 @@
 #ifndef AIMINFO_H
 #define AIMINFO_H
 
-#include "common/utils/Vec2D.h"
+#include "../../common/utils/Vec2D.h"
 
 struct AimInfo {
     const Vec2D direction;

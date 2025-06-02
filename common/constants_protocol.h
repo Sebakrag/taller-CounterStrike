@@ -54,6 +54,16 @@
 #define BYTE_ITEM_AWP 0x35
 #define BYTE_ITEM_BOMB 0x36
 
+// SpriteType { ... }
+#define BYTE_SPRITE_ARTIC_AVENGER 0x01
+#define BYTE_SPRITE_L337_KREW 0x02
+#define BYTE_SPRITE_GUERRILLA 0x03
+#define BYTE_SPRITE_PHOENIX 0x04
+#define BYTE_SPRITE_SEAL_FORCE 0x05
+#define BYTE_SPRITE_GERMAN_GSG_9 0x06
+#define BYTE_SPRITE_UK_SAS 0x07
+#define BYTE_SPRITE_FRENCH_GIGN 0x08
+
 
 // Acciones del cliente:
 //--------------------------
@@ -75,6 +85,7 @@
 #define BYTE_WALK 0X05
 #define BYTE_CHANGE_WEAPON 0X06
 #define BYTE_PICK_UP 0X07
+#define BYTE_ROTATE 0X08
 
 // Acciones del servidor:
 //--------------------------

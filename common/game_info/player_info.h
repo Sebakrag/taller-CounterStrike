@@ -8,6 +8,7 @@
 #include "../types.h"
 
 struct PlayerInfo {
+    unsigned int server_entt_id;
     std::string username;  // id
     Team team;
     PlayerSkin skin;
@@ -21,8 +22,9 @@ struct PlayerInfo {
     int ammo_weapon;
 
     PlayerInfo();
-    PlayerInfo(const std::string& username, Team team, PlayerSkin skin, int pos_x, int pos_y,
-               const Vec2D& direction, TypeWeapon weapon, int health, int money, int ammo);
+    PlayerInfo(unsigned int server_entt_id, const std::string& username, Team team, PlayerSkin skin,
+               int pos_x, int pos_y, const Vec2D& direction, TypeWeapon weapon, int health,
+               int money, int ammo);
 
     // private:
     explicit PlayerInfo(const std::vector<uint8_t>& bytes);

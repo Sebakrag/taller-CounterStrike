@@ -6,6 +6,9 @@
 
 #include "../protocol.h"
 
+#include "bullet_info.h"
+#include "player_info.h"
+
 GameInfo::GameInfo():
         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30) {}
 
@@ -53,6 +56,7 @@ GameInfo& GameInfo::operator=(const GameInfo& other) {
     return *this;
 }
 
+// TODO: modularizar. (Hacer 4 metodos privados)
 GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     // GamePhase (1 byte)
     gamePhase = Protocol_::decodeGamePhase(bytes[0]);
@@ -69,7 +73,17 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> playerBytes(
                 bytes.begin() + index,
                 bytes.begin() + index + size);  // 19 bytes después del username
+
         players.emplace_back(playerBytes);
+        PlayerInfo& p = players.back();
+        std::cout << p.username << std::endl;
+
+        EntitySnapshot entity(p.server_entt_id, p.pos_x, p.pos_y, p.direction.calculateAngle(),
+                              SpriteType::ARTIC_AVENGER, EntityType::TERRORIST, p.health, p.money,
+                              p.team, p.state);
+        entities.emplace_back(entity);
+
+
         index += size;
     }
 
@@ -81,6 +95,11 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> bulletBytes(bytes.begin() + index,
                                          bytes.begin() + index + SIZE_BULLET_INFO);
         bullets.emplace_back(bulletBytes);
+        BulletInfo& b = bullets.back();
+
+        EntitySnapshot entity(b.id, b.pos_x, b.pos_y, b.direction.calculateAngle(),
+                              SpriteType::BULLET, EntityType::BULLET);
+        entities.emplace_back(entity);
         index += SIZE_BULLET_INFO;
     }
 
@@ -92,6 +111,11 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> itemBytes(bytes.begin() + index,
                                        bytes.begin() + index + SIZE_ITEM_INFO);
         items.emplace_back(itemBytes);
+        ItemInfo& item = items.back();
+
+        EntitySnapshot entity(item.server_entt_id, item.pos_x, item.pos_y, item.getSpriteType(),
+                              EntityType::DROP);
+        entities.emplace_back(entity);
         index += SIZE_ITEM_INFO;
     }
 
@@ -146,6 +170,8 @@ std::vector<uint8_t> GameInfo::toBytes() const {
 
     return buffer;
 }
+
+std::vector<EntitySnapshot> GameInfo::getSnapshots() { return entities; }
 
 void GameInfo::print() {
     std::cout << "Game Phase: " << static_cast<int>(gamePhase) << std::endl;

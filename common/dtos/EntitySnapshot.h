@@ -3,22 +3,25 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <vector>
 
-#include "client/include/model/EC/EntityType.h"
-#include "client/include/model/utils/SpriteType.h"
-
+#include "../../client/include/model/utils/SpriteType.h"
+#include "../types.h"
+#include "../utils/EntityType.h"
 using ServerEntityID = uint32_t;
 
 struct EntitySnapshot {
-    const ServerEntityID server_entt_id;
-    const float pos_x, pos_y;
-    const float angle;  // represents the orientation where the player is looking.
-    const SpriteType sprite_type;
-    const EntityType entt_type;
-    const int hp;  // health
-    const float money;
-    const bool
-            is_alive;  // is alive or dead? (this could be useful for any entity, not just players)
+    ServerEntityID server_entt_id;
+    float pos_x, pos_y;
+    float angle;  // represents the orientation where the player is looking.
+    SpriteType sprite_type;
+    EntityType entt_type;
+    int hp;  // health
+    float money;
+    int ammo;
+    bool is_alive;  // is alive or dead? (this could be useful for any entity, not just players)
+    Team team;
+    PlayerState player_state;
 
     // TODO: Eliminar este constructor. Lo creo para poder crear el Client para probar el
     // renderizado. Lo inicializo con valores random.
@@ -31,8 +34,39 @@ struct EntitySnapshot {
             entt_type(EntityType::ANTI_TERRORIST),
             hp(100),
             money(500),
-            is_alive(true) {}
+            is_alive(true),
+            team(Team::CounterTerrorist),
+            player_state(PlayerState::Idle) {}
 
+    // para un item (drop).
+    explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,
+                            const float pos_y, const SpriteType sprite_type,
+                            const EntityType entt_type);
+
+    // para una bullet.
+    explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,
+                            const float pos_y, const float angle, const SpriteType sprite_type,
+                            const EntityType entt_type);
+
+
+    // para un player.
+    explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,
+                            const float pos_y, const float angle, const SpriteType sprite_type,
+                            const EntityType entt_type, const int hp, const float money, Team team,
+                            PlayerState state, bool is_alive = true):
+            server_entt_id(server_entt_id),
+            pos_x(pos_x),
+            pos_y(pos_y),
+            angle(angle),
+            sprite_type(sprite_type),
+            entt_type(entt_type),
+            hp(hp),
+            money(money),
+            is_alive(is_alive),
+            team(team),
+            player_state(state) {}
+
+    // ELIMINARLO cuando ya no se use en logica de la interfaz
     EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x, const float pos_y,
                    const float angle, const SpriteType sprite_type, const EntityType entt_type,
                    const int hp, const float money, const bool is_alive):
@@ -45,6 +79,9 @@ struct EntitySnapshot {
             hp(hp),
             money(money),
             is_alive(is_alive) {}
+    explicit EntitySnapshot(const std::vector<uint8_t>& bytes);
+
+    std::vector<uint8_t> toBytes() const;
 };
 
 static_assert(std::is_trivially_destructible_v<EntitySnapshot>,

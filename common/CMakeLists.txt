@@ -16,6 +16,7 @@ target_sources(taller_common
         game_info/item_info.cpp
 
         utils/Vec2D.cpp
+        dtos/EntitySnapshot.cpp
 
     PUBLIC
     # .h files
@@ -37,6 +38,8 @@ target_sources(taller_common
         game_info/item_info.h
 
         utils/Vec2D.h
+        utils/EntityType.h
+
         dtos/EntitySnapshot.h
         dtos/MapInfo.h
         dtos/MatchInfo.h

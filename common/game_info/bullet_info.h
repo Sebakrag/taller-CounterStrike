@@ -4,20 +4,20 @@
 #include <cstdint>
 #include <vector>
 
-#include "common/protocol.h"
-#include "common/types.h"
+#include "..//types.h"
+#include "../protocol.h"
 
-#define SIZE_BULLET_INFO 13
+#define SIZE_BULLET_INFO 15  // 13
 
 struct BulletInfo {
-    int id;
-    Weapon weapon;  // para diferenciar tipo de bala
+    unsigned int id;  // server_entt_id
+    Weapon weapon;    // para diferenciar tipo de bala
     int pos_x;
     int pos_y;
     Vec2D direction;
 
     BulletInfo() = default;
-    BulletInfo(int id, Weapon weapon, int pos_x, int pos_y, const Vec2D& direction);
+    BulletInfo(unsigned int id, Weapon weapon, int pos_x, int pos_y, const Vec2D& direction);
     BulletInfo(const BulletInfo& other);
 
     BulletInfo& operator=(const BulletInfo& other);
@@ -25,5 +25,7 @@ struct BulletInfo {
     explicit BulletInfo(const std::vector<uint8_t>& bytes);
 
     std::vector<uint8_t> toBytes() const;
+
+    SpriteType getSpriteType();
 };
 #endif  // BULLET_INFO_H_

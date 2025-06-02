@@ -28,7 +28,8 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         constexpr auto entt_type = EntityType::ANTI_TERRORIST;
         constexpr bool is_alive = true;
         const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
-                                        entt_type, hp, money, is_alive);
+                                        entt_type, hp, money, Team::Terrorist, PlayerState::Idle,
+                                        is_alive);
         const WindowConfig win_config(
                 SCREEN_WIDTH, SCREEN_HEIGHT,
                 SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
@@ -49,7 +50,7 @@ std::optional<AppStateCode> GameMatchAppState::update() {
 
         const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
 
-        Client client(first_snap);
+        Client client("localhost", "8080", "seba");
 
         Game game(match_info, client);
 

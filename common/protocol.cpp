@@ -44,6 +44,17 @@ void Protocol_::insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array) {
     array.push_back(bytes_be_ptr[1]);  // Segundo byte en big endian
 }
 
+void Protocol_::insertBigEndian32(uint32_t bytes, std::vector<uint8_t>& array) {
+    uint32_t bytes_big_endian = htonl(bytes);  // paso a big endian
+
+    uint8_t* bytes_be_ptr = reinterpret_cast<uint8_t*>(&bytes_big_endian);
+
+    array.push_back(bytes_be_ptr[0]);  // Primer byte en big endian
+    array.push_back(bytes_be_ptr[1]);  // Segundo byte en big endian
+    array.push_back(bytes_be_ptr[2]);  // tercer byte en big endian
+    array.push_back(bytes_be_ptr[3]);  // cuarto byte en big endian
+}
+
 void Protocol_::insertStringBytes(const std::string& string, std::vector<uint8_t>& array) {
     std::copy(string.begin(), string.end(), std::back_inserter(array));
 }
@@ -95,6 +106,16 @@ uint16_t Protocol_::getValueBigEndian16(uint8_t byte1, uint8_t byte2) {
     value = ntohs(value);  // convierto de big endian al endianness local
     return value;
 }
+
+uint32_t Protocol_::getBigEndian32(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4) {
+    uint32_t value;
+    uint8_t bytes[4] = {byte1, byte2, byte3, byte4};
+    std::memcpy(&value, bytes, sizeof(uint32_t));
+    value = ntohl(value);  // convierto de big endian al endianness local
+    return value;
+}
+
+
 float Protocol_::getFloatNormalized(uint8_t byte1, uint8_t byte2, uint8_t byte3) {
     float value = 0;
 
@@ -187,6 +208,8 @@ uint8_t Protocol_::encodeGameActionType(const GameActionType& gameActionType) {
             return BYTE_CHANGE_WEAPON;
         case GameActionType::PickUp:
             return BYTE_PICK_UP;
+        case GameActionType::Rotate:
+            return BYTE_ROTATE;
         default:
             throw std::runtime_error(
                     "Error. Tipo de acción de juego desconocida. No se puede codificar");
@@ -278,6 +301,49 @@ uint8_t Protocol_::encodeTypeItem(const TypeItem& typeItem) {
             throw std::runtime_error("Error. Tipo de item desconocido. No se puede codificar");
     }
 }
+
+
+uint8_t Protocol_::encodeEntitySpriteType(const SpriteType& spriteType) {
+
+    switch (spriteType) {
+        case SpriteType::PHEONIX:
+            return BYTE_SPRITE_PHOENIX;
+        case SpriteType::L337_KREW:
+            return BYTE_SPRITE_L337_KREW;
+        case SpriteType::ARTIC_AVENGER:
+            return BYTE_SPRITE_ARTIC_AVENGER;
+        case SpriteType::GUERRILLA:
+            return BYTE_SPRITE_GUERRILLA;
+        case SpriteType::SEAL_FORCE:
+            return BYTE_SPRITE_SEAL_FORCE;
+        case SpriteType::GERMAN_GSG_9:
+            return BYTE_SPRITE_GERMAN_GSG_9;
+        case SpriteType::UK_SAS:
+            return BYTE_SPRITE_UK_SAS;
+        case SpriteType::FRENCH_GIGN:
+            return BYTE_SPRITE_FRENCH_GIGN;
+        default:
+            throw std::runtime_error("Error. SpriteType desconocido. No se puede codificar");
+    }
+}
+
+uint8_t Protocol_::encodeEntityType(const EntityType& entityType) {
+    switch (entityType) {
+        case EntityType::TERRORIST:
+            return 1;
+        case EntityType::ANTI_TERRORIST:
+            return 2;
+        case EntityType::WEAPON:
+            return 3;
+        case EntityType::BULLET:
+            return 4;
+        case EntityType::BOMB:
+            return 5;
+        default:
+            throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede codificar");
+    }
+}
+
 // Decodificadores.
 //----------------------------------------------------------------------------------
 bool Protocol_::decodeBool(uint8_t byte) {
@@ -363,6 +429,8 @@ GameActionType Protocol_::decodeGameActionType(uint8_t byte) {
             return GameActionType::ChangeWeapon;
         case BYTE_PICK_UP:
             return GameActionType::PickUp;
+        case BYTE_ROTATE:
+            return GameActionType::Rotate;
         default:
             throw std::runtime_error(
                     "Error. Tipo de acción de juego desconocida. No se puede decodificar");
@@ -454,5 +522,46 @@ TypeItem Protocol_::decodeTypeItem(uint8_t byte) {
             throw std::runtime_error("Error. Tipo de item desconocido. No se puede decodificar");
     }
 }
+
+SpriteType Protocol_::decodeEntitySpriteType(uint8_t byte) {
+    switch (byte) {
+        case BYTE_SPRITE_PHOENIX:
+            return SpriteType::PHEONIX;
+        case BYTE_SPRITE_L337_KREW:
+            return SpriteType::L337_KREW;
+        case BYTE_SPRITE_ARTIC_AVENGER:
+            return SpriteType::ARTIC_AVENGER;
+        case BYTE_SPRITE_GUERRILLA:
+            return SpriteType::GUERRILLA;
+        case BYTE_SPRITE_SEAL_FORCE:
+            return SpriteType::SEAL_FORCE;
+        case BYTE_SPRITE_GERMAN_GSG_9:
+            return SpriteType::GERMAN_GSG_9;
+        case BYTE_SPRITE_UK_SAS:
+            return SpriteType::UK_SAS;
+        case BYTE_SPRITE_FRENCH_GIGN:
+            return SpriteType::FRENCH_GIGN;
+        default:
+            throw std::runtime_error("Error. SpriteType desconocido. No se puede decodificar");
+    }
+}
+
+EntityType Protocol_::decodeEntityType(uint8_t byte) {
+    switch (byte) {
+        case 1:
+            return EntityType::TERRORIST;
+        case 2:
+            return EntityType::ANTI_TERRORIST;
+        case 3:
+            return EntityType::WEAPON;
+        case 4:
+            return EntityType::BULLET;
+        case 5:
+            return EntityType::BOMB;
+        default:
+            throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede decodificar");
+    }
+}
+
 
 void Protocol_::shutDown(int how) { socket.shutdown(how); }

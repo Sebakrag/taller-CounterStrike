@@ -12,14 +12,15 @@ bool Match::addPlayer(const std::string& username) {
     int terroristCount = 0;
     int counterTerroristCount = 0;
 
-    for (const auto& p : players) {
+    for (const auto& p: players) {
         if (p.getTeam() == Team::Terrorist)
             terroristCount++;
         else if (p.getTeam() == Team::CounterTerrorist)
             counterTerroristCount++;
     }
 
-    Team assignedTeam = (terroristCount <= counterTerroristCount) ? Team::Terrorist : Team::CounterTerrorist;
+    Team assignedTeam =
+            (terroristCount <= counterTerroristCount) ? Team::Terrorist : Team::CounterTerrorist;
 
     Player newPlayer(username, assignedTeam);
     players.push_back(std::move(newPlayer));
@@ -46,7 +47,8 @@ Player* Match::getPlayer(const std::string& playerName) {
     return nullptr;
 }
 
-bool Match::movePlayer(const std::string& playerName, const float dx, const float dy, float deltaTime) {
+bool Match::movePlayer(const std::string& playerName, const float dx, const float dy,
+                       float deltaTime) {
     Player* p = getPlayer(playerName);
     if (!p || !p->isAlive())
         return false;
@@ -176,11 +178,12 @@ void Match::checkRoundEnd() {
         roundOver = true;
         roundWinner = Team::Terrorist;
         std::cout << "Todos los antiterroristas murieron. Ganan los terroristas. \n";
-    } /*else if (roundTimer <= 0 && !bombPlanted) {
-        roundOver = true;
-        roundWinner = Team::CounterTerrorist;
-        std::cout << "Se acabó el tiempo sin bomba. Ganan los antiterroristas. \n";
-    }*/
+    }
+    // else if (roundTimer <= 0 && !bombPlanted) {
+    //     roundOver = true;
+    //     roundWinner = Team::CounterTerrorist;
+    //     std::cout << "Se acabó el tiempo sin bomba. Ganan los antiterroristas. \n";
+    // }
 }
 /*
 GameInfo Match::generateGameInfo(const std::string& playerName) const {
@@ -211,26 +214,21 @@ GameInfo Match::generateGameInfo(const std::string& playerName) const {
 */
 GameInfo Match::generateGameInfo() const {
     std::vector<PlayerInfo> playersInfo;
+    unsigned int id = 0;  // temporal. debe ser un atributo de cada objeto
+    for (const auto& p: players) {
+        id++;
 
-    for (const auto& p : players) {
-        PlayerInfo info(
-            p.getId(),
-            p.getTeam(),
-            PlayerSkin::CounterTerrorist1,
-            p.getX(),
-            p.getY(),
-            Vector2(0,1),
-            p.getEquippedWeapon(),
-            p.getHealth(),
-            static_cast<int>(p.getMoney()),
-            p.getPrimaryWeapon() ? p.getPrimaryWeapon()->getBullets() : 0
-        );
+        PlayerInfo info(id, p.getId(), p.getTeam(), PlayerSkin::CounterTerrorist1, p.getX(),
+                        p.getY(), Vec2D(0, 1), p.getEquippedWeapon(), p.getHealth(),
+                        static_cast<int>(p.getMoney()),
+                        p.getPrimaryWeapon() ? p.getPrimaryWeapon()->getBullets() : 0);
         playersInfo.push_back(info);
     }
 
     GameInfo gameInfo(this->phase, roundTimer, playersInfo);
     return gameInfo;
 }
+
 void Match::showPlayers() const {
     std::cout << "Players in match:\n";
     for (const auto& p: players) {

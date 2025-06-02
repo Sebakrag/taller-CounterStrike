@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 
+#include "../client/include/model/utils/SpriteType.h"
+#include "utils/EntityType.h"
+
 #include "socket.h"
 #include "types.h"
 
@@ -32,6 +35,10 @@ public:
      * Inserta un numero de 2 bytes en formato big-endian dentro del array.
      */
     static void insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array);
+    /**
+     * Inserta un numero de 2 bytes en formato big-endian dentro del array.
+     */
+    static void insertBigEndian32(uint32_t bytes, std::vector<uint8_t>& array);
 
     // Inserta cada caracter del string (1 byte por caracter) en el array
     static void insertStringBytes(const std::string& string, std::vector<uint8_t>& array);
@@ -45,6 +52,8 @@ public:
     static void insertFloatNormalized3Bytes(float value, std::vector<uint8_t>& array);
 
     static uint16_t getValueBigEndian16(uint8_t byte1, uint8_t byte2);
+    static uint32_t getBigEndian32(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4);
+
     static float getFloatNormalized(uint8_t byte1, uint8_t byte2, uint8_t byte3);
 
     // Codificadores. Devuelven el byte correspondiente al valor del enum.
@@ -59,6 +68,8 @@ public:
     static uint8_t encodePlayerState(const PlayerState& playerState);
     static uint8_t encodePlayerSkin(const PlayerSkin& playerSkin);
     static uint8_t encodeTypeItem(const TypeItem&);
+    static uint8_t encodeEntitySpriteType(const SpriteType& spriteType);
+    static uint8_t encodeEntityType(const EntityType& entityType);
 
     // Decodificadores. Devuelven el valor del enum correspondiente al byte.
     static bool decodeBool(uint8_t byte);
@@ -72,6 +83,9 @@ public:
     static PlayerState decodePlayerState(uint8_t byte);
     static PlayerSkin decodePlayerSkin(uint8_t byte);
     static TypeItem decodeTypeItem(uint8_t byte);
+
+    static SpriteType decodeEntitySpriteType(uint8_t byte);
+    static EntityType decodeEntityType(uint8_t byte);
 
     void shutDown(int how);
 };

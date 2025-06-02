@@ -1,4 +1,4 @@
-#include "client/include/model/Map.h"
+#include "../../../client/include/model/Map.h"
 
 #include <cmath>
 
@@ -13,6 +13,10 @@ Map::Map(const MapInfo& mapInfo):
         tileSetTexture(TextureManager::getTexture(mapInfo.tileSetType)),
         widthInTiles(mapInfo.numTilesInX),
         heightInTiles(mapInfo.numTilesInY) {
+    if (!tileSetTexture) {
+        throw std::runtime_error("TextureManager::getTexture returned nullptr!");
+    }
+
     const int TILES_PER_ROW = (tileSetTexture->GetWidth() / TILE_SIZE);
 
     const auto& tileMap = mapInfo.tileMap;
