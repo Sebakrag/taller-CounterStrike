@@ -10,8 +10,8 @@
 
 // Paths
 
-#define PLAYER_PATH std::string("../client/assets/player")
-#define TILE_SETS_PATH std::string("../client/assets/tiles")
+#define PLAYER_PATH std::string("client/assets/player")
+#define TILE_SETS_PATH std::string("client/assets/tiles")
 
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix.bmp")
 #define L377_KREW_IMG (PLAYER_PATH + "/t_L377_krew.bmp")

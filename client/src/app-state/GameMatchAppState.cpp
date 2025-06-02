@@ -50,7 +50,8 @@ std::optional<AppStateCode> GameMatchAppState::update() {
 
         const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
 
-        Client client("localhost", "8080", "seba");
+        // Client client("localhost", "8080", "seba");
+        Client client(first_snap);
 
         Game game(match_info, client);
 

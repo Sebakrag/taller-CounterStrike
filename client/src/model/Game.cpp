@@ -1,5 +1,7 @@
 #include "client/include/model/Game.h"
 
+#include <SDL2/SDL_timer.h>
+
 Game::Game(const MatchInfo& match_info, Client& client):
         client(client),
         match_name(match_info.name),
@@ -17,11 +19,23 @@ void Game::update(float dt) {
 void Game::render() { graphics.render(world); }
 
 void Game::start() {
-    float dt = 0;
+    Uint32 lastTime = SDL_GetTicks();
     while (is_running) {
+        double current = getCurrentTime();
+        double elapsed = current - lastTime;
+        previous = current;
+        lag += elapsed;
+
         eventHandler.handleEvents(is_running);
-        update(dt);
+        while (lag >= MS_PER_UPDATE)
+        {
+            update(elapsed);
+            lag -= MS_PER_UPDATE;
+        }
+        // update(elapsed);
         render();
+
+        lastTime = current;
 
         usleep(1 / 30);  // adjust frame_rate
     }

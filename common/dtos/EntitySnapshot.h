@@ -22,6 +22,7 @@ struct EntitySnapshot {
     bool is_alive;  // is alive or dead? (this could be useful for any entity, not just players)
     Team team;
     PlayerState player_state;
+    ServerEntityID equipped_weapon_id;
 
     // TODO: Eliminar este constructor. Lo creo para poder crear el Client para probar el
     // renderizado. Lo inicializo con valores random.
