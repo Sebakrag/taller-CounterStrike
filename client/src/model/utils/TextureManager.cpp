@@ -1,6 +1,8 @@
 #include "client/include/model/utils/TextureManager.h"
 
+#include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_surface.h>
 
 #include "client/client_constants.h"
 
@@ -10,7 +12,6 @@ std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::texture
 
 void TextureManager::init(Renderer& ren) {
     // Players textures
-    // const Color playerColorKey = {255, 255, 255, 255};
     const Color playerColorKey = {0, 0, 0, 255};
     loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
     loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
@@ -35,9 +36,9 @@ void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path,
                                  const Color& colorKey) {
     Surface surface(path);
-    // surface.SetColorAndAlphaMod(colorKey);
-    Uint32 key = colorKey.GetRed() | colorKey.GetGreen() | colorKey.GetBlue() | colorKey.GetAlpha();
-    surface.SetColorKey(true, key);
+    Uint32 keyMapped = SDL_MapRGB(surface.Get()->format, colorKey.GetRed(), colorKey.GetGreen(),
+                                  colorKey.GetBlue());
+    surface.SetColorKey(true, keyMapped);
     textures[type] = std::make_shared<Texture>(ren, surface);
 }
 
