@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <random>
 
 #include <netinet/in.h>
 
@@ -101,7 +102,7 @@ int level_1[5][6] = {{2, 2, 2, 2, 2, 2},
                      {2, 1, 1, 1, 1, 2},
                      {2, 2, 2, 2, 2, 2}};
 
-TileMap TileMap::getLevelDemo() {
+/*TileMap TileMap::getLevelDemo() {
     std::vector<std::vector<int>> matriz_ids_tiles;
     for (int i = 0; i < 5; ++i) {
         std::vector<int> fila;
@@ -111,4 +112,22 @@ TileMap TileMap::getLevelDemo() {
         matriz_ids_tiles.push_back(fila);
     }
     return TileMap(matriz_ids_tiles);
+}*/
+
+TileMap TileMap::getCurrentLevel() {
+    constexpr int w = 1000;
+    constexpr int h = 1000;
+    std::vector<std::vector<int>> tileMap(h, std::vector<int>(w));
+
+    std::random_device rd;  // fuente de entropía
+    std::mt19937 gen(rd()); // motor de generación
+    std::uniform_int_distribution<> dist(1, 46);  // distribución de IDs
+
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            tileMap[y][x] = dist(gen);
+        }
+    }
+
+    return TileMap(tileMap);
 }

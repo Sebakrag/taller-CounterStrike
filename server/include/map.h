@@ -7,6 +7,7 @@
 class Map {
 private:
     TileMap tileMap;
+    const int TILE_SIZE = 32;
 
 public:
     Map();

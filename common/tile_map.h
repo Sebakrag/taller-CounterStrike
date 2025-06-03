@@ -41,7 +41,8 @@ public:
 
     void print();  // para testear
 
-    static TileMap getLevelDemo();
+    //static TileMap getLevelDemo();
+    static TileMap getCurrentLevel();
 };
 
 
