@@ -2,9 +2,6 @@
 set(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.qrc")
 qt6_add_resources(RCC_SOURCES "${QRC_FILE}")
 
-# Definición del ejecutable cliente
-add_executable(taller_client)
-
 # Fuentes del cliente
 target_sources(taller_client
     PRIVATE
