@@ -160,6 +160,23 @@ std::vector<PlayerInfoLobby> Client::refreshMatchRoom() {
     return info.players;
 }
 
+std::vector<PlayerInfoLobby> Client::refreshPlayersList() {
+    protocol.sendLobbyAction(LobbyAction::ListPlayers);
+    MatchRoomInfo info = protocol.recvUpdateMatchRoom();
+
+    // std::cout << "Players en la sala: " << std::endl;
+    // for (const auto& p: info.players) {
+    //     std::cout << " - " << p.username << std::endl;
+    // }
+
+    if (info.matchStarted) {
+        status = InGame;
+        sender.start();
+        receiver.start();
+    }
+    return info.players;
+}
+
 std::vector<EntitySnapshot> Client::getGameInfo() {
     // const EntitySnapshot s = {snap.server_entt_id, this->x,        this->y, this->angle,
     //                           snap.sprite_type,    snap.entt_type, snap.hp, snap.money,
