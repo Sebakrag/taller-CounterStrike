@@ -26,6 +26,7 @@ private:
     Camera camera;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
+    RenderSystem render_sys;
 
 public:
     /// ///

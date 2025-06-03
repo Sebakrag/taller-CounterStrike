@@ -1,0 +1,7 @@
+#ifndef WEAPONSPRITECOMPONENT_H
+#define WEAPONSPRITECOMPONENT_H
+
+class WeaponSpriteComponent {};
+
+
+#endif  // WEAPONSPRITECOMPONENT_H

@@ -19,23 +19,12 @@ void Game::update(float dt) {
 void Game::render() { graphics.render(world); }
 
 void Game::start() {
-    Uint32 lastTime = SDL_GetTicks();
+    float elapsed = 0;
     while (is_running) {
-        double current = getCurrentTime();
-        double elapsed = current - lastTime;
-        previous = current;
-        lag += elapsed;
 
         eventHandler.handleEvents(is_running);
-        while (lag >= MS_PER_UPDATE)
-        {
-            update(elapsed);
-            lag -= MS_PER_UPDATE;
-        }
-        // update(elapsed);
+        update(elapsed);
         render();
-
-        lastTime = current;
 
         usleep(1 / 30);  // adjust frame_rate
     }

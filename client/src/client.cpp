@@ -8,7 +8,7 @@
 #include "../include/client_protocol.h"
 
 Client::Client(const EntitySnapshot& snap):
-      snap(snap), x(snap.pos_x), y(snap.pos_y), angle(snap.angle) {}
+        snap(snap), x(snap.pos_x), y(snap.pos_y), angle(snap.angle) {}
 
 // Client::Client(const std::string& ip, const std::string& port, const std::string& user_name):
 //         protocol(ip.c_str(), port.c_str(), user_name),
@@ -160,8 +160,8 @@ Client::Client(const EntitySnapshot& snap):
 //
 // GameInfo Client::getGameInfo2() {
 //     GameInfo g;
-//     recv_queue.try_pop(g);  // o pop(). Tener en cuenta si la interfaz debe esperar o seguir igual
-//     return g;
+//     recv_queue.try_pop(g);  // o pop(). Tener en cuenta si la interfaz debe esperar o seguir
+//     igual return g;
 // }
 //
 // void Client::move(const Vec2D& direction) {
@@ -185,8 +185,8 @@ std::vector<EntitySnapshot> Client::getGameInfo() {
 }
 
 void Client::move(const Vec2D& direction) {
-    this->x += direction.getX();
-    this->y += direction.getY();
+    this->x += direction.getX() * 5;
+    this->y += direction.getY() * 5;
 }
 
 void Client::shoot(const AimInfo& aimInfo) { this->angle = aimInfo.angle; }

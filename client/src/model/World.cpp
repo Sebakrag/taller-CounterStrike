@@ -25,13 +25,20 @@ void World::render(Graphics& graphics) {
 
     map.render(graphics, camera);
 
+    render_sys.renderEntities(graphics, comp_mgr, camera);
+
     // se renderizan los personajes, las armas y los objetos en si:
     comp_mgr.forEach<RenderComponent>([&](RenderComponent& renderComp, const Entity e) {
-        const auto sprite = comp_mgr.getComponent<SpriteComponent>(e);
+        const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e);
         const auto transform = comp_mgr.getComponent<TransformComponent>(e);
+        const auto inventory = comp_mgr.getComponent<InventoryComponent>(e);
+        const auto weapon
 
-        if (sprite && transform) {
-            renderComp.render(graphics, *sprite, *transform, camera);
+                if (playerSpr) {
+            renderComp.render(graphics, *playerSpr, *transform, camera);
+        }
+        else if () {
+            renderComp.render();
         }
     });
 
