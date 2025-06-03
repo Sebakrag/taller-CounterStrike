@@ -14,7 +14,7 @@ private:
     float posX, posY;
     int health;
     PlayerState state;
-    float speed = 5.0f;
+    float speed = 80.0f;
 
     WeaponKnife knife;
     FireWeapon* primaryWeapon;

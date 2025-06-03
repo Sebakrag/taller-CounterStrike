@@ -54,6 +54,7 @@ bool Match::movePlayer(const std::string& playerName, const float dx, const floa
         return false;
 
     try {
+        std::cout << "En match::movePlayer llega con los parametros: (" << dx << ", " << dy << "), y deltatime: " << deltaTime << std::endl;
         PhysicsEngine::movePlayer(*p, dx, dy, deltaTime, map);
         return true;
     } catch (...) {
@@ -123,8 +124,8 @@ void Match::processPlant(const std::string& playerName) {
 
     int x = player->getX();
     int y = player->getY();
-    if (!map.isBombSite(x, y))
-        return;
+    //if (!map.isBombSite(x, y))
+      //  return;
 
     bombPlanted = true;
     bombPosX = x;
@@ -219,8 +220,8 @@ GameInfo Match::generateGameInfo() const {
     for (const auto& p: players) {
         id++;
 
-        PlayerInfo info(id, p.getId(), p.getTeam(), PlayerSkin::CounterTerrorist1, p.getX(),
-                        p.getY(), Vec2D(0, 1), p.getEquippedWeapon(), p.getHealth(),
+        PlayerInfo info(id, p.getId(), p.getTeam(), PlayerSkin::CounterTerrorist1, static_cast<int>(std::round(p.getX())),
+                        static_cast<int>(std::round(p.getY())), Vec2D(0, 1), p.getEquippedWeapon(), p.getHealth(),
                         static_cast<int>(p.getMoney()),
                         p.getPrimaryWeapon() ? p.getPrimaryWeapon()->getBullets() : 0);
         playersInfo.push_back(info);

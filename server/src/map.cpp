@@ -2,34 +2,29 @@
 
 #include <iostream>
 
-Map::Map() {
-    map = {
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 1, 1, 0, 0, 1, 1, 1, 0},
-            {0, 0, 0, 1, 0, 0, 1, 0, 0, 0}, {0, 1, 0, 0, 0, 1, 1, 0, 1, 0},
-            {0, 1, 1, 1, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 1, 0, 1, 1, 0, 1, 0},
-            {0, 1, 0, 0, 0, 0, 1, 0, 0, 0}, {0, 1, 1, 1, 1, 0, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    };
 
-    width = map[0].size();
-    height = map.size();
-}
+Map::Map() : tileMap(TileMap::getLevelDemo()) {}
 
-bool Map::isWalkable(const int x, const int y) const {
-    if (x < 0 || y < 0 || x >= width || y >= height)
+bool Map::isWalkable(int x, int y) {
+    if (x < 0 || y < 0 || x >= 640 || y >= 400)
         return false;
 
-    return map[y][x] == 0;
+    return true;
 }
 
-bool Map::isBombSite(int x, int y) const { return (x == 1 && y == 1); }
+/*Map::Map() : tileMap(TileMap::getLevelDemo()) {}
 
+bool Map::isWalkable(float x, float y) {
+    const int TILE_SIZE = 64;
 
-void Map::show() const {
-    for (const auto& row: map) {
-        for (const int cell: row) {
-            std::cout << (cell == 0 ? "." : "#");
-        }
-        std::cout << std::endl;
+    int tileX = static_cast<int>(x) / TILE_SIZE;
+    int tileY = static_cast<int>(y) / TILE_SIZE;
+
+    if (tileX < 0 || tileY < 0 ||
+        tileX >= 640 || tileY >= 400) {
+        return false;
     }
-}
+
+    return !tileMap.getTile(tileY, tileX).isSolid();
+}*/
+
