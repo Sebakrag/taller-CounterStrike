@@ -7,6 +7,7 @@
 #include "client/include/app-state/GameMatchAppState.h"
 #include "client/include/app-state/LoginAppState.h"
 #include "client/include/app-state/MainMenuAppState.h"
+#include "client/include/app-state/LobbyAppState.h"
 
 AppStateController::AppStateController() { current_state = new LoginAppState(); }
 
