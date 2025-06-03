@@ -1,69 +1,52 @@
-#include "app-state/LobbyAppState.h"
+#include "app-state/LoginAppState.h"
 
 #include <iostream>
-#include <optional>
+#include <memory>
+#include <string>
 
-#include "app-state/AppStateCode.h"
 #include "app-state/AppStateController.h"
 #include "client.h"
-#include "ui/LobbyWindow.h"
+#include "ui/LoginWindow.h"
 
-// Referencia a la variable global definida en MainMenuWindow.cpp
-extern Client* g_client;
-
-LobbyAppState::LobbyAppState() {
-    // inicializar si es necesario
+LoginAppState::LoginAppState() {
+    // Here we can initialize some music. This applies only if we
+    // are using the heap to create the app states.
+    // Otherwise, we should override the enter() method of AppState, and
+    // there we should initialize the music.
 }
 
-std::optional<AppStateCode> LobbyAppState::update() {
-    Client* client = controller->getClient();
-    if (!client) {
-        std::cerr << "[LobbyAppState] Error: No client available" << std::endl;
-        return AppStateCode::MAIN_MENU;
-    }
-    
-    // Actualizar la variable global para que los componentes UI puedan acceder al cliente
-    g_client = client;
+// std::optional<AppStateCode> LoginAppState::update() {
+// struct state_result_t {
+//     std::optional<AppStateCode> app_state_code;
+//     Client client;
+// };
 
-    // Verificar si el cliente está en el lobby
-    if (client->getStatus() != InLobby && client->getStatus() != InGame) {
-        std::cerr << "[LobbyAppState] Error: Client not in lobby status" << std::endl;
-        return AppStateCode::MAIN_MENU;
-    }
+// state_result_t LoginAppState::update() {
+std::optional<AppStateCode> LoginAppState::update() {
+    LoginWindow dlg;
+    if (dlg.exec() == QDialog::Accepted) {
+        const std::string usr = dlg.userName().toStdString();
+        const std::string ip = dlg.serverIp().toStdString();
+        const std::string port = dlg.serverPort().toStdString();
 
-    // Si el juego ya comenzó, transicionar al estado de juego
-    if (client->getStatus() == InGame) {
-        std::cout << "[LobbyAppState] Game started, transitioning to game match state" << std::endl;
-        return AppStateCode::GAME_MATCH;
-    }
+        std::cout << "[LoginAppState] Usuario=" << usr
+                  << " Servidor=" << ip << std::endl;
 
-    // Mostrar la ventana de lobby
-    LobbyWindow lobbyWindow(client);
-    int result = lobbyWindow.exec();
+        try {
+            auto c = std::make_shared<Client>(ip, port, usr);
+            std::cout << "[LoginAppState] Cliente creado" << std::endl;
 
-    // Manejar acciones del usuario en el lobby
-    if (result == LobbyWindow::StartGame) {
-        // Si el usuario es el creador y presionó "Start Game"
-        if (client->isCreator()) {
-            client->StartMatch();
-            if (client->getStatus() == InGame) {
-                return AppStateCode::GAME_MATCH;
-            }
+            controller->setClient(c);
+            return AppStateCode::MAIN_MENU;
         }
-    } else if (result == LobbyWindow::LeaveGame) {
-        // Si cualquier jugador presionó "Leave Game"
-        client->LeaveMatch();
-        return AppStateCode::MAIN_MENU;
+        catch(const std::exception &e) {
+            // Mostrar error y permanecer en la pantalla de login
+            std::cerr << "Error de login: " << e.what() << std::endl;
+            return AppStateCode::LOGIN;
+        }
     }
-
-    // Si el cliente ahora está en juego (porque otro jugador inició la partida)
-    if (client->getStatus() == InGame) {
-        return AppStateCode::GAME_MATCH;
-    }
-
-    return std::nullopt;
+    return AppStateCode::LOGIN;
 }
 
-LobbyAppState::~LobbyAppState() {
-    // deinicializar si fuera necesario
+LoginAppState::~LoginAppState() {
 }

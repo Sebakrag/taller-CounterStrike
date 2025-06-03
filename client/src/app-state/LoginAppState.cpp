@@ -1,6 +1,17 @@
-#include "client/include/app-state/LoginAppState.h"
+#include "app-state/LoginAppState.h"
 
-#include <iostream>  // Eliminar una vez tengamos la parte grafica.
+#include <iostream>
+#include <memory>
+#include <string>
+
+// Qt includes
+#include <QDialog>
+#include <QMessageBox>
+
+#include "app-state/AppStateController.h"
+#include "client.h"
+#include "ui/LoginWindow.h"
+#include "ui/UIConstants.h"
 
 LoginAppState::LoginAppState() {
     // Here we can initialize some music. This applies only if we
@@ -20,7 +31,7 @@ std::optional<AppStateCode> LoginAppState::update() {
     LoginWindow dlg;
     if (dlg.exec() == QDialog::Accepted) {
         const std::string usr = dlg.userName().toStdString();
-        const std::string ip  = dlg.serverIp() .toStdString();
+        const std::string ip = dlg.serverIp().toStdString();
         const std::string port = dlg.serverPort().toStdString();
 
         std::cout << "[LoginAppState] Usuario=" << usr
@@ -28,14 +39,14 @@ std::optional<AppStateCode> LoginAppState::update() {
 
         try {
             auto c = std::make_shared<Client>(ip, port, usr);
-            std::cout << "[LoginAppState] c" << c
-                             << std::endl;
+            std::cout << "[LoginAppState] Cliente creado" << std::endl;
 
             controller->setClient(c);
             return AppStateCode::MAIN_MENU;
         }
         catch(const std::exception &e) {
-            std::cerr << "Login: " << e.what() << std::endl;
+            // Mostrar error y permanecer en la pantalla de login
+            std::cerr << "Error de login: " << e.what() << std::endl;
             return AppStateCode::LOGIN;
         }
     }

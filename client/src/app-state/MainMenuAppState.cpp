@@ -1,10 +1,10 @@
-#include "app_state/MainMenuAppState.h"
+#include "app-state/MainMenuAppState.h"
 
 #include <iostream>
 #include <optional>
 
-#include "app_state/AppStateCode.h"
-#include "app_state/AppStateController.h"
+#include "app-state/AppStateCode.h"
+#include "app-state/AppStateController.h"
 #include "client.h"
 #include "ui/MainMenuWindow.h"
 #include "ui/JoinGameDialog.h"
@@ -31,7 +31,7 @@ std::optional<AppStateCode> MainMenuAppState::update() {
                 return AppStateCode::MAIN_MENU;
             }
             QString gameName = nid.textValue().trimmed();
-            bool success = controller->getClient()->createMatch(gameName.toStdString());
+            bool success = controller->getClient()->CreateMatch(gameName.toStdString());
 
             if (!success) {
                 showStyledWarning("Error", "No se pudo crear la partida. Es posible que ya exista una partida con ese nombre.");
@@ -49,7 +49,7 @@ std::optional<AppStateCode> MainMenuAppState::update() {
             break;
         }
         case MainMenuWindow::QuitApp:
-            controller->getClient()->exitGame();
+            controller->getClient()->ExitGame();
             return AppStateCode::QUIT;
         default:
             return AppStateCode::QUIT;

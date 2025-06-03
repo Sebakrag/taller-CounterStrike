@@ -152,7 +152,7 @@ void JoinGameDialog::centerOnScreen() {
 void JoinGameDialog::onJoinGame() {
     if (!selectedGame.isEmpty() && g_client) {
         // Si hay una partida seleccionada y tenemos acceso al cliente global
-        g_client->joinMatch(selectedGame.toStdString());
+        g_client->JoinMatch(selectedGame.toStdString());
         done(JoinSelected);
     } else {
         QMessageBox::warning(this, "Error", "Por favor selecciona una partida primero.");
