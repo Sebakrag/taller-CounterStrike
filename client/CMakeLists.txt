@@ -1,12 +1,31 @@
+# Compilación de recursos Qt
+set(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.qrc")
+qt6_add_resources(RCC_SOURCES "${QRC_FILE}")
+
+# Definición del ejecutable cliente
+add_executable(taller_client)
+
+# Fuentes del cliente
 target_sources(taller_client
     PRIVATE
-    # .cpp files
-    main.cpp
+        # Recursos Qt
+        ${RCC_SOURCES}
+        
+        # Lógica principal
+        main.cpp
         # app-sates:
         src/app-state/AppStateController.cpp
+        src/app-state/LobbyAppState.cpp
         src/app-state/LoginAppState.cpp
         src/app-state/MainMenuAppState.cpp
         src/app-state/GameMatchAppState.cpp
+        # ui:
+        src/ui/JoinGameDialog.cpp
+        src/ui/LobbyWindow.cpp
+        src/ui/LoginWindow.cpp
+        src/ui/MainMenuWindow.cpp
+        src/ui/NameInputDialog.cpp
+        src/ui/StyledMessageBox.cpp
         # model:
         src/model/Camera.cpp
         src/model/Game.cpp
@@ -27,7 +46,7 @@ target_sources(taller_client
         src/client_sender.cpp
         src/client_receiver.cpp
         src/client.cpp
-
+        
     PUBLIC
     # .h files
         client_constants.h
@@ -36,8 +55,17 @@ target_sources(taller_client
         include/app-state/AppStateCode.h
         include/app-state/AppStateController.h
         include/app-state/LoginAppState.h
+        include/app-state/LobbyAppState.h
         include/app-state/MainMenuAppState.h
         include/app-state/GameMatchAppState.h
+        # ui:
+        include/ui/JoinGameDialog.h
+        include/ui/LobbyWindow.h
+        include/ui/LoginWindow.h
+        include/ui/MainMenuWindow.h
+        include/ui/NameInputDialog.h
+        include/ui/StyledMessageBox.h
+        include/ui/UIConstants.h
         # model:
         include/model/Camera.h
         include/model/Game.h
@@ -65,3 +93,9 @@ target_sources(taller_client
         include/client_receiver.h
         include/client.h
     )
+
+# Directorios de inclusión
+target_include_directories(taller_client
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)

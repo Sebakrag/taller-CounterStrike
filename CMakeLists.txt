@@ -50,6 +50,26 @@ target_include_directories(taller_common PUBLIC .)
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
 #
 
+# —————————————————————————————————————————————————
+#  Qt integration
+# —————————————————————————————————————————————————
+
+# Si Qt no está en rutas estándar, ajusta aquí:
+# set(CMAKE_PREFIX_PATH "/ruta/a/Qt/6.5.0/lib/cmake")
+
+if(TALLER_CLIENT)
+    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+    
+    # Activa el procesamiento automático de moc, uic y rcc
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTORCC ON)
+endif()
+
+# —————————————————————————————————————————————————
+#  Fin Qt integration
+# —————————————————————————————————————————————————
+
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
 if(TALLER_CLIENT OR TALLER_EDITOR)
@@ -124,7 +144,15 @@ if(TALLER_CLIENT)
     target_include_directories(taller_client PRIVATE ${SDL2_IMAGE_SOURCE_DIR}/include)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp SDL2_image)
+    target_link_libraries(taller_client 
+        PRIVATE
+        taller_common
+        SDL2pp::SDL2pp
+        SDL2_image::SDL2_image
+        Qt6::Widgets 
+        Qt6::Core 
+        Qt6::Gui
+    )
 endif()
 
 if(TALLER_SERVER)
@@ -181,6 +209,26 @@ if(TALLER_TESTS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
+
+    # —————————————————————————————————————————————————
+    #  Qt integration
+    # —————————————————————————————————————————————————
+
+    # Si Qt no está en rutas estándar, ajusta aquí:
+    # set(CMAKE_PREFIX_PATH "/ruta/a/Qt/6.5.0/lib/cmake")
+
+    if(TALLER_CLIENT)
+        find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+        
+        # Activa el procesamiento automático de moc, uic y rcc
+        set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTOUIC ON)
+        set(CMAKE_AUTORCC ON)
+    endif()
+
+    # —————————————————————————————————————————————————
+    #  Fin Qt integration
+    # —————————————————————————————————————————————————
 
     # target for testing
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
