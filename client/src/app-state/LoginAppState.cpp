@@ -53,5 +53,4 @@ std::optional<AppStateCode> LoginAppState::update() {
     return AppStateCode::LOGIN;
 }
 
-LoginAppState::~LoginAppState() {
-}
+LoginAppState::~LoginAppState() {}
