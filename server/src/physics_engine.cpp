@@ -1,7 +1,7 @@
 #include "../include/physics_engine.h"
 
 void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float deltaTime,
-                               const Map& map) {
+                                Map& map) {
     if (dirX == 0 && dirY == 0)
         return;
 
@@ -19,15 +19,17 @@ void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float del
     const float newY = player.getY() + dy;
 
     // Validamos X e Y por separado para permitir movimiento en las esquinas
-    if (map.isWalkable(static_cast<int>(newX), static_cast<int>(player.getY())))
+    if (map.isWalkable(static_cast<int>(newX), static_cast<int>(player.getY()))) {
         player.setX(newX);
+    }
 
-    if (map.isWalkable(static_cast<int>(player.getX()), static_cast<int>(newY)))
+    if (map.isWalkable(static_cast<int>(player.getX()), static_cast<int>(newY))) {
         player.setY(newY);
+    }
 }
 
 bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, float dirY,
-                                  const Map& map, const Player& target, float maxDistance,
+                                    Map& map, const Player& target, float maxDistance,
                                   float& impactDistance) {
     // Normalizar la dirección
     const float len = std::sqrt(dirX * dirX + dirY * dirY);

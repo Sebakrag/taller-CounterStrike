@@ -2,17 +2,15 @@
 #define MAP_H
 
 #include <vector>
+#include "../../common/tile_map.h"
 
 class Map {
 private:
-    std::vector<std::vector<int>> map;
-    int width, height;
+    TileMap tileMap;
 
 public:
     Map();
-    bool isWalkable(const int x, const int y) const;
-    bool isBombSite(int x, int y) const;
-    void show() const;
+    bool isWalkable(int x, int y);
 };
 
 #endif
