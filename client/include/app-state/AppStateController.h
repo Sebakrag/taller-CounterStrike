@@ -2,6 +2,8 @@
 #define APPSTATECONTROLLER_H
 
 #include "AppState.h"
+#include <memory>
+#include "../client.h"
 
 
 class AppStateController {
