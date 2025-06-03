@@ -17,24 +17,30 @@ LoginAppState::LoginAppState() {
 
 // state_result_t LoginAppState::update() {
 std::optional<AppStateCode> LoginAppState::update() {
-    std::optional<AppStateCode> new_app_state;
+    LoginWindow dlg;
+    if (dlg.exec() == QDialog::Accepted) {
+        const std::string usr = dlg.userName().toStdString();
+        const std::string ip  = dlg.serverIp() .toStdString();
+        const std::string port = dlg.serverPort().toStdString();
 
-    // Parte grafica:
-    // Crear ventana que tenga un cuadro de texto para que el usuario
-    // ingrese su nombre.
-    // Y otro cuadro de texto para que ingrese la IP del Server.
-    // Con un boton "connect".
+        std::cout << "[LoginAppState] Usuario=" << usr
+                  << " Servidor=" << ip << std::endl;
 
-    // Con los datos tomando (nombre, y la direccion IP)
-    // Client client(dir_ip, port, usr_name);
-    std::cout << "Ya me logueeeee!" << std::endl;
-    new_app_state = AppStateCode::GAME_MATCH;  // Para pasar directo al juego y probarlo.
+        try {
+            auto c = std::make_shared<Client>(ip, port, usr);
+            std::cout << "[LoginAppState] c" << c
+                             << std::endl;
 
-
-    // return {new_app_state, std::move(client)};
-    return new_app_state;
+            controller->setClient(c);
+            return AppStateCode::MAIN_MENU;
+        }
+        catch(const std::exception &e) {
+            std::cerr << "Login: " << e.what() << std::endl;
+            return AppStateCode::LOGIN;
+        }
+    }
+    return AppStateCode::LOGIN;
 }
 
 LoginAppState::~LoginAppState() {
-    // Here we should deinitilize all the things we initilized in the constructor.
 }

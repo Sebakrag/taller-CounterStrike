@@ -22,23 +22,32 @@ void AppStateController::transition_to(const AppStateCode& new_state) {
     current_state = nullptr;
 
     switch (new_state) {
-        case AppStateCode::MAIN_MENU: {
+        case AppStateCode::MAIN_MENU:
             current_state = new MainMenuAppState();
-            update();
             break;
-        }
-        case AppStateCode::GAME_MATCH: {
+        case AppStateCode::LOBBY:
+            current_state = new LobbyAppState();
+            break;
+        case AppStateCode::GAME_MATCH:
             current_state = new GameMatchAppState();
-            update();
             break;
-        }
-        case AppStateCode::QUIT: {
-            std::cout << "Quiting client program" << std::endl;
-            break;
-        }
+        case AppStateCode::QUIT:
+            std::cout << "[Controller] Quiting client program\n";
+            return;
         default:
             throw std::runtime_error("Unknown app state.");
     }
+
+    current_state->setController(this);
+    update();
+}
+
+void AppStateController::setClient(std::shared_ptr<Client> c) {
+    client = std::move(c);
+}
+
+Client* AppStateController::getClient() const {
+    return client.get();
 }
 
 AppStateController::~AppStateController() {

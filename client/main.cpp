@@ -3,6 +3,8 @@
 
 #include "common/constants.h"
 #include "include/app-state/AppStateController.h"
+#include <QApplication>
+#include "common/constants.h"
 
 int main() {
     try {

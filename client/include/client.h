@@ -43,7 +43,7 @@ public:
 
     // Acciones en el menu principal
     void ExitGame();
-    void CreateMatch(const std::string& match_name);
+    bool CreateMatch(const std::string& match_name);
     void JoinMatch(const std::string& match_name);
     void refreshMatchList();
 
@@ -51,6 +51,9 @@ public:
     void LeaveMatch();  // regresa la menú principal
     void StartMatch();
     void refreshMatchRoom();
+    std::vector<PlayerInfoLobby> refreshPlayersList();
+    std::string getUsername() const { return username; }
+    bool isCreator() const { return player_creator; }
 
     // GameInfo getGameInfo() const;  // Este es el verdadero metodo.
     // TODO: implementar GameInfo getGameInfo() const; y eliminar el siguiente:
