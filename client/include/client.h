@@ -20,6 +20,7 @@ class Client {
 private:
     ClientProtocol protocol;
     Status status;
+    std::string username;
     std::string match_name;
     bool player_creator = false;
     Queue<GameAction> send_queue;

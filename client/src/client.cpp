@@ -120,7 +120,7 @@ std::vector<std::string> Client::refreshMatchList() {
     return list_matchs;
 }
 // in Lobby.
-void Client::leaveMatch() {
+void Client::LeaveMatch() {
     protocol.sendLobbyAction(LobbyAction(LobbyAction::QuitMatch));
     bool left = protocol.recvConfirmation();
     if (left) {
