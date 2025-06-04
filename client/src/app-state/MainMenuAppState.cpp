@@ -1,21 +1,20 @@
-#include "app-state/MainMenuAppState.h"
+#include "client/include/app-state/MainMenuAppState.h"
 
 #include <iostream>
 #include <optional>
 
-#include "app-state/AppStateCode.h"
-#include "app-state/AppStateController.h"
-#include "client.h"
-#include "ui/MainMenuWindow.h"
-#include "ui/JoinGameDialog.h"
-#include "ui/NameInputDialog.h"
-#include "ui/StyledMessageBox.h"
+#include "client/include/app-state/AppStateCode.h"
+#include "client/include/app-state/AppStateController.h"
+#include "client/include/client.h"
+#include "client/include/ui/JoinGameDialog.h"
+#include "client/include/ui/MainMenuWindow.h"
+#include "client/include/ui/NameInputDialog.h"
+#include "client/include/ui/StyledMessageBox.h"
 
 extern Client* g_client;
 
-#include "ui/NameInputDialog.h"
-
-MainMenuAppState::MainMenuAppState() {
+MainMenuAppState::MainMenuAppState(AppStateController* ctrl) {
+    controller = ctrl;
     std::cout << "[MainMenuAppState] Constructor called" << std::endl;
     // Initialize g_client to nullptr to avoid accessing uninitialized memory
     g_client = nullptr;
@@ -43,7 +42,8 @@ std::optional<AppStateCode> MainMenuAppState::update() {
             bool success = controller->getClient()->CreateMatch(gameName.toStdString());
 
             if (!success) {
-                showStyledWarning("Error", "No se pudo crear la partida. Es posible que ya exista una partida con ese nombre.");
+                showStyledWarning("Error", "No se pudo crear la partida. Es posible que ya exista "
+                                           "una partida con ese nombre.");
                 return AppStateCode::MAIN_MENU;
             }
             break;
@@ -70,5 +70,4 @@ std::optional<AppStateCode> MainMenuAppState::update() {
     return AppStateCode::MAIN_MENU;
 }
 
-MainMenuAppState::~MainMenuAppState() {
-}
+MainMenuAppState::~MainMenuAppState() {}

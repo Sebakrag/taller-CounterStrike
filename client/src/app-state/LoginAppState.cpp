@@ -1,4 +1,4 @@
-#include "app-state/LoginAppState.h"
+#include "client/include/app-state/LoginAppState.h"
 
 #include <iostream>
 #include <memory>
@@ -8,12 +8,14 @@
 #include <QDialog>
 #include <QMessageBox>
 
-#include "app-state/AppStateController.h"
-#include "client.h"
+#include "client/include/app-state/AppStateController.h"
 #include "ui/LoginWindow.h"
 #include "ui/UIConstants.h"
 
-LoginAppState::LoginAppState() {
+#include "client.h"
+
+LoginAppState::LoginAppState(AppStateController* ctrl) {
+    controller = ctrl;
     // Here we can initialize some music. This applies only if we
     // are using the heap to create the app states.
     // Otherwise, we should override the enter() method of AppState, and
@@ -34,8 +36,7 @@ std::optional<AppStateCode> LoginAppState::update() {
         const std::string ip = dlg.serverIp().toStdString();
         const std::string port = dlg.serverPort().toStdString();
 
-        std::cout << "[LoginAppState] Usuario=" << usr
-                  << " Servidor=" << ip << std::endl;
+        std::cout << "[LoginAppState] Usuario=" << usr << " Servidor=" << ip << std::endl;
 
         try {
             std::cout << "[LoginAppState] Intentando crear cliente..." << std::endl;
@@ -49,8 +50,7 @@ std::optional<AppStateCode> LoginAppState::update() {
             // Return directly without any further processing
             AppStateCode next_state = AppStateCode::MAIN_MENU;
             return next_state;
-        }
-        catch(const std::exception &e) {
+        } catch (const std::exception& e) {
             // Mostrar error y permanecer en la pantalla de login
             std::cerr << "Error de login: " << e.what() << std::endl;
             return AppStateCode::LOGIN;

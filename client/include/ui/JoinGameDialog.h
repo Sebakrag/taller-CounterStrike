@@ -1,32 +1,29 @@
 #pragma once
 
 #include <QDialog>
-#include <QPixmap>
 #include <QListWidget>
-#include <vector>
+#include <QPixmap>
 #include <string>
+#include <vector>
 
 class Client;
 class QPushButton;
 class QVBoxLayout;
 
-class JoinGameDialog : public QDialog {
+class JoinGameDialog: public QDialog {
     Q_OBJECT
 
 public:
-    enum JoinGameResult {
-        JoinSelected = 1,
-        Cancel = 0
-    };
+    enum JoinGameResult { JoinSelected = 1, Cancel = 0 };
 
-    explicit JoinGameDialog(QWidget *parent = nullptr);
+    explicit JoinGameDialog(QWidget* parent = nullptr);
     ~JoinGameDialog() override;
 
     QString getSelectedGame() const;
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
+    void paintEvent(QPaintEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 private slots:
     void onJoinGame();
@@ -45,7 +42,7 @@ private:
     QPushButton* cancelButton;
     QPushButton* refreshButton;
     QVBoxLayout* mainLayout;
-    
+
     std::vector<std::string> gameList;
     QString selectedGame;
 };

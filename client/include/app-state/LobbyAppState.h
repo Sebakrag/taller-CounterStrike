@@ -5,7 +5,7 @@
 
 class LobbyAppState: public AppState {
 public:
-    LobbyAppState();
+    explicit LobbyAppState(AppStateController* ctrl);
 
     std::optional<AppStateCode> update() override;
 

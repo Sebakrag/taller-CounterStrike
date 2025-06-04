@@ -5,7 +5,7 @@
 
 class MainMenuAppState: public AppState {
 public:
-    MainMenuAppState();
+    explicit MainMenuAppState(AppStateController* ctrl);
 
     std::optional<AppStateCode> update() override;
 

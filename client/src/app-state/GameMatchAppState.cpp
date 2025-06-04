@@ -7,11 +7,12 @@
 #include <SDL2pp/SDL2pp.hh>
 
 #include "client/client_constants.h"
+#include "client/include/app-state/AppStateController.h"
 #include "client/include/client.h"
 #include "client/include/model/Game.h"
 #include "common/dtos/MatchInfo.h"
 
-GameMatchAppState::GameMatchAppState() {}
+GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ctrl; }
 
 // Todas las configuraciones iniciales de la partida las tiene que recibir el constructor
 // de GameMatchAppState, que provienen del MainMenuState, cuando el usuario
@@ -50,9 +51,10 @@ std::optional<AppStateCode> GameMatchAppState::update() {
 
         const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
 
-        Client client("localhost", "8080", "seba");
+        // Client client("localhost", "8080", "seba");
+        const auto client = controller->getClient();
 
-        Game game(match_info, client);
+        Game game(match_info, *client);
 
         game.start();
 

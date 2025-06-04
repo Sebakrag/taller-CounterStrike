@@ -25,8 +25,8 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
     status = InMenu;
 
 
-    //CreateMatch("Partidita");
-    //StartMatch();
+    // CreateMatch("Partidita");
+    // StartMatch();
 }
 void Client::mainLoop() {
     while (status != Disconnected) {

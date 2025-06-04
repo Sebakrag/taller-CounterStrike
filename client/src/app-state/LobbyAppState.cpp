@@ -1,17 +1,17 @@
-#include "app-state/LobbyAppState.h"
+#include "client/include/app-state/LobbyAppState.h"
 
 #include <iostream>
 #include <optional>
 
-#include "app-state/AppStateCode.h"
-#include "app-state/AppStateController.h"
-#include "client.h"
-#include "ui/LobbyWindow.h"
+#include "client/include/app-state/AppStateController.h"
+#include "client/include/client.h"
+#include "client/include/ui/LobbyWindow.h"
 
 // Referencia a la variable global definida en MainMenuWindow.cpp
 extern Client* g_client;
 
-LobbyAppState::LobbyAppState() {
+LobbyAppState::LobbyAppState(AppStateController* ctrl) {
+    controller = ctrl;
     // inicializar si es necesario
 }
 

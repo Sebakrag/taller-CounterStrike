@@ -1,9 +1,11 @@
 #ifndef APPSTATECONTROLLER_H
 #define APPSTATECONTROLLER_H
 
-#include "AppState.h"
 #include <memory>
-#include "../client.h"
+
+#include "client/include/client.h"
+
+#include "AppState.h"
 
 
 class AppStateController {
@@ -21,7 +23,7 @@ public:
     void update();
 
     void setClient(std::unique_ptr<Client> c);
-    
+
     Client* getClient() const;
 
     ~AppStateController();

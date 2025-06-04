@@ -1,29 +1,29 @@
 #include "ui/MainMenuWindow.h"
-#include "ui_MainMenuWindow.h"
 
-#include <QPainter>
-#include <QScreen>
 #include <QGuiApplication>
-#include <QResizeEvent>
-#include <QPushButton>
-#include <QSizePolicy>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QListWidget>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPushButton>
+#include <QResizeEvent>
+#include <QScreen>
+#include <QSizePolicy>
+#include <QVBoxLayout>
 
 #include "../include/client.h"
 #include "ui/UIConstants.h"
 
+#include "ui_MainMenuWindow.h"
+
 // Variable global para acceder al cliente desde cualquier parte
 Client* g_client = nullptr;
 
-MainMenuWindow::MainMenuWindow(QWidget *parent)
-    : QDialog(parent),
-      ui(new Ui::MainMenuWindow),
-      m_backgroundPixmap(":/images/cs_background.jpg")
-{
+MainMenuWindow::MainMenuWindow(QWidget* parent):
+        QDialog(parent),
+        ui(new Ui::MainMenuWindow),
+        m_backgroundPixmap(":/images/cs_background.jpg") {
     ui->setupUi(this);
     setWindowTitle("Menú Principal");
 
@@ -54,7 +54,7 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     const int fixedWidth = 200;
     const int fixedHeight = 30;
 
-    auto setupButton = [&](QPushButton *btn) {
+    auto setupButton = [&](QPushButton* btn) {
         btn->setStyleSheet(btnStyle);
         btn->setFixedSize(fixedWidth, fixedHeight);
         btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -66,49 +66,42 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     setupButton(ui->quitButton);
 
     // Simplificamos la interfaz para mostrar solo los tres botones principales
-    
+
     // Conexiones señal/slot
     connect(ui->createButton, &QPushButton::clicked, this, &MainMenuWindow::onCreateGame);
-    connect(ui->joinButton,   &QPushButton::clicked, this, &MainMenuWindow::onJoinGame);
-    connect(ui->quitButton,   &QPushButton::clicked, this, &MainMenuWindow::onQuit);
+    connect(ui->joinButton, &QPushButton::clicked, this, &MainMenuWindow::onJoinGame);
+    connect(ui->quitButton, &QPushButton::clicked, this, &MainMenuWindow::onQuit);
 }
 
-MainMenuWindow::~MainMenuWindow() {
-    delete ui;
-}
+MainMenuWindow::~MainMenuWindow() { delete ui; }
 
-void MainMenuWindow::paintEvent(QPaintEvent *event) {
+void MainMenuWindow::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     if (!m_backgroundPixmap.isNull()) {
-        QPixmap scaled = m_backgroundPixmap.scaled(
-            size(),
-            Qt::KeepAspectRatioByExpanding,
-            Qt::SmoothTransformation
-        );
-        int x = (width()  - scaled.width()) / 2;
+        QPixmap scaled = m_backgroundPixmap.scaled(size(), Qt::KeepAspectRatioByExpanding,
+                                                   Qt::SmoothTransformation);
+        int x = (width() - scaled.width()) / 2;
         int y = (height() - scaled.height()) / 2;
         painter.drawPixmap(x, y, scaled);
     }
     QDialog::paintEvent(event);
 }
 
-void MainMenuWindow::resizeEvent(QResizeEvent *event) {
+void MainMenuWindow::resizeEvent(QResizeEvent* event) {
     QDialog::resizeEvent(event);
     centerOnScreen();
 }
 
 void MainMenuWindow::centerOnScreen() {
-    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+    if (QScreen* screen = QGuiApplication::primaryScreen()) {
         QRect geom = screen->availableGeometry();
-        int x = (geom.width()  - width()) / 2;
+        int x = (geom.width() - width()) / 2;
         int y = (geom.height() - height()) / 2;
         move(x, y);
     }
 }
 
-void MainMenuWindow::onCreateGame() {
-    done(CreateGame);
-}
+void MainMenuWindow::onCreateGame() { done(CreateGame); }
 
 void MainMenuWindow::onJoinGame() {
     // Simplemente indicamos que queremos unirse a una partida
@@ -116,6 +109,4 @@ void MainMenuWindow::onJoinGame() {
     done(JoinGame);
 }
 
-void MainMenuWindow::onQuit() {
-    done(QuitApp);
-}
+void MainMenuWindow::onQuit() { done(QuitApp); }

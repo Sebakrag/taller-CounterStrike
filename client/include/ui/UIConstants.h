@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QString>
 #include <QSize>
+#include <QString>
 
 namespace UIConstants {
-    // Tamaños para ventanas redimensionables
-    const QSize DEFAULT_SIZE(800, 600);
-    const QSize MINIMUM_SIZE(640, 480);
-    
-    // Estilos comunes
-    const QString BUTTON_STYLE = R"(
+// Tamaños para ventanas redimensionables
+const QSize DEFAULT_SIZE(800, 600);
+const QSize MINIMUM_SIZE(640, 480);
+
+// Estilos comunes
+const QString BUTTON_STYLE = R"(
         QPushButton {
             background-color: #A9A9A9;
             color: white;
@@ -24,8 +24,8 @@ namespace UIConstants {
             background-color: #696969;
         }
     )";
-    
-    const QString LIST_STYLE = R"(
+
+const QString LIST_STYLE = R"(
         QListWidget {
             background-color: rgba(0, 0, 0, 150);
             color: white;
@@ -39,7 +39,7 @@ namespace UIConstants {
             background-color: rgba(100, 100, 100, 150);
         }
     )";
-    
-    const QString LABEL_STYLE = "color: white; font-size: 14px;";
-    const QString TITLE_STYLE = "color: white; font-size: 18px; font-weight: bold;";
-}
+
+const QString LABEL_STYLE = "color: white; font-size: 14px;";
+const QString TITLE_STYLE = "color: white; font-size: 18px; font-weight: bold;";
+}  // namespace UIConstants

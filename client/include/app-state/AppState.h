@@ -5,7 +5,7 @@
 
 #include "AppStateCode.h"
 
-class AppStateController; // Forward declaration
+class AppStateController;  // Forward declaration
 
 class AppState {
 protected:
@@ -22,9 +22,7 @@ public:
     virtual std::optional<AppStateCode> update() = 0;
 
     // Método para establecer el controlador
-    virtual void setController(AppStateController* ctrl) {
-        controller = ctrl;
-    }
+    virtual void setController(AppStateController* ctrl) { controller = ctrl; }
 };
 
 #endif  // APPSTATE_H

@@ -7,20 +7,14 @@
 class QLabel;
 class QPushButton;
 
-class StyledMessageBox : public QDialog {
+class StyledMessageBox: public QDialog {
     Q_OBJECT
 
 public:
-    enum MessageType {
-        Information,
-        Warning,
-        Error
-    };
+    enum MessageType { Information, Warning, Error };
 
-    explicit StyledMessageBox(const QString& title, 
-                             const QString& message, 
-                             MessageType type = Warning,
-                             QWidget* parent = nullptr);
+    explicit StyledMessageBox(const QString& title, const QString& message,
+                              MessageType type = Warning, QWidget* parent = nullptr);
     ~StyledMessageBox() override;
 
 protected:
@@ -35,7 +29,7 @@ private:
     QString m_title;
     QString m_message;
     MessageType m_type;
-    
+
     QLabel* titleLabel;
     QLabel* messageLabel;
     QPushButton* okButton;

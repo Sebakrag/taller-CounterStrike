@@ -1,25 +1,26 @@
 #include "ui/LoginWindow.h"
+
+#include <QFont>
 #include <QFormLayout>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QScreen>
 #include <QGuiApplication>
-#include <QPainter>
+#include <QHBoxLayout>
 #include <QMessageBox>
 #include <QMovie>
-#include <QFont>
+#include <QPainter>
 #include <QResizeEvent>
+#include <QScreen>
+#include <QVBoxLayout>
+
 #include "ui/UIConstants.h"
 
-LoginWindow::LoginWindow(QWidget *parent)
-    : QDialog(parent),
-      m_userEdit(new QLineEdit(this)),
-      m_ipEdit(new QLineEdit(this)),
-      m_portEdit(new QLineEdit(this)),
-      m_connectBtn(new QPushButton("Conectar", this)),
-      m_gifLabel(new QLabel(this)),
-      m_backgroundPixmap(":/images/cs_background.jpg")
-{
+LoginWindow::LoginWindow(QWidget* parent):
+        QDialog(parent),
+        m_userEdit(new QLineEdit(this)),
+        m_ipEdit(new QLineEdit(this)),
+        m_portEdit(new QLineEdit(this)),
+        m_connectBtn(new QPushButton("Conectar", this)),
+        m_gifLabel(new QLabel(this)),
+        m_backgroundPixmap(":/images/cs_background.jpg") {
     // Configuración básica de la ventana
     setWindowTitle("Login - Taller CS");
     setModal(true);
@@ -30,7 +31,7 @@ LoginWindow::LoginWindow(QWidget *parent)
     // Carga y prepara el GIF animado (logo)
     m_gifLabel->setFixedSize(100, 100);
     m_gifLabel->setStyleSheet("background: transparent;");
-    QMovie *movie = new QMovie(":/animations/cs_logo.gif");
+    QMovie* movie = new QMovie(":/animations/cs_logo.gif");
     movie->setScaledSize(m_gifLabel->size());
     m_gifLabel->setMovie(movie);
     movie->start();
@@ -39,11 +40,11 @@ LoginWindow::LoginWindow(QWidget *parent)
     QFont editFont;
     editFont.setPointSize(11);
     m_userEdit->setFont(editFont);
-    m_ipEdit  ->setFont(editFont);
+    m_ipEdit->setFont(editFont);
     m_portEdit->setFont(editFont);
 
     m_userEdit->setPlaceholderText("Ingrese usuario");
-    m_ipEdit  ->setPlaceholderText("Ingrese IP del servidor");
+    m_ipEdit->setPlaceholderText("Ingrese IP del servidor");
     m_portEdit->setPlaceholderText("Ingrese puerto");
 
     QString lineEditStyle = R"(
@@ -55,7 +56,7 @@ LoginWindow::LoginWindow(QWidget *parent)
         }
     )";
     m_userEdit->setStyleSheet(lineEditStyle);
-    m_ipEdit  ->setStyleSheet(lineEditStyle);
+    m_ipEdit->setStyleSheet(lineEditStyle);
     m_portEdit->setStyleSheet(lineEditStyle);
 
     m_connectBtn->setCursor(Qt::PointingHandCursor);
@@ -82,7 +83,7 @@ LoginWindow::LoginWindow(QWidget *parent)
     m_connectBtn->setStyleSheet(btnStyle);
 
     // Creamos el formulario con QFormLayout (dentro de un contenedor)
-    QWidget *formContainer = new QWidget(this);
+    QWidget* formContainer = new QWidget(this);
     formContainer->setObjectName("formContainer");
     formContainer->setStyleSheet("#formContainer { background: transparent; }");
     formContainer->setFixedWidth(500);
@@ -108,9 +109,9 @@ LoginWindow::LoginWindow(QWidget *parent)
     lblPort->setFont(labelFont);
     lblPort->setStyleSheet("color: white;");
 
-    formLayout->addRow(lblUser,    m_userEdit);
-    formLayout->addRow(lblIP,      m_ipEdit);
-    formLayout->addRow(lblPort,    m_portEdit);
+    formLayout->addRow(lblUser, m_userEdit);
+    formLayout->addRow(lblIP, m_ipEdit);
+    formLayout->addRow(lblPort, m_portEdit);
 
     // Composición con QVBoxLayout para el diálogo
     auto mainLayout = new QVBoxLayout(this);
@@ -150,14 +151,11 @@ LoginWindow::LoginWindow(QWidget *parent)
     setLayout(mainLayout);
 
     // Conexiones de señales y slots
-    connect(m_connectBtn, &QPushButton::clicked,
-            this, &LoginWindow::onConnectClicked);
+    connect(m_connectBtn, &QPushButton::clicked, this, &LoginWindow::onConnectClicked);
 }
 
 // Cada vez que cambie el tamaño, volvemos a centrar
-void LoginWindow::resizeEvent(QResizeEvent *event) {
-    QDialog::resizeEvent(event);
-}
+void LoginWindow::resizeEvent(QResizeEvent* event) { QDialog::resizeEvent(event); }
 
 LoginWindow::~LoginWindow() {
     // Qt libera automáticamente los hijos
@@ -165,7 +163,7 @@ LoginWindow::~LoginWindow() {
 
 void LoginWindow::centerOnScreen() {
     // Obtener la geometría de la pantalla principal
-    QScreen *screen = QGuiApplication::primaryScreen();
+    QScreen* screen = QGuiApplication::primaryScreen();
     QRect screenGeometry = screen->geometry();
 
     // Calcular la posición para centrar la ventana
@@ -176,15 +174,12 @@ void LoginWindow::centerOnScreen() {
     move(x, y);
 }
 
-void LoginWindow::paintEvent(QPaintEvent *event) {
+void LoginWindow::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     if (!m_backgroundPixmap.isNull()) {
-        QPixmap scaled = m_backgroundPixmap.scaled(
-            size(),
-            Qt::KeepAspectRatioByExpanding,
-            Qt::SmoothTransformation
-        );
-        int x = (width()  - scaled.width()) / 2;
+        QPixmap scaled = m_backgroundPixmap.scaled(size(), Qt::KeepAspectRatioByExpanding,
+                                                   Qt::SmoothTransformation);
+        int x = (width() - scaled.width()) / 2;
         int y = (height() - scaled.height()) / 2;
         painter.drawPixmap(x, y, scaled);
     }
@@ -192,19 +187,15 @@ void LoginWindow::paintEvent(QPaintEvent *event) {
 }
 
 void LoginWindow::onConnectClicked() {
-    if (m_userEdit->text().isEmpty() ||
-        m_ipEdit->text().isEmpty() ||
+    if (m_userEdit->text().isEmpty() || m_ipEdit->text().isEmpty() ||
         m_portEdit->text().isEmpty()) {
-        QMessageBox::warning(
-            this,
-            "Faltan datos",
-            "Por favor ingresa usuario, puerto e IP del servidor."
-        );
+        QMessageBox::warning(this, "Faltan datos",
+                             "Por favor ingresa usuario, puerto e IP del servidor.");
         return;
     }
     accept();
 }
 
-QString LoginWindow::userName()   const { return m_userEdit->text(); }
-QString LoginWindow::serverIp()   const { return m_ipEdit->text(); }
+QString LoginWindow::userName() const { return m_userEdit->text(); }
+QString LoginWindow::serverIp() const { return m_ipEdit->text(); }
 QString LoginWindow::serverPort() const { return m_portEdit->text(); }

@@ -5,11 +5,11 @@
 #include <stdexcept>
 
 #include "client/include/app-state/GameMatchAppState.h"
+#include "client/include/app-state/LobbyAppState.h"
 #include "client/include/app-state/LoginAppState.h"
 #include "client/include/app-state/MainMenuAppState.h"
-#include "client/include/app-state/LobbyAppState.h"
 
-AppStateController::AppStateController() { current_state = new LoginAppState(); }
+AppStateController::AppStateController() { current_state = new LoginAppState(this); }
 
 void AppStateController::update() {
     std::cout << "[AppStateController] Calling update on current state..." << std::endl;
@@ -35,15 +35,15 @@ void AppStateController::transition_to(const AppStateCode& new_state) {
     switch (new_state) {
         case AppStateCode::MAIN_MENU:
             std::cout << "[Controller] Creating MainMenuAppState" << std::endl;
-            current_state = new MainMenuAppState();
+            current_state = new MainMenuAppState(this);
             break;
         case AppStateCode::LOBBY:
             std::cout << "[Controller] Creating LobbyAppState" << std::endl;
-            current_state = new LobbyAppState();
+            current_state = new LobbyAppState(this);
             break;
         case AppStateCode::GAME_MATCH:
             std::cout << "[Controller] Creating GameMatchAppState" << std::endl;
-            current_state = new GameMatchAppState();
+            current_state = new GameMatchAppState(this);
             break;
         case AppStateCode::QUIT:
             std::cout << "[Controller] Quiting client program\n";
@@ -52,13 +52,8 @@ void AppStateController::transition_to(const AppStateCode& new_state) {
             throw std::runtime_error("Unknown app state.");
     }
 
-    if (current_state == nullptr) {
-        std::cerr << "[Controller] ERROR: Failed to create new state" << std::endl;
-        return;
-    }
-
-    std::cout << "[Controller] Setting controller in new state" << std::endl;
-    current_state->setController(this);
+    // std::cout << "[Controller] Setting controller in new state" << std::endl;
+    // current_state->setController(this);
 
     std::cout << "[Controller] Calling update() on new state" << std::endl;
     update();

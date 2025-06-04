@@ -2,22 +2,19 @@
 
 #include "ui/NameInputDialog.h"
 
+#include <QGuiApplication>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QPainter>
+#include <QPushButton>
 #include <QScreen>
-#include <QGuiApplication>
+#include <QVBoxLayout>
+
 #include "ui/UIConstants.h"
 
-NameInputDialog::NameInputDialog(const QString &title,
-                                 const QString &labelText,
-                                 QWidget *parent)
-    : QDialog(parent),
-      m_backgroundPixmap(":/images/cs_background.jpg")
-{
+NameInputDialog::NameInputDialog(const QString& title, const QString& labelText, QWidget* parent):
+        QDialog(parent), m_backgroundPixmap(":/images/cs_background.jpg") {
     // Hacemos la ventana semitransparente (para ver el fondo dibujado).
     setAttribute(Qt::WA_TranslucentBackground);
     // Quitamos el botón de “?” de ayuda (solo barra de título y cerrar)
@@ -39,11 +36,11 @@ NameInputDialog::~NameInputDialog() {
     // Qt borra automáticamente todos los hijos
 }
 
-void NameInputDialog::setupUi(const QString &labelText) {
-    
+void NameInputDialog::setupUi(const QString& labelText) {
+
     // Creamos los widgets
     m_label = new QLabel(labelText, this);
-    
+
     // Centramos el texto y color blanco
     m_label->setAlignment(Qt::AlignHCenter);
     m_label->setStyleSheet("color: white; font-size: 11pt;");
@@ -89,14 +86,14 @@ void NameInputDialog::setupUi(const QString &labelText) {
     m_cancelButton->setFixedHeight(30);
 
     // Layouts
-    auto *buttonLayout = new QHBoxLayout;
+    auto* buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(m_cancelButton);
     buttonLayout->addSpacing(10);
     buttonLayout->addWidget(m_okButton);
     buttonLayout->addStretch(1);
 
-    auto *mainLayout = new QVBoxLayout(this);
+    auto* mainLayout = new QVBoxLayout(this);
     // Márgenes interiores de 20px por cada lado
     mainLayout->setContentsMargins(20, 20, 20, 20);
     // Espacio vertical entre elementos
@@ -133,22 +130,17 @@ void NameInputDialog::onCancelClicked() {
     reject();
 }
 
-QString NameInputDialog::textValue() const {
-    return m_lineEdit->text();
-}
+QString NameInputDialog::textValue() const { return m_lineEdit->text(); }
 
-void NameInputDialog::paintEvent(QPaintEvent *event) {
+void NameInputDialog::paintEvent(QPaintEvent* event) {
     // Pintamos la misma imagen de fondo que en Login/MainMenu
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     if (!m_backgroundPixmap.isNull()) {
         // Escalamos la imagen al tamaño completo del diálogo
-        QPixmap scaled = m_backgroundPixmap.scaled(
-            size(),
-            Qt::KeepAspectRatioByExpanding,
-            Qt::SmoothTransformation
-        );
-        int x = (width()  - scaled.width()) / 2;
+        QPixmap scaled = m_backgroundPixmap.scaled(size(), Qt::KeepAspectRatioByExpanding,
+                                                   Qt::SmoothTransformation);
+        int x = (width() - scaled.width()) / 2;
         int y = (height() - scaled.height()) / 2;
         painter.drawPixmap(x, y, scaled);
     }
@@ -157,9 +149,9 @@ void NameInputDialog::paintEvent(QPaintEvent *event) {
 }
 
 void NameInputDialog::centerOnScreen() {
-    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+    if (QScreen* screen = QGuiApplication::primaryScreen()) {
         QRect geom = screen->availableGeometry();
-        int x = (geom.width()  - width()) / 2;
+        int x = (geom.width() - width()) / 2;
         int y = (geom.height() - height()) / 2;
         move(x, y);
     }

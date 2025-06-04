@@ -13,21 +13,18 @@ class QPushButton;
 class QVBoxLayout;
 class QListWidget;
 
-class LobbyWindow : public QDialog {
+class LobbyWindow: public QDialog {
     Q_OBJECT
 
 public:
-    enum LobbyResult {
-        StartGame = 1,
-        LeaveGame = 2
-    };
+    enum LobbyResult { StartGame = 1, LeaveGame = 2 };
 
-    explicit LobbyWindow(Client* client, QWidget *parent = nullptr);
+    explicit LobbyWindow(Client* client, QWidget* parent = nullptr);
     ~LobbyWindow() override;
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
+    void paintEvent(QPaintEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 private slots:
     void onStartGame();
@@ -42,7 +39,7 @@ private:
     Client* client;
     QTimer refreshTimer;
     QPixmap m_backgroundPixmap;
-    
+
     // UI elements
     QLabel* titleLabel;
     QPushButton* startButton;
@@ -52,10 +49,10 @@ private:
     QListWidget* counterTerroristList;
     QLabel* terroristLabel;
     QLabel* counterTerroristLabel;
-    
+
     // Layouts
     QVBoxLayout* mainLayout;
-    
+
     // Player data
     std::vector<PlayerInfoLobby> players;
     bool isCreator;
