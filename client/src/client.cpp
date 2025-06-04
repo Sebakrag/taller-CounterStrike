@@ -23,10 +23,10 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
     }
     std::cout << "Bienvenido " << user_name << ". Ya estás conectado al servidor." << std::endl;
     status = InMenu;
-    // recvDatos();
 
-    CreateMatch("Partidita");
-    StartMatch();
+
+    //CreateMatch("Partidita");
+    //StartMatch();
 }
 void Client::mainLoop() {
     while (status != Disconnected) {

@@ -16,10 +16,19 @@ extern Client* g_client;
 #include "ui/NameInputDialog.h"
 
 MainMenuAppState::MainMenuAppState() {
+    std::cout << "[MainMenuAppState] Constructor called" << std::endl;
+    // Initialize g_client to nullptr to avoid accessing uninitialized memory
+    g_client = nullptr;
 }
 
 std::optional<AppStateCode> MainMenuAppState::update() {
-    g_client = controller->getClient();
+    // Get client pointer and check if it's valid
+    Client* client_ptr = controller->getClient();
+    if (client_ptr == nullptr) {
+        std::cerr << "[MainMenuAppState] Error: Client pointer is null" << std::endl;
+        return AppStateCode::QUIT;
+    }
+    g_client = client_ptr;
 
     MainMenuWindow menu_window;
     int result = menu_window.exec();
