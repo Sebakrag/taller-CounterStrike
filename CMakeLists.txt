@@ -50,26 +50,6 @@ target_include_directories(taller_common PUBLIC .)
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
 #
 
-# —————————————————————————————————————————————————
-#  Qt integration
-# —————————————————————————————————————————————————
-
-# Si Qt no está en rutas estándar, ajusta aquí:
-# set(CMAKE_PREFIX_PATH "/ruta/a/Qt/6.5.0/lib/cmake")
-
-if(TALLER_CLIENT)
-    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
-    
-    # Activa el procesamiento automático de moc, uic y rcc
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTOUIC ON)
-    set(CMAKE_AUTORCC ON)
-endif()
-
-# —————————————————————————————————————————————————
-#  Fin Qt integration
-# —————————————————————————————————————————————————
-
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
 if(TALLER_CLIENT OR TALLER_EDITOR)
@@ -127,6 +107,18 @@ endif()
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+
+    # 1) Encontrar Qt6 y activar AUTORCC/AUTOMOC/AUTOUIC
+    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+    set(CMAKE_AUTOMOC   ON)
+    set(CMAKE_AUTOUIC   ON)
+    set(CMAKE_AUTORCC   ON)
+
+    # 2) Procesar .qrc de client para generar qrc_resources.cpp en build/
+    qt6_add_resources(
+            RCC_SOURCES
+            "${CMAKE_SOURCE_DIR}/client/resources/resources.qrc"
+    )
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
 
