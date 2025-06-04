@@ -179,7 +179,13 @@ std::vector<EntitySnapshot> Client::getGameInfo() {
     const EntitySnapshot s = {snap.server_entt_id, this->x,        this->y, this->angle,
                               snap.sprite_type,    snap.entt_type, snap.hp, snap.money,
                               snap.is_alive};
-    std::vector<EntitySnapshot> v(1, s);
+
+    const EntitySnapshot s2(5, 30000, 30000, SpriteType::AK47, EntityType::WEAPON,
+                            WeaponState::DROPPED);
+
+    std::vector<EntitySnapshot> v;
+    v.push_back(s);
+    v.push_back(s2);
 
     return v;
 }

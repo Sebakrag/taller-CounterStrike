@@ -12,7 +12,9 @@
 
 #define PLAYER_PATH std::string("client/assets/player")
 #define TILE_SETS_PATH std::string("client/assets/tiles")
+#define WEAPON_PATH std::string("client/assets/weapons")
 
+// Players
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix.bmp")
 #define L377_KREW_IMG (PLAYER_PATH + "/t_L377_krew.bmp")
 #define ARTIC_AVENGER_IMG (PLAYER_PATH + "/t_artic_avenger.bmp")
@@ -22,6 +24,14 @@
 #define UK_SAS_IMG (PLAYER_PATH + "/ct_uk_sas.bmp")
 #define FRENCH_GIGN_IMG (PLAYER_PATH + "/ct_french_gign.bmp")
 
+// Weapons
+#define AK47_IMG (WEAPON_PATH + "/ak47_spritesheet.png")
+#define AWP_IMG (WEAPON_PATH + "/awp_spritesheet.png")
+#define GLOCK_IMG (WEAPON_PATH + "/glock_spritesheet.png")
+#define KNIFE_IMG (WEAPON_PATH + "/knife_spritesheet.bmp")
+#define M3_IMG (WEAPON_PATH + "/m3_spritesheet.png")
+
+// Maps
 #define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/desert_tiles.png")
 #define AZTEC_TILE_SET_IMG (TILE_SETS_PATH + "/aztec_tiles.png")
 #define TRAINING_TILE_SET_IMG (TILE_SETS_PATH + "/training_tiles.png")

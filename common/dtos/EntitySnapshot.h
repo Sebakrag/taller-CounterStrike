@@ -80,6 +80,11 @@ struct EntitySnapshot {
                             const float pos_y, const SpriteType sprite_type,
                             const EntityType entt_type);
 
+    // para un item (drop).
+    EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x, const float pos_y,
+                   const SpriteType sprite_type, const EntityType entt_type,
+                   const WeaponState weapon_state);
+
     // para una bullet.
     explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,
                             const float pos_y, const float angle, const SpriteType sprite_type,

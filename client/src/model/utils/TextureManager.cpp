@@ -10,7 +10,6 @@ std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::texture
 
 void TextureManager::init(Renderer& ren) {
     // Players textures
-    // const Color playerColorKey = {255, 255, 255, 255};
     const Color playerColorKey = {0, 0, 0, 255};
     loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
     loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
@@ -20,6 +19,14 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::GERMAN_GSG_9, GERMAN_GSG_9_IMG, playerColorKey);
     loadTexture(ren, SpriteType::UK_SAS, UK_SAS_IMG, playerColorKey);
     loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
+
+    // Weapons textures
+    const Color weaponColorKey = {163, 73, 164, 255};
+    loadTexture(ren, SpriteType::AK47, AK47_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::AWP, AWP_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::KNIFE, KNIFE_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::M3, M3_IMG, weaponColorKey);
 
     // Map textures
     loadTexture(ren, SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);
@@ -35,7 +42,6 @@ void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path,
                                  const Color& colorKey) {
     Surface surface(path);
-    // surface.SetColorAndAlphaMod(colorKey);
     Uint32 key = colorKey.GetRed() | colorKey.GetGreen() | colorKey.GetBlue() | colorKey.GetAlpha();
     surface.SetColorKey(true, key);
     textures[type] = std::make_shared<Texture>(ren, surface);

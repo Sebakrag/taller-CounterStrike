@@ -18,7 +18,11 @@ enum class SpriteType : unsigned char {
     BULLET,
 
     // Weapons (en mano)
-    //...
+    AK47,
+    AWP,
+    GLOCK,
+    KNIFE,
+    M3,
 
     // drops...
     DROP_GLOCK,

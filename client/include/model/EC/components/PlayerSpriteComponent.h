@@ -3,6 +3,6 @@
 
 #include "SpriteComponent.h"
 
-class PlayerSpriteComponent : public SpriteComponent {};
+class PlayerSpriteComponent: public SpriteComponent {};
 
-#endif //PLAYERSPRITECOMPONENT_H
+#endif  // PLAYERSPRITECOMPONENT_H

@@ -14,9 +14,7 @@ void WeaponSpriteComponent::setState(const WeaponState newState) {
     setFrameForState(state);
 }
 
-WeaponState WeaponSpriteComponent::getState() const {
-    return state;
-}
+WeaponState WeaponSpriteComponent::getState() const { return state; }
 
 void WeaponSpriteComponent::setFrameForState(const WeaponState state) {
     int row = 0;
