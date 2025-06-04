@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include "client/include/model/EC/components/RenderComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
 
 World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
@@ -16,6 +15,7 @@ World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
     std::cout << dt << std::endl;
     comp_updater.update(snapshots);
+    // audio_sys.update(); // Play the sound effects.
 }
 
 void World::render(Graphics& graphics) {
@@ -27,29 +27,14 @@ void World::render(Graphics& graphics) {
 
     render_sys.renderEntities(graphics, comp_mgr, camera);
 
-    // se renderizan los personajes, las armas y los objetos en si:
-    comp_mgr.forEach<RenderComponent>([&](RenderComponent& renderComp, const Entity e) {
-        const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e);
-        const auto transform = comp_mgr.getComponent<TransformComponent>(e);
-        const auto inventory = comp_mgr.getComponent<InventoryComponent>(e);
-        const auto weapon
-
-                if (playerSpr) {
-            renderComp.render(graphics, *playerSpr, *transform, camera);
-        }
-        else if () {
-            renderComp.render();
-        }
-    });
-
     // Renderizar el alpha blending (para simular el Field of View)
 
     // playerInventoryFrame.render(graphics); // Esto seria el frame que tiene la vida, la cant de
     // balas y la plata
 }
 
-AimInfo World::getPlayerAimInfo(int mouseX, int mouseY) {
-    Vec2D mouseWorldPos(mouseX, mouseY);
+AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
+    Vec2D mouseWorldPos(static_cast<float>(mouseX), static_cast<float>(mouseY));
     // le sumo el offset de la camara para obtener las coordenadas del mouse
     // relativas al mundo (o al mapa) en vez de las relativas a la pantalla.
     mouseWorldPos += camera.getOffset();

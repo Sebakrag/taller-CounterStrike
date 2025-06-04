@@ -16,9 +16,10 @@ target_sources(taller_client
         src/model/EC/ComponentUpdater.cpp
         src/model/EC/EntityFactory.cpp
         src/model/EC/EntityManager.cpp
+        src/model/EC/RenderSystem.cpp
         src/model/EC/components/TransformComponent.cpp
-        src/model/EC/components/RenderComponent.cpp
         src/model/EC/components/SpriteComponent.cpp
+        src/model/EC/components/WeaponSpriteComponent.cpp
         src/model/utils/EventHandler.cpp
         src/model/utils/SpriteMetadaProvider.cpp
         src/model/utils/TextureManager.cpp
@@ -47,13 +48,15 @@ target_sources(taller_client
         include/model/EC/Entity.h
         include/model/EC/EntityFactory.h
         include/model/EC/EntityManager.h
-        include/model/EC/EntityType.h
         include/model/EC/ComponentManager.h
         include/model/EC/ComponentPool.h
         include/model/EC/ComponentUpdater.h
-        include/model/EC/components/TransformComponent.h
-        include/model/EC/components/RenderComponent.h
+        include/model/EC/RenderSystem.h
+        include/model/EC/components/EquippedWeaponComponent.h
+        include/model/EC/components/PlayerSpriteComponent.h
         include/model/EC/components/SpriteComponent.h
+        include/model/EC/components/TransformComponent.h
+        include/model/EC/components/WeaponSpriteComponent.h
         include/model/utils/EventHandler.h
         include/model/utils/SpriteMetadataProvider.h
         include/model/utils/TextureManager.h

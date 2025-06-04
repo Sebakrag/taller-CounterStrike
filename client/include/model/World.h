@@ -6,6 +6,7 @@
 #include "EC/ComponentManager.h"
 #include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
+#include "EC/RenderSystem.h"
 #include "client/dtos/AimInfo.h"
 #include "common/dtos/EntitySnapshot.h"
 #include "common/dtos/MapInfo.h"
@@ -32,6 +33,7 @@ public:
     /// ///
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// @param mapInfo contains the info of the map selected by the creator of the game match.
+    /// @param winConfig contains the info necessary to create the window for the game.
     /// ///
     World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
           const WindowConfig& winConfig);

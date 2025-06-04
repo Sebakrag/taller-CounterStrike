@@ -1,7 +1,9 @@
 #include "client/include/model/EC/ComponentUpdater.h"
 
+#include "client/include/model/EC/components/EquippedWeaponComponent.h"
 #include "client/include/model/EC/components/SpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
+#include "client/include/model/EC/components/WeaponSpriteComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
@@ -63,6 +65,12 @@ void ComponentUpdater::updateComponents() {
     for (const auto& [e, snap]: old_entities) {
         if (const auto transform = comp_mgr.getComponent<TransformComponent>(e)) {
             transform->update(snap.pos_x, snap.pos_y, snap.angle);
+        }
+        if (const auto equippedWeapon = comp_mgr.getComponent<EquippedWeaponComponent>(e)) {
+            equippedWeapon->setID(entt_mgr.get(snap.equipped_weapon_id));
+        }
+        if (const auto weaponSpr = comp_mgr.getComponent<WeaponSpriteComponent>(e)) {
+            weaponSpr->setState(snap.weapon_state);
         }
 
         // Deberia crear un AnimationComponent para actualizar el sprite de forma correcta.

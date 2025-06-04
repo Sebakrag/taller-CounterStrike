@@ -7,6 +7,9 @@ void SpriteComponent::init(const SpriteType type) {
     setTexture(type);
 
     // TODO: cambiar SpriteMetadataProvider: Me gustaria hacer el calculo con el tamanio en pixels
+    // Directamente podriamos hacer:
+    // frameWidth = SPRITE_SIZE;  // con SPRITE_SIZE 32 (en pixels)
+    // frameHeight = SPRITE_SIZE;
     // (32x32)
     const SpriteSheetLayout layout = SpriteMetadataProvider::getLayout(type);
 
@@ -14,7 +17,6 @@ void SpriteComponent::init(const SpriteType type) {
     frameHeight = (texture->GetHeight() / layout.numSpritesAlongHeight);
     spriteRect.SetW(frameWidth);
     spriteRect.SetH(frameHeight);
-    // Estas posiciones de x e y deberian ser acorde al frame de animacion.
     spriteRect.SetX(0);
     spriteRect.SetY(0);
 }

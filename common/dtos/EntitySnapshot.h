@@ -5,9 +5,10 @@
 #include <type_traits>
 #include <vector>
 
-#include "../../client/include/model/utils/SpriteType.h"
-#include "../types.h"
-#include "../utils/EntityType.h"
+#include "client/include/model/utils/SpriteType.h"
+#include "common/types.h"
+#include "common/utils/EntityType.h"
+
 using ServerEntityID = uint32_t;
 
 struct EntitySnapshot {
@@ -23,6 +24,7 @@ struct EntitySnapshot {
     Team team;
     PlayerState player_state;
     ServerEntityID equipped_weapon_id;
+    WeaponState weapon_state;
 
     // TODO: Eliminar este constructor. Lo creo para poder crear el Client para probar el
     // renderizado. Lo inicializo con valores random.
