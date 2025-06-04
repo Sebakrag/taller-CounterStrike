@@ -1,6 +1,4 @@
-# Compilación de recursos Qt
-set(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.qrc")
-qt6_add_resources(RCC_SOURCES "${QRC_FILE}")
+
 
 # Fuentes del cliente
 target_sources(taller_client

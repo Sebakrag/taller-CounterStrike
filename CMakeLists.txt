@@ -127,6 +127,17 @@ endif()
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+
+    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+    set(CMAKE_AUTOMOC   ON)
+    set(CMAKE_AUTOUIC   ON)
+    set(CMAKE_AUTORCC   ON)
+
+    qt6_add_resources(
+            RCC_SOURCES
+            "${CMAKE_SOURCE_DIR}/client/resources/resources.qrc"
+    )
+
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
 
@@ -209,26 +220,6 @@ if(TALLER_TESTS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
-
-    # —————————————————————————————————————————————————
-    #  Qt integration
-    # —————————————————————————————————————————————————
-
-    # Si Qt no está en rutas estándar, ajusta aquí:
-    # set(CMAKE_PREFIX_PATH "/ruta/a/Qt/6.5.0/lib/cmake")
-
-    if(TALLER_CLIENT)
-        find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
-        
-        # Activa el procesamiento automático de moc, uic y rcc
-        set(CMAKE_AUTOMOC ON)
-        set(CMAKE_AUTOUIC ON)
-        set(CMAKE_AUTORCC ON)
-    endif()
-
-    # —————————————————————————————————————————————————
-    #  Fin Qt integration
-    # —————————————————————————————————————————————————
 
     # target for testing
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
