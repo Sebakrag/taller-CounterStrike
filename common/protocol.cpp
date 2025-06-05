@@ -131,11 +131,13 @@ uint32_t Protocol_::getBigEndian32(uint8_t byte1, uint8_t byte2, uint8_t byte3, 
 }
 
 float Protocol_::getFloat(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4) {
-    float value;
+    uint32_t value_bytes;
     uint8_t bytes[4] = {byte1, byte2, byte3, byte4};
-    std::memcpy(&value, bytes, sizeof(uint32_t));
-    value = ntohl(value);  // convierto de big endian al endianness local
+    std::memcpy(&value_bytes, bytes, sizeof(uint32_t));
+    value_bytes = ntohl(value_bytes);  // convierto de big endian al endianness local
 
+    float value;
+    std::memcpy(&value, &value_bytes, sizeof(float));
     return value;
 }
 

@@ -13,7 +13,7 @@
 //         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30)
 //         {}
 
-GameInfo::GameInfo(GamePhase gamePhase, double timeLeft, const std::vector<PlayerInfo>& players):
+GameInfo::GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players):
         gamePhase(gamePhase),
         bombPlanted(false),
         bombX(0),
@@ -21,7 +21,7 @@ GameInfo::GameInfo(GamePhase gamePhase, double timeLeft, const std::vector<Playe
         timeLeft(timeLeft),
         players(players) {}
 
-GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, double timeLeft,
+GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
                    const std::vector<PlayerInfo>& players, const std::vector<BulletInfo>& bullets,
                    const std::vector<ItemInfo>& items):
         gamePhase(gamePhase),
@@ -63,9 +63,9 @@ GameInfo& GameInfo::operator=(const GameInfo& other) {
 GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     // GamePhase (1 byte)
     gamePhase = Protocol_::decodeGamePhase(bytes[0]);
+    size_t index = 1;
 
     // Players
-    size_t index = 1;
     uint16_t numPlayers = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
 
@@ -80,9 +80,9 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         players.emplace_back(playerBytes);
         PlayerInfo& p = players.back();
 
-        EntitySnapshot entity(p.server_entt_id, p.pos_x, p.pos_y, p.direction.calculateAngle(),
-                              SpriteType::ARTIC_AVENGER, EntityType::TERRORIST, p.health, p.money,
-                              p.team, p.state);
+        EntitySnapshot entity(p.server_entt_id, p.position.getX(), p.position.getY(),
+                              p.angle_direction, SpriteType::ARTIC_AVENGER, EntityType::TERRORIST,
+                              p.health, p.money, p.team, p.state);
         entities.emplace_back(entity);
 
 
@@ -130,14 +130,14 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     index += 2;
 
     // Time left
-    timeLeft = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    timeLeft =
+            Protocol_::getFloat(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
 }
 
 std::vector<uint8_t> GameInfo::toBytes() const {
     std::vector<uint8_t> buffer;
 
     buffer.push_back(Protocol_::encodeGamePhase(gamePhase));
-
     // players.
     Protocol_::insertBigEndian16(players.size(), buffer);
     for (auto& p: players) {
@@ -168,7 +168,7 @@ std::vector<uint8_t> GameInfo::toBytes() const {
     Protocol_::insertBigEndian16(bombY, buffer);
 
     // time
-    Protocol_::insertBigEndian16((int)timeLeft, buffer);
+    Protocol_::insertFloat4Bytes(timeLeft, buffer);
 
     return buffer;
 }
@@ -179,7 +179,9 @@ void GameInfo::print() const {
     std::cout << "Game Phase: " << static_cast<int>(gamePhase) << std::endl;
 
     std::cout << "\nPlayers (" << players.size() << "):" << std::endl;
-
+    for (auto& p: players) {
+        p.print();
+    }
 
     std::cout << "\nBullets (" << bullets.size() << "):" << std::endl;
 

@@ -13,9 +13,8 @@ struct PlayerInfo {
     Team team;
     PlayerSkin skin;
     PlayerState state;
-    int pos_x;
-    int pos_y;
-    Vec2D direction;  // a dónde está mirando el player (Quizas es mejor que sea un angulo)
+    Vec2D position;
+    float angle_direction;  // a dónde está mirando el player
     TypeWeapon weapon_selected;
     int health;
     int money;
@@ -23,7 +22,7 @@ struct PlayerInfo {
 
     PlayerInfo();
     PlayerInfo(unsigned int server_entt_id, const std::string& username, Team team, PlayerSkin skin,
-               int pos_x, int pos_y, const Vec2D& direction, TypeWeapon weapon, int health,
+               const Vec2D& position, float angle_direction, TypeWeapon weapon, int health,
                int money, int ammo);
 
     // private:
@@ -46,6 +45,8 @@ struct PlayerInfo {
      * <uint16_t ammo_weapon>
      */
     std::vector<uint8_t> toBytes() const;
+
+    void print() const;
 };
 
 #endif  // PLAYER_INFO_H_

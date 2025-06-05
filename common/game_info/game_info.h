@@ -25,7 +25,9 @@ public:
     bool bombPlanted;
     int bombX;
     int bombY;
-    double timeLeft;
+    float timeLeft;  // En fase de preparación, indica los segundos que restan para comenzar el
+                     // juego. En el juego, indica cuanto falta para que explote la bomba, luego de
+                     // ser colocada.
 
     std::vector<PlayerInfo> players;
     std::vector<BulletInfo> bullets;
@@ -33,9 +35,9 @@ public:
 
     GameInfo() {}
 
-    explicit GameInfo(GamePhase gamePhase, double timeLeft, const std::vector<PlayerInfo>& players);
+    explicit GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players);
 
-    explicit GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, double timeLeft,
+    explicit GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
                       const std::vector<PlayerInfo>& players,
                       const std::vector<BulletInfo>& bullets, const std::vector<ItemInfo>& items);
 

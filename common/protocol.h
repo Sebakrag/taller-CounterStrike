@@ -30,7 +30,6 @@ protected:
     // recibe 3 bytes (correspondiente a un float) por el socket, casteando al endianness local
     float recvFloatNormalized();
 
-    float recvFloat4Bytes();
 
 public:
     /**
