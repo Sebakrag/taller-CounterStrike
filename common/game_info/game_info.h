@@ -31,7 +31,7 @@ public:
     std::vector<BulletInfo> bullets;
     std::vector<ItemInfo> items;
 
-    GameInfo();
+    GameInfo() {}
 
     explicit GameInfo(GamePhase gamePhase, double timeLeft, const std::vector<PlayerInfo>& players);
 
@@ -49,7 +49,7 @@ public:
     // nota. por ahora solo funciona si se usa el constructor con el buffer.
     std::vector<EntitySnapshot> getSnapshots();
 
-    void print();
+    void print() const;
 };
 
 #endif  // GAME_INFO_H_

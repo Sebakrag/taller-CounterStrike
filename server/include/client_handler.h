@@ -24,7 +24,7 @@ private:
     GameManager& gameManager;
     std::shared_ptr<Queue<GameInfo>> senderQueue;
     Sender sender;
-    Receiver* receiver;  // uso puntero para no tener que inicializarla en el constructor.
+    Receiver* receiver = nullptr;  // uso puntero para no tener que inicializarla en el constructor.
 
 public:
     ClientHandler(ServerProtocol&& serverProtocol, const std::string& username,
@@ -35,6 +35,8 @@ public:
     void kill();
 
     std::string getUsername();
+
+    ~ClientHandler();
 
 private:
     void handleMenuActions(const MenuAction& menuAction);

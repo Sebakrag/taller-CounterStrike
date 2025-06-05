@@ -55,6 +55,21 @@ void Protocol_::insertBigEndian32(uint32_t bytes, std::vector<uint8_t>& array) {
     array.push_back(bytes_be_ptr[3]);  // cuarto byte en big endian
 }
 
+void Protocol_::insertFloat4Bytes(float value, std::vector<uint8_t>& array) {
+    // Interpretar los bits del float como un entero de 32 bits sin alterar
+    uint32_t bytes;
+    std::memcpy(&bytes, &value, sizeof(float));  // Copia binaria segura
+
+    // Convertir a big-endian
+    uint32_t big_endian = htonl(bytes);
+    uint8_t* bytes_be_ptr = reinterpret_cast<uint8_t*>(&big_endian);
+
+    array.push_back(bytes_be_ptr[0]);  // Primer byte en big endian
+    array.push_back(bytes_be_ptr[1]);  // Segundo byte en big endian
+    array.push_back(bytes_be_ptr[2]);  // tercer byte en big endian
+    array.push_back(bytes_be_ptr[3]);  // cuarto byte en big endian
+}
+
 void Protocol_::insertStringBytes(const std::string& string, std::vector<uint8_t>& array) {
     std::copy(string.begin(), string.end(), std::back_inserter(array));
 }
@@ -115,6 +130,14 @@ uint32_t Protocol_::getBigEndian32(uint8_t byte1, uint8_t byte2, uint8_t byte3, 
     return value;
 }
 
+float Protocol_::getFloat(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4) {
+    float value;
+    uint8_t bytes[4] = {byte1, byte2, byte3, byte4};
+    std::memcpy(&value, bytes, sizeof(uint32_t));
+    value = ntohl(value);  // convierto de big endian al endianness local
+
+    return value;
+}
 
 float Protocol_::getFloatNormalized(uint8_t byte1, uint8_t byte2, uint8_t byte3) {
     float value = 0;
@@ -128,6 +151,7 @@ float Protocol_::getFloatNormalized(uint8_t byte1, uint8_t byte2, uint8_t byte3)
     }
     return value;
 }
+
 // Codificadores
 uint8_t Protocol_::encodeBool(bool value) {
     if (value)

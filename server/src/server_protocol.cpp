@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "common/constants_protocol.h"
+#include "../../common/constants_protocol.h"
 
 ServerProtocol::ServerProtocol(Socket&& socketClient): Protocol_(std::move(socketClient)) {}
 

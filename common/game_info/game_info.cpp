@@ -9,8 +9,9 @@
 #include "bullet_info.h"
 #include "player_info.h"
 
-GameInfo::GameInfo():
-        gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30) {}
+// GameInfo::GameInfo():
+//         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30)
+//         {}
 
 GameInfo::GameInfo(GamePhase gamePhase, double timeLeft, const std::vector<PlayerInfo>& players):
         gamePhase(gamePhase),
@@ -174,7 +175,7 @@ std::vector<uint8_t> GameInfo::toBytes() const {
 
 std::vector<EntitySnapshot> GameInfo::getSnapshots() { return entities; }
 
-void GameInfo::print() {
+void GameInfo::print() const {
     std::cout << "Game Phase: " << static_cast<int>(gamePhase) << std::endl;
 
     std::cout << "\nPlayers (" << players.size() << "):" << std::endl;

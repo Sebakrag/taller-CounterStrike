@@ -30,6 +30,8 @@ protected:
     // recibe 3 bytes (correspondiente a un float) por el socket, casteando al endianness local
     float recvFloatNormalized();
 
+    float recvFloat4Bytes();
+
 public:
     /**
      * Inserta un numero de 2 bytes en formato big-endian dentro del array.
@@ -39,7 +41,7 @@ public:
      * Inserta un numero de 2 bytes en formato big-endian dentro del array.
      */
     static void insertBigEndian32(uint32_t bytes, std::vector<uint8_t>& array);
-
+    static void insertFloat4Bytes(float value, std::vector<uint8_t>& array);
     // Inserta cada caracter del string (1 byte por caracter) en el array
     static void insertStringBytes(const std::string& string, std::vector<uint8_t>& array);
 
@@ -53,6 +55,7 @@ public:
 
     static uint16_t getValueBigEndian16(uint8_t byte1, uint8_t byte2);
     static uint32_t getBigEndian32(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4);
+    static float getFloat(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4);
 
     static float getFloatNormalized(uint8_t byte1, uint8_t byte2, uint8_t byte3);
 

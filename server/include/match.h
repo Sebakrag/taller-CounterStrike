@@ -17,14 +17,14 @@ private:
     std::vector<Player> players;
     Map map;
     GamePhase phase;
-    int roundsPlayed;
-    bool bombPlanted;
+    int roundsPlayed = 0;
+    bool bombPlanted = false;
     int bombPosX, bombPosY;
     double bombTimer;
     const double TIME_TO_EXPLODE = 40.0;
-    double roundTimer;
+    double roundTimer = 1.0;
     const double ROUND_DURATION = 120.0;
-    bool roundOver;
+    bool roundOver = false;
     Team roundWinner;
 
 public:

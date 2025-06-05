@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <list>
+#include <ostream>
 #include <string>
 #include <utility>
 
@@ -31,8 +32,20 @@ void ClientHandler::run() {
             if (status == InGame) {
                 receiver->start();
                 sender.start();
-                sender.join();
-                receiver->join();
+
+                if (status != Disconnected) {
+                    receiver->join();
+                    std::cout << "reciever joineado" << std::endl;
+                    // al finalizar, regresar al menú o cambiar a disconected
+                    try {
+                        senderQueue->close();
+                    } catch (...) {}
+                    sender.join();
+                    std::cout << "sender joineado" << std::endl;
+
+                    status = InMenu;
+                    // delete receiver;
+                }
             }
         }
     } catch (const std::exception& e) {
@@ -42,14 +55,16 @@ void ClientHandler::run() {
 
 void ClientHandler::kill() {
     protocol.shutDown(2);
-    status = Disconnected;
     if (status == InGame) {
+        std::cout << "KILL client handler" << std::endl;
+        status = Disconnected;
         sender.kill();
         receiver->kill();
-        sender.join();
-        receiver->join();
-        delete receiver;
+        // sender.join();
+        // receiver->join();
+        // delete receiver;
     }
+    // status = Disconnected;
     stop();
 }
 
@@ -113,5 +128,10 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             }
             protocol.sendMatchRoomInfo(info);
             break;
+    }
+}
+ClientHandler::~ClientHandler() {
+    if (receiver) {
+        delete receiver;
     }
 }

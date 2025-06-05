@@ -19,7 +19,7 @@ void Receiver::run() {
         std::cerr << "Receiver: " << e.what() << std::endl;
         stop();
     } catch (const std::exception& e) {
-        std::cerr << "Error en el Receiver: " << e.what() << std::endl;
+        std::cerr << "Falla en el Receiver: " << e.what() << std::endl;
         stop();
     }
     std::cout << "Receiver out." << std::endl;

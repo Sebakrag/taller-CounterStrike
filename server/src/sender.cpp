@@ -15,9 +15,11 @@ void Sender::run() {
         }
     } catch (const ClosedQueue& e) {  // si la queue fue cerrada
         std::cerr << "Sender: " << e.what() << std::endl;
+        protocol.shutDown(2);
         stop();
     } catch (const std::exception& e) {
         std::cerr << "Error en el Sender: " << e.what() << std::endl;
+        protocol.shutDown(2);
         stop();
     }
     std::cout << "Sender out." << std::endl;

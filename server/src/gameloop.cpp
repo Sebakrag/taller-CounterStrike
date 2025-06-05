@@ -30,8 +30,18 @@ void GameLoop::run() {
             match.updateState(1.0 / ITR_PER_SEC);
 
             // 2. envío el estado de juego a cada jugador
-            for (auto queue: queuesPlayers) {
-                queue->try_push(match.generateGameInfo());
+            for (auto it = queuesPlayers.begin(); it != queuesPlayers.end();) {
+                try {
+                    (*it)->try_push(match.generateGameInfo());
+                    ++it;
+                } catch (ClosedQueue& e) {  // si un jugador se fue de la partida (cerró el juego)
+                    it = queuesPlayers.erase(it);  // borro queue y continúo
+                    std::cout << "borro queue" << std::endl;
+                    if (queuesPlayers.size() ==
+                        0) {  // si se fueron todos los jugadores, termina el gameloop
+                        stop();
+                    }
+                }
             }
 
             // 3. calculo cuanto tiempo dormir.
@@ -53,12 +63,13 @@ void GameLoop::run() {
     } catch (const std::exception& e) {
         std::cerr << "GameLoop: " << e.what() << std::endl;
     }
+    std::cout << "Gameloop fuera." << std::endl;
 }
 
 void GameLoop::kill() {
     queueActionsPlayers->close();
     for (auto queue: queuesPlayers) {
-        queue->close();
+        // queue->close();
     }
     stop();
 }

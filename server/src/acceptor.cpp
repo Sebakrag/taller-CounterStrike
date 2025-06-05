@@ -33,8 +33,9 @@ void Acceptor::run() {
 
             if (user_avaiable) {
                 clients.emplace_back(std::move(protocol), username, gameManager);
+            } else {
+                std::cout << "username ya existe. Cliente no aceptado" << std::endl;
             }
-
             reapDeadClients();
         }
 
