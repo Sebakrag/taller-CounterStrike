@@ -22,9 +22,9 @@ GameMatchAppState::GameMatchAppState() {}
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         constexpr int SERVER_ENTITY_ID = 1;
-        constexpr float pos_x = 31000, pos_y = 31000, angle = 0, money = 500;
+        constexpr float pos_x = 30500, pos_y = 30500, angle = 0, money = 500;
         constexpr int hp = 100;  // health
-        constexpr auto sprite_type = SpriteType::GUERRILLA;
+        constexpr auto sprite_type = SpriteType::ARTIC_AVENGER;
         constexpr auto entt_type = EntityType::ANTI_TERRORIST;
         constexpr bool is_alive = true;
         const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,

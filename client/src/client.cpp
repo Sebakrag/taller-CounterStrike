@@ -176,16 +176,15 @@ Client::Client(const EntitySnapshot& snap):
 void Client::rotate(const float angle) { this->angle = angle; }
 
 std::vector<EntitySnapshot> Client::getGameInfo() {
-    const EntitySnapshot s = {snap.server_entt_id, this->x,        this->y, this->angle,
-                              snap.sprite_type,    snap.entt_type, snap.hp, snap.money,
-                              snap.is_alive};
+    const EntitySnapshot s(snap.server_entt_id, this->x, this->y, this->angle, snap.sprite_type,
+                           snap.entt_type, snap.hp, snap.money, snap.is_alive);
 
-    const EntitySnapshot s2(5, 30000, 30000, SpriteType::AK47, EntityType::WEAPON,
+    const EntitySnapshot s2(6, 30025.55, 30000, SpriteType::M3, EntityType::WEAPON,
                             WeaponState::DROPPED);
 
     std::vector<EntitySnapshot> v;
-    v.push_back(s);
-    v.push_back(s2);
+    v.emplace_back(s);
+    v.emplace_back(s2);
 
     return v;
 }

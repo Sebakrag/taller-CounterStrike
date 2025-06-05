@@ -24,9 +24,16 @@ EntitySnapshot::EntitySnapshot(const ServerEntityID server_entt_id, const float 
         server_entt_id(server_entt_id),
         pos_x(pos_x),
         pos_y(pos_y),
+        angle(0),
         sprite_type(sprite_type),
         entt_type(entt_type),
+        hp(0),
+        money(0),
+        ammo(0),
         is_alive(true),
+        team(Team::CounterTerrorist),
+        player_state(PlayerState::Idle),
+        equipped_weapon_id(0),
         weapon_state(weapon_state) {}
 
 // para una bullet.

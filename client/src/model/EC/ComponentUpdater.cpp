@@ -12,7 +12,6 @@ ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
 
 void ComponentUpdater::update(const std::vector<EntitySnapshot>& snapshots) {
     syncEntities(snapshots);
-    // applySnapshotData();
     updateComponents();
 }
 
@@ -40,22 +39,6 @@ void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots
         } else {
             old_entities.emplace_back(e, snap);
         }
-    }
-}
-
-void ComponentUpdater::applySnapshotData() {
-    // here I must use the old_entities container.
-    for (const auto& [e, snap]: old_entities) {
-        if (const auto transform = comp_mgr.getComponent<TransformComponent>(e)) {
-            transform->init(snap.pos_x, snap.pos_y, snap.angle);
-        }
-        // Quizas que esta actualizacion del spritesheet esta demas. Si tengo que cambiar el
-        // spritesheet deberia hacerlo cuando se que la entidad muere, o cuando sucede algo
-        // extraordinario. No deberia recibirlo en todos los frames, pq en la mayoria de los casos
-        // parece ser algo estatico. if (const auto spr = comp_mgr.getComponent<SpriteComponent>(e))
-        // {
-        //     spr->setTexture(snap.sprite_type);
-        // }
     }
 }
 

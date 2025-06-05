@@ -11,6 +11,43 @@
 
 using ServerEntityID = uint32_t;
 
+// struct CommonSnapshot {
+//     const ServerEntityID server_entt_id;
+//     const EntityType type;
+//     const SpriteType sprite_type;
+//     const float pos_x;
+//     const float pos_y;
+//     const bool is_alive;  // Indica si la entidad sigue viva o hay que eliminarla.
+// };
+//
+// struct PlayerSnapshot {
+//     const int hp; // health
+//     const float ammo;
+//     const float money;
+//     const float angle;
+//     const PlayerState state;
+//     const ServerEntityID equipped_weapon_id;
+//     const Team team;
+// };
+//
+// struct WeaponSnapshot {
+//     WeaponState state;
+// };
+//
+// struct BulletSnapshot {
+//     const float angle;
+// };
+//
+// struct EntitySnapshot2 {
+//     CommonSnapshot common_snap;
+//
+//     union {
+//         PlayerSnapshot player;
+//         WeaponSnapshot weapon;
+//         BulletSnapshot bullet;
+//     };
+// };
+
 struct EntitySnapshot {
     ServerEntityID server_entt_id;
     float pos_x, pos_y;
@@ -42,38 +79,10 @@ struct EntitySnapshot {
             player_state(PlayerState::Idle) {}
 
     // Constructor por copia
-    EntitySnapshot(const EntitySnapshot& other):
-            server_entt_id(other.server_entt_id),
-            pos_x(other.pos_x),
-            pos_y(other.pos_y),
-            angle(other.angle),
-            sprite_type(other.sprite_type),
-            entt_type(other.entt_type),
-            hp(other.hp),
-            money(other.money),
-            ammo(other.ammo),
-            is_alive(other.is_alive),
-            team(other.team),
-            player_state(other.player_state) {}
+    EntitySnapshot(const EntitySnapshot& other) = default;
 
     // Operador de asignación
-    EntitySnapshot& operator=(const EntitySnapshot& other) {
-        if (this != &other) {
-            server_entt_id = other.server_entt_id;
-            pos_x = other.pos_x;
-            pos_y = other.pos_y;
-            angle = other.angle;
-            sprite_type = other.sprite_type;
-            entt_type = other.entt_type;
-            hp = other.hp;
-            money = other.money;
-            ammo = other.ammo;
-            is_alive = other.is_alive;
-            team = other.team;
-            player_state = other.player_state;
-        }
-        return *this;
-    }
+    EntitySnapshot& operator=(const EntitySnapshot& other) = default;
 
     // para un item (drop).
     explicit EntitySnapshot(const ServerEntityID server_entt_id, const float pos_x,

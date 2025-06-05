@@ -53,5 +53,9 @@ void EntityFactory::create_weapon_entt(const Entity& new_entt, const EntitySnaps
     tComp->init(snap.pos_x, snap.pos_y, snap.angle);
 
     const auto spriteComp = comp_mgr.addComponent<WeaponSpriteComponent>(new_entt);
+    std::cout << "[DEBUG] inicializo weaponSprite con el estado: "
+              << static_cast<int>(snap.weapon_state) << std::endl;
     spriteComp->init(snap.sprite_type, snap.weapon_state);
+    std::cout << "Cree el arma con el serverID: " << snap.server_entt_id << "\n"
+              << "Tiene el estado: " << static_cast<int>(snap.weapon_state) << std::endl;
 }

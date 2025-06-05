@@ -9,7 +9,6 @@
 #define SCREEN_HEIGHT 400
 
 // Paths
-
 #define PLAYER_PATH std::string("client/assets/player")
 #define TILE_SETS_PATH std::string("client/assets/tiles")
 #define WEAPON_PATH std::string("client/assets/weapons")
@@ -38,5 +37,8 @@
 
 // Map
 #define TILE_SIZE 32  // in pixels
+
+// Sprites
+#define SPRITE_SIZE 32  // in pixels
 
 #endif  // CLIENTCONSTANTS_H

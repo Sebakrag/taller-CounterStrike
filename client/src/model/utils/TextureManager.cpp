@@ -1,8 +1,10 @@
 #include "client/include/model/utils/TextureManager.h"
 
+#include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_stdinc.h>
 
 #include "client/client_constants.h"
+#include "cmake-build-debug/_deps/sdl2-src/include/SDL_surface.h"
 
 using SDL2pp::Surface;
 
@@ -10,7 +12,7 @@ std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::texture
 
 void TextureManager::init(Renderer& ren) {
     // Players textures
-    const Color playerColorKey = {0, 0, 0, 255};
+    const Color playerColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
     loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
     loadTexture(ren, SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);
@@ -21,7 +23,7 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
 
     // Weapons textures
-    const Color weaponColorKey = {163, 73, 164, 255};
+    const Color weaponColorKey = {163, 73, 164, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::AK47, AK47_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::AWP, AWP_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
@@ -42,9 +44,12 @@ void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path,
                                  const Color& colorKey) {
     Surface surface(path);
-    Uint32 key = colorKey.GetRed() | colorKey.GetGreen() | colorKey.GetBlue() | colorKey.GetAlpha();
-    surface.SetColorKey(true, key);
+    const Uint32 mappedKey = SDL_MapRGB(surface.Get()->format, colorKey.GetRed(),
+                                        colorKey.GetGreen(), colorKey.GetBlue());
+    surface.SetColorKey(SDL_TRUE, mappedKey);
     textures[type] = std::make_shared<Texture>(ren, surface);
 }
 
-std::shared_ptr<Texture> TextureManager::getTexture(SpriteType type) { return textures[type]; }
+std::shared_ptr<Texture> TextureManager::getTexture(const SpriteType type) {
+    return textures[type];
+}

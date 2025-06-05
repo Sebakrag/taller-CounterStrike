@@ -12,7 +12,7 @@ enum class Team { Terrorist, CounterTerrorist };
 enum class GamePhase { Preparation, Combat, EndOfMatch };
 
 enum class PlayerState : unsigned char { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
-enum class WeaponState : unsigned char { DROPPED = 1, EQUIPPED, HIDDEN };
+enum class WeaponState : unsigned char { DROPPED, EQUIPPED, HIDDEN };
 
 enum class PlayerSkin {
     Terrorist1,
