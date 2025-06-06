@@ -17,6 +17,9 @@ void WeaponSpriteComponent::setState(const WeaponState newState) {
 
 WeaponState WeaponSpriteComponent::getState() const { return state; }
 
+Vec2D WeaponSpriteComponent::getRenderOffset() const { return renderOffset; }
+
+
 void WeaponSpriteComponent::setFrameForState(const WeaponState state) {
     int row = 0;
     std::cout << "[DEBUG] setFrameForState recibido: " << static_cast<int>(state) << std::endl;

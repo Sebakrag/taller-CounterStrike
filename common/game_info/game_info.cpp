@@ -79,11 +79,13 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         players.emplace_back(playerBytes);
         PlayerInfo& p = players.back();
 
-        EntitySnapshot entity(p.server_entt_id, p.pos_x, p.pos_y, p.direction.calculateAngle(),
-                              SpriteType::ARTIC_AVENGER, EntityType::TERRORIST, p.health, p.money,
-                              p.team, p.state);
-        entities.emplace_back(entity);
+        const auto x = static_cast<float>(p.pos_x);
+        const auto y = static_cast<float>(p.pos_y);
 
+        EntitySnapshot entity(p.server_entt_id, EntityType::PLAYER, SpriteType::ARTIC_AVENGER, x, y,
+                              p.direction.calculateAngle(), true, p.health, p.money, 0, p.state, 6,
+                              p.team);
+        entities.emplace_back(entity);
 
         index += size;
     }
@@ -98,8 +100,11 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         bullets.emplace_back(bulletBytes);
         BulletInfo& b = bullets.back();
 
-        EntitySnapshot entity(b.id, b.pos_x, b.pos_y, b.direction.calculateAngle(),
-                              SpriteType::BULLET, EntityType::BULLET);
+        const auto x = static_cast<float>(b.pos_x);
+        const auto y = static_cast<float>(b.pos_y);
+
+        EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, x, y,
+                              b.direction.calculateAngle(), true);
         entities.emplace_back(entity);
         index += SIZE_BULLET_INFO;
     }
@@ -114,8 +119,12 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         items.emplace_back(itemBytes);
         ItemInfo& item = items.back();
 
-        EntitySnapshot entity(item.server_entt_id, item.pos_x, item.pos_y, item.getSpriteType(),
-                              EntityType::DROP);
+        const auto x = static_cast<float>(item.pos_x);
+        const auto y = static_cast<float>(item.pos_y);
+        // TODO: esta bueno generalizar a items dropeados. Pero como por ahora solo tenemos
+        // armas dropeadas lo simplificamos.
+        EntitySnapshot entity(item.server_entt_id, EntityType::WEAPON, item.getSpriteType(), x, y,
+                              0, true, WeaponState::DROPPED);
         entities.emplace_back(entity);
         index += SIZE_ITEM_INFO;
     }

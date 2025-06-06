@@ -102,9 +102,14 @@ void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
         Entity weaponID = INVALID_ENTITY;
         if (equippedWeapon && ((weaponID = equippedWeapon->getID()) != INVALID_ENTITY)) {
             const auto weaponSpr = comp_mgr.getComponent<WeaponSpriteComponent>(weaponID);
-            if (weaponSpr)
+            if (weaponSpr) {
+                const Vec2D renderOffset = weaponSpr->getRenderOffset();
+                Rect weaponDestRect(static_cast<int>(screenPos.getX() + renderOffset.getX()),
+                                    static_cast<int>(screenPos.getY() - renderOffset.getY()), width,
+                                    height);
                 graphics.draw(*weaponSpr->getTexture(), Optional<Rect>(weaponSpr->getSpriteRect()),
-                              Optional<Rect>(destRect), rotAngle);
+                              Optional<Rect>(weaponDestRect), rotAngle);
+            }
         }
     });
 }

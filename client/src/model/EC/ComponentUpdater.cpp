@@ -50,10 +50,14 @@ void ComponentUpdater::updateComponents() {
             transform->update(snap.pos_x, snap.pos_y, snap.angle);
         }
         if (const auto equippedWeapon = comp_mgr.getComponent<EquippedWeaponComponent>(e)) {
-            equippedWeapon->setID(entt_mgr.get(snap.equipped_weapon_id));
+            if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
+                equippedWeapon->setID(entt_mgr.get(player->equipped_weapon_id));
+            }
         }
         if (const auto weaponSpr = comp_mgr.getComponent<WeaponSpriteComponent>(e)) {
-            weaponSpr->setState(snap.weapon_state);
+            if (const auto weapon = std::get_if<WeaponSnapshot>(&snap.data)) {
+                weaponSpr->setState(weapon->state);
+            }
         }
 
         // Deberia crear un AnimationComponent para actualizar el sprite de forma correcta.

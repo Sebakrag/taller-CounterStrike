@@ -21,15 +21,18 @@ GameMatchAppState::GameMatchAppState() {}
 
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
-        constexpr int SERVER_ENTITY_ID = 1;
-        constexpr float pos_x = 30500, pos_y = 30500, angle = 0, money = 500;
+        constexpr ServerEntityID SERVER_ENTITY_ID = 1;
+        constexpr float pos_x = 30500, pos_y = 30500, angle = 0;
+        constexpr int money = 500;
         constexpr int hp = 100;  // health
+        constexpr int ammo = 0;
         constexpr auto sprite_type = SpriteType::ARTIC_AVENGER;
-        constexpr auto entt_type = EntityType::ANTI_TERRORIST;
+        constexpr auto entt_type = EntityType::PLAYER;
         constexpr bool is_alive = true;
-        const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
-                                        entt_type, hp, money, Team::Terrorist, PlayerState::Idle,
-                                        is_alive);
+        constexpr ServerEntityID equipped_weapon_id = 6;  // Arbitrario.
+        const EntitySnapshot first_snap(SERVER_ENTITY_ID, entt_type, sprite_type, pos_x, pos_y,
+                                        angle, is_alive, hp, money, ammo, PlayerState::Idle,
+                                        equipped_weapon_id, Team::Terrorist);
         const WindowConfig win_config(
                 SCREEN_WIDTH, SCREEN_HEIGHT,
                 SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN

@@ -10,13 +10,9 @@ EntityFactory::EntityFactory(ComponentManager& cm): comp_mgr(cm) {}
 
 void EntityFactory::create_specific_entity(const Entity& new_entt,
                                            const EntitySnapshot& snap) const {
-    switch (snap.entt_type) {
-        // case EntityType::TERRORIST: {
-        //     create_terrorist_entt();
-        //     break;
-        // }
-        case EntityType::ANTI_TERRORIST: {
-            create_anti_terrorist_entt(new_entt, snap);
+    switch (snap.type) {
+        case EntityType::PLAYER: {
+            create_player_entt(new_entt, snap);
             break;
         }
         case EntityType::WEAPON: {
@@ -36,8 +32,7 @@ void EntityFactory::create_specific_entity(const Entity& new_entt,
     }
 }
 
-void EntityFactory::create_anti_terrorist_entt(const Entity& new_entt,
-                                               const EntitySnapshot& snap) const {
+void EntityFactory::create_player_entt(const Entity& new_entt, const EntitySnapshot& snap) const {
     const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
     tComp->init(snap.pos_x, snap.pos_y, snap.angle);
 
@@ -45,17 +40,22 @@ void EntityFactory::create_anti_terrorist_entt(const Entity& new_entt,
     spriteComp->init(snap.sprite_type);
 
     const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
-    equippedWeapon->setID(INVALID_ENTITY);
+    equippedWeapon->setID(
+            INVALID_ENTITY);  // TODO: Si lo dejamos asi, todo jugador empieza desarmado.
 }
 
 void EntityFactory::create_weapon_entt(const Entity& new_entt, const EntitySnapshot& snap) const {
-    const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
-    tComp->init(snap.pos_x, snap.pos_y, snap.angle);
+    if (const auto weapon = std::get_if<WeaponSnapshot>(&snap.data)) {
+        const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
+        tComp->init(snap.pos_x, snap.pos_y, snap.angle);
 
-    const auto spriteComp = comp_mgr.addComponent<WeaponSpriteComponent>(new_entt);
-    std::cout << "[DEBUG] inicializo weaponSprite con el estado: "
-              << static_cast<int>(snap.weapon_state) << std::endl;
-    spriteComp->init(snap.sprite_type, snap.weapon_state);
-    std::cout << "Cree el arma con el serverID: " << snap.server_entt_id << "\n"
-              << "Tiene el estado: " << static_cast<int>(snap.weapon_state) << std::endl;
+        const auto spriteComp = comp_mgr.addComponent<WeaponSpriteComponent>(new_entt);
+        std::cout << "[DEBUG] inicializo weaponSprite con el estado: "
+                  << static_cast<int>(weapon->state) << std::endl;
+        spriteComp->init(snap.sprite_type, weapon->state);
+        std::cout << "Cree el arma con el serverID: " << snap.server_entt_id << "\n"
+                  << "Tiene el estado: " << static_cast<int>(weapon->state) << std::endl;
+    } else {
+        throw std::runtime_error("Error trying to create a Weapon entity.");
+    }
 }
