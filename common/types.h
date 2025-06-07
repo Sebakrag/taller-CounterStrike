@@ -6,7 +6,7 @@
 
 #include "utils/Vec2D.h"
 
-enum class Weapon { None, Glock, Ak47, M3, Awp };
+enum class Weapon { None, Glock, Ak47, M3, Awp, Knife };
 enum class TypeWeapon { Primary, Secondary, Knife, Bomb };
 enum class Team { Terrorist, CounterTerrorist };
 enum class GamePhase { Preparation, Combat, EndOfMatch };

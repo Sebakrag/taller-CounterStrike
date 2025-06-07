@@ -6,9 +6,9 @@
 
 #include "map.h"
 #include "player.h"
-//#include "game_info.h"
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
+#include "weapon/projectile.h"
 
 #include "physics_engine.h"
 
@@ -26,6 +26,7 @@ private:
     const double ROUND_DURATION = 120.0;
     bool roundOver = false;
     Team roundWinner;
+    std::vector<Projectile> projectiles;
 
 public:
     Match();

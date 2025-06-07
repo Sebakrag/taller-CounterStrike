@@ -1,9 +1,17 @@
 #ifndef WEAPON_KNIFE_H
 #define WEAPON_KNIFE_H
 
-class WeaponKnife {
+#include "server/include/weapon/weapon.h"
+
+class WeaponKnife : public Weapon_{
 public:
-    int use();
+    WeaponKnife();
+    ~WeaponKnife() override = default;
+
+    int use(uint64_t currentTimeMs) override;
+    bool canShoot(uint64_t currentTimeMs) const override;
+    uint64_t getCooldownMs() const override;
+    Weapon getWeaponType() const override;
 };
 
 #endif

@@ -1,5 +1,4 @@
 #include "../include/player.h"
-
 #include <iostream>
 #include <string>
 
@@ -10,29 +9,19 @@ Player::Player(const std::string& name, const Team team):
         posY(200),
         health(100),
         state(PlayerState::Idle),
-        primaryWeapon(nullptr),
-        secondaryWeapon(nullptr),
+        knife(WeaponFactory::create(Weapon::Knife)),
         equippedWeapon(TypeWeapon::Knife),
         money(800),
         kills(0) {}
 
 
-void Player::receiveDamage(const int dmg) {
-    if (state == PlayerState::Dead)
-        return;
-
-    health -= dmg;
-    if (health <= 0) {
-        health = 0;
-        state = PlayerState::Dead;
-    }
+void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
+    primaryWeapon = std::move(weapon);
 }
-
-void Player::setPrimaryWeapon(FireWeapon* weapon) { primaryWeapon = weapon; }
 
 void Player::setEquippedWeapon(TypeWeapon type) { equippedWeapon = type; }
 
-int Player::attack(float targetX, float targetY) {
+int Player::attack(float targetX, float targetY, uint64_t currentTimeMs) {
     if (state == PlayerState::Dead)
         return -1;
 
@@ -40,11 +29,11 @@ int Player::attack(float targetX, float targetY) {
               << ")\n";
     switch (equippedWeapon) {
         case TypeWeapon::Knife:
-            return knife.use();
+            return knife ? knife->use(currentTimeMs) : -1;
         case TypeWeapon::Primary:
-            return primaryWeapon ? primaryWeapon->use() : -1;
+            return primaryWeapon ? primaryWeapon->use(currentTimeMs) : -1;
         case TypeWeapon::Secondary:
-            return secondaryWeapon ? secondaryWeapon->use() : -1;
+            return secondaryWeapon ? secondaryWeapon->use(currentTimeMs) : -1;
         default:
             return -1;
     }
@@ -68,8 +57,63 @@ float Player::getSpeed() const { return speed; }
 
 TypeWeapon Player::getEquippedWeapon() const { return equippedWeapon; }
 
-FireWeapon* Player::getPrimaryWeapon() const { return primaryWeapon; }
+Weapon Player::getSpecificEquippedWeapon() const {
+    switch (equippedWeapon) {
+        case TypeWeapon::Knife:
+            return knife ? knife->getWeaponType() : Weapon::None;
+        case TypeWeapon::Primary:
+            return primaryWeapon ? primaryWeapon->getWeaponType() : Weapon::None;
+        case TypeWeapon::Secondary:
+            return secondaryWeapon ? secondaryWeapon->getWeaponType() : Weapon::None;
+        default:
+            return Weapon::None;
+    }
+}
 
-FireWeapon* Player::getSecondaryWeapon() const { return secondaryWeapon; }
+
+Weapon_ *Player::getPrimaryWeapon() const {
+    return primaryWeapon.get();
+}
 
 bool Player::isAlive() const { return state != PlayerState::Dead; }
+
+bool Player::canShoot(uint64_t currentTimeMs) const {
+    switch (equippedWeapon) {
+        case TypeWeapon::Knife:
+            return knife && knife->canShoot(currentTimeMs);
+        case TypeWeapon::Primary:
+            return primaryWeapon && primaryWeapon->canShoot(currentTimeMs);
+        case TypeWeapon::Secondary:
+            return secondaryWeapon && secondaryWeapon->canShoot(currentTimeMs);
+        default:
+            return false;
+    }
+}
+
+void Player::takeDamage(int dmg) {
+    if (!isAlive()) return;
+
+    health -= dmg;
+    if (health <= 0) {
+        health = 0;
+        state = PlayerState::Dead;
+    }
+}
+
+int Player::shoot(uint64_t currentTimeMs) {
+    if (!isAlive() || !canShoot(currentTimeMs))
+        return 0;
+
+    switch (equippedWeapon) {
+        case TypeWeapon::Knife:
+            return knife ? knife->use(currentTimeMs) : 0;
+        case TypeWeapon::Primary:
+            return primaryWeapon ? primaryWeapon->use(currentTimeMs) : 0;
+        case TypeWeapon::Secondary:
+            return secondaryWeapon ? secondaryWeapon->use(currentTimeMs) : 0;
+        default:
+            return 0;
+    }
+}
+
+

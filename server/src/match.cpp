@@ -82,11 +82,21 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
         case GameActionType::Attack: {
             if (player->getEquippedWeapon() == TypeWeapon::Bomb) {
                 processPlant(action.player_username);
+                break;
             }
-            const int dmg =
-                    player->attack(gameAction.direction.getX(), gameAction.direction.getY());
-            std::cout << "Player " << action.player_username << " shoot with " << dmg
-                      << " damage\n";
+
+            if (!player->canShoot(0))
+                break;
+
+            Vec2D dir = gameAction.direction;
+            float norm = std::sqrt(dir.getX() * dir.getX() + dir.getY() * dir.getY());
+            if (norm == 0) break;
+
+            float dirX = dir.getX() / norm;
+            float dirY = dir.getY() / norm;
+
+            projectiles.emplace_back(player->getX(), player->getY(), dirX, dirY, 400.0f, 1000.f, player->getId(), player->getSpecificEquippedWeapon());
+            player->shoot(0);
             break;
         }
         // case ActionType::DEFUSE:
@@ -111,6 +121,35 @@ void Match::updateState(double elapsedTime) {
             roundWinner = Team::Terrorist;
         }
     }
+
+
+    // Actualizamos los proyectiles
+    for (auto& proj : projectiles) {
+        if (!proj.isActive()) continue;
+
+        proj.update(static_cast<float>(elapsedTime));
+
+        for (auto& target : players) {
+            if (target.getId() == proj.getShooter() || !target.isAlive()) continue;
+
+            float impactDist;
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), proj.getDirX(), proj.getDirY(), map, target, proj.getMaxDistance(), impactDist)) {
+                target.takeDamage(25); //TODO: Ajustar daño acorde al tipo de arma que la disparo
+                proj.deactivate();
+                break;
+            }
+        }
+
+        //Detectamos colisión con pared
+        if (!map.isWalkable(static_cast<int>(proj.getX()), static_cast<int>(proj.getY()))) {
+            proj.deactivate();
+        }
+    }
+
+    //Eliminamos proyectiles inactivos
+    projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
+                                            [](const Projectile& p) { return !p.isActive(); }),
+                                            projectiles.end());
 
     checkRoundEnd();
 }
