@@ -10,6 +10,8 @@ private:
     void renderDroppedWeapons(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
     // void renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
     void renderPlayers(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
+    void renderEquippedWeapon(Graphics& graphics, ComponentManager& comp_mgr, Entity weapon_id,
+                              const Rect& player_dest_rect, double rotAngle);
 
 public:
     RenderSystem() = default;

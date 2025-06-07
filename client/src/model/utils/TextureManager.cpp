@@ -23,7 +23,7 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
 
     // Weapons textures
-    const Color weaponColorKey = {163, 73, 164, SDL_ALPHA_OPAQUE};
+    const Color weaponColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::AK47, AK47_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::AWP, AWP_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);

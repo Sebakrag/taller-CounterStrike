@@ -184,10 +184,10 @@ std::vector<EntitySnapshot> Client::getGameInfo() {
         v.emplace_back(s);
     }
 
-    const EntitySnapshot s2(9, EntityType::WEAPON, SpriteType::M3, 30025.55, 30000, 0, true,
+    const EntitySnapshot s2(9, EntityType::WEAPON, SpriteType::AWP, 30025.55, 30000, 0, true,
                             WeaponState::DROPPED);
     v.emplace_back(s2);
-    const EntitySnapshot s3(6, EntityType::WEAPON, SpriteType::KNIFE, 30025.55, 30000, 0, true,
+    const EntitySnapshot s3(6, EntityType::WEAPON, SpriteType::GLOCK, 30025.55, 30000, 0, true,
                             WeaponState::EQUIPPED);
     v.emplace_back(s3);
 
