@@ -3,6 +3,9 @@
 #include "backgroundItem.h"
 #include <iostream>
 #include <QScrollBar>
+#include <QCoreApplication>
+#include <QPainter>
+#include <QImage>
 
 MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(nullptr), currentTerrainType(0)
 {

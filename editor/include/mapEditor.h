@@ -64,6 +64,9 @@ private:
     int currentTerrainType = 0;
     QString currentMapName;
     
+    // Método para obtener la ruta base a los recursos
+    static QString getResourcesPath();
+    
     // Métodos privados
     QString getResourcePath(int elementType, int subType = 0);
     void updateTerrainUI(int terrainType);
