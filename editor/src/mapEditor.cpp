@@ -91,11 +91,25 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     fileLayout->addWidget(saveMapButton);
     fileGroup->setLayout(fileLayout);
     
+    // Sección de control de zoom
+    QGroupBox *zoomGroup = new QGroupBox("Control de Zoom", toolPanel);
+    QHBoxLayout *zoomLayout = new QHBoxLayout(zoomGroup);
+    
+    QPushButton *zoomInButton = new QPushButton("+", zoomGroup);
+    QPushButton *zoomOutButton = new QPushButton("-", zoomGroup);
+    zoomInButton->setFixedWidth(40);
+    zoomOutButton->setFixedWidth(40);
+    
+    zoomLayout->addWidget(zoomInButton);
+    zoomLayout->addWidget(zoomOutButton);
+    zoomGroup->setLayout(zoomLayout);
+    
     // Añadir todas las secciones al panel de herramientas
     toolLayout->addWidget(terrainGroup);
     toolLayout->addWidget(teamsGroup);
     toolLayout->addWidget(objectsGroup);
     toolLayout->addWidget(weaponsGroup);
+    toolLayout->addWidget(zoomGroup);
     toolLayout->addWidget(fileGroup);
     toolLayout->addStretch(1); // Espacio flexible al final
     
@@ -115,6 +129,10 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     
     connect(loadMapButton, &QPushButton::clicked, this, &MapEditor::loadMapClicked);
     connect(saveMapButton, &QPushButton::clicked, this, &MapEditor::generarMapaClicked);
+    
+    // Conectar botones de zoom
+    connect(zoomInButton, &QPushButton::clicked, this, &MapEditor::zoomIn);
+    connect(zoomOutButton, &QPushButton::clicked, this, &MapEditor::zoomOut);
     
     // Crear el layout principal con el panel de herramientas y la vista
     QHBoxLayout *mainLayout = new QHBoxLayout();
@@ -260,6 +278,16 @@ void MapEditor::backgroundSelection(int index)
     // Asegurar que las barras de desplazamiento estén habilitadas
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    
+    // Aplicar un zoom mayor para acercar la vista
+    view->resetTransform();
+    float zoomFactor = 2.0; // Valor mayor para un zoom más cercano
+    view->scale(zoomFactor, zoomFactor);
+    
+    // Asegurar que el scroll comience en la posición superior izquierda (0,0)
+    view->horizontalScrollBar()->setValue(0);
+    view->verticalScrollBar()->setValue(0);
+    qDebug() << "Scroll posicionado en inicio (0,0)";
 
     if (currentBackground) {
         currentBackground->setPixmap(backgroundPixmap);
@@ -271,6 +299,47 @@ void MapEditor::backgroundSelection(int index)
     
     // Actualizar la interfaz de usuario según el tipo de terreno
     updateTerrainUI(index);
+}
+
+// Método para aumentar el zoom
+void MapEditor::zoomIn() {
+    // Incrementar el zoom en 25%
+    currentZoomFactor += 0.25;
+    // Limitar el zoom máximo
+    if (currentZoomFactor > 4.0) {
+        currentZoomFactor = 4.0;
+    }
+    
+    qDebug() << "Zoom aumentado a: " << currentZoomFactor;
+    applyZoom();
+}
+
+// Método para disminuir el zoom
+void MapEditor::zoomOut() {
+    // Reducir el zoom en 25%
+    currentZoomFactor -= 0.25;
+    // Limitar el zoom mínimo
+    if (currentZoomFactor < 0.5) {
+        currentZoomFactor = 0.5;
+    }
+    
+    qDebug() << "Zoom reducido a: " << currentZoomFactor;
+    applyZoom();
+}
+
+// Método para aplicar el factor de zoom actual
+void MapEditor::applyZoom() {
+    // Guardar la posición actual del centro de la vista
+    QPointF centerPoint = view->mapToScene(view->viewport()->width() / 2, view->viewport()->height() / 2);
+    
+    // Aplicar la transformación
+    view->resetTransform();
+    view->scale(currentZoomFactor, currentZoomFactor);
+    
+    // Centrar en el mismo punto después del zoom
+    view->centerOn(centerPoint);
+    
+    qDebug() << "Aplicado factor de zoom: " << currentZoomFactor;
 }
 
 // Obtener un color representativo para cada tipo de terreno

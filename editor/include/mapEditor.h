@@ -49,6 +49,11 @@ private slots:
     // Selección de terreno
     void backgroundSelection(int index);
     
+    // Control de zoom
+    void zoomIn();
+    void zoomOut();
+    void applyZoom();
+    
     // Acciones de archivo
     void generarMapaClicked();
     void loadMapClicked();
@@ -63,6 +68,7 @@ private:
     int widthBeam = 0;
     int currentTerrainType = 0;
     QString currentMapName;
+    float currentZoomFactor = 1.5; // Factor de zoom actual
     
     // Método para obtener la ruta base a los recursos
     static QString getResourcesPath();
