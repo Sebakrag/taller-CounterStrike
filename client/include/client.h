@@ -62,7 +62,8 @@ public:
 
     void move(const Vec2D& direction);
     void shoot(const AimInfo& aimInfo);
-    void rotate(const float angle);
+    void rotate(float angle);
+    void pickUpItem(const Vec2D& playerPosition);
 
     ~Client();
 

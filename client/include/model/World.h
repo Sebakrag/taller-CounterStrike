@@ -41,6 +41,7 @@ public:
     void update(float dt, const std::vector<EntitySnapshot>& snapshots);
     void render(Graphics& graphics);
     AimInfo getPlayerAimInfo(int mouseX, int mouseY);
+    Vec2D getPlayerPosition();
 };
 
 #endif  // WORLD_H

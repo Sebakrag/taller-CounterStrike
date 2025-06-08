@@ -201,6 +201,10 @@ void Client::move(const Vec2D& direction) {
 
 void Client::shoot(const AimInfo& aimInfo) { this->angle = aimInfo.angle; }
 
+void Client::pickUpItem(const Vec2D& playerPosition) {
+    std::cout << "playerPos: " << playerPosition << std::endl;
+}
+
 Client::~Client() {}
 
 // Status Client::getStatus() { return status; }

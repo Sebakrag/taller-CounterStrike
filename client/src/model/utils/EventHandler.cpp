@@ -46,7 +46,7 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
         gameIsRunning = false;
 }
 
-void EventHandler::handleMouseEvents(bool gameIsRunning) const {
+void EventHandler::handleMouseEvents(const bool gameIsRunning) const {
     if (!gameIsRunning) {
         return;
     }
@@ -58,6 +58,8 @@ void EventHandler::handleMouseEvents(bool gameIsRunning) const {
 
     if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         client.shoot(aimInfo);
+    } else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+        client.pickUpItem(world.getPlayerPosition());
     } else {
         client.rotate(aimInfo.angle);
     }

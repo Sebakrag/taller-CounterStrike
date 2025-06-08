@@ -19,9 +19,7 @@ void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
 }
 
 void World::render(Graphics& graphics) {
-    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-    std::cout << tCompLocalPlayer->getPosition() << std::endl;
-    camera.follow(tCompLocalPlayer->getPosition());
+    camera.follow(getPlayerPosition());
 
     map.render(graphics, camera);
 
@@ -39,11 +37,14 @@ AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
     // relativas al mundo (o al mapa) en vez de las relativas a la pantalla.
     mouseWorldPos += camera.getOffset();
 
-    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-
-    Vec2D aimDir = mouseWorldPos - tCompLocalPlayer->getPosition();
+    Vec2D aimDir = mouseWorldPos - getPlayerPosition();
     aimDir.normalize();
     const float angle = aimDir.calculateAngle(-90.0f);
 
     return {aimDir, angle};
+}
+
+Vec2D World::getPlayerPosition() {
+    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
+    return tCompLocalPlayer->getPosition();
 }
