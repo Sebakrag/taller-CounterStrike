@@ -242,17 +242,24 @@ void MapEditor::backgroundSelection(int index)
                 << image.width() << "x" << image.height();
     }
 
-    // Escalar la imagen al tamaño de la escena si es necesario
+    // Asegurarse de que la escena sea lo suficientemente grande para la imagen
     QRectF sceneRect = scene->sceneRect();
+    qDebug() << "Dimensiones de la imagen: " << backgroundPixmap.width() << "x" << backgroundPixmap.height();
+    qDebug() << "Dimensiones actuales de la escena: " << sceneRect.width() << "x" << sceneRect.height();
+    
+    // Ajustar el tamaño de la escena si la imagen es más grande
     if (!backgroundPixmap.isNull() && 
-        (backgroundPixmap.width() < sceneRect.width() || 
-         backgroundPixmap.height() < sceneRect.height())) {
-        backgroundPixmap = backgroundPixmap.scaled(
-            sceneRect.width(), sceneRect.height(),
-            Qt::KeepAspectRatioByExpanding,
-            Qt::SmoothTransformation
-        );
+        (backgroundPixmap.width() > sceneRect.width() || 
+         backgroundPixmap.height() > sceneRect.height())) {
+        scene->setSceneRect(0, 0, 
+                         qMax(static_cast<int>(sceneRect.width()), backgroundPixmap.width()),
+                         qMax(static_cast<int>(sceneRect.height()), backgroundPixmap.height()));
+        qDebug() << "Escena redimensionada a: " << scene->sceneRect().width() << "x" << scene->sceneRect().height();
     }
+    
+    // Asegurar que las barras de desplazamiento estén habilitadas
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
     if (currentBackground) {
         currentBackground->setPixmap(backgroundPixmap);
