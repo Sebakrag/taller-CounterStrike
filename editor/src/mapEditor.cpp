@@ -188,32 +188,55 @@ void MapEditor::addWeapon(int weaponType)
     scene->addItem(weaponItem);
 }
 
-void MapEditor::backgroundSelection(int index)
+void MapEditor::backgroundSelection(int index) 
 {
-    QPixmap backgroundPixmap;
     currentTerrainType = index; // Guardar el tipo de terreno seleccionado
-    QString basePath = "resources/backgrounds/";
-
+    QString basePath = getResourcesPath();
+    QString imagePath;
+    
     switch (index) {
         case DESERT: // Desierto
-            backgroundPixmap = QPixmap(basePath + "desert.png");
+            imagePath = basePath + "backgrounds/desert.png";
             break;
         case AZTEC_VILLAGE: // Pueblito Azteca
-            backgroundPixmap = QPixmap(basePath + "aztec.png");
+            imagePath = basePath + "backgrounds/aztec.png";
             break;
         case TRAINING_ZONE: // Zona de entrenamiento
-            backgroundPixmap = QPixmap(basePath + "training.png");
+            imagePath = basePath + "backgrounds/training.png";
             break;
         default:
-            backgroundPixmap = QPixmap(basePath + "desert.png"); // Por defecto desierto
+            imagePath = basePath + "backgrounds/desert.png"; // Por defecto desierto
             break;
     }
+    
+    qDebug() << "Intentando cargar imagen desde: " << imagePath;
+    
+    // Usar QImage primero, que es más flexible con formatos
+    QImage image(imagePath);
+    QPixmap backgroundPixmap;
+    backgroundPixmap = QPixmap::fromImage(image);
 
     // Si la imagen está vacía, intentar con un fondo genérico
-    if (backgroundPixmap.isNull()) {
-        qDebug() << "No se pudo cargar la imagen de fondo, usando fondo genérico.";
-        backgroundPixmap = QPixmap(32, 32);
+    if (image.isNull() || backgroundPixmap.isNull()) {
+        qWarning() << "No se pudo cargar la imagen de fondo desde: " << imagePath << ", usando fondo genérico.";
+        
+        // Crear un pixmap genérico con un patrón de cuadrícula
+        backgroundPixmap = QPixmap(1024, 1024);
         backgroundPixmap.fill(getTerrainColor(index));
+        
+        // Dibujar una cuadrícula para mejorar la visualización
+        QPainter painter(&backgroundPixmap);
+        painter.setPen(QPen(Qt::darkGray, 1));
+        int gridSize = 32;
+        for (int i = 0; i <= backgroundPixmap.width(); i += gridSize) {
+            painter.drawLine(i, 0, i, backgroundPixmap.height());
+        }
+        for (int i = 0; i <= backgroundPixmap.height(); i += gridSize) {
+            painter.drawLine(0, i, backgroundPixmap.width(), i);
+        }
+    } else {
+        qDebug() << "Imagen de fondo cargada exitosamente con dimensiones: " 
+                << image.width() << "x" << image.height();
     }
 
     // Escalar la imagen al tamaño de la escena si es necesario
@@ -276,10 +299,48 @@ float MapEditor::worldToPixelY(float worldY) {
     return worldY * 25.6f;
 }
 
+// Método para obtener la ruta base a los recursos
+QString MapEditor::getResourcesPath() {
+    // Directorio actual desde donde se ejecuta la aplicación
+    QDir currentDir = QDir::current();
+    qDebug() << "Directorio actual:" << currentDir.absolutePath();
+    
+    // Ruta al directorio editor/resources
+    QString editorResourcesPath = currentDir.absolutePath() + "/../editor/resources/";
+    
+    // Verificar si la carpeta existe
+    if (QDir(editorResourcesPath).exists()) {
+        qDebug() << "Usando ruta de recursos:" << editorResourcesPath;
+        return editorResourcesPath;
+    }
+    
+    // Alternativa: intentar con una ruta relativa desde el directorio actual
+    if (QDir("../editor/resources/").exists()) {
+        qDebug() << "Usando ruta de recursos relativa: ../editor/resources/";
+        return "../editor/resources/";
+    }
+    
+    // Alternativa: intentar con una ruta directa a resources
+    if (QDir("resources/").exists()) {
+        qDebug() << "Usando ruta de recursos simple: resources/";
+        return "resources/";
+    }
+    
+    // Último intento: buscar en el directorio de la aplicación
+    QString appDirPath = QCoreApplication::applicationDirPath() + "/resources/";
+    if (QDir(appDirPath).exists()) {
+        qDebug() << "Usando ruta de recursos desde directorio de aplicación:" << appDirPath;
+        return appDirPath;
+    }
+    
+    qWarning() << "No se encontró la carpeta de recursos. Usando ruta predeterminada.";
+    return "resources/";
+}
+
 // Método para obtener la ruta a un recurso según el tipo de elemento
 QString MapEditor::getResourcePath(int elementType, int subType)
 {
-    QString basePath = "resources/";
+    QString basePath = getResourcesPath();
     
     switch (elementType) {
         case TEAM_SPAWN_CT:
