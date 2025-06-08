@@ -1,8 +1,14 @@
-#include "client/include/app-state/LoginAppState.h"
+#include "../../../client/include/app-state/LoginAppState.h"
 
 #include <iostream>  // Eliminar una vez tengamos la parte grafica.
+#include <memory>
+#include <string>
 
-LoginAppState::LoginAppState() {
+#include "../../../client/include/app-state/AppStateController.h"
+#include "../../include/client.h"
+
+LoginAppState::LoginAppState(AppStateController* ctrl) {
+    controller = ctrl;
     // Here we can initialize some music. This applies only if we
     // are using the heap to create the app states.
     // Otherwise, we should override the enter() method of AppState, and
@@ -27,6 +33,12 @@ std::optional<AppStateCode> LoginAppState::update() {
 
     // Con los datos tomando (nombre, y la direccion IP)
     // Client client(dir_ip, port, usr_name);
+    const std::string usr = "jugador";
+    const std::string ip = "localhost";
+    const std::string port = "8080";
+
+    auto c = std::make_unique<Client>(ip, port, usr);
+    controller->setClient(std::move(c));
     std::cout << "Ya me logueeeee!" << std::endl;
     new_app_state = AppStateCode::GAME_MATCH;  // Para pasar directo al juego y probarlo.
 

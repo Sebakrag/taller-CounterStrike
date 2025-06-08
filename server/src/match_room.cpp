@@ -17,7 +17,7 @@ void MatchRoom::init(size_t amountPlayers) {
 // Constructor: inicializa nombre, host, crea Match y cola de acciones
 MatchRoom::MatchRoom(const std::string& name_match, const std::string& username_host,
                      std::shared_ptr<Queue<GameInfo>> playerQueue):
-        name_match(name_match), player_host(username_host), match() {
+        name_match(name_match), player_host(username_host), match("demo") {
     // Crear la cola para el cliente (GameInfo sender queue)
     // players[username_host] = playerQueue;
     addPlayer(username_host, playerQueue);
@@ -66,6 +66,9 @@ MatchRoomInfo MatchRoom::getMatchRoomInfo() {
 
     return MatchRoomInfo(infos, started);
 }
+// TileMap MatchRoom::getTileMap() {
+//     return match.getIdScenary()
+// }
 
 std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
     std::list<std::shared_ptr<Queue<GameInfo>>> playerQueues;

@@ -26,6 +26,7 @@ private:
     Queue<GameInfo> recv_queue;
     ClientSender sender;
     ClientReceiver receiver;
+    MatchInfo matchInfo;
 
     // Borrar esto una vez tengamos conexion con el servidor (sirve para probar el renderizado).
     EntitySnapshot snap;
@@ -52,6 +53,7 @@ public:
     void StartMatch();
     void refreshMatchRoom();
 
+    MatchInfo getMatchInfo();
     // GameInfo getGameInfo() const;  // Este es el verdadero metodo.
     // TODO: implementar GameInfo getGameInfo() const; y eliminar el siguiente:
     std::vector<EntitySnapshot> getGameInfo();

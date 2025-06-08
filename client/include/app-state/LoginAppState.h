@@ -5,7 +5,7 @@
 
 class LoginAppState: public AppState {
 public:
-    LoginAppState();
+    explicit LoginAppState(AppStateController* ctrl);
 
     std::optional<AppStateCode> update() override;
 

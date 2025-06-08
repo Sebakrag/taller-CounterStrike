@@ -8,7 +8,6 @@
 #include "EC/EntityManager.h"
 #include "client/dtos/AimInfo.h"
 #include "common/dtos/EntitySnapshot.h"
-#include "common/dtos/MapInfo.h"
 #include "common/dtos/WindowConfig.h"
 
 #include "Camera.h"
@@ -30,9 +29,9 @@ private:
 public:
     /// ///
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
-    /// @param mapInfo contains the info of the map selected by the creator of the game match.
+    /// @param tileMap contains the info of the map selected by the creator of the game match.
     /// ///
-    World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
+    World(const EntitySnapshot& firstLocalPlayerSnap, const TileMap& tileMap,
           const WindowConfig& winConfig);
 
     void update(float dt, const std::vector<EntitySnapshot>& snapshots);

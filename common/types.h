@@ -26,6 +26,8 @@ enum class PlayerSkin {
 
 enum class TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
 
+enum class TypeTileMap { Desert, Aztec, Training };
+
 struct PlayerInfoLobby {
     std::string username;
     Team team;

@@ -1,11 +1,11 @@
-#include "client/include/model/utils/EventHandler.h"
+#include "../../../../client/include/model/utils/EventHandler.h"
 
 #include <SDL2/SDL.h>
 
-#include "client/dtos/AimInfo.h"
-#include "common/utils/Vec2D.h"
+#include "../../../../client/dtos/AimInfo.h"
+#include "../../../../common/utils/Vec2D.h"
 
-EventHandler::EventHandler(Client& client, World& world): client(client), world(world) {}
+EventHandler::EventHandler(Client* client, World& world): client(client), world(world) {}
 
 void EventHandler::handleEvents(bool& gameIsRunning) const {
     SDL_Event e;
@@ -38,7 +38,7 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
     }
 
     if ((direction.getX() != 0) || (direction.getY() != 0)) {
-        client.move(direction);
+        client->move(direction);
     }
 
 
@@ -57,8 +57,8 @@ void EventHandler::handleMouseEvents(bool gameIsRunning) const {
     AimInfo aimInfo = world.getPlayerAimInfo(mouseX, mouseY);
 
     if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        client.shoot(aimInfo);
+        client->shoot(aimInfo);
     } else {
-        client.rotate(aimInfo.angle);
+        client->rotate(aimInfo.angle);
     }
 }

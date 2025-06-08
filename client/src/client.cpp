@@ -88,7 +88,8 @@ void Client::CreateMatch(const std::string& match_name) {
     if (created) {
         std::cout << "La partida se creó correctamente." << std::endl;
         status = InLobby;
-        // protocol.recvTileMap
+        matchInfo = protocol.recvMatchInfo();
+        std::cout << "recibí el matchinfo" << std::endl;
     } else {
         std::cout << "La partida No se pudo crear." << std::endl;
     }
@@ -99,7 +100,7 @@ void Client::JoinMatch(const std::string& match_name) {
     if (united) {
         std::cout << "Te uniste a la partida!" << std::endl;
         status = InLobby;
-        // protocol.recvTileMap
+        matchInfo = protocol.recvMatchInfo();
     } else {
         std::cout << "No pudiste unirte a la partida." << std::endl;
     }
@@ -144,6 +145,14 @@ void Client::refreshMatchRoom() {
     }
 }
 
+MatchInfo Client::getMatchInfo() {
+    if (status == Status::Disconnected || status == Status::InMenu) {
+        throw std::runtime_error("Error. El matchInfo aún no fue recibido del servidor.");
+    }
+    return matchInfo;
+}
+
+
 std::vector<EntitySnapshot> Client::getGameInfo() {
     // const EntitySnapshot s = {snap.server_entt_id, this->x,        this->y, this->angle,
     //                           snap.sprite_type,    snap.entt_type, snap.hp, snap.money,
@@ -152,7 +161,7 @@ std::vector<EntitySnapshot> Client::getGameInfo() {
     //
     // return v;
     GameInfo g = recv_queue.pop();
-    std::cout << "Cantidad de snapshots: " << g.getSnapshots().size() << std::endl;
+    // std::cout << "Cantidad de snapshots: " << g.getSnapshots().size() << std::endl;
 
 
     return g.getSnapshots();

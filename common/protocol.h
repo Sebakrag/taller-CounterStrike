@@ -6,9 +6,12 @@
 #include <vector>
 
 #include "../client/include/model/utils/SpriteType.h"
+#include "dtos/MatchInfo.h"
+#include "dtos/WindowConfig.h"
 #include "utils/EntityType.h"
 
 #include "socket.h"
+#include "tile_map.h"
 #include "types.h"
 
 #define DECIMAL_SCALE 10000  // 4 cifras significativas
@@ -27,18 +30,14 @@ protected:
     // local
     uint16_t recvBigEndian16();
 
+    uint32_t recvBigEndian32();
+
     // recibe 3 bytes (correspondiente a un float) por el socket, casteando al endianness local
     float recvFloatNormalized();
 
 
 public:
-    /**
-     * Inserta un numero de 2 bytes en formato big-endian dentro del array.
-     */
     static void insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array);
-    /**
-     * Inserta un numero de 2 bytes en formato big-endian dentro del array.
-     */
     static void insertBigEndian32(uint32_t bytes, std::vector<uint8_t>& array);
     static void insertFloat4Bytes(float value, std::vector<uint8_t>& array);
     // Inserta cada caracter del string (1 byte por caracter) en el array
@@ -70,8 +69,8 @@ public:
     static uint8_t encodePlayerState(const PlayerState& playerState);
     static uint8_t encodePlayerSkin(const PlayerSkin& playerSkin);
     static uint8_t encodeTypeItem(const TypeItem&);
-    static uint8_t encodeEntitySpriteType(const SpriteType& spriteType);
     static uint8_t encodeEntityType(const EntityType& entityType);
+    static uint8_t encodeTypeTileMap(const TypeTileMap&);
 
     // Decodificadores. Devuelven el valor del enum correspondiente al byte.
     static bool decodeBool(uint8_t byte);
@@ -85,9 +84,8 @@ public:
     static PlayerState decodePlayerState(uint8_t byte);
     static PlayerSkin decodePlayerSkin(uint8_t byte);
     static TypeItem decodeTypeItem(uint8_t byte);
-
-    static SpriteType decodeEntitySpriteType(uint8_t byte);
     static EntityType decodeEntityType(uint8_t byte);
+    static TypeTileMap decodeTypeTileMap(uint8_t byte);
 
     void shutDown(int how);
 };

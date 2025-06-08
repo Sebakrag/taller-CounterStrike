@@ -43,3 +43,13 @@ void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std
 }
 
 std::shared_ptr<Texture> TextureManager::getTexture(SpriteType type) { return textures[type]; }
+
+std::shared_ptr<Texture> TextureManager::getTextureMap(const TypeTileMap& typeTileMap) {
+    if (typeTileMap == TypeTileMap::Desert) {
+        return textures[SpriteType::DESERT_MAP];
+    } else if (typeTileMap == TypeTileMap::Aztec) {
+        return textures[SpriteType::AZTEC_MAP];
+    } else {
+        return textures[SpriteType::TRAINING_MAP];
+    }
+}

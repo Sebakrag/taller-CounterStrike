@@ -4,7 +4,8 @@
 #include <iostream>
 #include <vector>
 
-Match::Match(): phase(GamePhase::Preparation), roundsPlayed(0) {}
+Match::Match(const std::string& id_scenary):
+        id_scenary(id_scenary), phase(GamePhase::Preparation), roundsPlayed(0) {}
 
 void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
@@ -187,33 +188,7 @@ void Match::checkRoundEnd() {
     //     std::cout << "Se acabó el tiempo sin bomba. Ganan los antiterroristas. \n";
     // }
 }
-/*
-GameInfo Match::generateGameInfo(const std::string& playerName) const {
-    GameInfo info;
 
-    for (const auto& p : players) {
-        if (p.getId() == playerName) {
-            info.posX = p.getX();
-            info.posY = p.getY();
-            info.health = p.getHealth();
-            info.equippedWeapon = p.getEquippedWeapon();
-            info.bullets = p.getEquippedWeapon() == WeaponType::PRIMARY && p.getPrimaryWeapon() ?
-                           p.getPrimaryWeapon()->getBullets() :
-                           (p.getEquippedWeapon() == WeaponType::SECONDARY && p.getSecondaryWeapon()
-? p.getSecondaryWeapon()->getBullets() : 0); } else { info.otherPlayers.push_back(PlayerInfo{
-                p.getId(), p.getX(), p.getY(), p.isAlive(), p.getType()
-            });
-        }
-    }
-
-    info.bombPlanted = bombPlanted;
-    info.bombX = bombPosX;
-    info.bombY = bombPosY;
-    info.timeLeft = roundTimer;
-
-    return info;
-}
-*/
 GameInfo Match::generateGameInfo() const {
     std::vector<PlayerInfo> playersInfo;
     unsigned int id = 0;  // temporal. debe ser un atributo de cada objeto
@@ -232,6 +207,7 @@ GameInfo Match::generateGameInfo() const {
     return gameInfo;
 }
 
+std::string Match::getIdScenary() const { return id_scenary; }
 void Match::showPlayers() const {
     std::cout << "Players in match:\n";
     for (const auto& p: players) {

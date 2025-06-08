@@ -1,16 +1,16 @@
-#include "client/include/model/World.h"
+#include "../../../client/include/model/World.h"
 
 #include <iostream>
 
-#include "client/include/model/EC/components/RenderComponent.h"
-#include "client/include/model/EC/components/TransformComponent.h"
+#include "../../../client/include/model/EC/components/RenderComponent.h"
+#include "../../../client/include/model/EC/components/TransformComponent.h"
 
-World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
+World::World(const EntitySnapshot& firstLocalPlayerSnap, const TileMap& tileMap,
              const WindowConfig& winConfig):
         entt_mgr(comp_mgr),
         comp_updater(entt_mgr, comp_mgr),
-        map(mapInfo),
-        camera(winConfig.width, winConfig.height, mapInfo.numTilesInX, mapInfo.numTilesInY),
+        map(tileMap),
+        camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
         local_player(entt_mgr.create_entity(firstLocalPlayerSnap)) {}
 
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
@@ -20,7 +20,7 @@ void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
 
 void World::render(Graphics& graphics) {
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-    std::cout << tCompLocalPlayer->getPosition() << std::endl;
+    // std::cout << tCompLocalPlayer->getPosition() << std::endl;
     camera.follow(tCompLocalPlayer->getPosition());
 
     map.render(graphics, camera);

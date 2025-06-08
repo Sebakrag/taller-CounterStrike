@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "client/include/client.h"
-#include "common/dtos/MatchInfo.h"
+#include "../../../common/dtos/MatchInfo.h"
+#include "../client.h"
 #include "utils/EventHandler.h"
 
 #include "Graphics.h"
@@ -12,7 +12,7 @@
 
 class Game {
 private:
-    Client& client;  // This is the connection with the server.
+    Client* client;  // This is the connection with the server.
     const std::string match_name;
     Graphics graphics;
     World world;
@@ -30,7 +30,7 @@ public:
     /// \param[in] match_info structure containing the configuration for the game match.
     /// \param[in] client class that has the connection with the server.
     ////////////////////////////////////////////////////////////
-    Game(const MatchInfo& match_info, Client& client);
+    Game(const EntitySnapshot& firstLocalPlayerSnap, const MatchInfo& match_info, Client* client);
 
     ///
     /// \brief Initiate the game loop.

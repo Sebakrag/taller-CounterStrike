@@ -5,7 +5,12 @@
 
 #include "AppStateCode.h"
 
+class AppStateController;  // Forward declaration
+
 class AppState {
+protected:
+    AppStateController* controller = nullptr;
+
 public:
     virtual ~AppState() = default;
 

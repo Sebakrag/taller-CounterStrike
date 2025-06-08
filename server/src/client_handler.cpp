@@ -14,7 +14,7 @@ ClientHandler::ClientHandler(ServerProtocol&& serverProtocol, const std::string&
         gameManager(gameManager),
         senderQueue(std::make_shared<Queue<GameInfo>>()),
         sender(protocol, senderQueue) {
-    protocol.sendInitMsg();
+    // protocol.sendInitMsg();
     start();
 }
 
@@ -83,11 +83,7 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
             break;
         case MenuActionType::List: {
             std::list<std::string> matchs_list = gameManager.listMatchs();
-            std::string msg;
-            for (const auto& match: matchs_list) {
-                msg += match + "\n";
-            }
-            protocol.sendMessage(TypeMessage::ListMatchs, msg);
+            protocol.sendListOfMatchs(matchs_list);
             break;
         }
         case MenuActionType::Exit:
@@ -100,6 +96,8 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         std::cout << username << " entro al lobby" << std::endl;
         status = InLobby;
         myMatch = menuAction.name_match;
+        MatchInfo matchInfo = gameManager.getMatchInfo(myMatch);
+        protocol.sendMatchInfo(matchInfo);
         //...protocol.sendTilemap(...);
     }
 }
