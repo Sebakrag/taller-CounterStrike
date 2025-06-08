@@ -192,20 +192,20 @@ void MapEditor::backgroundSelection(int index)
 {
     QPixmap backgroundPixmap;
     currentTerrainType = index; // Guardar el tipo de terreno seleccionado
-    QString basePath = "../gfx/backgrounds/";
+    QString basePath = "resources/backgrounds/";
 
     switch (index) {
         case DESERT: // Desierto
-            backgroundPixmap = QPixmap(basePath + "dust2.bmp");
+            backgroundPixmap = QPixmap(basePath + "desert.png");
             break;
         case AZTEC_VILLAGE: // Pueblito Azteca
-            backgroundPixmap = QPixmap(basePath + "aztec.bmp");
+            backgroundPixmap = QPixmap(basePath + "aztec.png");
             break;
         case TRAINING_ZONE: // Zona de entrenamiento
-            backgroundPixmap = QPixmap(basePath + "train.bmp");
+            backgroundPixmap = QPixmap(basePath + "training.png");
             break;
         default:
-            backgroundPixmap = QPixmap(basePath + "dust2.bmp"); // Por defecto desierto
+            backgroundPixmap = QPixmap(basePath + "desert.png"); // Por defecto desierto
             break;
     }
 
@@ -255,78 +255,72 @@ QColor MapEditor::getTerrainColor(int terrainType)
     }
 }
 
+// Implementación de funciones de escala
+float MapEditor::pixelToWorldX(float pixelX, float elementWidth) {
+    // elementWidth no se usa actualmente pero podría usarse para ajustes de posición
+    (void)elementWidth; // Evitar advertencia de parámetro no utilizado
+    return pixelX / 25.6f;
+}
+
+float MapEditor::pixelToWorldY(float pixelY, float elementHeight) {
+    // elementHeight no se usa actualmente pero podría usarse para ajustes de posición
+    (void)elementHeight; // Evitar advertencia de parámetro no utilizado
+    return pixelY / 25.6f;
+}
+
+float MapEditor::worldToPixelX(float worldX) {
+    return worldX * 25.6f;
+}
+
+float MapEditor::worldToPixelY(float worldY) {
+    return worldY * 25.6f;
+}
+
 // Método para obtener la ruta a un recurso según el tipo de elemento
 QString MapEditor::getResourcePath(int elementType, int subType)
 {
-    QString basePath = "../gfx/";
+    QString basePath = "resources/";
     
     switch (elementType) {
         case TEAM_SPAWN_CT:
-            return basePath + "player/ct_spec.bmp";
+            return basePath + "player/ct_spawn.png";
             
         case TEAM_SPAWN_T:
-            return basePath + "player/t_spec.bmp";
+            return basePath + "player/t_spawn.png";
             
         case BOMB_ZONE:
-            return basePath + "weapons/c4.bmp";
+            return basePath + "objects/bomb_zone.png";
             
         case SOLID_STRUCTURE:
             // Diferentes tipos de estructuras según el terreno seleccionado
             switch (currentTerrainType) {
-                case DESERT: {
-                    // Usar tiles específicos de zonas desérticas
-                    int tileId = subType % 4; // Limitar a 4 tipos de tiles diferentes
-                    QStringList desertTiles = {
-                        "tiles/mideast/wood_box.bmp", 
-                        "tiles/mideast/block.bmp",
-                        "tiles/mideast/barrel.bmp",
-                        "tiles/mideast/pot.bmp"
-                    };
-                    return basePath + desertTiles[tileId];
-                }
-                case AZTEC_VILLAGE: {
-                    // Usar tiles específicos de zonas aztecas
-                    int tileId = subType % 4; // Limitar a 4 tipos de tiles diferentes
-                    QStringList aztecTiles = {
-                        "tiles/aztec/aztec_box.bmp", 
-                        "tiles/aztec/aztec_block.bmp",
-                        "tiles/aztec/aztec_barrel.bmp",
-                        "tiles/aztec/aztec_pot.bmp"
-                    };
-                    return basePath + aztecTiles[tileId];
-                }
-                case TRAINING_ZONE: {
-                    // Usar tiles específicos de zonas de entrenamiento
-                    int tileId = subType % 4; // Limitar a 4 tipos de tiles diferentes
-                    QStringList trainingTiles = {
-                        "tiles/training/box.bmp", 
-                        "tiles/training/block.bmp",
-                        "tiles/training/barrel.bmp",
-                        "tiles/training/wall.bmp"
-                    };
-                    return basePath + trainingTiles[tileId];
-                }
+                case DESERT: 
+                    return basePath + "objects/desert_box0.png";
+                case AZTEC_VILLAGE: 
+                    return basePath + "objects/aztec_box0.png";
+                case TRAINING_ZONE: 
+                    return basePath + "objects/train_box0.png";
                 default:
-                    return basePath + "tiles/box.bmp";
+                    return basePath + "objects/box.png";
             }
             
         case WEAPON:
             switch (subType) {
                 case PISTOL:
-                    return basePath + "weapons/usp.bmp";
+                    return basePath + "weapons/pistol.png";
                 case RIFLE:
-                    return basePath + "weapons/m4a1.bmp";
+                    return basePath + "weapons/rifle.png";
                 case SNIPER:
-                    return basePath + "weapons/awp.bmp";
+                    return basePath + "weapons/sniper.png";
                 case SHOTGUN:
-                    return basePath + "weapons/xm1014.bmp";
+                    return basePath + "weapons/shotgun.png";
                 default:
-                    return basePath + "weapons/glock.bmp";
+                    return basePath + "weapons/pistol.png";
             }
             
         default:
             // Imagen genérica para tipos desconocidos
-            return basePath + "tiles/box.bmp";
+            return basePath + "objects/default.png";
     }
 }
 
@@ -396,7 +390,7 @@ void MapEditor::loadMapFromFile(const QString &fileName)
     // Limpiar la escena actual
     QList<QGraphicsItem*> itemsToRemove;
     foreach (QGraphicsItem *item, scene->items()) {
-        if (DragAndDrop *dragItem = dynamic_cast<DragAndDrop*>(item)) {
+        if (dynamic_cast<DragAndDrop*>(item)) {
             itemsToRemove.append(item);
         }
     }
@@ -515,8 +509,8 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     // Convertir posición de pixeles a unidades de mundo si es necesario
     float elementWidth = (item->pixmap().width()) / 25.6;
     float elementHeight = (item->pixmap().height()) / 25.6;
-    float x = WorldScale::pixelToWorldX(position.x(), elementWidth);
-    float y = WorldScale::pixelToWorldY(position.y(), elementHeight);
+    float x = MapEditor::pixelToWorldX(position.x(), elementWidth);
+    float y = MapEditor::pixelToWorldY(position.y(), elementHeight);
     
     QPointF worldPos(x, y);
     
@@ -556,8 +550,8 @@ DragAndDrop* MapEditor::createDragAndDropItem(const MapElement* element)
     QPointF position = element->getPosition();
     
     // Convertir de unidades de mundo a pixeles si es necesario
-    float x = WorldScale::worldToPixelX(position.x());
-    float y = WorldScale::worldToPixelY(position.y());
+    float x = MapEditor::worldToPixelX(position.x());
+    float y = MapEditor::worldToPixelY(position.y());
     
     QPointF pixelPos(x, y);
     

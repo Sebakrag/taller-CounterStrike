@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGroupBox>
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
 #include <QWidget>
@@ -20,10 +21,12 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include "backgroundItem.h"
-#include "utils/WorldScale.h"
 #include "mapElements.h"
 #include "yamlHandler.h"
 #include "mapValidator.h"
+
+// Forward declaration
+class DragAndDrop;
 
 class MapEditor : public QMainWindow
 {
@@ -65,6 +68,12 @@ private:
     QString getResourcePath(int elementType, int subType = 0);
     void updateTerrainUI(int terrainType);
     QColor getTerrainColor(int terrainType);
+    
+    // Funciones de escala para convertir entre coordenadas de píxeles y mundo
+    static float pixelToWorldX(float pixelX, float elementWidth = 0.0f);
+    static float pixelToWorldY(float pixelY, float elementHeight = 0.0f);
+    static float worldToPixelX(float worldX);
+    static float worldToPixelY(float worldY);
     
     // Convertir elementos gráficos a elementos del mapa
     MapElement* convertToMapElement(DragAndDrop* item);
