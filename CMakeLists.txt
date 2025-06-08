@@ -107,6 +107,18 @@ endif()
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+
+    # 1) Encontrar Qt6 y activar AUTORCC/AUTOMOC/AUTOUIC
+    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+    set(CMAKE_AUTOMOC   ON)
+    set(CMAKE_AUTOUIC   ON)
+    set(CMAKE_AUTORCC   ON)
+
+    # 2) Procesar .qrc de client para generar qrc_resources.cpp en build/
+    qt6_add_resources(
+            RCC_SOURCES
+            "${CMAKE_SOURCE_DIR}/client/resources/resources.qrc"
+    )
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
 
@@ -124,7 +136,15 @@ if(TALLER_CLIENT)
     target_include_directories(taller_client PRIVATE ${SDL2_IMAGE_SOURCE_DIR}/include)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp SDL2_image)
+    target_link_libraries(taller_client 
+        PRIVATE
+        taller_common
+        SDL2pp::SDL2pp
+        SDL2_image::SDL2_image
+        Qt6::Widgets 
+        Qt6::Core 
+        Qt6::Gui
+    )
 endif()
 
 if(TALLER_SERVER)
@@ -181,6 +201,26 @@ if(TALLER_TESTS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
+
+    # —————————————————————————————————————————————————
+    #  Qt integration
+    # —————————————————————————————————————————————————
+
+    # Si Qt no está en rutas estándar, ajusta aquí:
+    # set(CMAKE_PREFIX_PATH "/ruta/a/Qt/6.5.0/lib/cmake")
+
+    if(TALLER_CLIENT)
+        find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+        
+        # Activa el procesamiento automático de moc, uic y rcc
+        set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTOUIC ON)
+        set(CMAKE_AUTORCC ON)
+    endif()
+
+    # —————————————————————————————————————————————————
+    #  Fin Qt integration
+    # —————————————————————————————————————————————————
 
     # target for testing
     # HEY!! TODO XXX: Change the name of the executable to the one you like!

@@ -38,7 +38,7 @@ public:
 
     std::list<std::string> listMatchs();
 
-    bool startMatch(const std::string& username, const std::string& matchName);
+    bool StartMatch(const std::string& username, const std::string& matchName);
 
     MatchRoomInfo getMatchRoomInfo(const std::string& matchName);
 

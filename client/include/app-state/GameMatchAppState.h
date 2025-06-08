@@ -5,7 +5,7 @@
 
 class GameMatchAppState: public AppState {
 public:
-    GameMatchAppState();
+    explicit GameMatchAppState(AppStateController* ctrl);
 
     std::optional<AppStateCode> update() override;
 

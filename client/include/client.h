@@ -20,6 +20,7 @@ class Client {
 private:
     ClientProtocol protocol;
     Status status;
+    std::string username;
     std::string match_name;
     bool player_creator = false;
     Queue<GameAction> send_queue;
@@ -43,14 +44,17 @@ public:
 
     // Acciones en el menu principal
     void ExitGame();
-    void CreateMatch(const std::string& match_name);
+    bool CreateMatch(const std::string& match_name);
     void JoinMatch(const std::string& match_name);
-    void refreshMatchList();
+    std::vector<std::string> refreshMatchList();
 
     // Acciones en el lobby (antes de empezar la partida)
     void LeaveMatch();  // regresa la menú principal
     void StartMatch();
-    void refreshMatchRoom();
+    std::vector<PlayerInfoLobby> refreshMatchRoom();
+    std::vector<PlayerInfoLobby> refreshPlayersList();
+    std::string getUsername() const { return username; }
+    bool isCreator() const { return player_creator; }
 
     // GameInfo getGameInfo() const;  // Este es el verdadero metodo.
     // TODO: implementar GameInfo getGameInfo() const; y eliminar el siguiente:

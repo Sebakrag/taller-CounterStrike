@@ -12,6 +12,7 @@
 
 Client::Client(const std::string& ip, const std::string& port, const std::string& user_name):
         protocol(ip.c_str(), port.c_str(), user_name),
+        username(user_name),
         sender(protocol, send_queue),
         receiver(protocol, recv_queue) {
     protocol.sendUserName(user_name);
@@ -22,10 +23,10 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
     }
     std::cout << "Bienvenido " << user_name << ". Ya estás conectado al servidor." << std::endl;
     status = InMenu;
-    // recvDatos();
 
-    CreateMatch("Partidita");
-    StartMatch();
+
+    // CreateMatch("Partidita");
+    // StartMatch();
 }
 void Client::mainLoop() {
     while (status != Disconnected) {
@@ -82,16 +83,19 @@ void Client::ExitGame() {
     status = Disconnected;
     protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
 }
-void Client::CreateMatch(const std::string& match_name) {
+bool Client::CreateMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, 0));
     bool created = protocol.recvConfirmation();
     if (created) {
         std::cout << "La partida se creó correctamente." << std::endl;
         status = InLobby;
+        player_creator = true;
+        this->match_name = match_name;
         // protocol.recvTileMap
     } else {
         std::cout << "La partida No se pudo crear." << std::endl;
     }
+    return created;
 }
 void Client::JoinMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Join, match_name));
@@ -99,23 +103,34 @@ void Client::JoinMatch(const std::string& match_name) {
     if (united) {
         std::cout << "Te uniste a la partida!" << std::endl;
         status = InLobby;
+        player_creator = false;
+        this->match_name = match_name;
         // protocol.recvTileMap
     } else {
         std::cout << "No pudiste unirte a la partida." << std::endl;
     }
 }
-void Client::refreshMatchList() {
+std::vector<std::string> Client::refreshMatchList() {
     protocol.sendMenuAction(MenuAction(MenuActionType::List));
-    std::vector<std::string> lista_partidas = protocol.recvListMatchs();
-    std::cout << "Partidas:" << std::endl;
-    for (const auto& partida: lista_partidas) {
-        std::cout << " - " << partida << std::endl;
-    }
+    std::vector<std::string> list_matchs = protocol.recvListMatchs();
+    // std::cout << "Partidas:" << std::endl;
+    // for (const auto& partida: lista_partidas) {
+    //     std::cout << " - " << partida << std::endl;
+    // }
+    return list_matchs;
 }
 // in Lobby.
 void Client::LeaveMatch() {
-    protocol.sendLobbyAction(LobbyAction::QuitMatch);
-    status = InMenu;
+    protocol.sendLobbyAction(LobbyAction(LobbyAction::QuitMatch));
+    bool left = protocol.recvConfirmation();
+    if (left) {
+        std::cout << "Abandonaste la partida." << std::endl;
+        status = InMenu;
+        player_creator = false;
+        match_name = "";
+    } else {
+        std::cout << "No pudiste abandonar la partida." << std::endl;
+    }
 }
 void Client::StartMatch() {
     protocol.sendLobbyAction(LobbyAction::StartMatch);
@@ -130,18 +145,36 @@ void Client::StartMatch() {
     }
 }
 
-void Client::refreshMatchRoom() {
+std::vector<PlayerInfoLobby> Client::refreshMatchRoom() {
     protocol.sendLobbyAction(LobbyAction::ListPlayers);
     MatchRoomInfo info = protocol.recvUpdateMatchRoom();
-    std::cout << "Players en la sala: " << std::endl;
-    for (const auto& p: info.players) {
-        std::cout << " - " << p.username << std::endl;
-    }
+    // std::cout << "Players en la sala: " << std::endl;
+    // for (const auto& p: info.players) {
+    //     std::cout << " - " << p.username << std::endl;
+    // }
     if (info.matchStarted) {
         status = InGame;
         sender.start();
         receiver.start();
     }
+    return info.players;
+}
+
+std::vector<PlayerInfoLobby> Client::refreshPlayersList() {
+    protocol.sendLobbyAction(LobbyAction::ListPlayers);
+    MatchRoomInfo info = protocol.recvUpdateMatchRoom();
+
+    // std::cout << "Players en la sala: " << std::endl;
+    // for (const auto& p: info.players) {
+    //     std::cout << " - " << p.username << std::endl;
+    // }
+
+    if (info.matchStarted) {
+        status = InGame;
+        sender.start();
+        receiver.start();
+    }
+    return info.players;
 }
 
 std::vector<EntitySnapshot> Client::getGameInfo() {

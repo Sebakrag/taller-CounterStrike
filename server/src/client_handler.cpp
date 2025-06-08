@@ -112,7 +112,7 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             status = InMenu;
             break;
         case LobbyAction::StartMatch: {
-            bool ok = gameManager.startMatch(username, myMatch);
+            bool ok = gameManager.StartMatch(username, myMatch);
             if (ok) {
                 status = InGame;
                 receiver = new Receiver(username, protocol, gameManager.getActionsQueue(myMatch));
