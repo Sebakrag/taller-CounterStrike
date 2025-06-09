@@ -516,8 +516,21 @@ QString MapEditor::obtenerNombreArchivo()
 // Método para cargar un mapa
 void MapEditor::loadMapClicked()
 {
+    // Verificar que exista el directorio maps
+    QDir mapsDir(QDir::current());
+    QString mapsPath = "maps/";
+    
+    if (!mapsDir.exists(mapsPath)) {
+        bool created = mapsDir.mkdir(mapsPath);
+        qDebug() << "Creando directorio maps para cargar:" << (created ? "Éxito" : "Fallo");
+    }
+    
+    // Obtener la ruta absoluta para mostrar en el diálogo
+    QString absoluteMapsPath = mapsDir.absoluteFilePath(mapsPath);
+    qDebug() << "Directorio de mapas para cargar:" << absoluteMapsPath;
+    
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Abrir Mapa"), "maps/", tr("Archivos YAML (*.yaml)"));
+        tr("Abrir Mapa"), absoluteMapsPath, tr("Archivos YAML (*.yaml)"));
         
     if (!fileName.isEmpty()) {
         loadMapFromFile(fileName);
@@ -599,9 +612,16 @@ void MapEditor::generateMapFile(const QString &fileName)
 {
     // Asegurar que exista el directorio de mapas
     QString directorio = "maps/";
-    QDir dir;
+    QDir dir(QDir::current());
+    
+    qDebug() << "Directorio actual para guardar mapas:" << dir.absolutePath();
+    
+    // Crear el directorio maps si no existe
     if (!dir.exists(directorio)) {
-        dir.mkdir(directorio);
+        bool created = dir.mkdir(directorio);
+        qDebug() << "Creando directorio maps:" << (created ? "Éxito" : "Fallo");
+    } else {
+        qDebug() << "Directorio maps ya existe en:" << dir.absoluteFilePath(directorio);
     }
 
     // Lista para almacenar todos los elementos
