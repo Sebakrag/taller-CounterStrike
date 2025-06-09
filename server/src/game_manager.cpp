@@ -74,7 +74,7 @@ std::list<std::string> GameManager::listMatchs() {
     return sorted_matches;
 }
 
-bool GameManager::startMatch(const std::string& username, const std::string& matchName) {
+bool GameManager::StartMatch(const std::string& username, const std::string& matchName) {
     std::lock_guard<std::mutex> lock(m);
     // busco la partida...
     auto it = lobbies.find(matchName);

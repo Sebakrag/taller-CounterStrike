@@ -11,7 +11,7 @@ private:
     Client* client;
 
 public:
-    explicit GameMatchAppState(Client* client);
+    explicit GameMatchAppState(AppStateController* ctrl);
 
     std::optional<AppStateCode> update() override;
 
