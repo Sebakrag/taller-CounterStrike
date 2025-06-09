@@ -2,7 +2,7 @@
 
 
 Tile::Tile(int id_tile): id_tile(id_tile) {
-    if (id_tile == ID_WALL1) {
+    if (id_tile <= ID_MAX_SOLID) {
         is_solid = true;
     } else {
         is_solid = false;

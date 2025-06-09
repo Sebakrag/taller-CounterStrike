@@ -5,14 +5,20 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "../include/scenario_registry.h"
+
 /*GameManager::GameManager(const std::list<std::string>& escenarios) {
     // YOUR CODE
 }
 */
 bool GameManager::createMatch(const std::string& matchName, const std::string& username,
-                              std::shared_ptr<Queue<GameInfo>> playerQueue) {
+                              std::shared_ptr<Queue<GameInfo>> playerQueue,
+                              const std::string& id_scenary) {
     // chequeo que no sea un nombre sin caracteres
     if (matchName.empty() || std::all_of(matchName.begin(), matchName.end(), ::isspace)) {
+        return false;
+    }
+    if (!ScenarioRegistry::existsScenario(id_scenary)) {
         return false;
     }
     std::lock_guard<std::mutex> lock(m);
@@ -20,7 +26,7 @@ bool GameManager::createMatch(const std::string& matchName, const std::string& u
     if (server_closed || lobbies.find(matchName) != lobbies.end()) {  // si la partida ya existe
         return false;
     }
-    lobbies.try_emplace(matchName, matchName, username, playerQueue);
+    lobbies.try_emplace(matchName, matchName, username, playerQueue, id_scenary);
 
     std::cout << username << " creó la partida " << matchName << std::endl;
 
@@ -96,11 +102,22 @@ MatchRoomInfo GameManager::getMatchRoomInfo(const std::string& matchName) {
     return it->second.getMatchRoomInfo();
 }
 
+MatchInfo GameManager::getMatchInfo(const std::string& matchName) {
+    auto it = lobbies.find(matchName);
+    if (it == lobbies.end()) {  // no existe la partida
+        throw std::runtime_error("No existe la partida.");
+    }
+    std::string id_scenary = it->second.getIdScenary();
+    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
+                     ScenarioRegistry::getTileMap(id_scenary));
+}
+
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {
     std::lock_guard<std::mutex> lock(m);
     return gameLoops.at(matchName)->getActionsQueue();
 }
 
+// asegurarse de que solo la clase server pueda llamar a este metodo.
 void GameManager::killAllMatchs() {
     std::lock_guard<std::mutex> lock(m);
     for (auto& [matchName, gameLoop]: gameLoops) {

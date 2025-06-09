@@ -5,7 +5,7 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "common/dtos/WindowConfig.h"
+#include "../../../common/dtos/WindowConfig.h"
 
 using SDL2pp::NullOpt;
 using SDL2pp::Optional;

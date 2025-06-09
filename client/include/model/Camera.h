@@ -3,7 +3,7 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "common/utils/Vec2D.h"
+#include "../../../common/utils/Vec2D.h"
 
 using SDL2pp::Rect;
 

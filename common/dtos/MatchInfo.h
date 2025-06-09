@@ -3,20 +3,36 @@
 
 #include <string>
 
+#include "../tile_map.h"
+
 #include "EntitySnapshot.h"
-#include "MapInfo.h"
 #include "WindowConfig.h"
 
 struct MatchInfo {
-    const std::string name;
-    const EntitySnapshot first_snap;  // Representa el snapshot inicial del local_player
-    const WindowConfig win_config;
-    const MapInfo map_info;
-    // const std::list<players_info_t> players;  // pensar si es la mejor forma.
+    std::string name;  // nombre de la partida.
+    WindowConfig win_config;
+    TileMap tileMap;
 
-    MatchInfo(const std::string& name, const EntitySnapshot& first_snap,
-              const WindowConfig& win_config, const MapInfo& map_info):
-            name(name), first_snap(first_snap), win_config(win_config), map_info(map_info) {}
+    MatchInfo() {}
+
+    explicit MatchInfo(const std::string& name, const WindowConfig& win_config,
+                       const TileMap& tile_map):
+            name(name), win_config(win_config), tileMap(tile_map) {}
+
+
+    MatchInfo(const MatchInfo& other) = default;
+
+    MatchInfo& operator=(const MatchInfo& other) = default;
+
+    void print() const {
+        std::cout << "MatchInfo {\n";
+        std::cout << "  Name: " << name << "\n";
+        std::cout << "  WindowConfig: { width: " << win_config.width
+                  << ", height: " << win_config.height << ", flags: " << win_config.flags << " }\n";
+        std::cout << "  TileMap: [size: " << tileMap.getColCount() << " x " << tileMap.getRowCount()
+                  << "]\n";
+        std::cout << "}" << std::endl;
+    }
 };
 
 #endif  // MATCHINFO_H

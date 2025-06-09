@@ -23,62 +23,8 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
     }
     std::cout << "Bienvenido " << user_name << ". Ya estás conectado al servidor." << std::endl;
     status = InMenu;
+}
 
-
-    // CreateMatch("Partidita");
-    // StartMatch();
-}
-void Client::mainLoop() {
-    while (status != Disconnected) {
-        if (status == InMenu) {
-            menuLoop();
-        }
-        if (status == InLobby) {
-            lobbyLoop();
-        }
-        if (status == InGame) {
-            sender.join();
-            receiver.join();
-        }
-    }
-}
-// Para probar (por ahora), voy a leer de la terminal el stdin
-void Client::menuLoop() {
-    std::cout << "Estás en el Menú" << std::endl;
-    std::cout << "Podes escribir: 'crear <nombre>', 'unirse <nombre> ', 'listar' o  'salir'"
-              << std::endl;
-    std::string msj_usuario;
-    while (status == InMenu) {
-        std::getline(std::cin, msj_usuario);
-        if (msj_usuario.substr(0, 6) == "crear ") {
-            std::string nombre_partida = msj_usuario.substr(6, msj_usuario.length());
-            CreateMatch(nombre_partida);
-        } else if (msj_usuario.substr(0, 7) == "unirse ") {
-            std::string nombre_partida = msj_usuario.substr(7, msj_usuario.length());
-            JoinMatch(nombre_partida);
-        } else if (msj_usuario == "listar") {
-            refreshMatchList();
-        } else if (msj_usuario == "salir") {
-            ExitGame();
-        }
-    }
-}
-// Para probar (por ahora), voy a leer de la terminal el stdin
-void Client::lobbyLoop() {
-    std::cout << "Estás en el Lobby" << std::endl;
-    std::cout << "Podes escribir: 'actualizar', 'abandonar', 'iniciar'" << std::endl;
-    std::string msj_usuario;
-    while (status == InLobby) {
-        std::getline(std::cin, msj_usuario);
-        if (msj_usuario == "actualizar") {
-            refreshMatchRoom();
-        } else if (msj_usuario == "abandonar") {
-            LeaveMatch();
-        } else if (msj_usuario == "iniciar") {
-            StartMatch();
-        }
-    }
-}
 void Client::ExitGame() {
     status = Disconnected;
     protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
@@ -89,9 +35,9 @@ bool Client::CreateMatch(const std::string& match_name) {
     if (created) {
         std::cout << "La partida se creó correctamente." << std::endl;
         status = InLobby;
+        matchInfo = protocol.recvMatchInfo();
         player_creator = true;
         this->match_name = match_name;
-        // protocol.recvTileMap
     } else {
         std::cout << "La partida No se pudo crear." << std::endl;
     }
@@ -103,9 +49,9 @@ void Client::JoinMatch(const std::string& match_name) {
     if (united) {
         std::cout << "Te uniste a la partida!" << std::endl;
         status = InLobby;
+        matchInfo = protocol.recvMatchInfo();
         player_creator = false;
         this->match_name = match_name;
-        // protocol.recvTileMap
     } else {
         std::cout << "No pudiste unirte a la partida." << std::endl;
     }
@@ -119,6 +65,7 @@ std::vector<std::string> Client::refreshMatchList() {
     // }
     return list_matchs;
 }
+
 // in Lobby.
 void Client::LeaveMatch() {
     protocol.sendLobbyAction(LobbyAction(LobbyAction::QuitMatch));
@@ -177,6 +124,14 @@ std::vector<PlayerInfoLobby> Client::refreshPlayersList() {
     return info.players;
 }
 
+MatchInfo Client::getMatchInfo() {
+    if (status == Status::Disconnected || status == Status::InMenu) {
+        throw std::runtime_error("Error. El matchInfo aún no fue recibido del servidor.");
+    }
+    return matchInfo;
+}
+
+
 std::vector<EntitySnapshot> Client::getGameInfo() {
     // const EntitySnapshot s = {snap.server_entt_id, this->x,        this->y, this->angle,
     //                           snap.sprite_type,    snap.entt_type, snap.hp, snap.money,
@@ -185,7 +140,7 @@ std::vector<EntitySnapshot> Client::getGameInfo() {
     //
     // return v;
     GameInfo g = recv_queue.pop();
-    std::cout << "Cantidad de snapshots: " << g.getSnapshots().size() << std::endl;
+    // std::cout << "Cantidad de snapshots: " << g.getSnapshots().size() << std::endl;
 
 
     return g.getSnapshots();
@@ -206,7 +161,9 @@ void Client::shoot(const AimInfo& aimInfo) {
 }
 
 // proximamente :) TODO: Implementar esto
-void Client::rotate(const float angle) { this->angle = angle; }
+void Client::rotate(const float angle) {
+    send_queue.try_push(GameAction(GameActionType::Rotate, angle));
+}
 
 Client::~Client() {}
 

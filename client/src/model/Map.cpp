@@ -1,28 +1,28 @@
 #include "../../../client/include/model/Map.h"
 
 #include <cmath>
+#include <iostream>
 
-#include "client/client_constants.h"
-#include "client/include/model/Graphics.h"
-#include "client/include/model/utils/TextureManager.h"
+#include "../../../client/client_constants.h"
+#include "../../../client/include/model/Graphics.h"
+#include "../../../client/include/model/utils/TextureManager.h"
 
 using SDL2pp::Optional;
 
-Map::Map(const MapInfo& mapInfo):
-        srcTileMap((mapInfo.numTilesInY), std::vector<Rect>((mapInfo.numTilesInX))),
-        tileSetTexture(TextureManager::getTexture(mapInfo.tileSetType)),
-        widthInTiles(mapInfo.numTilesInX),
-        heightInTiles(mapInfo.numTilesInY) {
+Map::Map(const TileMap& tileMap):
+        srcTileMap((tileMap.getRowCount()), std::vector<Rect>((tileMap.getColCount()))),
+        tileSetTexture(TextureManager::getTextureMap(tileMap.getType())),
+        widthInTiles(tileMap.getColCount()),
+        heightInTiles(tileMap.getRowCount()) {
     if (!tileSetTexture) {
         throw std::runtime_error("TextureManager::getTexture returned nullptr!");
     }
 
     const int TILES_PER_ROW = (tileSetTexture->GetWidth() / TILE_SIZE);
-
-    const auto& tileMap = mapInfo.tileMap;
+    std::cout << "heigth: " << heightInTiles << std::endl;
     for (int y = 0; y < heightInTiles; ++y) {
         for (int x = 0; x < widthInTiles; ++x) {
-            const int tileID = tileMap[y][x];
+            const int tileID = tileMap.getIdTile(y, x);
             Rect srcRect(0, 0, 0, 0);
             if (tileID > 0) {
                 // Le resto 1 pq enumeramos los tiles de 1 en adelante.
@@ -31,7 +31,6 @@ Map::Map(const MapInfo& mapInfo):
                 srcRect.SetW(TILE_SIZE);
                 srcRect.SetH(TILE_SIZE);
             }
-
             srcTileMap[y][x] = srcRect;
         }
     }
@@ -53,7 +52,13 @@ void Map::render(Graphics& graphics, const Camera& camera) {
     const Vec2D cameraOffset = camera.getOffset();
 
     for (int tileY = startTileY; (tileY < endTileY) && (tileY < heightInTiles); ++tileY) {
+        if (tileY < 0 || tileY >= heightInTiles)
+            continue;
+
         for (int tileX = startTileX; (tileX < endTileX) && (tileX < widthInTiles); ++tileX) {
+            if (tileX < 0 || tileX >= widthInTiles)
+                continue;
+
             const Rect& srcRect = srcTileMap[tileY][tileX];
 
             // Posición en pantalla en píxeles (ajustada por la cámara)

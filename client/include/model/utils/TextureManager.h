@@ -7,6 +7,8 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
+#include "../../../../common/types.h"
+
 #include "SpriteType.h"
 
 using SDL2pp::Color;
@@ -27,6 +29,8 @@ public:
     static void init(Renderer& ren);
 
     static std::shared_ptr<Texture> getTexture(SpriteType type);
+
+    static std::shared_ptr<Texture> getTextureMap(const TypeTileMap& typeTileMap);
 };
 
 #endif  // TEXTUREMANAGER_H

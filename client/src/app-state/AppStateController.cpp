@@ -1,13 +1,13 @@
-#include "client/include/app-state/AppStateController.h"
+#include "../../../client/include/app-state/AppStateController.h"
 
 #include <iostream>  //ELIMINAR
 #include <optional>
 #include <stdexcept>
 
-#include "client/include/app-state/GameMatchAppState.h"
+#include "../../../client/include/app-state/GameMatchAppState.h"
 #include "client/include/app-state/LobbyAppState.h"
-#include "client/include/app-state/LoginAppState.h"
-#include "client/include/app-state/MainMenuAppState.h"
+#include "../../../client/include/app-state/LoginAppState.h"
+#include "../../../client/include/app-state/MainMenuAppState.h"
 
 AppStateController::AppStateController() { current_state = new LoginAppState(this); }
 
@@ -37,6 +37,11 @@ void AppStateController::transition_to(const AppStateCode& new_state) {
             std::cout << "[Controller] Creating MainMenuAppState" << std::endl;
             current_state = new MainMenuAppState(this);
             break;
+        }
+        case AppStateCode::GAME_MATCH: {
+            current_state = new GameMatchAppState(getClient());
+            update();
+        }
         case AppStateCode::LOBBY:
             std::cout << "[Controller] Creating LobbyAppState" << std::endl;
             current_state = new LobbyAppState(this);
@@ -70,6 +75,31 @@ void AppStateController::setClient(std::unique_ptr<Client> c) {
         std::cout << "[AppStateController] Moving client pointer" << std::endl;
         client = std::move(c);
         std::cout << "[AppStateController] Client pointer moved successfully" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "[AppStateController] Exception in setClient: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "[AppStateController] Unknown exception in setClient" << std::endl;
+    }
+}
+
+Client* AppStateController::getClient() const {
+    std::cout << "[AppStateController] getClient called" << std::endl;
+    if (!client) {
+        std::cerr << "[AppStateController] WARNING: Returning nullptr from getClient" << std::endl;
+        return nullptr;
+    }
+    std::cout << "[AppStateController] Returning valid client pointer" << std::endl;
+    return client.get();
+}
+
+void AppStateController::setClient(std::unique_ptr<Client> c) {
+    if (c == nullptr) {
+        std::cerr << "[AppStateController] ERROR: Received nullptr client" << std::endl;
+        return;
+    }
+
+    try {
+        client = std::move(c);
     } catch (const std::exception& e) {
         std::cerr << "[AppStateController] Exception in setClient: " << e.what() << std::endl;
     } catch (...) {

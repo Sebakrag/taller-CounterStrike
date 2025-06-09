@@ -6,7 +6,8 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "common/dtos/MapInfo.h"
+#include "../../../common/dtos/MapInfo.h"
+#include "../../../common/tile_map.h"
 
 #include "Camera.h"
 
@@ -23,7 +24,7 @@ private:
     const int heightInTiles;
 
 public:
-    explicit Map(const MapInfo& mapInfo);
+    explicit Map(const TileMap& tileMap);
 
     void render(Graphics& graphics, const Camera& camera);
 

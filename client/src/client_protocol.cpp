@@ -70,6 +70,8 @@ void ClientProtocol::sendGameAction(const GameAction& gameAction) {
     } else if (gameAction.type == Attack || gameAction.type == Walk) {
         insertFloatNormalized3Bytes(gameAction.direction.getX(), buffer);
         insertFloatNormalized3Bytes(gameAction.direction.getY(), buffer);
+    } else if (gameAction.type == Rotate) {
+        insertFloat4Bytes(gameAction.angle, buffer);
     }
 
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
@@ -85,6 +87,36 @@ bool ClientProtocol::recvConfirmation() {
 
     throw std::runtime_error("Error. Se esperaba un byte OK o FAIL y se recibío otra cosa.");
 }
+
+MatchInfo ClientProtocol::recvMatchInfo() {
+    uint8_t byte;
+    socket.recvall(&byte, sizeof(uint8_t));
+    if (byte != BYTE_MATCH_INFO) {
+        throw std::runtime_error(
+                "Error. Se recibió un byte inesperado en ClientProtocol::recvMatchInfo()");
+    }
+    // recibo el nombre de la partida.
+    std::string name;
+    uint16_t length = recvBigEndian16();
+    name.resize(length);
+    socket.recvall(name.data(), sizeof(uint8_t) * length);
+    std::cout << "nombre de la partida: " << name << std::endl;
+    // recivo el window_config
+    int window_width = recvBigEndian16();
+    int window_heigth = recvBigEndian16();
+    int window_flags = recvBigEndian32();
+
+    // recivo el tilemap
+    int size_buffer_tilemap = recvBigEndian32();
+    std::cout << "-> size del buffer del tilemap: " << size_buffer_tilemap << std::endl;
+    std::vector<uint8_t> bytes_tilemap(size_buffer_tilemap);
+    socket.recvall(bytes_tilemap.data(), sizeof(uint8_t) * size_buffer_tilemap);
+
+    TileMap tilemap(bytes_tilemap);
+
+    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), tilemap);
+}
+
 
 std::vector<std::string> ClientProtocol::recvListMatchs() {
     std::string message;
