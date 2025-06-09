@@ -10,7 +10,8 @@ enum ElementType {
     TEAM_SPAWN_T = 1,
     BOMB_ZONE = 2,
     SOLID_STRUCTURE = 3,
-    WEAPON = 4
+    WEAPON = 4,
+    TILE = 5 // Nuevo tipo para los tiles del mapa
 };
 
 // Tipos de terreno
@@ -84,4 +85,15 @@ public:
     
 private:
     int weaponType; // Tipo de arma
+};
+
+class Tile : public MapElement {
+public:
+    Tile(const QPointF &pos, int tileId);
+    
+    int getTileId() const;
+    void setTileId(int id);
+    
+private:
+    int tileId; // ID del tile (corresponde al índice en tilePixmaps)
 };

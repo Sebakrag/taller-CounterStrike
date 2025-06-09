@@ -6,12 +6,19 @@
 #include <QCoreApplication>
 #include <QPainter>
 #include <QImage>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsSceneMouseEvent>
+#include <QDir>
 
 MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(nullptr), currentTerrainType(0)
 {
-    // Configurar una escena más grande para scrolling
+    // Configurar una escena de 1000x1000 para el mapa de tiles
     scene = new QGraphicsScene(this);
-    scene->setSceneRect(0, 0, 1024, 1024); // Tamaño mayor para soportar scrolling
+    scene->setSceneRect(0, 0, 1000, 1000); // Tamaño exacto para mapa de 1000x1000
+    
+    // Inicializar el sistema de tiles
+    currentTileId = -1;
+    tileButtons = new QButtonGroup(this);
 
     view = new QGraphicsView(scene, this);
 
@@ -29,7 +36,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     // Configurar tamaño de elementos
     widthBeam = scene->sceneRect().width() / 10;
 
-    // Crear la interfaz para agregar objetos
+    // Panel de herramientas lateral
     QWidget *toolPanel = new QWidget(this);
     QVBoxLayout *toolLayout = new QVBoxLayout(toolPanel);
     
@@ -104,8 +111,27 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     zoomLayout->addWidget(zoomOutButton);
     zoomGroup->setLayout(zoomLayout);
     
+    // Sección de selección de tiles (se llenará dinámicamente)
+    tilesGroup = new QGroupBox("Tiles disponibles", toolPanel);
+    QVBoxLayout *tilesLayout = new QVBoxLayout(tilesGroup);
+    
+    // Añadir un área de scroll para los tiles
+    tilesScrollArea = new QScrollArea(tilesGroup);
+    tilesScrollArea->setWidgetResizable(true);
+    tilesScrollArea->setMinimumHeight(200);
+    tilesScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    // Widget para contener los botones de tiles
+    QWidget *tilesContainer = new QWidget();
+    QGridLayout *tilesGridLayout = new QGridLayout(tilesContainer);
+    tilesScrollArea->setWidget(tilesContainer);
+    
+    tilesLayout->addWidget(tilesScrollArea);
+    tilesGroup->setLayout(tilesLayout);
+    
     // Añadir todas las secciones al panel de herramientas
     toolLayout->addWidget(terrainGroup);
+    toolLayout->addWidget(tilesGroup); // Añadir el grupo de tiles
     toolLayout->addWidget(teamsGroup);
     toolLayout->addWidget(objectsGroup);
     toolLayout->addWidget(weaponsGroup);
@@ -133,6 +159,15 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     // Conectar botones de zoom
     connect(zoomInButton, &QPushButton::clicked, this, &MapEditor::zoomIn);
     connect(zoomOutButton, &QPushButton::clicked, this, &MapEditor::zoomOut);
+    
+    // Instalamos un event filter en la vista para capturar clicks
+    view->viewport()->installEventFilter(this);
+    
+    // Cargar los tiles disponibles
+    loadAvailableTiles();
+    
+    // Inicializar con el fondo vacío con cuadrícula
+    backgroundSelection(0);
     
     // Crear el layout principal con el panel de herramientas y la vista
     QHBoxLayout *mainLayout = new QHBoxLayout();
@@ -393,7 +428,7 @@ QString MapEditor::getResourcesPath() {
         return editorResourcesPath;
     }
     
-    // Alternativa: intentar con una ruta relativa desde el directorio actual
+    // Verificar si existe en la ruta relativa al directorio actual
     if (QDir("../editor/resources/").exists()) {
         qDebug() << "Usando ruta de recursos relativa: ../editor/resources/";
         return "../editor/resources/";
@@ -416,52 +451,252 @@ QString MapEditor::getResourcesPath() {
     return "resources/";
 }
 
-// Método para obtener la ruta a un recurso según el tipo de elemento
-QString MapEditor::getResourcePath(int elementType, int subType)
-{
+// Método para obtener la ruta completa de un recurso según su tipo
+QString MapEditor::getResourcePath(int elementType, int subType) {
     QString basePath = getResourcesPath();
     
     switch (elementType) {
         case TEAM_SPAWN_CT:
-            return basePath + "player/ct_spawn.png";
+            return basePath + "player/ct.png";
             
         case TEAM_SPAWN_T:
-            return basePath + "player/t_spawn.png";
+            return basePath + "player/t.png";
             
         case BOMB_ZONE:
             return basePath + "objects/bomb_zone.png";
             
         case SOLID_STRUCTURE:
-            // Diferentes tipos de estructuras según el terreno seleccionado
-            switch (currentTerrainType) {
-                case DESERT: 
-                    return basePath + "objects/desert_box0.png";
-                case AZTEC_VILLAGE: 
-                    return basePath + "objects/aztec_box0.png";
-                case TRAINING_ZONE: 
-                    return basePath + "objects/train_box0.png";
-                default:
-                    return basePath + "objects/box.png";
-            }
+            // Podría tener diferentes tipos de estructuras según subType
+            return basePath + "objects/box.png";
             
         case WEAPON:
+            // Diferentes tipos de armas según el subType
             switch (subType) {
-                case PISTOL:
+                case 0: // Pistola
                     return basePath + "weapons/pistol.png";
-                case RIFLE:
+                case 1: // Rifle
                     return basePath + "weapons/rifle.png";
-                case SNIPER:
+                case 2: // Sniper
                     return basePath + "weapons/sniper.png";
-                case SHOTGUN:
+                case 3: // Shotgun
                     return basePath + "weapons/shotgun.png";
                 default:
                     return basePath + "weapons/pistol.png";
             }
             
         default:
-            // Imagen genérica para tipos desconocidos
-            return basePath + "objects/default.png";
+            qWarning() << "Tipo de elemento desconocido:" << elementType;
+            return "";
     }
+}
+
+// Método para cargar los tiles disponibles en gfx/tiles
+void MapEditor::loadAvailableTiles() {
+    // Ruta a los tiles del juego (ahora usando el sistema de recursos)
+    QString tilesPath = getResourcesPath() + "tiles/";
+    QDir tilesDir(tilesPath);
+    
+    qDebug() << "Buscando tiles en:" << tilesDir.absolutePath();
+    
+    // Verificar si el directorio existe
+    if (!tilesDir.exists()) {
+        qWarning() << "No se encontró el directorio de tiles:" << tilesPath;
+        
+        // Intento alternativo con la ruta antigua si la nueva no existe
+        tilesPath = "../gfx/tiles/";
+        tilesDir.setPath(tilesPath);
+        
+        if (!tilesDir.exists()) {
+            qWarning() << "Tampoco se encontró la ruta alternativa de tiles:" << tilesPath;
+            return;
+        } else {
+            qDebug() << "Usando ruta alternativa para tiles:" << tilesPath;
+        }
+    }
+    
+    // Filtrar por archivos BMP y PNG
+    QStringList filters;
+    filters << "*.bmp" << "*.png";
+    tilesDir.setNameFilters(filters);
+    
+    // Obtener la lista de archivos
+    QStringList tileFiles = tilesDir.entryList(filters, QDir::Files);
+    qDebug() << "Tiles encontrados:" << tileFiles.count();
+    
+    // Limpiar los widgets existentes en el área de scroll
+    QWidget* tilesContainer = tilesScrollArea->widget();
+    QGridLayout* tilesGridLayout = qobject_cast<QGridLayout*>(tilesContainer->layout());
+    
+    // Eliminar botones existentes
+    QList<QAbstractButton*> buttons = tileButtons->buttons();
+    for (QAbstractButton* button : buttons) {
+        tileButtons->removeButton(button);
+        delete button;
+    }
+    tilePixmaps.clear();
+    
+    // Cargar cada archivo de tile
+    int tileId = 0;
+    int row = 0;
+    int col = 0;
+    
+    for (const QString& tileFile : tileFiles) {
+        // Solo procesar archivos de imagen
+        if (tileFile.endsWith(".bmp", Qt::CaseInsensitive) || 
+            tileFile.endsWith(".png", Qt::CaseInsensitive)) {
+            
+            QString tilePath = tilesPath + tileFile;
+            QPixmap tilePixmap(tilePath);
+            
+            if (!tilePixmap.isNull()) {
+                // Almacenar el pixmap
+                tilePixmaps[tileId] = tilePixmap;
+                
+                // Crear un botón con una miniatura del tile
+                QPushButton* tileButton = new QPushButton();
+                tileButton->setFixedSize(40, 40);
+                
+                // Crear una versión escalada para el botón
+                QPixmap scaledPixmap = tilePixmap.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                tileButton->setIcon(QIcon(scaledPixmap));
+                tileButton->setIconSize(QSize(36, 36));
+                tileButton->setToolTip(tileFile);
+                
+                // Añadir al grupo de botones
+                tileButtons->addButton(tileButton, tileId);
+                
+                // Añadir a la cuadrícula
+                tilesGridLayout->addWidget(tileButton, row, col % 3);
+                
+                // Actualizar posición para el siguiente tile
+                col++;
+                if (col % 3 == 0) {
+                    row++;
+                    col = 0;
+                }
+                
+                tileId++;
+            }
+        }
+    }
+    
+    // Conectar el grupo de botones a la selección de tiles
+    connect(tileButtons, QOverload<int>::of(&QButtonGroup::buttonClicked),
+            this, &MapEditor::tileSelected);
+            
+    qDebug() << "Se cargaron" << tileId << "tiles";
+}
+
+// Método para manejar la selección de tiles
+void MapEditor::tileSelected(int id) {
+    currentTileId = id;
+    qDebug() << "Tile seleccionado:" << id;
+}
+
+// Método para colocar un tile en la posición del clic
+void MapEditor::placeTile(QPointF scenePos) {
+    // Solo proceder si hay un tile seleccionado
+    if (currentTileId < 0 || !tilePixmaps.contains(currentTileId)) {
+        return;
+    }
+    
+    // Convertir la posición de la escena a coordenadas de cuadrícula
+    QPoint gridPos = getTileGridPosition(scenePos);
+    int gridX = gridPos.x();
+    int gridY = gridPos.y();
+    
+    // Evitar colocar fuera de los límites
+    if (gridX < 0 || gridX >= 31 || gridY < 0 || gridY >= 31) {
+        return;
+    }
+    
+    qDebug() << "Colocando tile" << currentTileId << "en posición de cuadrícula:" << gridX << "," << gridY;
+    
+    // Calcular la posición exacta en la escena
+    qreal x = gridX * 32.0;
+    qreal y = gridY * 32.0;
+    
+    // Crear un nuevo item gráfico con el tile seleccionado
+    QGraphicsPixmapItem* tileItem = new QGraphicsPixmapItem(tilePixmaps[currentTileId]);
+    tileItem->setPos(x, y);
+    tileItem->setZValue(-0.5); // Por encima del fondo pero debajo de los elementos del mapa
+    
+    // Eliminar cualquier tile que pudiera haber en esa posición
+    QPair<int, int> gridKey(gridX, gridY);
+    for (QGraphicsItem* item : scene->items()) {
+        QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item);
+        if (pixmapItem && pixmapItem->zValue() == -0.5) {
+            QPoint itemPos = getTileGridPosition(pixmapItem->pos());
+            if (itemPos == gridPos) {
+                scene->removeItem(pixmapItem);
+                delete pixmapItem;
+                break;
+            }
+        }
+    }
+    
+    // Añadir el nuevo tile a la escena
+    scene->addItem(tileItem);
+    
+    // Guardar la referencia del tile colocado
+    placedTiles[gridKey] = currentTileId;
+}
+
+// Método para eliminar un tile en la posición del clic derecho
+void MapEditor::removeTile(QPointF scenePos) {
+    // Convertir la posición de la escena a coordenadas de cuadrícula
+    QPoint gridPos = getTileGridPosition(scenePos);
+    int gridX = gridPos.x();
+    int gridY = gridPos.y();
+    
+    // Verificar que esté dentro de los límites del mapa
+    if (gridX < 0 || gridX >= 31 || gridY < 0 || gridY >= 31) {
+        return;
+    }
+    
+    // Clave para el mapa de tiles
+    QPair<int, int> gridKey(gridX, gridY);
+    
+    // Verificar si hay un tile en esta posición
+    if (placedTiles.contains(gridKey)) {
+        // Eliminar la entrada del mapa de tiles
+        placedTiles.remove(gridKey);
+        
+        // Buscar el item visual correspondiente y eliminarlo
+        bool removed = false;
+        for (QGraphicsItem* item : scene->items()) {
+            QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item);
+            if (pixmapItem && pixmapItem->zValue() == -0.5 && pixmapItem != currentBackground) {
+                QPoint itemPos = getTileGridPosition(pixmapItem->pos());
+                if (itemPos == gridPos) {
+                    scene->removeItem(pixmapItem);
+                    delete pixmapItem;
+                    removed = true;
+                    qDebug() << "Tile eliminado en posición" << gridX << "," << gridY;
+                    break;
+                }
+            }
+        }
+        
+        if (!removed) {
+            qDebug() << "No se encontró el tile visual para eliminar en" << gridX << "," << gridY;
+        }
+    } else {
+        qDebug() << "No hay tile para eliminar en la posición" << gridX << "," << gridY;
+    }
+}
+
+// Convertir posición de la escena a coordenadas de la cuadrícula
+QPoint MapEditor::getTileGridPosition(const QPointF& scenePos) {
+    // Tamaño de cada celda de la cuadrícula (32x32 píxeles)
+    int gridSize = 32;
+    
+    // Calcular las coordenadas de la cuadrícula
+    int gridX = static_cast<int>(scenePos.x()) / gridSize;
+    int gridY = static_cast<int>(scenePos.y()) / gridSize;
+    
+    // Retornar las coordenadas como un punto
+    return QPoint(gridX, gridY);
 }
 
 // Método para actualizar la interfaz de usuario según el tipo de terreno
@@ -533,7 +768,7 @@ void MapEditor::loadMapClicked()
     // Ahora intentar crear maps dentro de server si no existe
     if (!currentDir.exists(mapsPath)) {
         bool created = currentDir.mkpath(mapsPath); // mkpath crea directorios recursivamente si es necesario
-        qDebug() << "Creando directorio server/maps para cargar:" << (created ? "Éxito" : "Fallo");
+        qDebug() << "Creando directorio server/maps:" << (created ? "Éxito" : "Fallo");
     }
     
     // Obtener la ruta absoluta para mostrar en el diálogo
@@ -554,8 +789,14 @@ void MapEditor::loadMapFromFile(const QString &fileName)
     // Limpiar la escena actual
     QList<QGraphicsItem*> itemsToRemove;
     foreach (QGraphicsItem *item, scene->items()) {
-        if (dynamic_cast<DragAndDrop*>(item)) {
+        if (DragAndDrop *dragItem = dynamic_cast<DragAndDrop*>(item)) {
             itemsToRemove.append(item);
+        }
+        // También eliminar tiles (son QGraphicsPixmapItem con zValue -0.5)
+        else if (QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item)) {
+            if (pixmapItem->zValue() == -0.5 && pixmapItem != currentBackground) {
+                itemsToRemove.append(item);
+            }
         }
     }
     
@@ -564,6 +805,9 @@ void MapEditor::loadMapFromFile(const QString &fileName)
         scene->removeItem(item);
         delete item;
     }
+    
+    // Limpiar el mapa de tiles colocados
+    placedTiles.clear();
     
     QList<MapElement*> elements;
     int terrainType;
@@ -578,9 +822,30 @@ void MapEditor::loadMapFromFile(const QString &fileName)
         
         // Crear elementos gráficos para cada elemento del mapa
         foreach (MapElement *element, elements) {
-            DragAndDrop *item = createDragAndDropItem(element);
-            if (item) {
-                scene->addItem(item);
+            // Si es un tile, procesarlo diferente
+            if (element->getType() == TILE) {
+                Tile *tile = dynamic_cast<Tile*>(element);
+                if (tile && tile->getTileId() >= 0 && tilePixmaps.contains(tile->getTileId())) {
+                    // Obtener la posición de la cuadrícula
+                    QPoint gridPos = getTileGridPosition(tile->getPosition());
+                    
+                    // Colocar el tile en esa posición
+                    QGraphicsPixmapItem* tileItem = new QGraphicsPixmapItem(tilePixmaps[tile->getTileId()]);
+                    tileItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
+                    tileItem->setZValue(-0.5);
+                    scene->addItem(tileItem);
+                    
+                    // Guardar la referencia del tile colocado
+                    placedTiles[QPair<int, int>(gridPos.x(), gridPos.y())] = tile->getTileId();
+                    
+                    qDebug() << "Cargando tile" << tile->getTileId() << "en posición" << gridPos.x() << "," << gridPos.y();
+                }
+            } else {
+                // Procesar otros elementos normalmente
+                DragAndDrop *item = createDragAndDropItem(element);
+                if (item) {
+                    scene->addItem(item);
+                }
             }
         }
         
@@ -617,6 +882,43 @@ bool MapEditor::validateMap()
     elements.clear();
     
     return isValid;
+}
+
+// Método para filtrar eventos, especialmente del ratón para colocar/eliminar tiles
+bool MapEditor::eventFilter(QObject* watched, QEvent* event)
+{
+    // Solo procesamos eventos del viewport de la vista
+    if (watched != view->viewport()) {
+        return false;
+    }
+    
+    // Manejar eventos de ratón
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        QPointF scenePos = view->mapToScene(mouseEvent->pos());
+        
+        // Verificar que la posición esté dentro de los límites del mapa
+        if (scenePos.x() < 0 || scenePos.y() < 0 || 
+            scenePos.x() >= scene->width() || scenePos.y() >= scene->height()) {
+            return false;
+        }
+        
+        // Clic izquierdo: colocar tile seleccionado
+        if (mouseEvent->button() == Qt::LeftButton) {
+            if (currentTileId >= 0) { // Solo si hay un tile seleccionado
+                placeTile(scenePos);
+                return true; // Evento procesado
+            }
+        }
+        // Clic derecho: eliminar tile existente
+        else if (mouseEvent->button() == Qt::RightButton) {
+            removeTile(scenePos);
+            return true; // Evento procesado
+        }
+    }
+    
+    // Dejar que Qt maneje otros eventos
+    return false;
 }
 
 void MapEditor::generateMapFile(const QString &fileName)
@@ -657,6 +959,22 @@ void MapEditor::generateMapFile(const QString &fileName)
                 elements.append(element);
             }
         }
+    }
+    
+    // Añadir los tiles colocados como elementos del mapa
+    QMap<QPair<int, int>, int>::const_iterator it;
+    for (it = placedTiles.constBegin(); it != placedTiles.constEnd(); ++it) {
+        QPair<int, int> gridPos = it.key();
+        int tileId = it.value();
+        
+        // Posición en píxeles (cada celda es 32x32)
+        QPointF pixelPos(gridPos.first * 32.0, gridPos.second * 32.0);
+        
+        // Crear un elemento Tile
+        MapElement *tileElement = new Tile(pixelPos, tileId);
+        elements.append(tileElement);
+        
+        qDebug() << "Guardando tile" << tileId << "en posición" << gridPos.first << "," << gridPos.second;
     }
 
     // Guardar el mapa en formato YAML

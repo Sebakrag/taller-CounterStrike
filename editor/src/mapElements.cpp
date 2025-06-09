@@ -63,3 +63,15 @@ int Weapon::getWeaponType() const {
 void Weapon::setWeaponType(int type) {
     weaponType = type;
 }
+
+// Tile implementation
+Tile::Tile(const QPointF &pos, int id) 
+    : MapElement(pos, TILE), tileId(id) {}
+
+int Tile::getTileId() const {
+    return tileId;
+}
+
+void Tile::setTileId(int id) {
+    tileId = id;
+}

@@ -43,6 +43,10 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         out << YAML::Key << "weapons";
         out << YAML::Value << YAML::BeginSeq;
         
+        // Tiles
+        out << YAML::Key << "tiles";
+        out << YAML::Value << YAML::BeginSeq;
+        
         // Procesar cada elemento según su tipo
         for (const MapElement* element : elements) {
             switch (element->getType()) {
@@ -59,10 +63,14 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
                 case WEAPON:
                     serializeWeapon(out, static_cast<const Weapon*>(element));
                     break;
+                case TILE:
+                    serializeTile(out, static_cast<const Tile*>(element));
+                    break;
             }
         }
         
         // Cerrar secuencias
+        out << YAML::EndSeq; // tiles
         out << YAML::EndSeq; // weapons
         out << YAML::EndSeq; // solid_structures
         out << YAML::EndSeq; // bomb_zones
@@ -161,6 +169,19 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
             }
         }
         
+        // Leer tiles
+        if (mapNode["tiles"]) {
+            YAML::Node tilesNode = mapNode["tiles"];
+            for (const auto& tileNode : tilesNode) {
+                Tile* tile = deserializeTile(tileNode);
+                if (tile) {
+                    elements.append(tile);
+                    qDebug() << "Cargado tile desde archivo:" << tile->getTileId() << "en posición" 
+                            << tile->getPosition().x() << "," << tile->getPosition().y();
+                }
+            }
+        }
+        
         return true;
     } catch (const YAML::Exception &e) {
         qDebug() << "Error al cargar YAML:" << e.what();
@@ -199,6 +220,14 @@ void YamlHandler::serializeWeapon(YAML::Emitter &out, const Weapon *weapon) {
     out << YAML::Key << "type" << YAML::Value << weapon->getWeaponType();
     out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
         << weapon->getPosition().x() << weapon->getPosition().y() << YAML::EndSeq;
+    out << YAML::EndMap;
+}
+
+void YamlHandler::serializeTile(YAML::Emitter &out, const Tile *tile) {
+    out << YAML::BeginMap;
+    out << YAML::Key << "tile_id" << YAML::Value << tile->getTileId();
+    out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
+        << tile->getPosition().x() << tile->getPosition().y() << YAML::EndSeq;
     out << YAML::EndMap;
 }
 
@@ -254,4 +283,16 @@ Weapon* YamlHandler::deserializeWeapon(const YAML::Node &node) {
     QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
     
     return new Weapon(pos, type);
+}
+
+Tile* YamlHandler::deserializeTile(const YAML::Node &node) {
+    if (!node["tile_id"] || !node["position"]) {
+        return nullptr;
+    }
+    
+    int tileId = node["tile_id"].as<int>();
+    auto posNode = node["position"];
+    QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
+    
+    return new Tile(pos, tileId);
 }

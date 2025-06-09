@@ -25,10 +25,12 @@ private:
     static void serializeBombZone(YAML::Emitter &out, const BombZone *zone);
     static void serializeSolidStructure(YAML::Emitter &out, const SolidStructure *structure);
     static void serializeWeapon(YAML::Emitter &out, const Weapon *weapon);
+    static void serializeTile(YAML::Emitter &out, const Tile *tile);
     
     // Métodos auxiliares para deserialización
     static TeamSpawn* deserializeTeamSpawn(const YAML::Node &node);
     static BombZone* deserializeBombZone(const YAML::Node &node);
     static SolidStructure* deserializeSolidStructure(const YAML::Node &node);
     static Weapon* deserializeWeapon(const YAML::Node &node);
+    static Tile* deserializeTile(const YAML::Node &node);
 };

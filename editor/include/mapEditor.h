@@ -20,6 +20,12 @@
 #include <QList>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMap>
+#include <QScrollArea>
+#include <QPushButton>
+#include <QButtonGroup>
+#include <QMouseEvent>
+#include <QPair>
 #include "backgroundItem.h"
 #include "mapElements.h"
 #include "yamlHandler.h"
@@ -33,6 +39,10 @@ class MapEditor : public QMainWindow
 
 public:
     MapEditor(QWidget *parent = nullptr);
+    ~MapEditor(); // Corregir la declaración duplicada del destructor
+    
+    // Event filter para capturar eventos de ratón
+    bool eventFilter(QObject* watched, QEvent* event) override;
     void generateMapFile(const QString &nombreArchivo);
     QString obtenerNombreArchivo();
     bool validateMap();
@@ -54,6 +64,11 @@ private slots:
     void zoomOut();
     void applyZoom();
     
+    // Sistema de tiles
+    void tileSelected(int id);
+    void placeTile(QPointF scenePos);
+    void removeTile(QPointF scenePos);
+    
     // Acciones de archivo
     void generarMapaClicked();
     void loadMapClicked();
@@ -69,6 +84,14 @@ private:
     int currentTerrainType = 0;
     QString currentMapName;
     float currentZoomFactor = 1.5; // Factor de zoom actual
+    
+    // Sistema de tiles
+    QMap<int, QPixmap> tilePixmaps; // Almacena todos los tiles disponibles
+    QMap<QPair<int, int>, int> placedTiles; // Tiles colocados en formato (x,y) -> tileId
+    int currentTileId = -1; // ID del tile seleccionado actualmente
+    QScrollArea* tilesScrollArea; // Área de desplazamiento para la paleta de tiles
+    QGroupBox* tilesGroup; // Contenedor para la paleta de tiles
+    QButtonGroup* tileButtons; // Grupo de botones para los tiles
     
     // Método para obtener la ruta base a los recursos
     static QString getResourcesPath();
@@ -89,4 +112,9 @@ private:
     
     // Crear elementos gráficos a partir de elementos del mapa
     DragAndDrop* createDragAndDropItem(const MapElement* element);
+    
+    // Métodos para el sistema de tiles
+    void loadAvailableTiles(); // Cargar los tiles disponibles en gfx/tiles
+    void createTilesPanel(); // Crear el panel de selección de tiles
+    QPoint getTileGridPosition(const QPointF& scenePos); // Convertir posición de la escena a coordenadas de cuadrícula
 };
