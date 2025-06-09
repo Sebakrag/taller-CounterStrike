@@ -516,17 +516,28 @@ QString MapEditor::obtenerNombreArchivo()
 // Método para cargar un mapa
 void MapEditor::loadMapClicked()
 {
-    // Verificar que exista el directorio maps
-    QDir mapsDir(QDir::current());
-    QString mapsPath = "maps/";
+    // Verificar que exista el directorio server/maps
+    QDir currentDir(QDir::current());
+    QString serverDir = "../server/";
+    QString mapsPath = serverDir + "maps/";
     
-    if (!mapsDir.exists(mapsPath)) {
-        bool created = mapsDir.mkdir(mapsPath);
-        qDebug() << "Creando directorio maps para cargar:" << (created ? "Éxito" : "Fallo");
+    qDebug() << "Buscando directorio para cargar mapas:" << currentDir.absolutePath();
+    
+    // Primero verificar que existe la carpeta server
+    if (!currentDir.exists(serverDir)) {
+        qDebug() << "La carpeta server no existe. Intentando crear carpeta server.";
+        bool created = currentDir.mkdir(serverDir);
+        qDebug() << "Creando directorio server:" << (created ? "Éxito" : "Fallo");
+    }
+    
+    // Ahora intentar crear maps dentro de server si no existe
+    if (!currentDir.exists(mapsPath)) {
+        bool created = currentDir.mkpath(mapsPath); // mkpath crea directorios recursivamente si es necesario
+        qDebug() << "Creando directorio server/maps para cargar:" << (created ? "Éxito" : "Fallo");
     }
     
     // Obtener la ruta absoluta para mostrar en el diálogo
-    QString absoluteMapsPath = mapsDir.absoluteFilePath(mapsPath);
+    QString absoluteMapsPath = currentDir.absoluteFilePath(mapsPath);
     qDebug() << "Directorio de mapas para cargar:" << absoluteMapsPath;
     
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -610,19 +621,30 @@ bool MapEditor::validateMap()
 
 void MapEditor::generateMapFile(const QString &fileName)
 {
-    // Asegurar que exista el directorio de mapas
-    QString directorio = "maps/";
+    // Asegurar que exista el directorio de mapas dentro de server
+    QString serverDir = "../server/";
+    QString mapsDir = serverDir + "maps/";
     QDir dir(QDir::current());
     
     qDebug() << "Directorio actual para guardar mapas:" << dir.absolutePath();
     
-    // Crear el directorio maps si no existe
-    if (!dir.exists(directorio)) {
-        bool created = dir.mkdir(directorio);
-        qDebug() << "Creando directorio maps:" << (created ? "Éxito" : "Fallo");
-    } else {
-        qDebug() << "Directorio maps ya existe en:" << dir.absoluteFilePath(directorio);
+    // Primero verificar que existe la carpeta server
+    if (!dir.exists(serverDir)) {
+        qDebug() << "La carpeta server no existe. Intentando crear carpeta server.";
+        bool created = dir.mkdir(serverDir);
+        qDebug() << "Creando directorio server:" << (created ? "Éxito" : "Fallo");
     }
+    
+    // Ahora intentar crear maps dentro de server
+    if (!dir.exists(mapsDir)) {
+        bool created = dir.mkpath(mapsDir); // mkpath crea directorios recursivamente si es necesario
+        qDebug() << "Creando directorio server/maps:" << (created ? "Éxito" : "Fallo");
+    } else {
+        qDebug() << "Directorio server/maps ya existe en:" << dir.absoluteFilePath(mapsDir);
+    }
+    
+    // Actualizar el directorio donde se guardarán los mapas
+    QString directorio = mapsDir;
 
     // Lista para almacenar todos los elementos
     QList<MapElement*> elements;
