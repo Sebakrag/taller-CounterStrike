@@ -21,6 +21,8 @@ public:
     virtual int getBullets() const { return 0;};
 
     virtual Weapon getWeaponType() const = 0;
+
+    virtual int getDamage() const { return damage; }
 };
 
 #endif

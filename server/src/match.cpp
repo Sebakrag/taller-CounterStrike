@@ -134,7 +134,14 @@ void Match::updateState(double elapsedTime) {
 
             float impactDist;
             if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), proj.getDirX(), proj.getDirY(), map, target, proj.getMaxDistance(), impactDist)) {
-                target.takeDamage(25); //TODO: Ajustar daño acorde al tipo de arma que la disparo
+                const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
+                target.takeDamage(weapon->getDamage());
+
+                std::cout << "[Impacto] Jugador " << target.getId()
+                << " recibió " << weapon->getDamage() << " de daño por arma "
+                << static_cast<int>(proj.getWeaponUsed()) << " disparada por "
+                << proj.getShooter() << "\n";
+
                 proj.deactivate();
                 break;
             }
@@ -267,7 +274,20 @@ GameInfo Match::generateGameInfo() const {
         playersInfo.push_back(info);
     }
 
-    GameInfo gameInfo(this->phase, roundTimer, playersInfo);
+    std::vector<ProjectileInfo> projectileInfos;
+    for (const auto& p : projectiles) {
+        projectileInfos.emplace_back(
+            p.getX(),
+            p.getY(),
+            p.getDirX(),
+            p.getDirY(),
+            p.getShooter(),
+            p.getWeaponUsed(),
+            p.isActive()
+        );
+    }
+
+    GameInfo gameInfo(this->phase, roundTimer, playersInfo, projectileInfos);
     return gameInfo;
 }
 
