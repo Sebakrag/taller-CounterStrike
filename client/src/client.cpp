@@ -22,62 +22,8 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
     }
     std::cout << "Bienvenido " << user_name << ". Ya estás conectado al servidor." << std::endl;
     status = InMenu;
-    // recvDatos();
+}
 
-    CreateMatch("Partidita");
-    StartMatch();
-}
-void Client::mainLoop() {
-    while (status != Disconnected) {
-        if (status == InMenu) {
-            menuLoop();
-        }
-        if (status == InLobby) {
-            lobbyLoop();
-        }
-        if (status == InGame) {
-            sender.join();
-            receiver.join();
-        }
-    }
-}
-// Para probar (por ahora), voy a leer de la terminal el stdin
-void Client::menuLoop() {
-    std::cout << "Estás en el Menú" << std::endl;
-    std::cout << "Podes escribir: 'crear <nombre>', 'unirse <nombre> ', 'listar' o  'salir'"
-              << std::endl;
-    std::string msj_usuario;
-    while (status == InMenu) {
-        std::getline(std::cin, msj_usuario);
-        if (msj_usuario.substr(0, 6) == "crear ") {
-            std::string nombre_partida = msj_usuario.substr(6, msj_usuario.length());
-            CreateMatch(nombre_partida);
-        } else if (msj_usuario.substr(0, 7) == "unirse ") {
-            std::string nombre_partida = msj_usuario.substr(7, msj_usuario.length());
-            JoinMatch(nombre_partida);
-        } else if (msj_usuario == "listar") {
-            refreshMatchList();
-        } else if (msj_usuario == "salir") {
-            ExitGame();
-        }
-    }
-}
-// Para probar (por ahora), voy a leer de la terminal el stdin
-void Client::lobbyLoop() {
-    std::cout << "Estás en el Lobby" << std::endl;
-    std::cout << "Podes escribir: 'actualizar', 'abandonar', 'iniciar'" << std::endl;
-    std::string msj_usuario;
-    while (status == InLobby) {
-        std::getline(std::cin, msj_usuario);
-        if (msj_usuario == "actualizar") {
-            refreshMatchRoom();
-        } else if (msj_usuario == "abandonar") {
-            LeaveMatch();
-        } else if (msj_usuario == "iniciar") {
-            StartMatch();
-        }
-    }
-}
 void Client::ExitGame() {
     status = Disconnected;
     protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
@@ -89,7 +35,6 @@ void Client::CreateMatch(const std::string& match_name) {
         std::cout << "La partida se creó correctamente." << std::endl;
         status = InLobby;
         matchInfo = protocol.recvMatchInfo();
-        std::cout << "recibí el matchinfo" << std::endl;
     } else {
         std::cout << "La partida No se pudo crear." << std::endl;
     }
@@ -113,6 +58,7 @@ void Client::refreshMatchList() {
         std::cout << " - " << partida << std::endl;
     }
 }
+
 // in Lobby.
 void Client::LeaveMatch() {
     protocol.sendLobbyAction(LobbyAction::QuitMatch);

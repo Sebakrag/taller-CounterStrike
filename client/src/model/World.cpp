@@ -14,7 +14,9 @@ World::World(const EntitySnapshot& firstLocalPlayerSnap, const TileMap& tileMap,
         local_player(entt_mgr.create_entity(firstLocalPlayerSnap)) {}
 
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
-    std::cout << dt << std::endl;
+    // qué es el dt?
+    // std::cout << dt << std::endl;
+    if (dt == 1) {}
     comp_updater.update(snapshots);
 }
 

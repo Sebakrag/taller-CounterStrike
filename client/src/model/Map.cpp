@@ -52,7 +52,13 @@ void Map::render(Graphics& graphics, const Camera& camera) {
     const Vec2D cameraOffset = camera.getOffset();
 
     for (int tileY = startTileY; (tileY < endTileY) && (tileY < heightInTiles); ++tileY) {
+        if (tileY < 0 || tileY >= heightInTiles)
+            continue;
+
         for (int tileX = startTileX; (tileX < endTileX) && (tileX < widthInTiles); ++tileX) {
+            if (tileX < 0 || tileX >= widthInTiles)
+                continue;
+
             const Rect& srcRect = srcTileMap[tileY][tileX];
 
             // Posición en pantalla en píxeles (ajustada por la cámara)

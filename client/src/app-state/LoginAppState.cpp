@@ -40,6 +40,8 @@ std::optional<AppStateCode> LoginAppState::update() {
     auto c = std::make_unique<Client>(ip, port, usr);
     controller->setClient(std::move(c));
     std::cout << "Ya me logueeeee!" << std::endl;
+    controller->getClient()->CreateMatch("partidita 1");
+    controller->getClient()->StartMatch();
     new_app_state = AppStateCode::GAME_MATCH;  // Para pasar directo al juego y probarlo.
 
 

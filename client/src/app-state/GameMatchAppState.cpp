@@ -30,15 +30,6 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
                                         entt_type, hp, money, Team::Terrorist, PlayerState::Idle,
                                         is_alive);
-        // const WindowConfig win_config(
-        //         SCREEN_WIDTH, SCREEN_HEIGHT,
-        //         SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
-        //
-        // TileMap tileMap = TileMap::getLevelDemo();
-        //
-        // const MatchInfo match_info("Partidita", win_config, tileMap);
-
-        // Client client("localhost", "8080", "seba");
 
         // TODO. Sacar el first snap del constructor y dejar que lo cree al recibirlo por el
         // snapshot del juego.
