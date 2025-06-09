@@ -12,15 +12,15 @@ std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::texture
 
 void TextureManager::init(Renderer& ren) {
     // Players textures
-    const Color playerColorKey = {0, 0, 0, 255};
-    loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::GUERRILLA, GUERRILLA_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::SEAL_FORCE, SEAL_FORCE_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::GERMAN_GSG_9, GERMAN_GSG_9_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::UK_SAS, UK_SAS_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
+    // const Color playerColorKey = {0, 0, 0, 255};
+    loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG);
+    loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG);
+    loadTexture(ren, SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG);
+    loadTexture(ren, SpriteType::GUERRILLA, GUERRILLA_IMG);
+    loadTexture(ren, SpriteType::SEAL_FORCE, SEAL_FORCE_IMG);
+    loadTexture(ren, SpriteType::GERMAN_GSG_9, GERMAN_GSG_9_IMG);
+    loadTexture(ren, SpriteType::UK_SAS, UK_SAS_IMG);
+    loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG);
 
     // Map textures
     loadTexture(ren, SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);
@@ -30,7 +30,9 @@ void TextureManager::init(Renderer& ren) {
 
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path) {
     Surface surface(path);
-    textures[type] = std::make_shared<Texture>(ren, surface);
+    auto texture = std::make_shared<Texture>(ren, surface);
+    texture->SetBlendMode(SDL_BLENDMODE_BLEND);  // ✅ Asegura el alpha blending
+    textures[type] = texture;
 }
 
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path,
@@ -38,8 +40,10 @@ void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std
     Surface surface(path);
     Uint32 keyMapped = SDL_MapRGB(surface.Get()->format, colorKey.GetRed(), colorKey.GetGreen(),
                                   colorKey.GetBlue());
-    surface.SetColorKey(true, keyMapped);
-    textures[type] = std::make_shared<Texture>(ren, surface);
+    surface.SetColorKey(false, keyMapped);
+    auto texture = std::make_shared<Texture>(ren, surface);
+    texture->SetBlendMode(SDL_BLENDMODE_BLEND);
+    textures[type] = texture;
 }
 
 std::shared_ptr<Texture> TextureManager::getTexture(SpriteType type) { return textures[type]; }

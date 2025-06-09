@@ -147,6 +147,8 @@ GameAction ServerProtocol::recvGameAction() {
         float dir_x = recvFloatNormalized();
         float dir_y = recvFloatNormalized();
         gameAction.direction = Vec2D(dir_x, dir_y);
+    } else if (type == Rotate) {
+        gameAction.angle = recvFloat();
     }
 
     return gameAction;

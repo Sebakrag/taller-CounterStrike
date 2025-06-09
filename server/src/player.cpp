@@ -1,5 +1,6 @@
 #include "../include/player.h"
 
+#include <cmath>
 #include <iostream>
 #include <string>
 
@@ -55,6 +56,9 @@ void Player::setX(const float x) { posX = x; }
 
 float Player::getY() const { return posY; }
 void Player::setY(const float y) { posY = y; }
+
+float Player::getAngle() const { return angle; }
+void Player::setAngle(float _angle) { angle = _angle; }
 
 std::string Player::getId() const { return name; }
 

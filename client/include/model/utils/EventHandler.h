@@ -1,6 +1,8 @@
 #ifndef EVENTHANDLER_H
 #define EVENTHANDLER_H
 
+#include <SDL_stdinc.h>
+
 #include "../../../../client/include/client.h"
 #include "../../../../client/include/model/World.h"
 
@@ -14,13 +16,15 @@ private:
     // para el jugador local). Es decir, es una forma de sincronizar la vision entre todos los
     // jugadores en cada frame.
     World& world;
-    void handleKeyboardEvents(bool& gameIsRunning) const;
-    void handleMouseEvents(bool gameIsRunning) const;
+    Uint32 lastMouseProcessTime = 0;  // variable para contar tiempo
+
+    void handleKeyboardEvents(bool& gameIsRunning);
+    void handleMouseEvents(bool gameIsRunning);
 
 public:
     EventHandler(Client* client, World& world);
 
-    void handleEvents(bool& gameIsRunning) const;
+    void handleEvents(bool& gameIsRunning);
 };
 
 #endif  // EVENTHANDLER_H

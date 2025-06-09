@@ -31,6 +31,7 @@ protected:
     uint16_t recvBigEndian16();
 
     uint32_t recvBigEndian32();
+    float recvFloat();
 
     // recibe 3 bytes (correspondiente a un float) por el socket, casteando al endianness local
     float recvFloatNormalized();

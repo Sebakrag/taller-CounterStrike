@@ -72,15 +72,19 @@ struct GameAction {
     TypeWeapon typeWeapon = TypeWeapon::Knife;  // rellenar si se quiere cambiar o comprar municion.
     int count_ammo = 0;                         // rellenar si quiere comprar municion
     Vec2D direction;
+    float angle = 0;  // para Rotate
 
     GameAction() {}
     explicit GameAction(GameActionType type, Weapon weapon = Weapon::Glock):
             type(type), weapon(weapon) {}
 
-    GameAction(GameActionType type, TypeWeapon typeWeapon, int count_ammo = 0):
+    explicit GameAction(GameActionType type, TypeWeapon typeWeapon, int count_ammo = 0):
             type(type), typeWeapon(typeWeapon), count_ammo(count_ammo) {}
 
-    GameAction(GameActionType type, const Vec2D& direction): type(type), direction(direction) {}
+    explicit GameAction(GameActionType type, const Vec2D& direction):
+            type(type), direction(direction) {}
+
+    explicit GameAction(GameActionType type, float angle): type(type), angle(angle) {}
 
     GameAction(const GameAction&) = default;
     GameAction& operator=(const GameAction&) = default;

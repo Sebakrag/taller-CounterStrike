@@ -27,6 +27,7 @@
 #define TRAINING_TILE_SET_IMG (TILE_SETS_PATH + "/training_tiles.png")
 
 // Map
-#define TILE_SIZE 32  // in pixels
+#define TILE_SIZE 32     // in pixels
+#define SCALE_SPRITES 2  // va a dibujar los sprites al doble de su tamaño original
 
 #endif  // CLIENTCONSTANTS_H

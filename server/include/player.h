@@ -15,6 +15,7 @@ private:
     int health;
     PlayerState state;
     float speed = 80.0f;
+    float angle = 0;
 
     WeaponKnife knife;
     FireWeapon* primaryWeapon;
@@ -36,6 +37,8 @@ public:
     void setX(const float x);
     float getY() const;
     void setY(const float y);
+    float getAngle() const;
+    void setAngle(float angle);
     std::string getId() const;
     Team getTeam() const;
     int getHealth() const;

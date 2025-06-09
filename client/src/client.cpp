@@ -128,7 +128,9 @@ void Client::shoot(const AimInfo& aimInfo) {
 }
 
 // proximamente :) TODO: Implementar esto
-void Client::rotate(const float angle) { this->angle = angle; }
+void Client::rotate(const float angle) {
+    send_queue.try_push(GameAction(GameActionType::Rotate, angle));
+}
 
 Client::~Client() {}
 

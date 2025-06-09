@@ -90,6 +90,10 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                       << " damage\n";
             break;
         }
+        case GameActionType::Rotate: {
+            player->setAngle(action.gameAction.angle);
+            break;
+        }
         // case ActionType::DEFUSE:
         //   processDefuse(playerId);
         //   break;
@@ -197,8 +201,8 @@ GameInfo Match::generateGameInfo() const {
         id++;
 
         PlayerInfo info(id, p.getId(), p.getTeam(), PlayerSkin::CounterTerrorist1,
-                        Vec2D(p.getX(), p.getY()), 0, p.getEquippedWeapon(), p.getHealth(),
-                        static_cast<int>(p.getMoney()),
+                        Vec2D(p.getX(), p.getY()), p.getAngle(), p.getEquippedWeapon(),
+                        p.getHealth(), static_cast<int>(p.getMoney()),
                         p.getPrimaryWeapon() ? p.getPrimaryWeapon()->getBullets() : 0);
         playersInfo.push_back(info);
     }

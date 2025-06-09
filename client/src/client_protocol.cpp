@@ -70,6 +70,8 @@ void ClientProtocol::sendGameAction(const GameAction& gameAction) {
     } else if (gameAction.type == Attack || gameAction.type == Walk) {
         insertFloatNormalized3Bytes(gameAction.direction.getX(), buffer);
         insertFloatNormalized3Bytes(gameAction.direction.getY(), buffer);
+    } else if (gameAction.type == Rotate) {
+        insertFloat4Bytes(gameAction.angle, buffer);
     }
 
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());

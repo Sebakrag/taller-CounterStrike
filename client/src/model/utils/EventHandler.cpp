@@ -1,5 +1,8 @@
 #include "../../../../client/include/model/utils/EventHandler.h"
 
+#include <iostream>
+#include <ostream>
+
 #include <SDL2/SDL.h>
 
 #include "../../../../client/dtos/AimInfo.h"
@@ -7,7 +10,7 @@
 
 EventHandler::EventHandler(Client* client, World& world): client(client), world(world) {}
 
-void EventHandler::handleEvents(bool& gameIsRunning) const {
+void EventHandler::handleEvents(bool& gameIsRunning) {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
@@ -20,7 +23,7 @@ void EventHandler::handleEvents(bool& gameIsRunning) const {
     handleMouseEvents(gameIsRunning);
 }
 
-void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
+void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     Vec2D direction(0, 0);
@@ -46,10 +49,17 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
         gameIsRunning = false;
 }
 
-void EventHandler::handleMouseEvents(bool gameIsRunning) const {
+void EventHandler::handleMouseEvents(bool gameIsRunning) {
     if (!gameIsRunning) {
         return;
     }
+    const Uint32 throttleDelayMs = 200;  // Ajustá este valor (en milisegundos)
+
+
+    Uint32 now = SDL_GetTicks();
+    if (now - lastMouseProcessTime < throttleDelayMs)
+        return;
+    lastMouseProcessTime = now;
 
     int mouseX, mouseY;
     Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);

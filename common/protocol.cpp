@@ -44,6 +44,19 @@ uint32_t Protocol_::recvBigEndian32() {
     return number;
 }
 
+float Protocol_::recvFloat() {
+    uint32_t number;
+    int r = socket.recvall(&number, sizeof(uint32_t));
+    if (r != 4) {
+        throw std::runtime_error("Error al recibir el number.");
+    }
+    number = ntohl(number);  // convierto de big endian al endianness local
+
+    float value;
+    std::memcpy(&value, &number, sizeof(float));
+    return value;
+}
+
 void Protocol_::insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array) {
     uint16_t bytes_big_endian = htons(bytes);  // paso a big endian
 
