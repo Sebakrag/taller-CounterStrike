@@ -123,7 +123,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     
     // Widget para contener los botones de tiles
     QWidget *tilesContainer = new QWidget();
-    QGridLayout *tilesGridLayout = new QGridLayout(tilesContainer);
+    new QGridLayout(tilesContainer); // Aplicar layout directamente, no necesitamos guardar la referencia
     tilesScrollArea->setWidget(tilesContainer);
     
     tilesLayout->addWidget(tilesScrollArea);
@@ -581,7 +581,7 @@ void MapEditor::loadAvailableTiles() {
     }
     
     // Conectar el grupo de botones a la selección de tiles
-    connect(tileButtons, QOverload<int>::of(&QButtonGroup::buttonClicked),
+    connect(tileButtons, &QButtonGroup::idClicked,
             this, &MapEditor::tileSelected);
             
     qDebug() << "Se cargaron" << tileId << "tiles";
@@ -789,7 +789,7 @@ void MapEditor::loadMapFromFile(const QString &fileName)
     // Limpiar la escena actual
     QList<QGraphicsItem*> itemsToRemove;
     foreach (QGraphicsItem *item, scene->items()) {
-        if (DragAndDrop *dragItem = dynamic_cast<DragAndDrop*>(item)) {
+        if (auto* item_ptr = dynamic_cast<DragAndDrop*>(item)) {
             itemsToRemove.append(item);
         }
         // También eliminar tiles (son QGraphicsPixmapItem con zValue -0.5)
@@ -866,7 +866,7 @@ bool MapEditor::validateMap()
     
     // Convertir los elementos gráficos a elementos del mapa
     foreach (QGraphicsItem *item, scene->items()) {
-        if (DragAndDrop *dragItem = dynamic_cast<DragAndDrop*>(item)) {
+        if (auto* item_ptr = dynamic_cast<DragAndDrop*>(item)) {
             MapElement *element = convertToMapElement(dragItem);
             if (element) {
                 elements.append(element);
@@ -953,7 +953,7 @@ void MapEditor::generateMapFile(const QString &fileName)
     
     // Convertir todos los elementos gráficos a elementos del mapa
     foreach (QGraphicsItem *item, scene->items()) {
-        if (DragAndDrop *dragItem = dynamic_cast<DragAndDrop*>(item)) {
+        if (auto* item_ptr = dynamic_cast<DragAndDrop*>(item)) {
             MapElement *element = convertToMapElement(dragItem);
             if (element) {
                 elements.append(element);
