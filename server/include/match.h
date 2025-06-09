@@ -14,7 +14,6 @@
 
 class Match {
 private:
-    std::string id_scenary;
     std::vector<Player> players;
     Map map;
     GamePhase phase;
@@ -29,7 +28,7 @@ private:
     Team roundWinner;
 
 public:
-    explicit Match(const std::string& id_scenary);
+    explicit Match(const TileMap& tilemap);
 
     void addPlayer(Player&& player);
     bool addPlayer(const std::string& playerName);
@@ -44,7 +43,6 @@ public:
 
     GameInfo generateGameInfo() const;
     MatchInfo generateMatchInfo() const;
-    std::string getIdScenary() const;
 
     void showPlayers() const;
     std::vector<std::string> getPlayers();

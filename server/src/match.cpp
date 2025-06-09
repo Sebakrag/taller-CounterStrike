@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 
-Match::Match(const std::string& id_scenary):
-        id_scenary(id_scenary), phase(GamePhase::Preparation), roundsPlayed(0) {}
+Match::Match(const TileMap& tilemap):
+        map(tilemap), phase(GamePhase::Preparation), roundsPlayed(0) {}
 
 void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
@@ -207,7 +207,6 @@ GameInfo Match::generateGameInfo() const {
     return gameInfo;
 }
 
-std::string Match::getIdScenary() const { return id_scenary; }
 void Match::showPlayers() const {
     std::cout << "Players in match:\n";
     for (const auto& p: players) {

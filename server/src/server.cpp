@@ -1,12 +1,21 @@
 #include "../include/server.h"
 
 #include <iostream>
+#include <map>
 
 #include "../include/acceptor.h"
 #include "../include/game_manager.h"
+#include "../include/scenario_registry.h"
 
 Server::Server(const std::string& port): port(port), gameManager() {
-    MatchRoom::init(10);  // hardcodeo. Enrealidad tengo leer del config.YAML
+    // hardcodeo. En realidad tengo leer del config.YAML
+
+    MatchRoom::init(10);
+
+    WindowConfig window_config(700, 400, 0);
+    std::map<std::string, TileMap> scenarios;
+    scenarios.emplace("demo", TileMap::getLevelDemo());
+    ScenarioRegistry::init(window_config, scenarios);
 }
 
 void Server::run() {

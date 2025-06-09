@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-Map::Map(): tileMap(TileMap::getLevelDemo()) {}
+Map::Map(const TileMap& tilemap): tileMap(tilemap) {}
 
 bool Map::isWalkable(int x, int y) {
     int tileX = x / TILE_SIZE;

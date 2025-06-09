@@ -23,6 +23,16 @@ struct MatchInfo {
     MatchInfo(const MatchInfo& other) = default;
 
     MatchInfo& operator=(const MatchInfo& other) = default;
+
+    void print() const {
+        std::cout << "MatchInfo {\n";
+        std::cout << "  Name: " << name << "\n";
+        std::cout << "  WindowConfig: { width: " << win_config.width
+                  << ", height: " << win_config.height << ", flags: " << win_config.flags << " }\n";
+        std::cout << "  TileMap: [size: " << tileMap.getColCount() << " x " << tileMap.getRowCount()
+                  << "]\n";
+        std::cout << "}" << std::endl;
+    }
 };
 
 #endif  // MATCHINFO_H

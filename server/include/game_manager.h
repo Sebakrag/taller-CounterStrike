@@ -27,7 +27,7 @@ public:
 
     // devuelve true si pudo crear la partida correctamente
     bool createMatch(const std::string& matchName, const std::string& username,
-                     std::shared_ptr<Queue<GameInfo>> playerQueue);
+                     std::shared_ptr<Queue<GameInfo>> playerQueue, const std::string& id_scenary);
 
     // devuelve true si pudo unirse a la partida correctamente
     bool JoinMatch(const std::string& matchName, const std::string& username,

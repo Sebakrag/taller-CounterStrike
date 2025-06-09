@@ -23,10 +23,11 @@ private:
     bool started = false;
     // Por cada jugador: <username, senderQueue>
     std::map<std::string, std::shared_ptr<Queue<GameInfo>>> players;
+    std::string id_scenario;
 
 public:
     MatchRoom(const std::string& name_match, const std::string& username_host,
-              std::shared_ptr<Queue<GameInfo>> playerQueue);
+              std::shared_ptr<Queue<GameInfo>> playerQueue, const std::string& id_scenario);
 
     bool addPlayer(const std::string& username, std::shared_ptr<Queue<GameInfo>> playerQueue);
 
@@ -44,7 +45,7 @@ public:
     bool isPlayerHost(const std::string& username) const;
 
     MatchRoomInfo getMatchRoomInfo();
-    TileMap getTileMap();
+    const std::string& getIdScenary();
     // No se puede copiar.
     MatchRoom(const MatchRoom&) = delete;
     MatchRoom& operator=(const MatchRoom&) = delete;

@@ -74,7 +74,7 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
     bool aux = false;
     switch (menuAction.type) {
         case MenuActionType::Create:
-            aux = gameManager.createMatch(menuAction.name_match, username, senderQueue);
+            aux = gameManager.createMatch(menuAction.name_match, username, senderQueue, "demo");
             protocol.sendConfirmation(aux);
             break;
         case MenuActionType::Join:
@@ -97,6 +97,8 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         status = InLobby;
         myMatch = menuAction.name_match;
         MatchInfo matchInfo = gameManager.getMatchInfo(myMatch);
+        matchInfo.print();
+
         protocol.sendMatchInfo(matchInfo);
         //...protocol.sendTilemap(...);
     }
@@ -128,6 +130,7 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             break;
     }
 }
+
 ClientHandler::~ClientHandler() {
     if (receiver) {
         delete receiver;
