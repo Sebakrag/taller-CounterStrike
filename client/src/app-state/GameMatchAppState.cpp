@@ -6,11 +6,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 
-#include "client/client_constants.h"
-#include "client/include/app-state/AppStateController.h"
-#include "client/include/client.h"
-#include "client/include/model/Game.h"
-#include "common/dtos/MatchInfo.h"
+#include "../../../client/client_constants.h"
+#include "../../../client/include/app-state/AppStateController.h"
+#include "../../../client/include/client.h"
+#include "../../../client/include/model/Game.h"
+#include "../../../common/dtos/MatchInfo.h"
 
 GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ctrl; }
 
@@ -35,20 +35,21 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         // TODO. Sacar el first snap del constructor y dejar que lo cree al recibirlo por el
         // snapshot del juego.
         MatchInfo matchInfo = controller->getClient()->getMatchInfo();
+        matchInfo.print();
 
-//         for (int y = 0; y < h; ++y) {
-//             for (int x = 0; x < w; ++x) {
-//                 tileMap[y][x] = dist(gen);
-//             }
-//         }
-        //const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
+        //         for (int y = 0; y < h; ++y) {
+        //             for (int x = 0; x < w; ++x) {
+        //                 tileMap[y][x] = dist(gen);
+        //             }
+        //         }
+        // const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
 
-        //const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
+        // const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
 
         // Client client("localhost", "8080", "seba");
         const auto client = controller->getClient();
 
-        Game game(first_snap, matchInfo, *client);
+        Game game(first_snap, matchInfo, client);
 
         game.start();
 
