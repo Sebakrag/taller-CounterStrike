@@ -1,6 +1,7 @@
 #include "mapEditor.h"
 #include "dragAndDrop.h"
 #include "backgroundItem.h"
+#include "tileItem.h"
 #include <iostream>
 #include <QScrollBar>
 #include <QCoreApplication>
@@ -186,6 +187,20 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     backgroundSelection(0);
 }
 
+// Implementación del destructor
+MapEditor::~MapEditor()
+{
+    // Liberar memoria de los elementos de la interfaz
+    if (currentBackground) {
+        delete currentBackground;
+        currentBackground = nullptr;
+    }
+    
+    // Limpiar los mapas de tiles
+    tilePixmaps.clear();
+    placedTiles.clear();
+}
+
 void MapEditor::addBox()
 {
     // Añadir una estructura sólida
@@ -233,7 +248,6 @@ void MapEditor::addBombZone()
     bombZoneItem->setBombZoneSize(QSizeF(50, 50)); // Tamaño por defecto
     scene->addItem(bombZoneItem);
 }
-
 void MapEditor::addWeapon(int weaponType)
 {
     // Añadir un arma al mapa
@@ -244,95 +258,48 @@ void MapEditor::addWeapon(int weaponType)
     scene->addItem(weaponItem);
 }
 
-void MapEditor::backgroundSelection(int index) 
+void MapEditor::backgroundSelection(int index)
 {
-    currentTerrainType = index; // Guardar el tipo de terreno seleccionado
-    QString basePath = getResourcesPath();
-    QString imagePath;
-    
-    switch (index) {
-        case DESERT: // Desierto
-            imagePath = basePath + "backgrounds/desert.png";
-            break;
-        case AZTEC_VILLAGE: // Pueblito Azteca
-            imagePath = basePath + "backgrounds/aztec.png";
-            break;
-        case TRAINING_ZONE: // Zona de entrenamiento
-            imagePath = basePath + "backgrounds/training.png";
-            break;
-        default:
-            imagePath = basePath + "backgrounds/desert.png"; // Por defecto desierto
-            break;
+    // Borrar el fondo anterior si existe
+    if (currentBackground) {
+        scene->removeItem(currentBackground);
+        delete currentBackground;
+        currentBackground = nullptr;
     }
     
-    qDebug() << "Intentando cargar imagen desde: " << imagePath;
-    
-    // Usar QImage primero, que es más flexible con formatos
-    QImage image(imagePath);
-    QPixmap backgroundPixmap;
-    backgroundPixmap = QPixmap::fromImage(image);
-
-    // Si la imagen está vacía, intentar con un fondo genérico
-    if (image.isNull() || backgroundPixmap.isNull()) {
-        qWarning() << "No se pudo cargar la imagen de fondo desde: " << imagePath << ", usando fondo genérico.";
-        
-        // Crear un pixmap genérico con un patrón de cuadrícula
-        backgroundPixmap = QPixmap(1024, 1024);
-        backgroundPixmap.fill(getTerrainColor(index));
-        
-        // Dibujar una cuadrícula para mejorar la visualización
-        QPainter painter(&backgroundPixmap);
-        painter.setPen(QPen(Qt::darkGray, 1));
-        int gridSize = 32;
-        for (int i = 0; i <= backgroundPixmap.width(); i += gridSize) {
-            painter.drawLine(i, 0, i, backgroundPixmap.height());
-        }
-        for (int i = 0; i <= backgroundPixmap.height(); i += gridSize) {
-            painter.drawLine(0, i, backgroundPixmap.width(), i);
-        }
-    } else {
-        qDebug() << "Imagen de fondo cargada exitosamente con dimensiones: " 
-                << image.width() << "x" << image.height();
+    // Limpiar todos los tiles antes de cambiar el terreno
+    for (auto it = tileMap.begin(); it != tileMap.end(); ++it) {
+        scene->removeItem(it.value());
+        delete it.value();
     }
-
-    // Asegurarse de que la escena sea lo suficientemente grande para la imagen
-    QRectF sceneRect = scene->sceneRect();
-    qDebug() << "Dimensiones de la imagen: " << backgroundPixmap.width() << "x" << backgroundPixmap.height();
-    qDebug() << "Dimensiones actuales de la escena: " << sceneRect.width() << "x" << sceneRect.height();
+    tileMap.clear();
     
-    // Ajustar el tamaño de la escena si la imagen es más grande
-    if (!backgroundPixmap.isNull() && 
-        (backgroundPixmap.width() > sceneRect.width() || 
-         backgroundPixmap.height() > sceneRect.height())) {
-        scene->setSceneRect(0, 0, 
-                         qMax(static_cast<int>(sceneRect.width()), backgroundPixmap.width()),
-                         qMax(static_cast<int>(sceneRect.height()), backgroundPixmap.height()));
-        qDebug() << "Escena redimensionada a: " << scene->sceneRect().width() << "x" << scene->sceneRect().height();
+    // Actualizar indice de terreno
+    currentTerrainType = index;
+    
+    // Crear nueva cuadrícula de fondo de 1000x1000 con celdas de 32x32 píxeles
+    currentBackground = new BackgroundItem(1000, 1000, 32);
+    currentBackground->setPos(0, 0);
+    scene->addItem(currentBackground);
+    currentBackground->setZValue(-1000); // Asegurarse de que el fondo esté detrás de todo
+    
+    // También eliminar todos los elementos del mapa ya que estamos cambiando el entorno
+    for (QGraphicsItem* item : scene->items()) {
+        DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item);
+        if (dragItem && dragItem != currentBackground) {
+            scene->removeItem(dragItem);
+            delete dragItem;
+        }
     }
     
     // Asegurar que las barras de desplazamiento estén habilitadas
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     
-    // Aplicar un zoom mayor para acercar la vista
-    view->resetTransform();
-    float zoomFactor = 2.0; // Valor mayor para un zoom más cercano
-    view->scale(zoomFactor, zoomFactor);
+    // Cargar nuevos tiles según el terreno seleccionado
+    loadAvailableTiles();
     
-    // Asegurar que el scroll comience en la posición superior izquierda (0,0)
-    view->horizontalScrollBar()->setValue(0);
-    view->verticalScrollBar()->setValue(0);
-    qDebug() << "Scroll posicionado en inicio (0,0)";
-
-    if (currentBackground) {
-        currentBackground->setPixmap(backgroundPixmap);
-    } else {
-        currentBackground = new BackgroundItem(backgroundPixmap, 1.0);
-        scene->addItem(currentBackground);
-        currentBackground->setZValue(-1); // Asegurar que esté detrás de todos los elementos
-    }
-    
-    // Actualizar la interfaz de usuario según el tipo de terreno
+    // Actualizar la interfaz según el terreno
     updateTerrainUI(index);
 }
 
@@ -490,28 +457,34 @@ QString MapEditor::getResourcePath(int elementType, int subType) {
     }
 }
 
-// Método para cargar los tiles disponibles en gfx/tiles
-void MapEditor::loadAvailableTiles() {
-    // Ruta a los tiles del juego (ahora usando el sistema de recursos)
-    QString tilesPath = getResourcesPath() + "tiles/";
-    QDir tilesDir(tilesPath);
+// Método para cargar los tiles disponibles en editor/resources/tiles
+void MapEditor::loadAvailableTiles()
+{
+    QString tilesPath;
+    QDir tilesDir;
     
-    qDebug() << "Buscando tiles en:" << tilesDir.absolutePath();
+    // Cargar tiles desde la carpeta de recursos del editor según el tipo de terreno
+    switch (currentTerrainType) {
+        case DESERT: // Desierto
+            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_desert/";
+            break;
+        case AZTEC_VILLAGE: // Pueblito Azteca
+            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_aztec/";
+            break;
+        case TRAINING_ZONE: // Zona de entrenamiento
+            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_training/";
+            break;
+        default:
+            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_desert/";
+    }
     
-    // Verificar si el directorio existe
+    tilesDir.setPath(tilesPath);
+    
     if (!tilesDir.exists()) {
-        qWarning() << "No se encontró el directorio de tiles:" << tilesPath;
-        
-        // Intento alternativo con la ruta antigua si la nueva no existe
-        tilesPath = "../gfx/tiles/";
-        tilesDir.setPath(tilesPath);
-        
-        if (!tilesDir.exists()) {
-            qWarning() << "Tampoco se encontró la ruta alternativa de tiles:" << tilesPath;
-            return;
-        } else {
-            qDebug() << "Usando ruta alternativa para tiles:" << tilesPath;
-        }
+        qWarning() << "No se encontró la carpeta de tiles para el terreno seleccionado:" << tilesPath;
+        return;
+    } else {
+        qDebug() << "Cargando tiles desde:" << tilesPath;
     }
     
     // Filtrar por archivos BMP y PNG
@@ -594,7 +567,8 @@ void MapEditor::tileSelected(int id) {
 }
 
 // Método para colocar un tile en la posición del clic
-void MapEditor::placeTile(QPointF scenePos) {
+void MapEditor::placeTile(QPointF scenePos)
+{
     // Solo proceder si hay un tile seleccionado
     if (currentTileId < 0 || !tilePixmaps.contains(currentTileId)) {
         return;
@@ -616,20 +590,21 @@ void MapEditor::placeTile(QPointF scenePos) {
     qreal x = gridX * 32.0;
     qreal y = gridY * 32.0;
     
-    // Crear un nuevo item gráfico con el tile seleccionado
-    QGraphicsPixmapItem* tileItem = new QGraphicsPixmapItem(tilePixmaps[currentTileId]);
+    // Crear un nuevo TileItem con el tile seleccionado (para permitir drag and drop)
+    QString tileName = QString("Tile_%1").arg(currentTileId);
+    TileItem* tileItem = new TileItem(tilePixmaps[currentTileId], currentTileId, tileName, scene);
     tileItem->setPos(x, y);
     tileItem->setZValue(-0.5); // Por encima del fondo pero debajo de los elementos del mapa
     
     // Eliminar cualquier tile que pudiera haber en esa posición
     QPair<int, int> gridKey(gridX, gridY);
     for (QGraphicsItem* item : scene->items()) {
-        QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item);
-        if (pixmapItem && pixmapItem->zValue() == -0.5) {
-            QPoint itemPos = getTileGridPosition(pixmapItem->pos());
+        TileItem* tileItem2 = dynamic_cast<TileItem*>(item);
+        if (tileItem2 && tileItem2->zValue() == -0.5) {
+            QPoint itemPos = getTileGridPosition(tileItem2->pos());
             if (itemPos == gridPos) {
-                scene->removeItem(pixmapItem);
-                delete pixmapItem;
+                scene->removeItem(tileItem2);
+                delete tileItem2;
                 break;
             }
         }
@@ -665,12 +640,12 @@ void MapEditor::removeTile(QPointF scenePos) {
         // Buscar el item visual correspondiente y eliminarlo
         bool removed = false;
         for (QGraphicsItem* item : scene->items()) {
-            QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item);
-            if (pixmapItem && pixmapItem->zValue() == -0.5 && pixmapItem != currentBackground) {
-                QPoint itemPos = getTileGridPosition(pixmapItem->pos());
+            TileItem* tileItem = dynamic_cast<TileItem*>(item);
+            if (tileItem && tileItem->zValue() == -0.5) {
+                QPoint itemPos = getTileGridPosition(tileItem->pos());
                 if (itemPos == gridPos) {
-                    scene->removeItem(pixmapItem);
-                    delete pixmapItem;
+                    scene->removeItem(tileItem);
+                    delete tileItem;
                     removed = true;
                     qDebug() << "Tile eliminado en posición" << gridX << "," << gridY;
                     break;
@@ -789,12 +764,12 @@ void MapEditor::loadMapFromFile(const QString &fileName)
     // Limpiar la escena actual
     QList<QGraphicsItem*> itemsToRemove;
     foreach (QGraphicsItem *item, scene->items()) {
-        if (auto* item_ptr = dynamic_cast<DragAndDrop*>(item)) {
+        if (dynamic_cast<DragAndDrop*>(item)) {
             itemsToRemove.append(item);
         }
         // También eliminar tiles (son QGraphicsPixmapItem con zValue -0.5)
-        else if (QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item)) {
-            if (pixmapItem->zValue() == -0.5 && pixmapItem != currentBackground) {
+        else if (QGraphicsItem* pixmapItem = dynamic_cast<QGraphicsItem*>(item)) {
+            if (pixmapItem->zValue() == -0.5 && dynamic_cast<TileItem*>(pixmapItem)) {
                 itemsToRemove.append(item);
             }
         }
@@ -830,7 +805,7 @@ void MapEditor::loadMapFromFile(const QString &fileName)
                     QPoint gridPos = getTileGridPosition(tile->getPosition());
                     
                     // Colocar el tile en esa posición
-                    QGraphicsPixmapItem* tileItem = new QGraphicsPixmapItem(tilePixmaps[tile->getTileId()]);
+                    TileItem* tileItem = new TileItem(tilePixmaps[tile->getTileId()], tile->getTileId(), QString("Tile_%1").arg(tile->getTileId()), scene);
                     tileItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
                     tileItem->setZValue(-0.5);
                     scene->addItem(tileItem);
@@ -866,7 +841,7 @@ bool MapEditor::validateMap()
     
     // Convertir los elementos gráficos a elementos del mapa
     foreach (QGraphicsItem *item, scene->items()) {
-        if (auto* item_ptr = dynamic_cast<DragAndDrop*>(item)) {
+        if (DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item)) {
             MapElement *element = convertToMapElement(dragItem);
             if (element) {
                 elements.append(element);
@@ -953,7 +928,7 @@ void MapEditor::generateMapFile(const QString &fileName)
     
     // Convertir todos los elementos gráficos a elementos del mapa
     foreach (QGraphicsItem *item, scene->items()) {
-        if (auto* item_ptr = dynamic_cast<DragAndDrop*>(item)) {
+        if (DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item)) {
             MapElement *element = convertToMapElement(dragItem);
             if (element) {
                 elements.append(element);

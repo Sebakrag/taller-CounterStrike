@@ -1,12 +1,18 @@
-#pragma once
+#ifndef BACKGROUNDITEM_H
+#define BACKGROUNDITEM_H
 
 #include <QGraphicsPixmapItem>
-#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsRectItem>
+#include <QPainter>
 
-class BackgroundItem : public QGraphicsPixmapItem
-{
+class BackgroundItem : public QGraphicsRectItem {
 public:
-    BackgroundItem(const QPixmap &pixmap, qreal scale = 1.0);
-
+    BackgroundItem(int width, int height, int gridSize);
     QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+private:
+    int m_gridSize;
 };
+
+#endif // BACKGROUNDITEM_H
