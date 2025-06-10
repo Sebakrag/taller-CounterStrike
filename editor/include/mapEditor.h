@@ -70,6 +70,12 @@ private slots:
     void placeTile(QPointF scenePos);
     void removeTile(QPointF scenePos);
     
+    // Métodos para manipular sólidos, zonas y armas
+    void placeSolid(QPointF scenePos); // Colocar un sólido en la posición del ratón
+    void placeZone(QPointF scenePos); // Colocar una zona en la posición del ratón
+    void placeWeapon(QPointF scenePos); // Colocar un arma en la posición del ratón
+    void removeElementAt(QPointF scenePos); // Eliminar cualquier elemento en la posición del ratón
+    
     // Acciones de archivo
     void generarMapaClicked();
     void loadMapClicked();
@@ -95,6 +101,27 @@ private:
     QGroupBox* tilesGroup; // Contenedor para la paleta de tiles
     QButtonGroup* tileButtons; // Grupo de botones para los tiles
     
+    // Sistema de sólidos
+    QMap<int, QPixmap> solidPixmaps; // Almacena todos los sólidos disponibles
+    int currentSolidId = -1; // ID del sólido seleccionado actualmente
+    QScrollArea* solidsScrollArea; // Área de desplazamiento para la paleta de sólidos
+    QGroupBox* solidsGroup; // Contenedor para la paleta de sólidos
+    QButtonGroup* solidButtons; // Grupo de botones para los sólidos
+    
+    // Sistema de zonas
+    QMap<int, QPixmap> zonePixmaps; // Almacena todas las zonas disponibles
+    int currentZoneId = -1; // ID de la zona seleccionada actualmente
+    QScrollArea* zonesScrollArea; // Área de desplazamiento para la paleta de zonas
+    QGroupBox* zonesGroup; // Contenedor para la paleta de zonas
+    QButtonGroup* zoneButtons; // Grupo de botones para las zonas
+    
+    // Sistema de armas
+    QMap<int, QPixmap> weaponPixmaps; // Almacena todas las armas disponibles
+    int currentWeaponId = -1; // ID del arma seleccionada actualmente
+    QScrollArea* weaponsScrollArea; // Área de desplazamiento para la paleta de armas 
+    QGroupBox* weaponsGroup; // Contenedor para la paleta de armas
+    QButtonGroup* weaponButtons; // Grupo de botones para las armas
+    
     // Método para obtener la ruta base a los recursos
     static QString getResourcesPath();
     
@@ -115,8 +142,21 @@ private:
     // Crear elementos gráficos a partir de elementos del mapa
     DragAndDrop* createDragAndDropItem(const MapElement* element);
     
-    // Métodos para el sistema de tiles
-    void loadAvailableTiles(); // Cargar los tiles disponibles en gfx/tiles
+    // Sistema de tiles y otros elementos
+    void loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pixmapMap,
+                            QButtonGroup* buttonGroup, QScrollArea* scrollArea,
+                            void (MapEditor::*selectCallback)(int));
+    void loadAvailableTiles(); // Cargar los tiles disponibles según el terreno
+    void loadAvailableSolids(); // Cargar los elementos sólidos
+    void loadAvailableZones(); // Cargar las zonas
+    void loadAvailableWeapons(); // Cargar las armas
+    
+    // Métodos de selección de elementos
+    void tileSelected(int id);
+    void solidSelected(int id);
+    void zoneSelected(int id);
+    void weaponSelected(int id);
+    
     void createTilesPanel(); // Crear el panel de selección de tiles
     QPoint getTileGridPosition(const QPointF& scenePos); // Convertir posición de la escena a coordenadas de cuadrícula
 };

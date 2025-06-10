@@ -8,6 +8,7 @@ target_sources(taller_editor
     src/yamlHandler.cpp
     src/mapValidator.cpp
     src/backgroundItem.cpp
+    src/tileItem.cpp
     PUBLIC
     # .h files
     include/mapEditor.h
@@ -16,6 +17,7 @@ target_sources(taller_editor
     include/yamlHandler.h
     include/mapValidator.h
     include/backgroundItem.h
+    include/tileItem.h
     )
 
 # Incluir directorios de cabeceras

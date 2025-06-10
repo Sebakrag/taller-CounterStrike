@@ -37,46 +37,107 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     // Configurar tamaño de elementos
     widthBeam = scene->sceneRect().width() / 10;
 
-    // Panel de herramientas lateral
-    QWidget *toolPanel = new QWidget(this);
-    QVBoxLayout *toolLayout = new QVBoxLayout(toolPanel);
+    // Panel derecho para controles y selección de elementos del mapa
+    QWidget* rightPanel = new QWidget();
+    QVBoxLayout* rightLayout = new QVBoxLayout(rightPanel);
     
-    // Sección de terreno
-    QGroupBox *terrainGroup = new QGroupBox("Tipo de Terreno", toolPanel);
-    QVBoxLayout *terrainLayout = new QVBoxLayout(terrainGroup);
+    // Grupo para opciones de terreno
+    QGroupBox* terrainGroup = new QGroupBox("Tipo de Terreno");
+    QVBoxLayout* terrainLayout = new QVBoxLayout(terrainGroup);
     
-    QComboBox *terrainSelector = new QComboBox(terrainGroup);
-    terrainSelector->addItem("Desierto");            // TerrainType::DESERT
-    terrainSelector->addItem("Pueblito Azteca");     // TerrainType::AZTEC_VILLAGE
-    terrainSelector->addItem("Zona Entrenamiento");  // TerrainType::TRAINING_ZONE
+    // Opciones de terreno
+    QComboBox* terrainCombo = new QComboBox();
+    terrainCombo->addItem("Desert");
+    terrainCombo->addItem("Aztec");
+    terrainCombo->addItem("Training Zone");
+    terrainLayout->addWidget(terrainCombo);
     
-    terrainLayout->addWidget(terrainSelector);
-    terrainGroup->setLayout(terrainLayout);
+    // Crear pestañas para diferentes tipos de elementos
+    QTabWidget* elementsTabWidget = new QTabWidget();
     
-    // Sección de equipos
-    QGroupBox *teamsGroup = new QGroupBox("Equipos", toolPanel);
-    QVBoxLayout *teamsLayout = new QVBoxLayout(teamsGroup);
+    // Pestaña para Tiles
+    QWidget* tilesTab = new QWidget();
+    QVBoxLayout* tilesTabLayout = new QVBoxLayout(tilesTab);
     
-    QPushButton *addCTButton = new QPushButton("Añadir Zona CT", teamsGroup);
-    QPushButton *addTButton = new QPushButton("Añadir Zona T", teamsGroup);
+    // Preparar el área de selección de tiles
+    tilesGroup = new QGroupBox("Tiles");
+    QVBoxLayout* tilesLayout = new QVBoxLayout(tilesGroup);
     
-    teamsLayout->addWidget(addCTButton);
-    teamsLayout->addWidget(addTButton);
-    teamsGroup->setLayout(teamsLayout);
+    tilesScrollArea = new QScrollArea();
+    tilesScrollArea->setWidgetResizable(true);
+    QWidget* tilesContainer = new QWidget();
+    QGridLayout* tilesGrid = new QGridLayout(tilesContainer);
+    tilesScrollArea->setWidget(tilesContainer);
+    tilesLayout->addWidget(tilesScrollArea);
     
-    // Sección de objetos
-    QGroupBox *objectsGroup = new QGroupBox("Objetos", toolPanel);
-    QVBoxLayout *objectsLayout = new QVBoxLayout(objectsGroup);
+    // Grupo de botones para tiles
+    tileButtons = new QButtonGroup(this);
     
-    QPushButton *addBoxButton = new QPushButton("Añadir Estructura", objectsGroup);
-    QPushButton *addBombZoneButton = new QPushButton("Añadir Zona Bomba", objectsGroup);
+    tilesTabLayout->addWidget(tilesGroup);
+    elementsTabWidget->addTab(tilesTab, "Tiles");
     
-    objectsLayout->addWidget(addBoxButton);
-    objectsLayout->addWidget(addBombZoneButton);
-    objectsGroup->setLayout(objectsLayout);
+    // Pestaña para elementos sólidos
+    QWidget* solidsTab = new QWidget();
+    QVBoxLayout* solidsTabLayout = new QVBoxLayout(solidsTab);
+    
+    // Área de desplazamiento para sólidos
+    solidsGroup = new QGroupBox("Sólidos");
+    QVBoxLayout* solidsLayout = new QVBoxLayout(solidsGroup);
+    
+    solidsScrollArea = new QScrollArea();
+    solidsScrollArea->setWidgetResizable(true);
+    QWidget* solidsContainer = new QWidget();
+    QGridLayout* solidsGrid = new QGridLayout(solidsContainer);
+    solidsScrollArea->setWidget(solidsContainer);
+    solidsLayout->addWidget(solidsScrollArea);
+    
+    // Grupo de botones para sólidos
+    solidButtons = new QButtonGroup(this);
+    
+    solidsTabLayout->addWidget(solidsGroup);
+    elementsTabWidget->addTab(solidsTab, "Sólidos");
+    
+    // Pestaña para zonas
+    QWidget* zonesTab = new QWidget();
+    QVBoxLayout* zonesTabLayout = new QVBoxLayout(zonesTab);
+    
+    // Área de desplazamiento para zonas
+    zonesGroup = new QGroupBox("Zonas");
+    QVBoxLayout* zonesLayout = new QVBoxLayout(zonesGroup);
+    
+    zonesScrollArea = new QScrollArea();
+    zonesScrollArea->setWidgetResizable(true);
+    QWidget* zonesContainer = new QWidget();
+    QGridLayout* zonesGrid = new QGridLayout(zonesContainer);
+    zonesScrollArea->setWidget(zonesContainer);
+    zonesLayout->addWidget(zonesScrollArea);
+    
+    // Grupo de botones para zonas
+    zoneButtons = new QButtonGroup(this);
+    
+    zonesTabLayout->addWidget(zonesGroup);
+    elementsTabWidget->addTab(zonesTab, "Zonas");
+    
+    // Pestaña para armas
+    QWidget* weaponsTab = new QWidget();
+    QVBoxLayout* weaponsTabLayout = new QVBoxLayout(weaponsTab);
+    
+    // Área de desplazamiento para armas
+    weaponsGroup = new QGroupBox("Armas");
+    QVBoxLayout* weaponsLayout = new QVBoxLayout(weaponsGroup);
+    
+    weaponsScrollArea = new QScrollArea();
+    weaponsScrollArea->setWidgetResizable(true);
+    QWidget* weaponsContainer = new QWidget();
+    QGridLayout* weaponsGrid = new QGridLayout(weaponsContainer);
+    weaponsScrollArea->setWidget(weaponsContainer);
+    weaponsLayout->addWidget(weaponsScrollArea);
+    
+    // Grupo de botones para armas
+    weaponButtons = new QButtonGroup(this);
     
     // Sección de armas
-    QGroupBox *weaponsGroup = new QGroupBox("Armas", toolPanel);
+    QGroupBox *weaponsGroup = new QGroupBox("Armas", rightPanel);
     QVBoxLayout *weaponsLayout = new QVBoxLayout(weaponsGroup);
     
     QPushButton *addPistolButton = new QPushButton("Añadir Pistola", weaponsGroup);
@@ -285,10 +346,13 @@ void MapEditor::backgroundSelection(int index)
     
     // También eliminar todos los elementos del mapa ya que estamos cambiando el entorno
     for (QGraphicsItem* item : scene->items()) {
-        DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item);
-        if (dragItem && dragItem != currentBackground) {
-            scene->removeItem(dragItem);
-            delete dragItem;
+        // Asegurarse de no eliminar el fondo actual
+        if (item != currentBackground) {
+            DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item);
+            if (dragItem) {
+                scene->removeItem(dragItem);
+                delete dragItem;
+            }
         }
     }
     
@@ -453,22 +517,95 @@ QString MapEditor::getResourcePath(int elementType, int subType) {
             
         default:
             qWarning() << "Tipo de elemento desconocido:" << elementType;
-            return "";
+        return;
+    } else {
+        qDebug() << "Cargando elementos desde:" << path;
     }
+    
+    // Filtrar por archivos BMP y PNG
+    QStringList filters;
+    filters << "*.bmp" << "*.png";
+    elementsDir.setNameFilters(filters);
+    
+    // Obtener la lista de archivos
+    QStringList elementFiles = elementsDir.entryList(filters, QDir::Files);
+    qDebug() << "Elementos encontrados:" << elementFiles.count();
+    
+    // Limpiar los widgets existentes en el área de scroll
+    QWidget* elementsContainer = scrollArea->widget();
+    QGridLayout* elementsGridLayout = qobject_cast<QGridLayout*>(elementsContainer->layout());
+    
+    // Eliminar botones existentes
+    QList<QAbstractButton*> buttons = buttonGroup->buttons();
+    for (QAbstractButton* button : buttons) {
+        buttonGroup->removeButton(button);
+        delete button;
+    }
+    
+    // Cargar cada archivo de elemento
+    int elementId = 0;
+    int row = 0;
+    int col = 0;
+    
+    for (const QString& elementFile : elementFiles) {
+        // Solo procesar archivos de imagen
+        if (elementFile.endsWith(".bmp", Qt::CaseInsensitive) || 
+            elementFile.endsWith(".png", Qt::CaseInsensitive)) {
+            
+            QString elementPath = path + elementFile;
+            QPixmap elementPixmap(elementPath);
+            
+            if (!elementPixmap.isNull()) {
+                // Almacenar el pixmap
+                pixmapMap[elementId] = elementPixmap;
+                
+                // Crear un botón con una miniatura del elemento
+                QPushButton* elementButton = new QPushButton();
+                elementButton->setFixedSize(40, 40);
+                
+                // Crear una versión escalada para el botón
+                QPixmap scaledPixmap = elementPixmap.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                elementButton->setIcon(QIcon(scaledPixmap));
+                elementButton->setIconSize(QSize(36, 36));
+                elementButton->setToolTip(elementFile);
+                
+                // Añadir al grupo de botones
+                buttonGroup->addButton(elementButton, elementId);
+                
+                // Añadir a la cuadrícula
+                elementsGridLayout->addWidget(elementButton, row, col % 3);
+                
+                // Actualizar posición para el siguiente elemento
+                col++;
+                if (col % 3 == 0) {
+                    row++;
+                    col = 0;
+                }
+                
+                elementId++;
+            }
+        }
+    }
+    
+    // Conectar el grupo de botones al callback de selección
+    if (selectCallback) {
+        connect(buttonGroup, &QButtonGroup::idClicked,
+                this, selectCallback);
+    }
+            
+    qDebug() << "Se cargaron" << elementId << "elementos";
 }
 
-// Método para cargar los tiles disponibles en editor/resources/tiles
 void MapEditor::loadAvailableTiles()
 {
+    // Determinar la ruta de los tiles según el tipo de terreno
     QString tilesPath;
-    QDir tilesDir;
     
-    // Cargar tiles desde la carpeta de recursos del editor según el tipo de terreno
     switch (currentTerrainType) {
         case DESERT: // Desierto
             tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_desert/";
             break;
-        case AZTEC_VILLAGE: // Pueblito Azteca
+        case AZTEC_VILLAGE: // Aztec
             tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_aztec/";
             break;
         case TRAINING_ZONE: // Zona de entrenamiento
@@ -478,92 +615,82 @@ void MapEditor::loadAvailableTiles()
             tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_desert/";
     }
     
-    tilesDir.setPath(tilesPath);
+    // Usar el método genérico para cargar los tiles
+    loadElementsFromPath(tilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
     
-    if (!tilesDir.exists()) {
-        qWarning() << "No se encontró la carpeta de tiles para el terreno seleccionado:" << tilesPath;
-        return;
-    } else {
-        qDebug() << "Cargando tiles desde:" << tilesPath;
-    }
-    
-    // Filtrar por archivos BMP y PNG
-    QStringList filters;
-    filters << "*.bmp" << "*.png";
-    tilesDir.setNameFilters(filters);
-    
-    // Obtener la lista de archivos
-    QStringList tileFiles = tilesDir.entryList(filters, QDir::Files);
-    qDebug() << "Tiles encontrados:" << tileFiles.count();
-    
-    // Limpiar los widgets existentes en el área de scroll
-    QWidget* tilesContainer = tilesScrollArea->widget();
-    QGridLayout* tilesGridLayout = qobject_cast<QGridLayout*>(tilesContainer->layout());
-    
-    // Eliminar botones existentes
-    QList<QAbstractButton*> buttons = tileButtons->buttons();
-    for (QAbstractButton* button : buttons) {
-        tileButtons->removeButton(button);
-        delete button;
-    }
-    tilePixmaps.clear();
-    
-    // Cargar cada archivo de tile
-    int tileId = 0;
-    int row = 0;
-    int col = 0;
-    
-    for (const QString& tileFile : tileFiles) {
-        // Solo procesar archivos de imagen
-        if (tileFile.endsWith(".bmp", Qt::CaseInsensitive) || 
-            tileFile.endsWith(".png", Qt::CaseInsensitive)) {
-            
-            QString tilePath = tilesPath + tileFile;
-            QPixmap tilePixmap(tilePath);
-            
-            if (!tilePixmap.isNull()) {
-                // Almacenar el pixmap
-                tilePixmaps[tileId] = tilePixmap;
-                
-                // Crear un botón con una miniatura del tile
-                QPushButton* tileButton = new QPushButton();
-                tileButton->setFixedSize(40, 40);
-                
-                // Crear una versión escalada para el botón
-                QPixmap scaledPixmap = tilePixmap.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-                tileButton->setIcon(QIcon(scaledPixmap));
-                tileButton->setIconSize(QSize(36, 36));
-                tileButton->setToolTip(tileFile);
-                
-                // Añadir al grupo de botones
-                tileButtons->addButton(tileButton, tileId);
-                
-                // Añadir a la cuadrícula
-                tilesGridLayout->addWidget(tileButton, row, col % 3);
-                
-                // Actualizar posición para el siguiente tile
-                col++;
-                if (col % 3 == 0) {
-                    row++;
-                    col = 0;
-                }
-                
-                tileId++;
-            }
-        }
-    }
-    
-    // Conectar el grupo de botones a la selección de tiles
-    connect(tileButtons, &QButtonGroup::idClicked,
-            this, &MapEditor::tileSelected);
-            
-    qDebug() << "Se cargaron" << tileId << "tiles";
+    // También cargar otros tipos de elementos
+    loadAvailableSolids();
+    loadAvailableZones();
+    loadAvailableWeapons();
+}
+
+// Cargar elementos sólidos
+void MapEditor::loadAvailableSolids()
+{
+    QString solidsPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/solid/";
+    loadElementsFromPath(solidsPath, solidPixmaps, solidButtons, solidsScrollArea, &MapEditor::solidSelected);
+}
+
+// Cargar zonas
+void MapEditor::loadAvailableZones()
+{
+    QString zonesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/zones/";
+    loadElementsFromPath(zonesPath, zonePixmaps, zoneButtons, zonesScrollArea, &MapEditor::zoneSelected);
+}
+
+// Cargar armas
+void MapEditor::loadAvailableWeapons()
+{
+    QString weaponsPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/weapons/";
+    loadElementsFromPath(weaponsPath, weaponPixmaps, weaponButtons, weaponsScrollArea, &MapEditor::weaponSelected);
 }
 
 // Método para manejar la selección de tiles
 void MapEditor::tileSelected(int id) {
+    // Desactivar otros tipos de elementos
+    currentSolidId = -1;
+    currentZoneId = -1;
+    currentWeaponId = -1;
+    
+    // Activar el tile seleccionado
     currentTileId = id;
     qDebug() << "Tile seleccionado:" << id;
+}
+
+// Método para manejar la selección de sólidos
+void MapEditor::solidSelected(int id) {
+    // Desactivar otros tipos de elementos
+    currentTileId = -1;
+    currentZoneId = -1;
+    currentWeaponId = -1;
+    
+    // Activar el sólido seleccionado
+    currentSolidId = id;
+    qDebug() << "Sólido seleccionado:" << id;
+}
+
+// Método para manejar la selección de zonas
+void MapEditor::zoneSelected(int id) {
+    // Desactivar otros tipos de elementos
+    currentTileId = -1;
+    currentSolidId = -1;
+    currentWeaponId = -1;
+    
+    // Activar la zona seleccionada
+    currentZoneId = id;
+    qDebug() << "Zona seleccionada:" << id;
+}
+
+// Método para manejar la selección de armas
+void MapEditor::weaponSelected(int id) {
+    // Desactivar otros tipos de elementos
+    currentTileId = -1;
+    currentSolidId = -1;
+    currentZoneId = -1;
+    
+    // Activar el arma seleccionada
+    currentWeaponId = id;
+    qDebug() << "Arma seleccionada:" << id;
 }
 
 // Método para colocar un tile en la posición del clic
@@ -617,47 +744,134 @@ void MapEditor::placeTile(QPointF scenePos)
     placedTiles[gridKey] = currentTileId;
 }
 
+// Método para colocar un sólido en la posición del clic
+void MapEditor::placeSolid(QPointF scenePos)
+{
+    if (currentSolidId < 0) {
+        return; // No hay sólido seleccionado
+    }
+    
+    QPoint gridPos = getTileGridPosition(scenePos);
+    
+    // Crear un nuevo elemento sólido
+    QPixmap solidPixmap = solidPixmaps[currentSolidId];
+    DragAndDrop* solidItem = new DragAndDrop(solidPixmap);
+    solidItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
+    scene->addItem(solidItem);
+    
+    // Crear un nuevo elemento de mapa de tipo sólido
+    MapElement* newElement = new MapElement();
+    newElement->type = MapElementType::SOLID;
+    newElement->position = QPoint(gridPos.x(), gridPos.y());
+    newElement->params["id"] = QString::number(currentSolidId);
+    elements.push_back(newElement);
+    
+    // Vincular el elemento gráfico con su elemento de mapa
+    elementToGraphics[newElement] = solidItem;
+}
+
+// Método para colocar una zona en la posición del clic
+void MapEditor::placeZone(QPointF scenePos)
+{
+    if (currentZoneId < 0) {
+        return; // No hay zona seleccionada
+    }
+    
+    QPoint gridPos = getTileGridPosition(scenePos);
+    
+    // Crear un nuevo elemento zona
+    QPixmap zonePixmap = zonePixmaps[currentZoneId];
+    DragAndDrop* zoneItem = new DragAndDrop(zonePixmap);
+    zoneItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
+    scene->addItem(zoneItem);
+    
+    // Crear un nuevo elemento de mapa de tipo zona
+    MapElement* newElement = new MapElement();
+    newElement->type = MapElementType::ZONE;
+    newElement->position = QPoint(gridPos.x(), gridPos.y());
+    newElement->params["id"] = QString::number(currentZoneId);
+    elements.push_back(newElement);
+    
+    // Vincular el elemento gráfico con su elemento de mapa
+    elementToGraphics[newElement] = zoneItem;
+}
+
+// Método para colocar un arma en la posición del clic
+void MapEditor::placeWeapon(QPointF scenePos)
+{
+    if (currentWeaponId < 0) {
+        return; // No hay arma seleccionada
+    }
+    
+    QPoint gridPos = getTileGridPosition(scenePos);
+    
+    // Crear un nuevo elemento arma
+    QPixmap weaponPixmap = weaponPixmaps[currentWeaponId];
+    DragAndDrop* weaponItem = new DragAndDrop(weaponPixmap);
+    weaponItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
+    scene->addItem(weaponItem);
+    
+    // Crear un nuevo elemento de mapa de tipo arma
+    MapElement* newElement = new MapElement();
+    newElement->type = MapElementType::WEAPON;
+    newElement->position = QPoint(gridPos.x(), gridPos.y());
+    newElement->params["id"] = QString::number(currentWeaponId);
+    elements.push_back(newElement);
+    
+    // Vincular el elemento gráfico con su elemento de mapa
+    elementToGraphics[newElement] = weaponItem;
+}
+
 // Método para eliminar un tile en la posición del clic derecho
 void MapEditor::removeTile(QPointF scenePos) {
     // Convertir la posición de la escena a coordenadas de cuadrícula
     QPoint gridPos = getTileGridPosition(scenePos);
-    int gridX = gridPos.x();
-    int gridY = gridPos.y();
-    
-    // Verificar que esté dentro de los límites del mapa
-    if (gridX < 0 || gridX >= 31 || gridY < 0 || gridY >= 31) {
-        return;
-    }
-    
-    // Clave para el mapa de tiles
-    QPair<int, int> gridKey(gridX, gridY);
+    QPair<int, int> gridKey(gridPos.x(), gridPos.y());
     
     // Verificar si hay un tile en esta posición
-    if (placedTiles.contains(gridKey)) {
-        // Eliminar la entrada del mapa de tiles
+    if (tileMap.contains(gridKey)) {
+        // Eliminar el tile del mapa visual
+        TileItem* tileItem = tileMap[gridKey];
+        if (tileItem) {
+            scene->removeItem(tileItem);
+            delete tileItem;
+        }
+        
+        // Eliminar del registro de tiles colocados
+        tileMap.remove(gridKey);
         placedTiles.remove(gridKey);
+    }
+}
+
+// Método para eliminar cualquier elemento en la posición del clic derecho
+void MapEditor::removeElementAt(QPointF scenePos) {
+    // Convertir la posición de la escena a coordenadas de cuadrícula
+    QPoint gridPos = getTileGridPosition(scenePos);
+    
+    // Buscar algún elemento en esta posición
+    for (auto it = elements.begin(); it != elements.end(); ) {
+        MapElement* element = *it;
         
-        // Buscar el item visual correspondiente y eliminarlo
-        bool removed = false;
-        for (QGraphicsItem* item : scene->items()) {
-            TileItem* tileItem = dynamic_cast<TileItem*>(item);
-            if (tileItem && tileItem->zValue() == -0.5) {
-                QPoint itemPos = getTileGridPosition(tileItem->pos());
-                if (itemPos == gridPos) {
-                    scene->removeItem(tileItem);
-                    delete tileItem;
-                    removed = true;
-                    qDebug() << "Tile eliminado en posición" << gridX << "," << gridY;
-                    break;
-                }
+        // Verificar si el elemento está en la misma posición de cuadrícula
+        if (element->position == gridPos) {
+            // Eliminar el elemento gráfico asociado
+            auto graphicIt = elementToGraphics.find(element);
+            if (graphicIt != elementToGraphics.end()) {
+                DragAndDrop* graphicItem = graphicIt.value();
+                scene->removeItem(graphicItem);
+                delete graphicItem;
+                elementToGraphics.remove(element);
             }
+            
+            // Eliminar el elemento del mapa
+            delete element;
+            it = elements.erase(it);
+            
+            // Solo eliminamos un elemento por cada clic
+            return;
+        } else {
+            ++it;
         }
-        
-        if (!removed) {
-            qDebug() << "No se encontró el tile visual para eliminar en" << gridX << "," << gridY;
-        }
-    } else {
-        qDebug() << "No hay tile para eliminar en la posición" << gridX << "," << gridY;
     }
 }
 
@@ -859,41 +1073,48 @@ bool MapEditor::validateMap()
     return isValid;
 }
 
-// Método para filtrar eventos, especialmente del ratón para colocar/eliminar tiles
 bool MapEditor::eventFilter(QObject* watched, QEvent* event)
 {
-    // Solo procesamos eventos del viewport de la vista
-    if (watched != view->viewport()) {
-        return false;
-    }
-    
-    // Manejar eventos de ratón
-    if (event->type() == QEvent::MouseButtonPress) {
+    // Capturar eventos de ratón en la vista
+    if (watched == view->viewport()) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         QPointF scenePos = view->mapToScene(mouseEvent->pos());
         
-        // Verificar que la posición esté dentro de los límites del mapa
-        if (scenePos.x() < 0 || scenePos.y() < 0 || 
-            scenePos.x() >= scene->width() || scenePos.y() >= scene->height()) {
-            return false;
-        }
-        
-        // Clic izquierdo: colocar tile seleccionado
-        if (mouseEvent->button() == Qt::LeftButton) {
-            if (currentTileId >= 0) { // Solo si hay un tile seleccionado
-                placeTile(scenePos);
-                return true; // Evento procesado
+        if (event->type() == QEvent::MouseButtonPress) {
+            if (mouseEvent->button() == Qt::LeftButton) {
+                // Colocar elemento según lo que esté seleccionado actualmente
+                if (currentTileId >= 0) {
+                    // Colocar un tile
+                    placeTile(scenePos);
+                    return true;
+                } else if (currentSolidId >= 0) {
+                    // Colocar un sólido
+                    placeSolid(scenePos);
+                    return true;
+                } else if (currentZoneId >= 0) {
+                    // Colocar una zona
+                    placeZone(scenePos);
+                    return true;
+                } else if (currentWeaponId >= 0) {
+                    // Colocar un arma
+                    placeWeapon(scenePos);
+                    return true;
+                }
+            } else if (mouseEvent->button() == Qt::RightButton) {
+                // Clic derecho para eliminar elementos
+                if (currentTileId >= 0) {
+                    removeTile(scenePos);
+                } else if (currentSolidId >= 0 || currentZoneId >= 0 || currentWeaponId >= 0) {
+                    // Para otros elementos, intentar eliminar cualquier elemento en esa posición
+                    removeElementAt(scenePos);
+                }
+                return true;
             }
-        }
-        // Clic derecho: eliminar tile existente
-        else if (mouseEvent->button() == Qt::RightButton) {
-            removeTile(scenePos);
-            return true; // Evento procesado
         }
     }
     
     // Dejar que Qt maneje otros eventos
-    return false;
+    return QMainWindow::eventFilter(watched, event);
 }
 
 void MapEditor::generateMapFile(const QString &fileName)
