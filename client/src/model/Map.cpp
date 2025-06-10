@@ -1,11 +1,10 @@
-#include "../../../client/include/model/Map.h"
+#include "client/include/model/Map.h"
 
 #include <cmath>
-#include <iostream>
 
-#include "../../../client/client_constants.h"
-#include "../../../client/include/model/Graphics.h"
-#include "../../../client/include/model/utils/TextureManager.h"
+#include "client/client_constants.h"
+#include "client/include/model/Graphics.h"
+#include "client/include/model/utils/TextureManager.h"
 
 using SDL2pp::Optional;
 
@@ -19,7 +18,6 @@ Map::Map(const TileMap& tileMap):
     }
 
     const int TILES_PER_ROW = (tileSetTexture->GetWidth() / TILE_SIZE);
-    std::cout << "heigth: " << heightInTiles << std::endl;
     for (int y = 0; y < heightInTiles; ++y) {
         for (int x = 0; x < widthInTiles; ++x) {
             const int tileID = tileMap.getIdTile(y, x);
@@ -36,7 +34,7 @@ Map::Map(const TileMap& tileMap):
     }
 }
 
-void Map::render(Graphics& graphics, const Camera& camera) {
+void Map::render(Graphics& graphics, const Camera& camera) const {
     const Rect view = camera.getViewport();
 
     // Determinar tiles visibles (en coordenadas de tiles, no píxeles)

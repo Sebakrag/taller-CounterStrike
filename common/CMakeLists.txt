@@ -42,7 +42,6 @@ target_sources(taller_common
 
         dtos/AmmoInfo.h
         dtos/EntitySnapshot.h
-        dtos/MapInfo.h
         dtos/MatchInfo.h
         dtos/WindowConfig.h
     )
