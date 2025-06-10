@@ -1,6 +1,5 @@
 #include "../../../client/include/app-state/LoginAppState.h"
 
-
 #include <iostream>
 #include <memory>
 #include <string>
@@ -23,13 +22,6 @@ LoginAppState::LoginAppState(AppStateController* ctrl) {
     // there we should initialize the music.
 }
 
-// std::optional<AppStateCode> LoginAppState::update() {
-// struct state_result_t {
-//     std::optional<AppStateCode> app_state_code;
-//     Client client;
-// };
-
-// state_result_t LoginAppState::update() {
 std::optional<AppStateCode> LoginAppState::update() {
     LoginWindow dlg;
     if (dlg.exec() == QDialog::Accepted) {
