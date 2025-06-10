@@ -11,7 +11,7 @@ Game::Game(Client& client, const MatchInfo& match_info, const EntitySnapshot& fi
 void Game::update(float dt) {
     // Cuando refactoricemos getGameInfo para que devuelva un GameInfo tenemos que modificar
     // esta funcion para decidir en que fase del juego nos encontramos.
-    world.update(dt, client.getGameInfo());
+    world.update(dt, client.getGameInfo().getSnapshots());
 }
 
 void Game::render() { graphics.render(world); }

@@ -14,13 +14,11 @@ struct MatchInfo {
 
     MatchInfo() = default;
 
-    explicit MatchInfo(const std::string& name, const WindowConfig& win_config,
-                       const TileMap& tile_map):
+    MatchInfo(const std::string& name, const WindowConfig& win_config, const TileMap& tile_map):
             name(name), win_config(win_config), tileMap(tile_map) {}
 
 
     MatchInfo(const MatchInfo& other) = default;
-
     MatchInfo& operator=(const MatchInfo& other) = default;
 
     void print() const {

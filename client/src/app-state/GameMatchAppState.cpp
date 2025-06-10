@@ -5,9 +5,7 @@
 #include <SDL2pp/SDL2pp.hh>
 
 #include "client/include/app-state/AppStateController.h"
-#include "client/include/client.h"
 #include "client/include/model/Game.h"
-#include "common/dtos/MatchInfo.h"
 
 GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ctrl; }
 
