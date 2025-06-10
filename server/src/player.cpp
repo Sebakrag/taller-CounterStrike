@@ -102,4 +102,9 @@ std::vector<Projectile> Player::shoot(float dirX, float dirY, uint64_t currentTi
     return weapon->shoot(posX, posY, dirX, dirY, name, currentTimeMs);
 }
 
+std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() {
+    return std::move(primaryWeapon);
+}
+
+
 

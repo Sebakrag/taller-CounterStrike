@@ -100,3 +100,12 @@ bool PhysicsEngine::knifeHit(float originX, float originY, float dirX, float dir
     outDist = distance;
     return true;
 }
+
+bool PhysicsEngine::playerTouchingItem(float playerPosX, float playerPosY, float itemPosX, float itemPosY) {
+    const float radius = 15.0f;
+    const float dx = playerPosX - itemPosX;
+    const float dy = playerPosY - itemPosY;
+
+    return (dx * dx + dy * dy) <= (radius * radius);
+}
+

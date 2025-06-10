@@ -9,6 +9,7 @@
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
 #include "weapon/projectile.h"
+#include "types2.h"
 
 #include "physics_engine.h"
 
@@ -27,6 +28,7 @@ private:
     bool roundOver = false;
     Team roundWinner;
     std::vector<Projectile> projectiles;
+    std::vector<DroppedWeapon> droppedWeapons;
 
 public:
     Match();

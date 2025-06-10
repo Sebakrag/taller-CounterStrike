@@ -48,6 +48,7 @@ public:
     void takeDamage(int dmg);
     std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
     Weapon_* getEquippedWeaponInstance();
+    std::unique_ptr<Weapon_> dropPrimaryWeapon();
 };
 
 

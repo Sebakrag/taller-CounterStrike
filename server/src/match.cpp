@@ -104,9 +104,25 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             projectiles.insert(projectiles.end(), newProjectiles.begin(), newProjectiles.end());
             break;
         }
-        // case ActionType::DEFUSE:
-        //   processDefuse(playerId);
-        //   break;
+        case GameActionType::PickUp: {
+            for (auto it = droppedWeapons.begin(); it != droppedWeapons.end(); ++it) {
+                if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(), it->position.getX(), it->position.getY())) {
+                    //Drop de arma equipada
+                    if (player->getPrimaryWeapon()) {
+                        droppedWeapons.emplace_back(
+                            std::move(player->dropPrimaryWeapon()),
+                            Vec2D(player->getX(), player->getY())
+                            );
+                    }
+
+                    //Pickup arma dropeada
+                    player->setPrimaryWeapon(std::move(it->weapon));
+                    droppedWeapons.erase(it);
+                    break;
+                }
+            }
+            return;
+        }
         default:
             std::cout << "Accion no implementada\n";
             break;
@@ -142,12 +158,15 @@ void Match::updateState(double elapsedTime) {
                 const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
                 target.takeDamage(weapon->getDamage());
 
-                std::cout << "[Impacto] Jugador " << target.getId()
-                << " recibió " << weapon->getDamage() << " de daño por arma "
-                << static_cast<int>(proj.getWeaponUsed()) << " disparada por "
-                << proj.getShooter() << "\n";
+                if (!target.isAlive()) {
+                    std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
+                    if (droppedWeapon)
+                        droppedWeapons.emplace_back(std::move(droppedWeapon), Vec2D(target.getX(), target.getY()));
+                }
+
 
                 proj.deactivate();
+
                 break;
             }
         }
