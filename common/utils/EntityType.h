@@ -2,8 +2,7 @@
 #define ENTITYTYPE_H
 
 enum class EntityType : unsigned char {
-    TERRORIST = 1,
-    ANTI_TERRORIST,
+    PLAYER = 1,
     WEAPON,
     BULLET,
     BOMB,

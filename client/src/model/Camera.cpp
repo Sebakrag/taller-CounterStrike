@@ -28,3 +28,20 @@ Rect Camera::getViewport() const {
     const int y = static_cast<int>(offset.getY());
     return {x, y, viewportW, viewportH};
 }
+
+bool Camera::isVisible(const Vec2D& enttMapPos, const int width, const int height) const {
+    // Definimos el rectángulo de la entidad en el mapa (mundo)
+    const Rect entityRect(static_cast<int>(enttMapPos.getX()), static_cast<int>(enttMapPos.getY()),
+                          width, height);
+
+    // Si la entidad está fuera del viewport, no la dibujamos.
+    return getViewport().Intersects(entityRect);
+}
+
+Vec2D Camera::projectToScreen(const Vec2D& enttMapPos, const int width, const int height) const {
+    Vec2D screenPos = enttMapPos - this->getOffset();
+    // Corregimos el posicionamiento para centrar el sprite
+    screenPos.setX(screenPos.getX() - static_cast<float>(width) / 2.0f);
+    screenPos.setY(screenPos.getY() - static_cast<float>(height) / 2.0f);
+    return screenPos;
+}

@@ -3,25 +3,25 @@
 
 #include <string>
 
-#include "../tile_map.h"
+#include "common/tile_map.h"
 
-#include "EntitySnapshot.h"
 #include "WindowConfig.h"
 
 struct MatchInfo {
     std::string name;  // nombre de la partida.
     WindowConfig win_config;
     TileMap tileMap;
+    int numPlayers;  // TODO: reemplazar por un struct que cargue con la cant maxima de cada tipo
+                     // entidad.
 
-    MatchInfo() {}
+    MatchInfo() = default;
 
-    explicit MatchInfo(const std::string& name, const WindowConfig& win_config,
-                       const TileMap& tile_map):
-            name(name), win_config(win_config), tileMap(tile_map) {}
+    MatchInfo(const std::string& name, const WindowConfig& win_config, const TileMap& tile_map,
+              const int numPlayers):
+            name(name), win_config(win_config), tileMap(tile_map), numPlayers(numPlayers) {}
 
 
     MatchInfo(const MatchInfo& other) = default;
-
     MatchInfo& operator=(const MatchInfo& other) = default;
 
     void print() const {

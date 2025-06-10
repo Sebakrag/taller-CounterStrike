@@ -20,6 +20,7 @@ private:
     };
     EntityManager& entt_mgr;
     ComponentManager& comp_mgr;
+    // TODO: usar std::vector<std::pair<Entity, const EntitySnapshot*>>
     std::vector<OldEntityEntry>
             old_entities;  // entities that weren't created in the current frame.
 
@@ -36,7 +37,6 @@ private:
     /// @note This function should be call right after the method "syncEntities". If not, an
     /// unknown behavior could take place.
     ///
-    void applySnapshotData();
     void updateComponents();
 
 public:

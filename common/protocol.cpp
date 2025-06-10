@@ -352,16 +352,14 @@ uint8_t Protocol_::encodeTypeItem(const TypeItem& typeItem) {
 
 uint8_t Protocol_::encodeEntityType(const EntityType& entityType) {
     switch (entityType) {
-        case EntityType::TERRORIST:
+        case EntityType::PLAYER:
             return 1;
-        case EntityType::ANTI_TERRORIST:
-            return 2;
         case EntityType::WEAPON:
-            return 3;
+            return 2;
         case EntityType::BULLET:
-            return 4;
+            return 3;
         case EntityType::BOMB:
-            return 5;
+            return 4;
         default:
             throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede codificar");
     }
@@ -559,14 +557,12 @@ TypeItem Protocol_::decodeTypeItem(uint8_t byte) {
 EntityType Protocol_::decodeEntityType(uint8_t byte) {
     switch (byte) {
         case 1:
-            return EntityType::TERRORIST;
+            return EntityType::PLAYER;
         case 2:
-            return EntityType::ANTI_TERRORIST;
-        case 3:
             return EntityType::WEAPON;
-        case 4:
+        case 3:
             return EntityType::BULLET;
-        case 5:
+        case 4:
             return EntityType::BOMB;
         default:
             throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede decodificar");

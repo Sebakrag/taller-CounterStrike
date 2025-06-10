@@ -1,14 +1,11 @@
-#include "../include/client.h"
+#include "client/include/client.h"
 
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
 #include <string>
 
-#include "../include/client_protocol.h"
-
-// Client::Client(const EntitySnapshot& snap):
-//       snap(snap), x(snap.pos_x), y(snap.pos_y), angle(snap.angle) {}
+#include "client/include/client_protocol.h"
 
 Client::Client(const std::string& ip, const std::string& port, const std::string& user_name):
         protocol(ip.c_str(), port.c_str(), user_name),
@@ -132,21 +129,12 @@ MatchInfo Client::getMatchInfo() {
 }
 
 
-std::vector<EntitySnapshot> Client::getGameInfo() {
-    // const EntitySnapshot s = {snap.server_entt_id, this->x,        this->y, this->angle,
-    //                           snap.sprite_type,    snap.entt_type, snap.hp, snap.money,
-    //                           snap.is_alive};
-    // std::vector<EntitySnapshot> v(1, s);
-    //
-    // return v;
+GameInfo Client::getGameInfo() {
     GameInfo g = recv_queue.pop();
-    // std::cout << "Cantidad de snapshots: " << g.getSnapshots().size() << std::endl;
-
-
-    return g.getSnapshots();
+    return g;
 }
 
-GameInfo Client::getGameInfo2() {
+GameInfo Client::tryGetGameInfo() {
     GameInfo g;
     recv_queue.try_pop(g);  // o pop(). Tener en cuenta si la interfaz debe esperar o seguir igual
     return g;
@@ -160,9 +148,13 @@ void Client::shoot(const AimInfo& aimInfo) {
     send_queue.try_push(GameAction(GameActionType::Attack, aimInfo.direction));
 }
 
-// proximamente :) TODO: Implementar esto
 void Client::rotate(const float angle) {
     send_queue.try_push(GameAction(GameActionType::Rotate, angle));
+}
+
+// TODO: implementar pickUpItem
+void Client::pickUpItem(const Vec2D& playerPosition) {
+    std::cout << "playerPos: " << playerPosition << std::endl;
 }
 
 Client::~Client() {}

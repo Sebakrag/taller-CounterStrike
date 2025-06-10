@@ -113,8 +113,8 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     socket.recvall(bytes_tilemap.data(), sizeof(uint8_t) * size_buffer_tilemap);
 
     TileMap tilemap(bytes_tilemap);
-
-    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), tilemap);
+    // TODO: Recibir numPlayers y agregarlo al constructor de MatchInfo (ahora lo hardcodeo).
+    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), tilemap, 10);
 }
 
 

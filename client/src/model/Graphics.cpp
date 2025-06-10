@@ -43,3 +43,8 @@ void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<
                     const double angle, const Optional<Point>& center, const int flip) {
     renderer.Copy(tex, srcRect, dstRect, angle, center, flip);
 }
+
+Vec2D Graphics::getDrawableWindowDimension() const {
+    const Point dimension = window.GetDrawableSize();
+    return {static_cast<float>(dimension.GetX()), static_cast<float>(dimension.GetY())};
+}
