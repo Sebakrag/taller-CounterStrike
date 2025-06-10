@@ -8,7 +8,7 @@ struct WindowConfig {
     int height;  // en px
     uint32_t flags;
 
-    WindowConfig() {}
+    WindowConfig() = default;
 
     WindowConfig(const int w, const int h, const uint32_t flags):
             width(w), height(h), flags(flags) {}

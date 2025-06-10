@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../tile_map.h"
+#include "common/tile_map.h"
 
 #include "WindowConfig.h"
 
@@ -12,7 +12,7 @@ struct MatchInfo {
     WindowConfig win_config;
     TileMap tileMap;
 
-    MatchInfo() {}
+    MatchInfo() = default;
 
     explicit MatchInfo(const std::string& name, const WindowConfig& win_config,
                        const TileMap& tile_map):
