@@ -1,8 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <string>
-
 #include "common/dtos/MatchInfo.h"
 #include "utils/EventHandler.h"
 
@@ -13,7 +11,6 @@
 class Game {
 private:
     Client& client;  // This is the connection with the server.
-    const std::string match_name;
     Graphics graphics;
     World world;
     EventHandler eventHandler;
