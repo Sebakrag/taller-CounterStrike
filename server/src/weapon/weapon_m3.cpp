@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-WeaponM3::WeaponM3(): FireWeapon(70, 3000, 20, 500) {}
+WeaponM3::WeaponM3(): FireWeapon(70, 3000, 20, 60) {}
 
 Weapon WeaponM3::getWeaponType() const {
     return Weapon::M3;

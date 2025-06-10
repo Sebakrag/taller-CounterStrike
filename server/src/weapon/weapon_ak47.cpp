@@ -1,6 +1,6 @@
 #include "../../include/weapon/weapon_ak47.h"
 
-WeaponAk47::WeaponAk47(): FireWeapon(35, 2700, 30, 600) {}
+WeaponAk47::WeaponAk47(): FireWeapon(35, 2700, 30, 24) {}
 
 Weapon WeaponAk47::getWeaponType() const {
     return Weapon::Ak47;
