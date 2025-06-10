@@ -5,7 +5,7 @@
 #include "client/dtos/AimInfo.h"
 #include "common/utils/Vec2D.h"
 
-EventHandler::EventHandler(Client* client, World& world): client(client), world(world) {}
+EventHandler::EventHandler(Client& client, World& world): client(client), world(world) {}
 
 void EventHandler::handleEvents(bool& gameIsRunning) {
     SDL_Event e;
@@ -38,7 +38,7 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
     }
 
     if ((direction.getX() != 0) || (direction.getY() != 0)) {
-        client->move(direction);
+        client.move(direction);
     }
 
 
@@ -64,10 +64,10 @@ void EventHandler::handleMouseEvents(const bool gameIsRunning) {
     const AimInfo aimInfo = world.getPlayerAimInfo(mouseX, mouseY);
 
     if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        client->shoot(aimInfo);
+        client.shoot(aimInfo);
     } else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        client->pickUpItem(world.getPlayerPosition());
+        client.pickUpItem(world.getPlayerPosition());
     } else {
-        client->rotate(aimInfo.angle);
+        client.rotate(aimInfo.angle);
     }
 }

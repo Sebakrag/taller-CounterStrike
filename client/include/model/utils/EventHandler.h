@@ -8,7 +8,7 @@
 
 class EventHandler {
 private:
-    Client* client;
+    Client& client;
     World& world;
     Uint32 lastMouseProcessTime = 0;  // variable para contar tiempo
 
@@ -16,7 +16,7 @@ private:
     void handleMouseEvents(bool gameIsRunning);
 
 public:
-    EventHandler(Client* client, World& world);
+    EventHandler(Client& client, World& world);
 
     void handleEvents(bool& gameIsRunning);
 };
