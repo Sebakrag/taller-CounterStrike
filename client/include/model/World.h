@@ -13,6 +13,7 @@
 #include "common/dtos/WindowConfig.h"
 
 #include "Camera.h"
+#include "HUD.h"
 #include "Map.h"
 
 class Graphics;
@@ -27,6 +28,7 @@ private:
     Camera camera;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
+    HUD player_HUD;
     RenderSystem render_sys;
 
 public:

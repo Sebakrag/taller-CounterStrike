@@ -15,6 +15,16 @@ World::World(const EntitySnapshot& firstLocalPlayerSnap, const MapInfo& mapInfo,
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
     std::cout << dt << std::endl;
     comp_updater.update(snapshots);
+    // TODO: otra opcion para actualizar el HUD podria ser definiendo los componentes:
+    // HealthComponent y MoneyComponent, y luego actualizar utilizando ComponentManager y
+    // local_player_id. player_HUD.update(comp_mgr, local_player);
+    for (const auto& snap: snapshots) {
+        if (entt_mgr.get(snap.server_entt_id) == local_player) {
+            player_HUD.updateFromSnapshot(snap);
+            break;
+        }
+    }
+
     // audio_sys.update(); // Play the sound effects.
 }
 
@@ -27,7 +37,7 @@ void World::render(Graphics& graphics) {
 
     // Renderizar el alpha blending (para simular el Field of View)
 
-    // playerInventoryFrame.render(graphics); // Esto seria el frame que tiene la vida, la cant de
+    player_HUD.render(graphics);  // Esto seria el frame que tiene la vida, la cant de
     // balas y la plata
 }
 

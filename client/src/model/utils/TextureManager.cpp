@@ -34,6 +34,11 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);
     loadTexture(ren, SpriteType::DESERT_MAP, DESERT_TILE_SET_IMG);
     loadTexture(ren, SpriteType::AZTEC_MAP, AZTEC_TILE_SET_IMG);
+
+    // HUD textures:
+    const Color hudColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
+    loadTexture(ren, SpriteType::HUD_NUMBERS, HUD_NUMS, hudColorKey);
+    loadTexture(ren, SpriteType::HUD_SYMBOLS, HUD_SYMB, hudColorKey);
 }
 
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path) {

@@ -40,6 +40,7 @@ target_sources(taller_common
         utils/Vec2D.h
         utils/EntityType.h
 
+        dtos/AmmoInfo.h
         dtos/EntitySnapshot.h
         dtos/MapInfo.h
         dtos/MatchInfo.h

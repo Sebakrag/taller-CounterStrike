@@ -23,9 +23,9 @@ std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         constexpr ServerEntityID SERVER_ENTITY_ID = 1;
         constexpr float pos_x = 30500, pos_y = 30500, angle = 0;
-        constexpr int money = 500;
-        constexpr int hp = 100;  // health
-        constexpr int ammo = 0;
+        constexpr int money = 1000;
+        constexpr int hp = 200;  // health
+        constexpr int ammo = 99;
         constexpr auto sprite_type = SpriteType::ARTIC_AVENGER;
         constexpr auto entt_type = EntityType::PLAYER;
         constexpr bool is_alive = true;

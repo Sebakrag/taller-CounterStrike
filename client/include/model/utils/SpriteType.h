@@ -35,6 +35,10 @@ enum class SpriteType : unsigned char {
     DESERT_MAP,
     AZTEC_MAP,
     TRAINING_MAP,
+
+    // HUD sprite types:
+    HUD_NUMBERS,
+    HUD_SYMBOLS,
 };
 
 #endif  // SPRITETYPE_H

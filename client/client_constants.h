@@ -12,6 +12,7 @@
 #define PLAYER_PATH std::string("client/assets/player")
 #define TILE_SETS_PATH std::string("client/assets/tiles")
 #define WEAPON_PATH std::string("client/assets/weapons")
+#define HUD_PATH std::string("client/assets/hud")
 
 // Players
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix.bmp")
@@ -34,6 +35,10 @@
 #define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/desert_tiles.png")
 #define AZTEC_TILE_SET_IMG (TILE_SETS_PATH + "/aztec_tiles.png")
 #define TRAINING_TILE_SET_IMG (TILE_SETS_PATH + "/training_tiles.png")
+
+// HUD:
+#define HUD_NUMS (HUD_PATH + "/hud_nums.bmp")
+#define HUD_SYMB (HUD_PATH + "/hud_symbols.bmp")
 
 // Map
 #define TILE_SIZE 32  // in pixels
