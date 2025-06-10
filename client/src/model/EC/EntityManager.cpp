@@ -2,7 +2,8 @@
 
 #include <stdexcept>
 
-EntityManager::EntityManager(ComponentManager& cm): entt_factory(cm) {}
+EntityManager::EntityManager(ComponentManager& cm, const int numPlayers):
+        entt_factory(cm, numPlayers) {}
 
 Entity EntityManager::create_entity(const EntitySnapshot& snap) {
     Entity new_entt;

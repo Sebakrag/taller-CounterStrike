@@ -21,7 +21,7 @@ private:
     EntityFactory entt_factory;
 
 public:
-    explicit EntityManager(ComponentManager& cm);
+    EntityManager(ComponentManager& cm, int numPlayers);
 
     Entity create_entity(const EntitySnapshot& snap);
 

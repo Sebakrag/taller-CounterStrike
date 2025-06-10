@@ -11,11 +11,13 @@ struct MatchInfo {
     std::string name;  // nombre de la partida.
     WindowConfig win_config;
     TileMap tileMap;
+    int numPlayers;
 
     MatchInfo() = default;
 
-    MatchInfo(const std::string& name, const WindowConfig& win_config, const TileMap& tile_map):
-            name(name), win_config(win_config), tileMap(tile_map) {}
+    MatchInfo(const std::string& name, const WindowConfig& win_config, const TileMap& tile_map,
+              const int numPlayers):
+            name(name), win_config(win_config), tileMap(tile_map), numPlayers(numPlayers) {}
 
 
     MatchInfo(const MatchInfo& other) = default;

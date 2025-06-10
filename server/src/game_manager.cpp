@@ -108,8 +108,9 @@ MatchInfo GameManager::getMatchInfo(const std::string& matchName) {
         throw std::runtime_error("No existe la partida.");
     }
     std::string id_scenary = it->second.getIdScenary();
+    // TODO: Enviar numPlayers a traves de MatchInfo (ahora hardcodeo).
     return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
-                     ScenarioRegistry::getTileMap(id_scenary));
+                     ScenarioRegistry::getTileMap(id_scenary), 10);
 }
 
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {

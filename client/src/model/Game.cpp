@@ -3,7 +3,8 @@
 Game::Game(Client& client, const MatchInfo& match_info, const EntitySnapshot& firstLocalPlayerSnap):
         client(client),
         graphics(match_info.win_config, match_info.name),
-        world(match_info.tileMap, match_info.win_config, firstLocalPlayerSnap),
+        world(match_info.tileMap, match_info.win_config, match_info.numPlayers,
+              firstLocalPlayerSnap),
         eventHandler(client, world),
         is_running(true) {}
 

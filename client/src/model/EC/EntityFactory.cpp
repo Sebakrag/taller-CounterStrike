@@ -6,7 +6,14 @@
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
 
 
-EntityFactory::EntityFactory(ComponentManager& cm): comp_mgr(cm) {}
+EntityFactory::EntityFactory(ComponentManager& cm, const int numPlayers): comp_mgr(cm) {
+    setPlayersComponentsCapacity(numPlayers);
+}
+
+void EntityFactory::setPlayersComponentsCapacity(const int numPlayers) const {
+    comp_mgr.setCapacity<PlayerSpriteComponent>(numPlayers);
+    comp_mgr.setCapacity<EquippedWeaponComponent>(numPlayers);
+}
 
 void EntityFactory::create_specific_entity(const Entity& new_entt,
                                            const EntitySnapshot& snap) const {

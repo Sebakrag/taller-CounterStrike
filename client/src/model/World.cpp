@@ -2,9 +2,9 @@
 
 #include "client/include/model/EC/components/TransformComponent.h"
 
-World::World(const TileMap& tileMap, const WindowConfig& winConfig,
+World::World(const TileMap& tileMap, const WindowConfig& winConfig, const int numPlayers,
              const EntitySnapshot& firstLocalPlayerSnap):
-        entt_mgr(comp_mgr),
+        entt_mgr(comp_mgr, numPlayers),
         comp_updater(entt_mgr, comp_mgr),
         map(tileMap),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
