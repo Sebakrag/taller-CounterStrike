@@ -20,6 +20,7 @@ public:
     explicit EntityFactory(ComponentManager& cm);
 
     void create_specific_entity(const Entity& new_entt, const EntitySnapshot& snap) const;
+    void destroy(const Entity& entt) const;
 };
 
 #endif  // ENTITYFACTORY_H

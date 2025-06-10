@@ -9,6 +9,7 @@
 class BasePool {
 public:
     virtual ~BasePool() = default;
+    virtual void remove(Entity entity) = 0;
 };
 
 template <typename T>
@@ -35,7 +36,7 @@ public:
         return nullptr;  // There is no memory available for a new component
     }
 
-    void remove(const Entity entity) {
+    void remove(const Entity entity) override {
         Entity index = entity_to_pool_index[entity];
         if (index == INVALID_INDEX)
             return;  // The entity doesn't have this kind of component.

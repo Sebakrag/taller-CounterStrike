@@ -28,7 +28,6 @@ void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots
         if (!snap.is_alive) {  // I have to destroy it. Later we could have an enum that indicates
                                // if have to delete it immediately or not.
             entt_mgr.destroy_entity_immediately(snap.server_entt_id);
-            // TODO: destroy all the components related to the entity I've just destroyed.
             continue;
         }
 

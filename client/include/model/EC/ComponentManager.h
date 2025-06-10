@@ -41,6 +41,12 @@ public:
     void forEach(Func func) {
         getPool<Component>()->forEach(func);
     }
+
+    void removeAllComponentsOf(const Entity entity) {
+        for (auto& [_, pool]: pools_map) {
+            pool->remove(entity);
+        }
+    }
 };
 
 #endif  // COMPONENTMANAGER_H

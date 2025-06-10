@@ -23,7 +23,8 @@ void EntityFactory::create_specific_entity(const Entity& new_entt,
             //     create_bullet_entt();
             //     break;
             // }
-            // case EntityType::BOMB: {
+            // case EntityType::BOMB: { // TODO: me parece que me conviene tratar a la bomba como un
+            // arma mas.
             //     create_bomb_entt();
             //     break;
             // }
@@ -59,3 +60,5 @@ void EntityFactory::create_weapon_entt(const Entity& new_entt, const EntitySnaps
         throw std::runtime_error("Error trying to create a Weapon entity.");
     }
 }
+
+void EntityFactory::destroy(const Entity& entt) const { comp_mgr.removeAllComponentsOf(entt); }
