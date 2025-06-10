@@ -11,7 +11,8 @@ struct MatchInfo {
     std::string name;  // nombre de la partida.
     WindowConfig win_config;
     TileMap tileMap;
-    int numPlayers;
+    int numPlayers;  // TODO: reemplazar por un struct que cargue con la cant maxima de cada tipo
+                     // entidad.
 
     MatchInfo() = default;
 
