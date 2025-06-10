@@ -10,6 +10,7 @@ Player::Player(const std::string& name, const Team team):
         health(100),
         state(PlayerState::Idle),
         knife(WeaponFactory::create(Weapon::Knife)),
+        secondaryWeapon(WeaponFactory::create(Weapon::Glock)),
         equippedWeapon(TypeWeapon::Knife),
         money(800),
         kills(0) {}
@@ -20,24 +21,6 @@ void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
 }
 
 void Player::setEquippedWeapon(TypeWeapon type) { equippedWeapon = type; }
-
-int Player::attack(float targetX, float targetY, uint64_t currentTimeMs) {
-    if (state == PlayerState::Dead)
-        return -1;
-
-    std::cout << "Player " << name << " attacking target at (" << targetX << ", " << targetY
-              << ")\n";
-    switch (equippedWeapon) {
-        case TypeWeapon::Knife:
-            return knife ? knife->use(currentTimeMs) : -1;
-        case TypeWeapon::Primary:
-            return primaryWeapon ? primaryWeapon->use(currentTimeMs) : -1;
-        case TypeWeapon::Secondary:
-            return secondaryWeapon ? secondaryWeapon->use(currentTimeMs) : -1;
-        default:
-            return -1;
-    }
-}
 
 float Player::getX() const { return posX; }
 void Player::setX(const float x) { posX = x; }
@@ -70,6 +53,18 @@ Weapon Player::getSpecificEquippedWeapon() const {
     }
 }
 
+Weapon_* Player::getEquippedWeaponInstance() {
+    switch (equippedWeapon) {
+        case TypeWeapon::Knife:
+            return knife.get();
+        case TypeWeapon::Primary:
+            return primaryWeapon.get();
+        case TypeWeapon::Secondary:
+            return secondaryWeapon.get();
+        default:
+            return nullptr;
+    }
+}
 
 Weapon_ *Player::getPrimaryWeapon() const {
     return primaryWeapon.get();
@@ -100,20 +95,11 @@ void Player::takeDamage(int dmg) {
     }
 }
 
-int Player::shoot(uint64_t currentTimeMs) {
-    if (!isAlive() || !canShoot(currentTimeMs))
-        return 0;
+std::vector<Projectile> Player::shoot(float dirX, float dirY, uint64_t currentTimeMs) {
+    Weapon_* weapon = getEquippedWeaponInstance();
+    if (!weapon || !weapon->canShoot(currentTimeMs)) return {};
 
-    switch (equippedWeapon) {
-        case TypeWeapon::Knife:
-            return knife ? knife->use(currentTimeMs) : 0;
-        case TypeWeapon::Primary:
-            return primaryWeapon ? primaryWeapon->use(currentTimeMs) : 0;
-        case TypeWeapon::Secondary:
-            return secondaryWeapon ? secondaryWeapon->use(currentTimeMs) : 0;
-        default:
-            return 0;
-    }
+    return weapon->shoot(posX, posY, dirX, dirY, name, currentTimeMs);
 }
 
 

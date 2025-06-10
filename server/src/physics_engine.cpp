@@ -119,3 +119,19 @@ float PhysicsEngine::calculatePrecisionByDistance(float distance, float maxRange
 
     return basePrecision * factor;
 }
+
+bool PhysicsEngine::knifeHit(float originX, float originY, float dirX, float dirY, const Player& target, float& outDist) {
+    float dx = target.getX() - originX;
+    float dy = target.getY() - originY;
+
+    float distance = std::sqrt(dx * dx + dy * dy);
+    if (distance > 50.0f)
+        return false;
+
+    float dot = dx * dirX + dy * dirY;
+    if (dot < 0)
+        return false;
+
+    outDist = distance;
+    return true;
+}

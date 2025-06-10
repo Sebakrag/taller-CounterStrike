@@ -43,9 +43,9 @@ public:
     void checkRoundEnd();
     GameInfo generateGameInfo(const std::string& playerName) const;
     GameInfo generateGameInfo() const;
-
     void showPlayers() const;
     std::vector<std::string> getPlayers();
+    void handleKnifeAttack(Player* attacker, const Vec2D& direction);
 };
 
 #endif

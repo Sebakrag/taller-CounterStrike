@@ -17,6 +17,7 @@ public:
             float originX, float originY, float dirX, float dirY, float areaAngle, float range,
             const std::vector<std::shared_ptr<Player>>& players);
     static float calculatePrecisionByDistance(float distance, float maxRange, float basePrecision);
+    static bool knifeHit(float originX, float originY, float dirX, float dirY, const Player& target, float& outDist);
 };
 
 #endif

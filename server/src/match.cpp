@@ -95,8 +95,13 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             float dirX = dir.getX() / norm;
             float dirY = dir.getY() / norm;
 
-            projectiles.emplace_back(player->getX(), player->getY(), dirX, dirY, 400.0f, 1000.f, player->getId(), player->getSpecificEquippedWeapon());
-            player->shoot(0);
+            if (player->getEquippedWeapon() == TypeWeapon::Knife) {
+                handleKnifeAttack(player, gameAction.direction);
+                break;
+            }
+
+            std::vector<Projectile> newProjectiles = player->shoot(dirX, dirY, 0);
+            projectiles.insert(projectiles.end(), newProjectiles.begin(), newProjectiles.end());
             break;
         }
         // case ActionType::DEFUSE:
@@ -298,3 +303,15 @@ void Match::showPlayers() const {
                   << (p.isAlive() ? "[VIVO]" : "[MUERTO]") << "\n";
     }
 }
+
+void Match::handleKnifeAttack(Player *attacker, const Vec2D &direction) {
+    for (auto& target : players) {
+        if (target.getId() == attacker->getId() || !target.isAlive()) continue;
+
+        float impactDistance;
+        if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(), direction.getY(), target, impactDistance)) {
+            target.takeDamage(20);
+        }
+    }
+}
+

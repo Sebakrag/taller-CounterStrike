@@ -30,7 +30,6 @@ public:
 
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
     void setEquippedWeapon(TypeWeapon type);
-    int attack(float targetX, float targetY, uint64_t currentTimeMs);
 
     float getX() const;
     void setX(const float x);
@@ -47,7 +46,8 @@ public:
     bool isAlive() const;
     bool canShoot(uint64_t currentTimeMs) const;
     void takeDamage(int dmg);
-    int shoot(uint64_t currentTimeMs);
+    std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
+    Weapon_* getEquippedWeaponInstance();
 };
 
 

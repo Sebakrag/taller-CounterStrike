@@ -14,7 +14,6 @@ public:
     FireWeapon(int damage, float price, int bullets, int rateOfFire);
     ~FireWeapon() override = default;
 
-    int use(uint64_t currentTimeMs) override;
     bool canShoot(uint64_t currentTimeMs) const override;
     uint64_t getCooldownMs() const override;
 

@@ -3,14 +3,6 @@
 FireWeapon::FireWeapon(int damage, float price, int bullets, int rateOfFire):
         Weapon_(damage), price(price), bullets(bullets), rateOfFire(rateOfFire), lastShotTimeMs(0) {}
 
-int FireWeapon::use(uint64_t currentTimeMs) {
-    if (!canShoot(currentTimeMs))
-        return -1;
-
-    bullets--;
-    lastShotTimeMs = currentTimeMs;
-    return damage;
-}
 
 bool FireWeapon::canShoot(uint64_t currentTimeMs) const {
     return (bullets > 0) && ((currentTimeMs - lastShotTimeMs) >= getCooldownMs());
