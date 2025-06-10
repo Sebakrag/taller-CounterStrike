@@ -5,7 +5,6 @@
 
 #include "../tile_map.h"
 
-#include "EntitySnapshot.h"
 #include "WindowConfig.h"
 
 struct MatchInfo {

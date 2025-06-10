@@ -13,7 +13,8 @@ class EntityFactory {
 private:
     ComponentManager& comp_mgr;
 
-    void create_anti_terrorist_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
+    void create_player_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
+    void create_weapon_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
 
 public:
     explicit EntityFactory(ComponentManager& cm);

@@ -1,22 +1,19 @@
 #include "client/include/model/EC/components/SpriteComponent.h"
 
+#include "client/client_constants.h"
 #include "client/include/model/utils/SpriteMetadataProvider.h"
 #include "client/include/model/utils/TextureManager.h"
 
 void SpriteComponent::init(const SpriteType type) {
     setTexture(type);
 
-    // TODO: cambiar SpriteMetadataProvider: Me gustaria hacer el calculo con el tamanio en pixels
-    // (32x32)
-    const SpriteSheetLayout layout = SpriteMetadataProvider::getLayout(type);
-
-    frameWidth = (texture->GetWidth() / layout.numSpritesAlongWidth);
-    frameHeight = (texture->GetHeight() / layout.numSpritesAlongHeight);
+    frameWidth = SPRITE_SIZE;
+    frameHeight = SPRITE_SIZE;
     spriteRect.SetW(frameWidth);
     spriteRect.SetH(frameHeight);
-    // Estas posiciones de x e y deberian ser acorde al frame de animacion.
     spriteRect.SetX(0);
     spriteRect.SetY(0);
+    std::cout << "SriteComponent instanciadooo!" << std::endl;
 }
 
 void SpriteComponent::setFrame(const int row, const int col) {

@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
-#include "../../client/dtos/AimInfo.h"
-#include "../../common/dtos/EntitySnapshot.h"
-#include "../../common/queue.h"
+#include "client/dtos/AimInfo.h"
+#include "common/dtos/EntitySnapshot.h"
+#include "common/queue.h"
 
 #include "client_protocol.h"
 #include "client_receiver.h"
@@ -15,7 +15,6 @@
 
 enum Status { Disconnected, InMenu, InLobby, InGame };
 
-// Clase para probar la conexion. Determinar despues si sirve o no
 class Client {
 private:
     ClientProtocol protocol;
@@ -30,10 +29,10 @@ private:
     MatchInfo matchInfo;
 
     // Borrar esto una vez tengamos conexion con el servidor (sirve para probar el renderizado).
-    EntitySnapshot snap;
-    float x;
-    float y;
-    float angle;
+    // EntitySnapshot snap;
+    // float x;
+    // float y;
+    // float angle;
 
 public:
     Client(const std::string& ip, const std::string& port, const std::string& user_name);
@@ -68,6 +67,7 @@ public:
     void move(const Vec2D& direction);
     void shoot(const AimInfo& aimInfo);
     void rotate(const float angle);
+    void pickUpItem(const Vec2D& playerPosition);
 
     ~Client();
 

@@ -12,6 +12,8 @@ SpriteSheetLayout SpriteMetadataProvider::getLayout(const SpriteType type) {
         case SpriteType::UK_SAS:
         case SpriteType::FRENCH_GIGN:
             return SpriteSheetLayout(2, 3);
+        case SpriteType::AK47:
+            return SpriteSheetLayout(1, 2);
         default:
             return SpriteSheetLayout(1, 1);
     }

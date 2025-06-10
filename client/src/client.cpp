@@ -165,6 +165,10 @@ void Client::rotate(const float angle) {
     send_queue.try_push(GameAction(GameActionType::Rotate, angle));
 }
 
+void Client::pickUpItem(const Vec2D& playerPosition) {
+    std::cout << "playerPos: " << playerPosition << std::endl;
+}
+
 Client::~Client() {}
 
 Status Client::getStatus() { return status; }

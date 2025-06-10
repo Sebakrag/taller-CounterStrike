@@ -1,4 +1,4 @@
-#include "../../../client/include/model/Game.h"
+#include "client/include/model/Game.h"
 
 Game::Game(const EntitySnapshot& firstLocalPlayerSnap, const MatchInfo& match_info, Client* client):
         client(client),
