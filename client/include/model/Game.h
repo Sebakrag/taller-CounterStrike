@@ -27,10 +27,10 @@ public:
     /// \brief Create a game with the received configurations. All the objects of the game
     /// are created here too.
     ///
-    /// \param[in] match_info structure containing the configuration for the game match.
     /// \param[in] client class that has the connection with the server.
+    /// \param[in] match_info structure containing the configuration for the game match.
     ////////////////////////////////////////////////////////////
-    Game(const EntitySnapshot& firstLocalPlayerSnap, const MatchInfo& match_info, Client* client);
+    Game(Client* client, const MatchInfo& match_info, const EntitySnapshot& firstLocalPlayerSnap);
 
     ///
     /// \brief Initiate the game loop.

@@ -39,7 +39,7 @@ std::optional<AppStateCode> GameMatchAppState::update() {
 
         const auto client = controller->getClient();
 
-        Game game(first_snap, matchInfo, client);
+        Game game(client, matchInfo, first_snap);
 
         game.start();
 

@@ -2,8 +2,8 @@
 
 #include "client/include/model/EC/components/TransformComponent.h"
 
-World::World(const EntitySnapshot& firstLocalPlayerSnap, const TileMap& tileMap,
-             const WindowConfig& winConfig):
+World::World(const TileMap& tileMap, const WindowConfig& winConfig,
+             const EntitySnapshot& firstLocalPlayerSnap):
         entt_mgr(comp_mgr),
         comp_updater(entt_mgr, comp_mgr),
         map(tileMap),

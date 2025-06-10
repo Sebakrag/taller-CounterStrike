@@ -32,12 +32,12 @@ private:
 
 public:
     /// ///
-    /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// @param tileMap contains the info of the map selected by the creator of the game match.
     /// @param winConfig contains the info necessary to create the window for the game.
+    /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// ///
-    World(const EntitySnapshot& firstLocalPlayerSnap, const TileMap& tileMap,
-          const WindowConfig& winConfig);
+    World(const TileMap& tileMap, const WindowConfig& winConfig,
+          const EntitySnapshot& firstLocalPlayerSnap);
 
     void update(float dt, const std::vector<EntitySnapshot>& snapshots);
     void render(Graphics& graphics);
