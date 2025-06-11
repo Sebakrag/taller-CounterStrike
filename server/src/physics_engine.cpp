@@ -1,7 +1,6 @@
 #include "../include/physics_engine.h"
 
-void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float deltaTime,
-                                Map& map) {
+void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float deltaTime, Map& map) {
     if (dirX == 0 && dirY == 0)
         return;
 
@@ -32,9 +31,8 @@ void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float del
     }
 }
 
-bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, float dirY,
-                                    Map& map, const Player& target, float maxDistance,
-                                  float& impactDistance) {
+bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, float dirY, Map& map,
+                                  const Player& target, float maxDistance, float& impactDistance) {
     // Normalizar la dirección
     const float len = std::sqrt(dirX * dirX + dirY * dirY);
     if (len == 0.0f)

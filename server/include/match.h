@@ -31,7 +31,7 @@ private:
     std::vector<DroppedWeapon> droppedWeapons;
 
 public:
-    Match();
+    explicit Match(const TileMap& tilemap);
 
     void addPlayer(Player&& player);
     bool addPlayer(const std::string& playerName);
@@ -43,8 +43,10 @@ public:
     void processPlant(const std::string& playerName);
     void processDefuse(const std::string& playerName);
     void checkRoundEnd();
-    GameInfo generateGameInfo(const std::string& playerName) const;
+
     GameInfo generateGameInfo() const;
+    MatchInfo generateMatchInfo() const;
+
     void showPlayers() const;
     std::vector<std::string> getPlayers();
     void handleKnifeAttack(Player* attacker, const Vec2D& direction);

@@ -1,17 +1,17 @@
 #include "client/include/model/Game.h"
 
-Game::Game(const MatchInfo& match_info, Client& client):
+Game::Game(Client& client, const MatchInfo& match_info, const EntitySnapshot& firstLocalPlayerSnap):
         client(client),
-        match_name(match_info.name),
-        graphics(match_info.win_config, match_name),
-        world(match_info.first_snap, match_info.map_info, match_info.win_config),
+        graphics(match_info.win_config, match_info.name),
+        world(match_info.tileMap, match_info.win_config, match_info.numPlayers,
+              firstLocalPlayerSnap),
         eventHandler(client, world),
         is_running(true) {}
 
 void Game::update(float dt) {
     // Cuando refactoricemos getGameInfo para que devuelva un GameInfo tenemos que modificar
     // esta funcion para decidir en que fase del juego nos encontramos.
-    world.update(dt, client.getGameInfo());
+    world.update(dt, client.getGameInfo().getSnapshots());
 }
 
 void Game::render() { graphics.render(world); }
@@ -23,7 +23,7 @@ void Game::start() {
         update(dt);
         render();
 
-        usleep(1 / 30);  // adjust frame_rate
+        usleep(1 / 24);  // adjust frame_rate
     }
 }
 

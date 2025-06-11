@@ -1,77 +1,94 @@
 #ifndef COMPONENTPOOL_H
 #define COMPONENTPOOL_H
 
-#include <array>
-#include <bitset>
+#include <algorithm>
+#include <unordered_map>
+#include <vector>
 
 #include "Entity.h"
+
 
 class BasePool {
 public:
     virtual ~BasePool() = default;
+    virtual void remove(Entity entity) = 0;
 };
 
 template <typename T>
 class ComponentPool: public BasePool {
 public:
-    ComponentPool() {
-        entity_to_pool_index.fill(INVALID_INDEX);
-        entities.fill(INVALID_ENTITY);
+    explicit ComponentPool(size_t capacity = MAX_ENTITIES) {
+        pool.reserve(capacity);
+        entities.reserve(capacity);
     }
 
-    T* create(const Entity entity) {
-        if (entity_to_pool_index[entity] != INVALID_INDEX) {
-            return &pool[entity_to_pool_index[entity]];  // The entity already has the component
+    T* create(const Entity e) {
+        if (has(e)) {
+            return get(e);
         }
 
-        for (size_t i = 0; i < pool.size(); ++i) {
-            if (!in_use[i]) {
-                in_use[i] = true;
-                entities[i] = entity;
-                entity_to_pool_index[entity] = i;
-                return &pool[i];
-            }
+        size_t index;
+        if (!free_indices.empty()) {
+            index = free_indices.back();
+            free_indices.pop_back();
+
+            pool[index] = T();
+            entities[index] = e;
+        } else {
+            index = pool.size();
+            pool.emplace_back();  // Default constructor
+            entities.emplace_back(e);
         }
-        return nullptr;  // There is no memory available for a new component
-    }
 
-    void remove(const Entity entity) {
-        Entity index = entity_to_pool_index[entity];
-        if (index == INVALID_INDEX)
-            return;  // The entity doesn't have this kind of component.
-
-        in_use[index] = false;
-        entity_to_pool_index[entity] = INVALID_INDEX;
-        entities[index] = INVALID_ENTITY;
-
-        if constexpr (requires(T t) { t.init(); }) {
-            pool[index].init();  // Reset to default values (optional)
-        }
-    }
-
-    T* get(const Entity entity) {
-        Entity index = entity_to_pool_index[entity];
-        if (index == INVALID_INDEX)
-            return nullptr;
+        entity_to_index[e] = index;
         return &pool[index];
     }
 
-    // Iteration for a cache-friendly operation (like render, for instance).
+    void remove(const Entity e) override {
+        const auto it = entity_to_index.find(e);
+        if (it == entity_to_index.end())
+            return;
+
+        size_t index = it->second;
+        entity_to_index.erase(it);
+
+        // Optional: reset values to default (clean memory)
+        pool[index] = T();
+        entities[index] = INVALID_ENTITY;
+
+        free_indices.push_back(index);
+    }
+
+    T* get(const Entity e) {
+        const auto it = entity_to_index.find(e);
+        if (it == entity_to_index.end())
+            return nullptr;
+        return &pool[it->second];
+    }
+
+    bool has(const Entity e) const { return entity_to_index.contains(e); }
+
+    void clear() {
+        pool.clear();
+        entities.clear();
+        entity_to_index.clear();
+        free_indices.clear();
+    }
+
     template <typename Func>
     void forEach(Func func) {
         for (size_t i = 0; i < pool.size(); ++i) {
-            if (in_use[i]) {
+            if (entities[i] != INVALID_ENTITY) {
                 func(pool[i], entities[i]);
             }
         }
     }
 
 private:
-    std::array<T, MAX_ENTITIES> pool;
-    std::bitset<MAX_ENTITIES>
-            in_use;  // each position it's a flag indicating if the component is available.
-    std::array<Entity, MAX_ENTITIES> entity_to_pool_index{};  // Entity -> pool index
-    std::array<Entity, MAX_ENTITIES> entities{};  // index -> Entity (sirve solo para iterar)
+    std::vector<T> pool;
+    std::vector<Entity> entities;                        // index -> Entity (sirve solo para iterar)
+    std::unordered_map<Entity, size_t> entity_to_index;  // Entity -> pool index
+    std::vector<size_t> free_indices;
 
     const uint32_t INVALID_INDEX = INVALID_ENTITY;
 };

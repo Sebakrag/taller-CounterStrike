@@ -5,9 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "../../client/dtos/AimInfo.h"
-#include "../../common/dtos/EntitySnapshot.h"
-#include "../../common/queue.h"
+#include "client/dtos/AimInfo.h"
+#include "common/queue.h"
 
 #include "client_protocol.h"
 #include "client_receiver.h"
@@ -15,53 +14,45 @@
 
 enum Status { Disconnected, InMenu, InLobby, InGame };
 
-// Clase para probar la conexion. Determinar despues si sirve o no
 class Client {
 private:
     ClientProtocol protocol;
     Status status;
-    std::string match_name;
+    std::string username;
+    std::string match_name;  // TODO: eliminar este miembro. (Ya esta dentro de matchInfo)
     bool player_creator = false;
     Queue<GameAction> send_queue;
     Queue<GameInfo> recv_queue;
     ClientSender sender;
     ClientReceiver receiver;
-
-    // Borrar esto una vez tengamos conexion con el servidor (sirve para probar el renderizado).
-    EntitySnapshot snap;
-    float x;
-    float y;
-    float angle;
+    MatchInfo matchInfo;
 
 public:
     Client(const std::string& ip, const std::string& port, const std::string& user_name);
 
-    // estos loop NO IRÍAN ACÁ.
-    void mainLoop();
-    void menuLoop();
-    void lobbyLoop();
-
     // Acciones en el menu principal
     void ExitGame();
-    void CreateMatch(const std::string& match_name);
+    bool CreateMatch(const std::string& match_name);
     void JoinMatch(const std::string& match_name);
-    void refreshMatchList();
+    std::vector<std::string> refreshMatchList();
 
     // Acciones en el lobby (antes de empezar la partida)
     void LeaveMatch();  // regresa la menú principal
     void StartMatch();
-    void refreshMatchRoom();
+    std::vector<PlayerInfoLobby> refreshMatchRoom();
+    std::vector<PlayerInfoLobby> refreshPlayersList();
+    std::string getUsername() const { return username; }
+    bool isCreator() const { return player_creator; }
 
-    // GameInfo getGameInfo() const;  // Este es el verdadero metodo.
-    // TODO: implementar GameInfo getGameInfo() const; y eliminar el siguiente:
-    std::vector<EntitySnapshot> getGameInfo();
+    MatchInfo getMatchInfo();
 
-    // el posta
-    GameInfo getGameInfo2();
+    GameInfo getGameInfo();     // sync
+    GameInfo tryGetGameInfo();  // Async
 
     void move(const Vec2D& direction);
     void shoot(const AimInfo& aimInfo);
-    void rotate(const float angle);
+    void rotate(float angle);
+    void pickUpItem(const Vec2D& playerPosition);
 
     ~Client();
 

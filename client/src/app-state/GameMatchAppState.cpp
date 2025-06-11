@@ -1,17 +1,13 @@
 #include "client/include/app-state/GameMatchAppState.h"
 
-#include <random>
 #include <string>
 
-#include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 
-#include "client/client_constants.h"
-#include "client/include/client.h"
+#include "client/include/app-state/AppStateController.h"
 #include "client/include/model/Game.h"
-#include "common/dtos/MatchInfo.h"
 
-GameMatchAppState::GameMatchAppState() {}
+GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ctrl; }
 
 // Todas las configuraciones iniciales de la partida las tiene que recibir el constructor
 // de GameMatchAppState, que provienen del MainMenuState, cuando el usuario
@@ -21,38 +17,27 @@ GameMatchAppState::GameMatchAppState() {}
 
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
-        constexpr int SERVER_ENTITY_ID = 1;
-        constexpr float pos_x = 31000, pos_y = 31000, angle = 0, money = 500;
-        constexpr int hp = 100;  // health
-        constexpr auto sprite_type = SpriteType::SEAL_FORCE;
-        constexpr auto entt_type = EntityType::ANTI_TERRORIST;
+        constexpr ServerEntityID SERVER_ENTITY_ID = 1;
+        constexpr float pos_x = 30500, pos_y = 30500, angle = 0;
+        constexpr int money = 1000;
+        constexpr int hp = 200;  // health
+        constexpr int ammo = 99;
+        constexpr auto sprite_type = SpriteType::ARTIC_AVENGER;
+        constexpr auto entt_type = EntityType::PLAYER;
         constexpr bool is_alive = true;
-        const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
-                                        entt_type, hp, money, Team::Terrorist, PlayerState::Idle,
-                                        is_alive);
-        const WindowConfig win_config(
-                SCREEN_WIDTH, SCREEN_HEIGHT,
-                SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
+        constexpr ServerEntityID equipped_weapon_id = 6;  // Arbitrario.
+        const EntitySnapshot first_snap(SERVER_ENTITY_ID, entt_type, sprite_type, pos_x, pos_y,
+                                        angle, is_alive, hp, money, ammo, PlayerState::Idle,
+                                        equipped_weapon_id, Team::Terrorist);
 
-        constexpr int w = 1000;
-        constexpr int h = 1000;
-        std::vector<std::vector<int>> tileMap(h, std::vector<int>(w));
-        std::random_device rd;                        // fuente de entropía
-        std::mt19937 gen(rd());                       // motor de generación
-        std::uniform_int_distribution<> dist(1, 46);  // distribución uniforme
+        // TODO. Sacar el first snap del constructor y dejar que lo cree al recibirlo por el
+        // snapshot del juego.
+        const MatchInfo matchInfo = controller->getClient()->getMatchInfo();
+        matchInfo.print();
 
-        for (int y = 0; y < h; ++y) {
-            for (int x = 0; x < w; ++x) {
-                tileMap[y][x] = dist(gen);
-            }
-        }
-        const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
+        const auto client = controller->getClient();
 
-        const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
-
-        Client client("localhost", "8080", "seba");
-
-        Game game(match_info, client);
+        Game game(*client, matchInfo, first_snap);
 
         game.start();
 

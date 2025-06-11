@@ -3,6 +3,8 @@
 #include <memory>
 #include <utility>
 
+#include "../include/scenario_registry.h"
+
 // Inicializo las variables estáticas (para poder compilar)
 bool MatchRoom::initialized = false;
 size_t MatchRoom::AMOUNT_PLAYERS = 0;
@@ -16,10 +18,11 @@ void MatchRoom::init(size_t amountPlayers) {
 
 // Constructor: inicializa nombre, host, crea Match y cola de acciones
 MatchRoom::MatchRoom(const std::string& name_match, const std::string& username_host,
-                     std::shared_ptr<Queue<GameInfo>> playerQueue):
-        name_match(name_match), player_host(username_host), match() {
-    // Crear la cola para el cliente (GameInfo sender queue)
-    // players[username_host] = playerQueue;
+                     std::shared_ptr<Queue<GameInfo>> playerQueue, const std::string& id_scenario):
+        name_match(name_match),
+        player_host(username_host),
+        match(ScenarioRegistry::getTileMap(id_scenario)),
+        id_scenario(id_scenario) {
     addPlayer(username_host, playerQueue);
 }
 
@@ -66,7 +69,10 @@ MatchRoomInfo MatchRoom::getMatchRoomInfo() {
 
     return MatchRoomInfo(infos, started);
 }
-
+// TileMap MatchRoom::getTileMap() {
+//     return match.getIdScenary()
+// }
+const std::string& MatchRoom::getIdScenary() { return id_scenario; }
 std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
     std::list<std::shared_ptr<Queue<GameInfo>>> playerQueues;
 

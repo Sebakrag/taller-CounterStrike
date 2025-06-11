@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainMenuWindow</class>
+ <widget class="QDialog" name="MainMenuWindow">
+  <property name="windowTitle">
+   <string>Menú Principal</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QPushButton" name="createButton">
+     <property name="text"><string>Crear Partida</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="joinButton">
+     <property name="text"><string>Unirse Partida</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="quitButton">
+     <property name="text"><string>Salir</string></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

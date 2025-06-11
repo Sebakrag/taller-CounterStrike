@@ -25,6 +25,8 @@ target_sources(taller_server
         src/weapon/weapon_factory.cpp
         src/weapon/projectile.cpp
 
+        src/scenario_registry.cpp
+
     PUBLIC
     # .h files
         include/acceptor.h
@@ -51,4 +53,5 @@ target_sources(taller_server
         include/weapon/weapon_glock.h
         include/weapon/weapon_factory.h
         include/weapon/projectile.h
+        include/scenario_registry.h
 )
