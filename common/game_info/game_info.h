@@ -11,6 +11,7 @@
 #include "bullet_info.h"
 #include "item_info.h"
 #include "player_info.h"
+#include "projectile_info.h"
 
 // Acá están todos los datos que va a recibir la interfaz grafica
 // en cada frame. Son los que enviará el gameloop del server en cada iteración.
@@ -32,14 +33,16 @@ public:
     std::vector<PlayerInfo> players;
     std::vector<BulletInfo> bullets;
     std::vector<ItemInfo> items;
+    std::vector<ProjectileInfo> projectiles;
 
     GameInfo() {}
 
-    explicit GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players);
+    explicit GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles);
 
     explicit GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
                       const std::vector<PlayerInfo>& players,
                       const std::vector<BulletInfo>& bullets, const std::vector<ItemInfo>& items);
+
 
     GameInfo(const GameInfo& other);
     GameInfo& operator=(const GameInfo& other);

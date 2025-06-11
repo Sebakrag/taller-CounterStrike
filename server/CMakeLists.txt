@@ -15,9 +15,15 @@ target_sources(taller_server
         src/player.cpp
         src/map.cpp
         src/physics_engine.cpp
+        src/id_generator.cpp
         src/weapon/weapon_knife.cpp
         src/weapon/fire_weapon.cpp
         src/weapon/weapon_ak47.cpp
+        src/weapon/weapon_awp.cpp
+        src/weapon/weapon_m3.cpp
+        src/weapon/weapon_glock.cpp
+        src/weapon/weapon_factory.cpp
+        src/weapon/projectile.cpp
 
         src/scenario_registry.cpp
 
@@ -37,11 +43,15 @@ target_sources(taller_server
         include/player.h
         include/map.h
         include/physics_engine.h
+        include/id_generator.h
         include/weapon/weapon_knife.h
         include/weapon/weapon.h
         include/weapon/fire_weapon.h
         include/weapon/weapon_ak47.h
-
-
+        include/weapon/weapon_awp.h
+        include/weapon/weapon_m3.h
+        include/weapon/weapon_glock.h
+        include/weapon/weapon_factory.h
+        include/weapon/projectile.h
         include/scenario_registry.h
 )

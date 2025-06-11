@@ -13,13 +13,14 @@
 //         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30)
 //         {}
 
-GameInfo::GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players):
+GameInfo::GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles):
         gamePhase(gamePhase),
         bombPlanted(false),
         bombX(0),
         bombY(0),
         timeLeft(timeLeft),
-        players(players) {}
+        players(players),
+        projectiles(projectiles) {}
 
 GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
                    const std::vector<PlayerInfo>& players, const std::vector<BulletInfo>& bullets,

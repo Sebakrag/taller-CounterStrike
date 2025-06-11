@@ -6,9 +6,10 @@
 
 #include "map.h"
 #include "player.h"
-//#include "game_info.h"
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
+#include "weapon/projectile.h"
+#include "types2.h"
 
 #include "physics_engine.h"
 
@@ -26,6 +27,8 @@ private:
     const double ROUND_DURATION = 120.0;
     bool roundOver = false;
     Team roundWinner;
+    std::vector<Projectile> projectiles;
+    std::vector<DroppedWeapon> droppedWeapons;
 
 public:
     explicit Match(const TileMap& tilemap);
@@ -46,6 +49,7 @@ public:
 
     void showPlayers() const;
     std::vector<std::string> getPlayers();
+    void handleKnifeAttack(Player* attacker, const Vec2D& direction);
 };
 
 #endif
