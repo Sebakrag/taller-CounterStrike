@@ -1117,9 +1117,8 @@ void MapEditor::placeSolid(QPointF scenePos)
     mapElements.append(newElement);
 }
 
-// Método para colocar una zona en la posición del clic
-// Solo debe existir una zona de cada tipo en todo el mapa
 // Método para colocar una zona de bomba en la posición del clic
+// Solo debe existir una zona de bomba en todo el mapa
 void MapEditor::placeBombZone(QPointF scenePos)
 {
     if (currentBombZoneId < 0) {
@@ -1131,6 +1130,7 @@ void MapEditor::placeBombZone(QPointF scenePos)
     qreal y = gridPos.y() * 32.0;
     
     // Buscar y eliminar cualquier elemento existente en la misma posición
+    // EXCEPTO las zonas normales (TEAM_SPAWN_CT, TEAM_SPAWN_T)
     QList<QGraphicsItem*> itemsToRemove;
     for (QGraphicsItem* item : scene->items()) {
         // Verificar si es un elemento de mapa (usando data)
@@ -1140,7 +1140,11 @@ void MapEditor::placeBombZone(QPointF scenePos)
             
             // Si el elemento ocupa la posición objetivo
             if (itemRect.contains(QPointF(x, y).x() - itemPos.x(), QPointF(x, y).y() - itemPos.y())) {
-                itemsToRemove.append(item);
+                // No eliminar zonas normales (TEAM_SPAWN_CT, TEAM_SPAWN_T)
+                int elementType = item->data(1).toInt();
+                if (elementType != ElementType::TEAM_SPAWN_CT && elementType != ElementType::TEAM_SPAWN_T) {
+                    itemsToRemove.append(item);
+                }
             }
         }
     }
@@ -1154,7 +1158,7 @@ void MapEditor::placeBombZone(QPointF scenePos)
     // También eliminar cualquier zona de bomba existente en todo el mapa (solo debe haber una)
     QList<QGraphicsItem*> bombZoneItems;
     for (QGraphicsItem* item : scene->items()) {
-        if (item->data(1).isValid() && item->data(1).toInt() == BOMB_ZONE) {
+        if (item->data(1).isValid() && item->data(1).toInt() == ElementType::BOMB_ZONE) {
             if (!itemsToRemove.contains(item)) { // Si no está ya en la lista para eliminar
                 bombZoneItems.append(item);
             }
@@ -1180,11 +1184,11 @@ void MapEditor::placeBombZone(QPointF scenePos)
     
     // Crear un nuevo elemento de mapa de tipo zona de bomba
     QPointF worldPos(gridPos.x(), gridPos.y());
-    MapElement* newElement = new MapElement(worldPos, BOMB_ZONE);
+    MapElement* newElement = new MapElement(worldPos, ElementType::BOMB_ZONE);
     
     // Asociar el elemento gráfico con una identificación interna
     bombZoneItem->setData(0, currentBombZoneId); // Almacenar el ID de la zona de bomba
-    bombZoneItem->setData(1, BOMB_ZONE); // Almacenar el tipo de elemento
+    bombZoneItem->setData(1, ElementType::BOMB_ZONE); // Almacenar el tipo de elemento
     
     // Añadir a la lista de elementos
     mapElements.append(newElement);
@@ -1200,18 +1204,20 @@ void MapEditor::placeZone(QPointF scenePos)
     qreal x = gridPos.x() * 32.0;
     qreal y = gridPos.y() * 32.0;
     
-    // PRIMERO: Eliminar cualquier zona DEL MISMO TIPO (currentZoneId) que ya exista en cualquier parte del mapa
+    // Determinar el tipo de zona basado en el ID
+    // Asumimos que currentZoneId 0 es TEAM_SPAWN_CT y 1 es TEAM_SPAWN_T
+    ElementType zoneType = (currentZoneId == 0) ? ElementType::TEAM_SPAWN_CT : ElementType::TEAM_SPAWN_T;
+    
+    // PRIMERO: Eliminar cualquier zona DEL MISMO TIPO (zoneType) que ya exista en cualquier parte del mapa
     // Ya que solo debe haber una zona de cada tipo en todo el mapa
     QList<QGraphicsItem*> sameZoneTypeItems;
     
     for (QGraphicsItem* item : scene->items()) {
-        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
-        if (existingItem && 
-            existingItem->data(1).toInt() == BOMB_ZONE && 
-            existingItem->data(0).toInt() == currentZoneId) { // Verificar si es el mismo tipo de zona
+        if (item->data(1).isValid() && 
+            item->data(1).toInt() == zoneType) { // Verificar si es el mismo tipo de zona
             // Misma zona (tipo) encontrada, agregar para eliminar
-            sameZoneTypeItems.append(existingItem);
-            qDebug() << "Eliminando zona existente del tipo" << currentZoneId;
+            sameZoneTypeItems.append(item);
+            qDebug() << "Eliminando zona existente del tipo" << zoneType;
         }
     }
     
@@ -1224,7 +1230,7 @@ void MapEditor::placeZone(QPointF scenePos)
             QPointF elementPos = element->getPosition();
             if (elementPos.x() == removeGridPos.x() && 
                 elementPos.y() == removeGridPos.y() && 
-                element->getType() == BOMB_ZONE) {
+                element->getType() == zoneType) {
                 mapElements.removeAt(i);
                 delete element;
                 break;
@@ -1235,13 +1241,18 @@ void MapEditor::placeZone(QPointF scenePos)
     }
     
     // SEGUNDO: Eliminar cualquier elemento que exista en la posición seleccionada
+    // EXCEPTO las zonas de bomba (BOMB_ZONE)
     QList<QGraphicsItem*> itemsAtPosition;
     for (QGraphicsItem* item : scene->items()) {
         // Verificar si es un elemento de mapa (usando data)
         if ((item->data(1).isValid())) {
             QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
-                itemsAtPosition.append(item);
+                // No eliminar zonas de bomba
+                int elementType = item->data(1).toInt();
+                if (elementType != ElementType::BOMB_ZONE) {
+                    itemsAtPosition.append(item);
+                }
             }
         }
     }
@@ -1271,11 +1282,11 @@ void MapEditor::placeZone(QPointF scenePos)
     
     // Crear un nuevo elemento de mapa de tipo zona
     QPointF worldPos(gridPos.x(), gridPos.y());
-    MapElement* newElement = new MapElement(worldPos, BOMB_ZONE);
+    MapElement* newElement = new MapElement(worldPos, zoneType);
     
     // Asociar el elemento gráfico con una identificación interna
     zoneItem->setData(0, currentZoneId); // Almacenar el ID de la zona
-    zoneItem->setData(1, BOMB_ZONE); // Almacenar el tipo de elemento
+    zoneItem->setData(1, zoneType); // Almacenar el tipo de elemento
     
     // Añadir a la lista de elementos
     mapElements.append(newElement);
