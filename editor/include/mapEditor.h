@@ -123,6 +123,7 @@ private:
     QTabWidget* elementsTabWidget; // Widget de pestañas para los diferentes elementos
     QComboBox* terrainCombo;     // Selector de tipo de terreno
     QWidget* toolPanel;          // Panel de herramientas lateral
+    QVBoxLayout* toolPanelLayout;   // Layout para el panel de herramientas
     
     // Método para obtener la ruta base a los recursos
     static QString getResourcesPath();

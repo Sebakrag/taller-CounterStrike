@@ -235,18 +235,6 @@ MapEditor::~MapEditor()
     placedTiles.clear();
 }
 
-void MapEditor::addBox()
-{
-    // Añadir una estructura sólida
-    QPixmap boxPixmap(getResourcePath(SOLID_STRUCTURE));
-    DragAndDrop *boxItem = new DragAndDrop(boxPixmap, 1.0, scene);
-    boxItem->setTipoElemento(SOLID_STRUCTURE);
-    boxItem->setStructureType(0); // Tipo por defecto
-    boxItem->setPixmap(boxPixmap.scaledToWidth(widthBeam));
-    scene->addItem(boxItem);
-}
-
-
 // Método eliminado - ahora los elementos se colocan directamente con el clic
 
 // Método eliminado - ahora los elementos se colocan directamente con el clic
