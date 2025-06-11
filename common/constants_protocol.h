@@ -54,16 +54,10 @@
 #define BYTE_ITEM_AWP 0x35
 #define BYTE_ITEM_BOMB 0x36
 
-// SpriteType { ... }
-#define BYTE_SPRITE_ARTIC_AVENGER 0x01
-#define BYTE_SPRITE_L337_KREW 0x02
-#define BYTE_SPRITE_GUERRILLA 0x03
-#define BYTE_SPRITE_PHOENIX 0x04
-#define BYTE_SPRITE_SEAL_FORCE 0x05
-#define BYTE_SPRITE_GERMAN_GSG_9 0x06
-#define BYTE_SPRITE_UK_SAS 0x07
-#define BYTE_SPRITE_FRENCH_GIGN 0x08
-
+// TypeTileMap{ Desert, Aztec, Training };
+#define BYTE_MAP_DESERT 0xE1
+#define BYTE_MAP_AZTEC 0xE2
+#define BYTE_MAP_TRAINING 0xE3
 
 // Acciones del cliente:
 //--------------------------
@@ -95,7 +89,7 @@
 #define BYTE_TRUE 0X01
 #define BYTE_FALSE 0X00
 
-#define BYTE_TILE_MAP 0xC0
+#define BYTE_MATCH_INFO 0xC0    // name, window_config, tilemap
 #define BYTE_MATCH_LIST 0xC1    // server envía al cliente
 #define BYTE_PLAYERS_LIST 0xC2  // server envía al cliente
 #define BYTE_GAME_INFO 0xC3

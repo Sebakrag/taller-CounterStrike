@@ -36,12 +36,13 @@ target_sources(taller_common
         game_info/game_info.h
         game_info/bullet_info.h
         game_info/item_info.h
+        game_info/projectile_info.h
 
         utils/Vec2D.h
         utils/EntityType.h
 
+        dtos/AmmoInfo.h
         dtos/EntitySnapshot.h
-        dtos/MapInfo.h
         dtos/MatchInfo.h
         dtos/WindowConfig.h
     )

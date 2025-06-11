@@ -4,9 +4,11 @@
 #include <cstdint>
 
 struct WindowConfig {
-    const int width;
-    const int height;
-    const uint32_t flags;
+    int width;   // en px
+    int height;  // en px
+    uint32_t flags;
+
+    WindowConfig(): width(0), height(0), flags(0) {}
 
     WindowConfig(const int w, const int h, const uint32_t flags):
             width(w), height(h), flags(flags) {}

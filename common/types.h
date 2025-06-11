@@ -6,12 +6,13 @@
 
 #include "utils/Vec2D.h"
 
-enum class Weapon { None, Glock, Ak47, M3, Awp };
+enum class Weapon { None, Glock, Ak47, M3, Awp, Knife };
 enum class TypeWeapon { Primary, Secondary, Knife, Bomb };
 enum class Team { Terrorist, CounterTerrorist };
 enum class GamePhase { Preparation, Combat, EndOfMatch };
 
-enum class PlayerState { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
+enum class PlayerState : unsigned char { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
+enum class WeaponState : unsigned char { DROPPED, EQUIPPED, HIDDEN };
 
 enum class PlayerSkin {
     Terrorist1,
@@ -25,6 +26,8 @@ enum class PlayerSkin {
 };
 
 enum class TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
+
+enum class TypeTileMap { Desert, Aztec, Training };
 
 struct PlayerInfoLobby {
     std::string username;
@@ -70,15 +73,19 @@ struct GameAction {
     TypeWeapon typeWeapon = TypeWeapon::Knife;  // rellenar si se quiere cambiar o comprar municion.
     int count_ammo = 0;                         // rellenar si quiere comprar municion
     Vec2D direction;
+    float angle = 0;  // para Rotate
 
     GameAction() {}
     explicit GameAction(GameActionType type, Weapon weapon = Weapon::Glock):
             type(type), weapon(weapon) {}
 
-    GameAction(GameActionType type, TypeWeapon typeWeapon, int count_ammo = 0):
+    explicit GameAction(GameActionType type, TypeWeapon typeWeapon, int count_ammo = 0):
             type(type), typeWeapon(typeWeapon), count_ammo(count_ammo) {}
 
-    GameAction(GameActionType type, const Vec2D& direction): type(type), direction(direction) {}
+    explicit GameAction(GameActionType type, const Vec2D& direction):
+            type(type), direction(direction) {}
+
+    explicit GameAction(GameActionType type, float angle): type(type), angle(angle) {}
 
     GameAction(const GameAction&) = default;
     GameAction& operator=(const GameAction&) = default;

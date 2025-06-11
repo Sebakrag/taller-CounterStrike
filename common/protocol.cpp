@@ -34,6 +34,28 @@ uint16_t Protocol_::recvBigEndian16() {
     return number;
 }
 
+uint32_t Protocol_::recvBigEndian32() {
+    uint32_t number;
+    int r = socket.recvall(&number, sizeof(uint32_t));
+    if (r != 4) {
+        throw std::runtime_error("Error al recibir el number.");
+    }
+    number = ntohl(number);  // convierto de big endian al endianness local
+    return number;
+}
+
+float Protocol_::recvFloat() {
+    uint32_t number;
+    int r = socket.recvall(&number, sizeof(uint32_t));
+    if (r != 4) {
+        throw std::runtime_error("Error al recibir el number.");
+    }
+    number = ntohl(number);  // convierto de big endian al endianness local
+
+    float value;
+    std::memcpy(&value, &number, sizeof(float));
+    return value;
+}
 
 void Protocol_::insertBigEndian16(uint16_t bytes, std::vector<uint8_t>& array) {
     uint16_t bytes_big_endian = htons(bytes);  // paso a big endian
@@ -328,47 +350,30 @@ uint8_t Protocol_::encodeTypeItem(const TypeItem& typeItem) {
     }
 }
 
-
-uint8_t Protocol_::encodeEntitySpriteType(const SpriteType& spriteType) {
-
-    switch (spriteType) {
-        case SpriteType::PHEONIX:
-            return BYTE_SPRITE_PHOENIX;
-        case SpriteType::L337_KREW:
-            return BYTE_SPRITE_L337_KREW;
-        case SpriteType::ARTIC_AVENGER:
-            return BYTE_SPRITE_ARTIC_AVENGER;
-        case SpriteType::GUERRILLA:
-            return BYTE_SPRITE_GUERRILLA;
-        case SpriteType::SEAL_FORCE:
-            return BYTE_SPRITE_SEAL_FORCE;
-        case SpriteType::GERMAN_GSG_9:
-            return BYTE_SPRITE_GERMAN_GSG_9;
-        case SpriteType::UK_SAS:
-            return BYTE_SPRITE_UK_SAS;
-        case SpriteType::FRENCH_GIGN:
-            return BYTE_SPRITE_FRENCH_GIGN;
-        default:
-            throw std::runtime_error("Error. SpriteType desconocido. No se puede codificar");
-    }
-}
-
 uint8_t Protocol_::encodeEntityType(const EntityType& entityType) {
     switch (entityType) {
-        case EntityType::TERRORIST:
+        case EntityType::PLAYER:
             return 1;
-        case EntityType::ANTI_TERRORIST:
-            return 2;
         case EntityType::WEAPON:
-            return 3;
+            return 2;
         case EntityType::BULLET:
-            return 4;
+            return 3;
         case EntityType::BOMB:
-            return 5;
+            return 4;
         default:
             throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede codificar");
     }
 }
+
+uint8_t Protocol_::encodeTypeTileMap(const TypeTileMap& type) {
+    if (type == TypeTileMap::Aztec)
+        return BYTE_MAP_AZTEC;
+    if (type == TypeTileMap::Desert)
+        return BYTE_MAP_DESERT;
+    else
+        return BYTE_MAP_TRAINING;
+}
+
 
 // Decodificadores.
 //----------------------------------------------------------------------------------
@@ -549,43 +554,31 @@ TypeItem Protocol_::decodeTypeItem(uint8_t byte) {
     }
 }
 
-SpriteType Protocol_::decodeEntitySpriteType(uint8_t byte) {
-    switch (byte) {
-        case BYTE_SPRITE_PHOENIX:
-            return SpriteType::PHEONIX;
-        case BYTE_SPRITE_L337_KREW:
-            return SpriteType::L337_KREW;
-        case BYTE_SPRITE_ARTIC_AVENGER:
-            return SpriteType::ARTIC_AVENGER;
-        case BYTE_SPRITE_GUERRILLA:
-            return SpriteType::GUERRILLA;
-        case BYTE_SPRITE_SEAL_FORCE:
-            return SpriteType::SEAL_FORCE;
-        case BYTE_SPRITE_GERMAN_GSG_9:
-            return SpriteType::GERMAN_GSG_9;
-        case BYTE_SPRITE_UK_SAS:
-            return SpriteType::UK_SAS;
-        case BYTE_SPRITE_FRENCH_GIGN:
-            return SpriteType::FRENCH_GIGN;
-        default:
-            throw std::runtime_error("Error. SpriteType desconocido. No se puede decodificar");
-    }
-}
-
 EntityType Protocol_::decodeEntityType(uint8_t byte) {
     switch (byte) {
         case 1:
-            return EntityType::TERRORIST;
+            return EntityType::PLAYER;
         case 2:
-            return EntityType::ANTI_TERRORIST;
-        case 3:
             return EntityType::WEAPON;
-        case 4:
+        case 3:
             return EntityType::BULLET;
-        case 5:
+        case 4:
             return EntityType::BOMB;
         default:
             throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede decodificar");
+    }
+}
+
+TypeTileMap Protocol_::decodeTypeTileMap(uint8_t byte) {
+    switch (byte) {
+        case BYTE_MAP_AZTEC:
+            return TypeTileMap::Aztec;
+        case BYTE_MAP_DESERT:
+            return TypeTileMap::Desert;
+        case BYTE_MAP_TRAINING:
+            return TypeTileMap::Training;
+        default:
+            throw std::runtime_error("Error. Tipo de map desconcido. No se puede decodificar");
     }
 }
 

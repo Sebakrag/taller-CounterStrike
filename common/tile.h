@@ -4,18 +4,9 @@
 #include <cstdint>
 #include <vector>
 
-// se me ocurren 2 maneras para poder identificar si el Tile es solido a partir del ID.
-// 1. Defino como constantes todos los ids de los tiles solidos.
-//    Luego en el constructor, chequeo si es alguno de esos
-// 2. Hacemos que los que tengan id impar sean sólidos y los que tengan id par no lo sean.
-//    (habría que revisar los nombres de las imagenes con atención)
-// [DISCUTIRLO]
-
-// el id de cada tile corresponderá a un archivo png.
-// por ej. id = 2 corresponde al archivo "tile_002.png"
-//(no usar mas de 255 imagenes)
-
-#define ID_WALL1 2  // pared
+// Convención.
+// los ids del 1 al 12 corresponden a tiles SÓLIDOS. Los posteriores son traspasables.
+#define ID_MAX_SOLID 12
 
 // 32x32 px
 class Tile {
