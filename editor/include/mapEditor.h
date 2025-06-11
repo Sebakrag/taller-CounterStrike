@@ -73,6 +73,9 @@ private slots:
     // Método para actualizar el indicador de selección
     void updateSelectionIndicator(QPointF scenePos);
     
+    // Método para actualizar el estilo del botón seleccionado
+    void updateSelectedButtonStyle(QButtonGroup* buttonGroup, int selectedId);
+    
     // Acciones de archivo
     void generarMapaClicked();
     void loadMapClicked();

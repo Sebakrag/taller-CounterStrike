@@ -198,13 +198,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     // Instalamos un event filter en la vista para capturar clicks y movimientos
     view->viewport()->installEventFilter(this);
     
-    // Crear el indicador de selección (un rectángulo con borde que muestra la celda seleccionada)
-    selectionIndicator = new QGraphicsRectItem(0, 0, 32, 32);
-    selectionIndicator->setPen(QPen(QColor(255, 255, 0), 2)); // Borde amarillo
-    selectionIndicator->setBrush(QBrush(QColor(255, 255, 0, 50))); // Relleno amarillo semi-transparente
-    selectionIndicator->setZValue(1000); // Siempre visible por encima de otros elementos
-    scene->addItem(selectionIndicator);
-    selectionIndicator->hide(); // Inicialmente oculto
+    // No necesitamos un indicador en la cuadrícula porque resaltaremos los elementos en el menú
     
     // Estos métodos se llamarán más abajo en backgroundSelection(0)
     
@@ -237,6 +231,26 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
 }
 
 // Implementación del destructor
+// Método para actualizar el estilo del botón seleccionado
+void MapEditor::updateSelectedButtonStyle(QButtonGroup* buttonGroup, int selectedId)
+{
+    // Estilo para resaltar el botón seleccionado
+    const QString selectedStyle = "QPushButton { border: 2px solid #FFD700; background-color: rgba(255, 215, 0, 0.3); }";
+    const QString normalStyle = "";
+    
+    // Recorrer todos los botones y actualizar su estilo
+    for (QAbstractButton* button : buttonGroup->buttons()) {
+        int id = buttonGroup->id(button);
+        if (id == selectedId) {
+            // Aplicar estilo seleccionado
+            button->setStyleSheet(selectedStyle);
+        } else {
+            // Restaurar estilo normal
+            button->setStyleSheet(normalStyle);
+        }
+    }
+}
+
 MapEditor::~MapEditor()
 {
     // Desconectar todas las señales para evitar que se activen durante la destrucción
@@ -573,6 +587,7 @@ void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pi
                     elementButton->setIcon(buttonIcon);
                     elementButton->setIconSize(QSize(36, 36));
                     elementButton->setToolTip(elementFile);
+                    elementButton->setStyleSheet(""); // Inicializar sin estilo especial
                     
                     // Añadir al grupo de botones
                     buttonGroup->addButton(elementButton, elementId);
@@ -735,6 +750,12 @@ void MapEditor::tileSelected(int id) {
     // Activar el tile seleccionado
     currentTileId = id;
     qDebug() << "Tile seleccionado:" << id;
+    
+    // Actualizar visualización de botones seleccionados
+    updateSelectedButtonStyle(tileButtons, id);
+    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de sólidos
@@ -747,6 +768,12 @@ void MapEditor::solidSelected(int id) {
     // Activar el sólido seleccionado
     currentSolidId = id;
     qDebug() << "Sólido seleccionado:" << id;
+    
+    // Actualizar visualización de botones seleccionados
+    updateSelectedButtonStyle(solidButtons, id);
+    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de zonas
@@ -759,6 +786,12 @@ void MapEditor::zoneSelected(int id) {
     // Activar la zona seleccionada
     currentZoneId = id;
     qDebug() << "Zona seleccionada:" << id;
+    
+    // Actualizar visualización de botones seleccionados
+    updateSelectedButtonStyle(zoneButtons, id);
+    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de armas
@@ -771,6 +804,12 @@ void MapEditor::weaponSelected(int id) {
     // Activar el arma seleccionada
     currentWeaponId = id;
     qDebug() << "Arma seleccionada:" << id;
+    
+    // Actualizar visualización de botones seleccionados
+    updateSelectedButtonStyle(weaponButtons, id);
+    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
 }
 
 // Método para colocar un tile en la posición del clic
@@ -806,7 +845,7 @@ void MapEditor::placeTile(QPointF scenePos)
             if (itemGridPos == gridPos) {
                 itemsToRemove.append(item);
             }
-        }
+        } 
     }
     
     // Remover de la escena y de la lista de elementos del mapa
