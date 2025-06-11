@@ -89,7 +89,7 @@ private:
     // Sistema de tiles
     QMap<int, QPixmap> tilePixmaps; // Almacena todos los tiles disponibles
     QMap<QPair<int, int>, int> placedTiles; // Tiles colocados en formato (x,y) -> tileId
-    QMap<QPair<int, int>, TileItem*> tileMap; // Mapa que guarda los elementos TileItem por posición de cuadrícula
+    // Ya no usamos tileMap, los tiles ahora son QGraphicsPixmapItem simples
     int currentTileId = -1; // ID del tile seleccionado actualmente
     QScrollArea* tilesScrollArea; // Área de desplazamiento para la paleta de tiles
     QGroupBox* tilesGroup; // Contenedor para la paleta de tiles

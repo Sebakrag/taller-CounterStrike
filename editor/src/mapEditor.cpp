@@ -270,12 +270,23 @@ void MapEditor::backgroundSelection(int index)
         currentBackground = nullptr;
     }
     
-    // Limpiar todos los tiles antes de cambiar el terreno
-    for (auto it = tileMap.begin(); it != tileMap.end(); ++it) {
-        scene->removeItem(it.value());
-        delete it.value();
+    // Eliminar todos los tiles que pudieran existir en la escena
+    QList<QGraphicsItem*> tilesToRemove;
+    for (QGraphicsItem* item : scene->items()) {
+        QGraphicsPixmapItem* tileItem = dynamic_cast<QGraphicsPixmapItem*>(item);
+        if (tileItem && tileItem->data(1).toInt() == TILE) {
+            tilesToRemove.append(tileItem);
+        }
     }
-    tileMap.clear();
+    
+    // Eliminar los tiles encontrados
+    for (QGraphicsItem* item : tilesToRemove) {
+        scene->removeItem(item);
+        delete item;
+    }
+    
+    // Limpiar el registro de tiles colocados
+    placedTiles.clear();
     
     // Actualizar indice de terreno
     currentTerrainType = index;
@@ -785,31 +796,45 @@ void MapEditor::placeTile(QPointF scenePos)
     qreal x = gridX * 32.0;
     qreal y = gridY * 32.0;
     
-    // Crear un nuevo TileItem con el tile seleccionado (para permitir drag and drop)
-    QString tileName = QString("Tile_%1").arg(currentTileId);
-    TileItem* tileItem = new TileItem(tilePixmaps[currentTileId], currentTileId, tileName, scene);
-    tileItem->setPos(x, y);
-    tileItem->setZValue(-0.5); // Por encima del fondo pero debajo de los elementos del mapa
-    
-    // Eliminar cualquier tile que pudiera haber en esa posición
-    QPair<int, int> gridKey(gridX, gridY);
+    // Buscar y eliminar cualquier tile existente en la misma posición
+    QList<QGraphicsItem*> itemsToRemove;
     for (QGraphicsItem* item : scene->items()) {
-        TileItem* tileItem2 = dynamic_cast<TileItem*>(item);
-        if (tileItem2 && tileItem2->zValue() == -0.5) {
-            QPoint itemPos = getTileGridPosition(tileItem2->pos());
-            if (itemPos == gridPos) {
-                scene->removeItem(tileItem2);
-                delete tileItem2;
-                break;
+        QGraphicsPixmapItem* existingItem = dynamic_cast<QGraphicsPixmapItem*>(item);
+        if (existingItem && existingItem->data(1).toInt() == TILE) {
+            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+            if (itemGridPos == gridPos) {
+                itemsToRemove.append(existingItem);
             }
         }
     }
+    
+    // Remover de la escena y de la lista de elementos del mapa
+    for (QGraphicsItem* itemToRemove : itemsToRemove) {
+        // Remover el tile del registro placedTiles
+        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
+        QPair<int, int> gridKey(removeGridPos.x(), removeGridPos.y());
+        placedTiles.remove(gridKey);
+        
+        scene->removeItem(itemToRemove);
+        delete itemToRemove;
+    }
+    
+    // Crear un nuevo elemento tile sin comportamiento de drag and drop
+    QPixmap tilePixmap = tilePixmaps[currentTileId];
+    QGraphicsPixmapItem* tileItem = new QGraphicsPixmapItem(tilePixmap);
+    tileItem->setPos(x, y);
+    tileItem->setZValue(-0.5); // Por encima del fondo pero debajo de otros elementos
+    
+    // Almacenar metadatos en el item
+    tileItem->setData(0, currentTileId); // ID del tile
+    tileItem->setData(1, TILE); // Tipo de elemento (tile)
     
     // Añadir el nuevo tile a la escena
     scene->addItem(tileItem);
     
     // Guardar la referencia del tile colocado
-    placedTiles[gridKey] = currentTileId;
+    QPair<int, int> newGridKey(gridX, gridY);
+    placedTiles[newGridKey] = currentTileId;
 }
 
 // Método para colocar un sólido en la posición del clic
@@ -841,9 +866,10 @@ void MapEditor::placeSolid(QPointF scenePos)
         QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
         for (int i = 0; i < mapElements.size(); ++i) {
             MapElement* element = mapElements[i];
-            if (element->position().x() == removeGridPos.x() && 
-                element->position().y() == removeGridPos.y() && 
-                element->type() == SOLID_STRUCTURE) {
+            QPointF elementPos = element->getPosition();
+            if (elementPos.x() == removeGridPos.x() && 
+                elementPos.y() == removeGridPos.y() && 
+                element->getType() == SOLID_STRUCTURE) {
                 mapElements.removeAt(i);
                 delete element;
                 break;
@@ -872,6 +898,7 @@ void MapEditor::placeSolid(QPointF scenePos)
 }
 
 // Método para colocar una zona en la posición del clic
+// Solo debe existir una zona de cada tipo en todo el mapa
 void MapEditor::placeZone(QPointF scenePos)
 {
     if (currentZoneId < 0) {
@@ -882,27 +909,60 @@ void MapEditor::placeZone(QPointF scenePos)
     qreal x = gridPos.x() * 32.0;
     qreal y = gridPos.y() * 32.0;
     
-    // Buscar y eliminar cualquier elemento existente de tipo zona en la misma posición
-    QList<QGraphicsItem*> itemsToRemove;
+    // PRIMERO: Eliminar cualquier zona DEL MISMO TIPO (currentZoneId) que ya exista en cualquier parte del mapa
+    // Ya que solo debe haber una zona de cada tipo en todo el mapa
+    QList<QGraphicsItem*> sameZoneTypeItems;
+    
     for (QGraphicsItem* item : scene->items()) {
         DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
-        if (existingItem && existingItem->data(1).toInt() == BOMB_ZONE) {
+        if (existingItem && 
+            existingItem->data(1).toInt() == BOMB_ZONE && 
+            existingItem->data(0).toInt() == currentZoneId) { // Verificar si es el mismo tipo de zona
+            // Misma zona (tipo) encontrada, agregar para eliminar
+            sameZoneTypeItems.append(existingItem);
+            qDebug() << "Eliminando zona existente del tipo" << currentZoneId;
+        }
+    }
+    
+    // Eliminar todas las zonas del mismo tipo encontradas
+    for (QGraphicsItem* itemToRemove : sameZoneTypeItems) {
+        // Eliminar también de la lista de elementos internos
+        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
+        for (int i = 0; i < mapElements.size(); ++i) {
+            MapElement* element = mapElements[i];
+            QPointF elementPos = element->getPosition();
+            if (elementPos.x() == removeGridPos.x() && 
+                elementPos.y() == removeGridPos.y() && 
+                element->getType() == BOMB_ZONE) {
+                mapElements.removeAt(i);
+                delete element;
+                break;
+            }
+        }
+        scene->removeItem(itemToRemove);
+        delete itemToRemove;
+    }
+    
+    // SEGUNDO: Eliminar cualquier elemento (de otro tipo) que exista en la posición seleccionada
+    QList<QGraphicsItem*> itemsAtPosition;
+    for (QGraphicsItem* item : scene->items()) {
+        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
+        if (existingItem) {
             QPoint itemGridPos = getTileGridPosition(existingItem->pos());
             if (itemGridPos == gridPos) {
-                itemsToRemove.append(existingItem);
+                itemsAtPosition.append(existingItem);
             }
         }
     }
     
-    // Remover de la escena y de la lista de elementos del mapa
-    for (QGraphicsItem* itemToRemove : itemsToRemove) {
-        // También eliminar el elemento de mapElements
+    // Eliminar elementos en la posición seleccionada
+    for (QGraphicsItem* itemToRemove : itemsAtPosition) {
         QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
         for (int i = 0; i < mapElements.size(); ++i) {
             MapElement* element = mapElements[i];
-            if (element->position().x() == removeGridPos.x() && 
-                element->position().y() == removeGridPos.y() && 
-                element->type() == BOMB_ZONE) {
+            QPointF elementPos = element->getPosition();
+            if (elementPos.x() == removeGridPos.x() && 
+                elementPos.y() == removeGridPos.y()) {
                 mapElements.removeAt(i);
                 delete element;
                 break;
@@ -959,9 +1019,10 @@ void MapEditor::placeWeapon(QPointF scenePos)
         QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
         for (int i = 0; i < mapElements.size(); ++i) {
             MapElement* element = mapElements[i];
-            if (element->position().x() == removeGridPos.x() && 
-                element->position().y() == removeGridPos.y() && 
-                element->type() == WEAPON) {
+            QPointF elementPos = element->getPosition();
+            if (elementPos.x() == removeGridPos.x() && 
+                elementPos.y() == removeGridPos.y() && 
+                element->getType() == WEAPON) {
                 mapElements.removeAt(i);
                 delete element;
                 break;
@@ -995,17 +1056,30 @@ void MapEditor::removeTile(QPointF scenePos) {
     QPoint gridPos = getTileGridPosition(scenePos);
     QPair<int, int> gridKey(gridPos.x(), gridPos.y());
     
-    // Verificar si hay un tile en esta posición
-    if (tileMap.contains(gridKey)) {
-        // Eliminar el tile del mapa visual
-        TileItem* tileItem = tileMap[gridKey];
-        if (tileItem) {
-            scene->removeItem(tileItem);
-            delete tileItem;
+    // Buscar y eliminar cualquier tile en la posición
+    bool tileRemoved = false;
+    QList<QGraphicsItem*> itemsToRemove;
+    
+    // Buscar elementos gráficos que sean tiles en esa posición
+    for (QGraphicsItem* item : scene->items()) {
+        QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item);
+        if (pixmapItem && pixmapItem->data(1).toInt() == TILE) {
+            QPoint itemGridPos = getTileGridPosition(pixmapItem->pos());
+            if (itemGridPos == gridPos) {
+                itemsToRemove.append(pixmapItem);
+                tileRemoved = true;
+            }
         }
-        
-        // Eliminar del registro de tiles colocados
-        tileMap.remove(gridKey);
+    }
+    
+    // Eliminar los tiles encontrados
+    for (QGraphicsItem* item : itemsToRemove) {
+        scene->removeItem(item);
+        delete item;
+    }
+    
+    // Eliminar del registro de tiles colocados si se eliminó alguno
+    if (tileRemoved) {
         placedTiles.remove(gridKey);
     }
 }
