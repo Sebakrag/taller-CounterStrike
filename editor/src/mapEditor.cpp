@@ -231,10 +231,17 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
 // Implementación del destructor
 MapEditor::~MapEditor()
 {
-    // Liberar memoria de los elementos de la interfaz
+    // Desconectar todas las señales para evitar que se activen durante la destrucción
+    disconnect(this); // Desconecta todas las conexiones que involucran a esta instancia
+    
+    // Primero intentar remover elementos de la escena para evitar accesos inválidos
+    if (scene) {
+        scene->clear(); // Limpia todos los items de la escena
+    }
+    
+    // Limpiar primero currentBackground para evitar accesos inválidos
     if (currentBackground) {
-        delete currentBackground;
-        currentBackground = nullptr;
+        currentBackground = nullptr; // Evita acceso a memoria liberada
     }
     
     // Limpiar los mapas de tiles
@@ -1153,46 +1160,74 @@ bool MapEditor::validateMap()
 
 bool MapEditor::eventFilter(QObject* watched, QEvent* event)
 {
-    // Capturar eventos de ratón en la vista
-    if (watched == view->viewport()) {
-        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        QPointF scenePos = view->mapToScene(mouseEvent->pos());
+    try {
+        // Verificación de validez de punteros para prevenir segmentation fault
+        if (!watched || !event || !view || !view->viewport()) {
+            qWarning() << "eventFilter: Puntero nulo detectado";
+            return false;
+        }
         
-        if (event->type() == QEvent::MouseButtonPress) {
-            if (mouseEvent->button() == Qt::LeftButton) {
-                // Colocar elemento según lo que esté seleccionado actualmente
-                if (currentTileId >= 0) {
-                    // Colocar un tile
-                    placeTile(scenePos);
-                    return true;
-                } else if (currentSolidId >= 0) {
-                    // Colocar un sólido
-                    placeSolid(scenePos);
-                    return true;
-                } else if (currentZoneId >= 0) {
-                    // Colocar una zona
-                    placeZone(scenePos);
-                    return true;
-                } else if (currentWeaponId >= 0) {
-                    // Colocar un arma
-                    placeWeapon(scenePos);
-                    return true;
+        // Capturar eventos de ratón en la vista
+        if (watched == view->viewport()) {
+            // Asegurarse de que el evento es realmente un evento de ratón
+            if (event->type() != QEvent::MouseButtonPress && 
+                event->type() != QEvent::MouseButtonRelease && 
+                event->type() != QEvent::MouseMove) {
+                return QMainWindow::eventFilter(watched, event);
+            }
+            
+            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+            QPointF scenePos = view->mapToScene(mouseEvent->pos());
+            
+            if (event->type() == QEvent::MouseButtonPress) {
+                if (mouseEvent->button() == Qt::LeftButton) {
+                    // Verificar que la escena existe antes de proceder
+                    if (!scene) {
+                        qWarning() << "eventFilter: Intentando acceder a una escena nula";
+                        return false;
+                    }
+                    
+                    // Colocar elemento según lo que esté seleccionado actualmente
+                    if (currentTileId >= 0 && tilePixmaps.contains(currentTileId)) {
+                        // Colocar un tile si está disponible en el mapa
+                        placeTile(scenePos);
+                        return true;
+                    } else if (currentSolidId >= 0 && solidPixmaps.contains(currentSolidId)) {
+                        // Colocar un sólido
+                        placeSolid(scenePos);
+                        return true;
+                    } else if (currentZoneId >= 0 && zonePixmaps.contains(currentZoneId)) {
+                        // Colocar una zona
+                        placeZone(scenePos);
+                        return true;
+                    } else if (currentWeaponId >= 0 && weaponPixmaps.contains(currentWeaponId)) {
+                        // Colocar un arma
+                        placeWeapon(scenePos);
+                        return true;
+                    }
+                } else if (mouseEvent->button() == Qt::RightButton) {
+                    // Clic derecho para eliminar elementos
+                    if (currentTileId >= 0) {
+                        removeTile(scenePos);
+                        return true;
+                    } else if (currentSolidId >= 0 || currentZoneId >= 0 || currentWeaponId >= 0) {
+                        // Para otros elementos, intentar eliminar cualquier elemento en esa posición
+                        removeElementAt(scenePos);
+                        return true;
+                    }
                 }
-            } else if (mouseEvent->button() == Qt::RightButton) {
-                // Clic derecho para eliminar elementos
-                if (currentTileId >= 0) {
-                    removeTile(scenePos);
-                } else if (currentSolidId >= 0 || currentZoneId >= 0 || currentWeaponId >= 0) {
-                    // Para otros elementos, intentar eliminar cualquier elemento en esa posición
-                    removeElementAt(scenePos);
-                }
-                return true;
             }
         }
+        
+        // Dejar que Qt maneje otros eventos
+        return QMainWindow::eventFilter(watched, event);
+    } catch (const std::exception& e) {
+        qCritical() << "Excepción en eventFilter:" << e.what();
+        return false;
+    } catch (...) {
+        qCritical() << "Excepción desconocida en eventFilter";
+        return false;
     }
-    
-    // Dejar que Qt maneje otros eventos
-    return QMainWindow::eventFilter(watched, event);
 }
 
 void MapEditor::generateMapFile(const QString &fileName)
