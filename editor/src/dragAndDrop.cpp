@@ -1,8 +1,15 @@
 #include "dragAndDrop.h"
 
 DragAndDrop::DragAndDrop(const QPixmap &pixmap, qreal scale, QGraphicsScene* scene)
-    : QGraphicsPixmapItem(pixmap), scene(scene), tipoElemento(SOLID_STRUCTURE),
-      teamId(0), weaponType(0), structureType(0), bombZoneSize(50, 50), isDragging(false)
+    : QGraphicsPixmapItem(pixmap), 
+      startPos(), 
+      isDragging(false),
+      scene(scene), 
+      tipoElemento(SOLID_STRUCTURE),
+      teamId(0), 
+      weaponType(0), 
+      structureType(0), 
+      bombZoneSize(50, 50)
 {
     // Por defecto, los elementos no son arrastrables ni seleccionables
     // Se habilitará solo para armas en el método setTipoElemento
