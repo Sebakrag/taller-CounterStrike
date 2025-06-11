@@ -122,6 +122,14 @@ private:
     QGroupBox* weaponsGroup; // Contenedor para la paleta de armas
     QButtonGroup* weaponButtons; // Grupo de botones para las armas
     
+    // Lista de elementos del mapa (no tiles)
+    QList<MapElement*> mapElements; // Lista para almacenar todos los elementos del mapa
+    
+    // Elementos de la UI
+    QTabWidget* elementsTabWidget; // Widget de pestañas para los diferentes elementos
+    QComboBox* terrainCombo;     // Selector de tipo de terreno
+    QWidget* toolPanel;          // Panel de herramientas lateral
+    
     // Método para obtener la ruta base a los recursos
     static QString getResourcesPath();
     
@@ -152,7 +160,6 @@ private:
     void loadAvailableWeapons(); // Cargar las armas
     
     // Métodos de selección de elementos
-    void tileSelected(int id);
     void solidSelected(int id);
     void zoneSelected(int id);
     void weaponSelected(int id);

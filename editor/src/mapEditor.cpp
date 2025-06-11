@@ -38,22 +38,22 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     widthBeam = scene->sceneRect().width() / 10;
 
     // Panel derecho para controles y selección de elementos del mapa
-    QWidget* rightPanel = new QWidget();
-    QVBoxLayout* rightLayout = new QVBoxLayout(rightPanel);
+    toolPanel = new QWidget();
+    QVBoxLayout* rightLayout = new QVBoxLayout(toolPanel);
     
     // Grupo para opciones de terreno
     QGroupBox* terrainGroup = new QGroupBox("Tipo de Terreno");
     QVBoxLayout* terrainLayout = new QVBoxLayout(terrainGroup);
     
     // Opciones de terreno
-    QComboBox* terrainCombo = new QComboBox();
+    terrainCombo = new QComboBox();
     terrainCombo->addItem("Desert");
     terrainCombo->addItem("Aztec");
     terrainCombo->addItem("Training Zone");
     terrainLayout->addWidget(terrainCombo);
     
     // Crear pestañas para diferentes tipos de elementos
-    QTabWidget* elementsTabWidget = new QTabWidget();
+    elementsTabWidget = new QTabWidget();
     
     // Pestaña para Tiles
     QWidget* tilesTab = new QWidget();
@@ -136,18 +136,18 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     // Grupo de botones para armas
     weaponButtons = new QButtonGroup(this);
     
-    // Sección de armas
-    QGroupBox *weaponsGroup = new QGroupBox("Armas", rightPanel);
-    QVBoxLayout *weaponsLayout = new QVBoxLayout(weaponsGroup);
+    // Añadir la pestaña de armas a las pestañas
+    weaponsTabLayout->addWidget(weaponsGroup);
+    elementsTabWidget->addTab(weaponsTab, "Armas");
     
-    QPushButton *addPistolButton = new QPushButton("Añadir Pistola", weaponsGroup);
-    QPushButton *addRifleButton = new QPushButton("Añadir Rifle", weaponsGroup);
-    QPushButton *addSniperButton = new QPushButton("Añadir Sniper", weaponsGroup);
+    // Añadir el widget de pestañas al layout principal
+    QVBoxLayout* toolPanelLayout = new QVBoxLayout();
+    toolPanelLayout->addWidget(terrainGroup);
+    toolPanelLayout->addWidget(elementsTabWidget);
     
-    weaponsLayout->addWidget(addPistolButton);
-    weaponsLayout->addWidget(addRifleButton);
-    weaponsLayout->addWidget(addSniperButton);
-    weaponsGroup->setLayout(weaponsLayout);
+    // Crear panel de herramientas
+    QWidget* toolPanel = new QWidget();
+    toolPanel->setLayout(toolPanelLayout);
     
     // Sección de archivo
     QGroupBox *fileGroup = new QGroupBox("Archivo", toolPanel);
@@ -192,29 +192,18 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     tilesGroup->setLayout(tilesLayout);
     
     // Añadir todas las secciones al panel de herramientas
-    toolLayout->addWidget(terrainGroup);
-    toolLayout->addWidget(tilesGroup); // Añadir el grupo de tiles
-    toolLayout->addWidget(teamsGroup);
-    toolLayout->addWidget(objectsGroup);
-    toolLayout->addWidget(weaponsGroup);
-    toolLayout->addWidget(zoomGroup);
-    toolLayout->addWidget(fileGroup);
-    toolLayout->addStretch(1); // Espacio flexible al final
+    QVBoxLayout* mainToolLayout = new QVBoxLayout(toolPanel);
+    mainToolLayout->addWidget(terrainGroup);
+    mainToolLayout->addWidget(elementsTabWidget); // Añadir el widget de pestañas
+    mainToolLayout->addWidget(zoomGroup);
+    mainToolLayout->addWidget(fileGroup);
+    mainToolLayout->addStretch(1); // Espacio flexible al final
     
     // Conectar señales
-    connect(terrainSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    connect(terrainCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MapEditor::backgroundSelection);
     
-    connect(addCTButton, &QPushButton::clicked, this, &MapEditor::addTeamSpawnCT);
-    connect(addTButton, &QPushButton::clicked, this, &MapEditor::addTeamSpawnT);
-    
-    connect(addBoxButton, &QPushButton::clicked, this, &MapEditor::addBox);
-    connect(addBombZoneButton, &QPushButton::clicked, this, &MapEditor::addBombZone);
-    
-    connect(addPistolButton, &QPushButton::clicked, this, [this](){ this->addWeapon(PISTOL); });
-    connect(addRifleButton, &QPushButton::clicked, this, [this](){ this->addWeapon(RIFLE); });
-    connect(addSniperButton, &QPushButton::clicked, this, [this](){ this->addWeapon(SNIPER); });
-    
+    // Conectar botones de carga y guardado
     connect(loadMapButton, &QPushButton::clicked, this, &MapEditor::loadMapClicked);
     connect(saveMapButton, &QPushButton::clicked, this, &MapEditor::generarMapaClicked);
     
@@ -517,11 +506,23 @@ QString MapEditor::getResourcePath(int elementType, int subType) {
             
         default:
             qWarning() << "Tipo de elemento desconocido:" << elementType;
-        return;
-    } else {
-        qDebug() << "Cargando elementos desde:" << path;
+            return basePath + "unknown.png";
     }
-    
+}
+
+// Método genérico para cargar elementos desde una carpeta
+void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pixmapMap,
+                                   QButtonGroup* buttonGroup, QScrollArea* scrollArea,
+                                   void (MapEditor::*selectCallback)(int))
+{
+    // Clear previous elements
+    pixmapMap.clear();
+    QDir elementsDir(path);
+    if (!elementsDir.exists()) {
+        qWarning() << "No se encontró la carpeta de elementos:" << path;
+        return;
+    }
+
     // Filtrar por archivos BMP y PNG
     QStringList filters;
     filters << "*.bmp" << "*.png";
@@ -760,14 +761,15 @@ void MapEditor::placeSolid(QPointF scenePos)
     scene->addItem(solidItem);
     
     // Crear un nuevo elemento de mapa de tipo sólido
-    MapElement* newElement = new MapElement();
-    newElement->type = MapElementType::SOLID;
-    newElement->position = QPoint(gridPos.x(), gridPos.y());
-    newElement->params["id"] = QString::number(currentSolidId);
-    elements.push_back(newElement);
+    QPointF worldPos(gridPos.x(), gridPos.y());
+    MapElement* newElement = new MapElement(worldPos, SOLID_STRUCTURE);
     
-    // Vincular el elemento gráfico con su elemento de mapa
-    elementToGraphics[newElement] = solidItem;
+    // Asociar el elemento gráfico con una identificación interna
+    solidItem->setData(0, currentSolidId); // Almacenar el ID del sólido
+    solidItem->setData(1, SOLID_STRUCTURE); // Almacenar el tipo de elemento
+    
+    // Añadir a la lista de elementos
+    mapElements.append(newElement);
 }
 
 // Método para colocar una zona en la posición del clic
@@ -786,14 +788,15 @@ void MapEditor::placeZone(QPointF scenePos)
     scene->addItem(zoneItem);
     
     // Crear un nuevo elemento de mapa de tipo zona
-    MapElement* newElement = new MapElement();
-    newElement->type = MapElementType::ZONE;
-    newElement->position = QPoint(gridPos.x(), gridPos.y());
-    newElement->params["id"] = QString::number(currentZoneId);
-    elements.push_back(newElement);
+    QPointF worldPos(gridPos.x(), gridPos.y());
+    MapElement* newElement = new MapElement(worldPos, BOMB_ZONE);
     
-    // Vincular el elemento gráfico con su elemento de mapa
-    elementToGraphics[newElement] = zoneItem;
+    // Asociar el elemento gráfico con una identificación interna
+    zoneItem->setData(0, currentZoneId); // Almacenar el ID de la zona
+    zoneItem->setData(1, BOMB_ZONE); // Almacenar el tipo de elemento
+    
+    // Añadir a la lista de elementos
+    mapElements.append(newElement);
 }
 
 // Método para colocar un arma en la posición del clic
@@ -812,14 +815,15 @@ void MapEditor::placeWeapon(QPointF scenePos)
     scene->addItem(weaponItem);
     
     // Crear un nuevo elemento de mapa de tipo arma
-    MapElement* newElement = new MapElement();
-    newElement->type = MapElementType::WEAPON;
-    newElement->position = QPoint(gridPos.x(), gridPos.y());
-    newElement->params["id"] = QString::number(currentWeaponId);
-    elements.push_back(newElement);
+    QPointF worldPos(gridPos.x(), gridPos.y());
+    MapElement* newElement = new MapElement(worldPos, WEAPON);
     
-    // Vincular el elemento gráfico con su elemento de mapa
-    elementToGraphics[newElement] = weaponItem;
+    // Asociar el elemento gráfico con una identificación interna
+    weaponItem->setData(0, currentWeaponId); // Almacenar el ID del arma
+    weaponItem->setData(1, WEAPON); // Almacenar el tipo de elemento
+    
+    // Añadir a la lista de elementos
+    mapElements.append(newElement);
 }
 
 // Método para eliminar un tile en la posición del clic derecho
@@ -849,28 +853,35 @@ void MapEditor::removeElementAt(QPointF scenePos) {
     QPoint gridPos = getTileGridPosition(scenePos);
     
     // Buscar algún elemento en esta posición
-    for (auto it = elements.begin(); it != elements.end(); ) {
-        MapElement* element = *it;
-        
-        // Verificar si el elemento está en la misma posición de cuadrícula
-        if (element->position == gridPos) {
-            // Eliminar el elemento gráfico asociado
-            auto graphicIt = elementToGraphics.find(element);
-            if (graphicIt != elementToGraphics.end()) {
-                DragAndDrop* graphicItem = graphicIt.value();
-                scene->removeItem(graphicItem);
-                delete graphicItem;
-                elementToGraphics.remove(element);
+    QPointF worldPos(gridPos.x(), gridPos.y());
+    
+    // Buscar elementos en la escena en esta posición
+    QList<QGraphicsItem*> itemsAtPos = scene->items(worldPos.x() * 32 + 16, worldPos.y() * 32 + 16, 1, 1, Qt::IntersectsItemShape, Qt::DescendingOrder);
+    
+    for (QGraphicsItem* item : itemsAtPos) {
+        // Verificar si es un DragAndDrop
+        DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item);
+        if (dragItem) {
+            // Solo eliminamos elementos que no son tiles (los tiles se manejan en removeTile)
+            if (dragItem->data(1).isValid()) {
+                int elementType = dragItem->data(1).toInt();
+                if (elementType == SOLID_STRUCTURE || elementType == BOMB_ZONE || elementType == WEAPON) {
+                    // Encontrar y eliminar el MapElement correspondiente
+                    for (int i = 0; i < mapElements.size(); i++) {
+                        MapElement* element = mapElements.at(i);
+                        if (element->getPosition() == worldPos && element->getType() == elementType) {
+                            // Eliminar el elemento del mapa
+                            scene->removeItem(dragItem);
+                            delete dragItem;
+                            
+                            // Eliminar el elemento lógico
+                            mapElements.removeAt(i);
+                            delete element;
+                            return; // Solo eliminamos un elemento a la vez
+                        }
+                    }
+                }
             }
-            
-            // Eliminar el elemento del mapa
-            delete element;
-            it = elements.erase(it);
-            
-            // Solo eliminamos un elemento por cada clic
-            return;
-        } else {
-            ++it;
         }
     }
 }
