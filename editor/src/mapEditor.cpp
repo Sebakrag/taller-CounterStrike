@@ -39,7 +39,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
 
     // Panel derecho para controles y selección de elementos del mapa
     toolPanel = new QWidget();
-    QVBoxLayout* rightLayout = new QVBoxLayout(toolPanel);
+    new QVBoxLayout(toolPanel); // No necesitamos guardar la referencia
     
     // Grupo para opciones de terreno
     QGroupBox* terrainGroup = new QGroupBox("Tipo de Terreno");
@@ -66,7 +66,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     tilesScrollArea = new QScrollArea();
     tilesScrollArea->setWidgetResizable(true);
     QWidget* tilesContainer = new QWidget();
-    QGridLayout* tilesGrid = new QGridLayout(tilesContainer);
+    new QGridLayout(tilesContainer);
     tilesScrollArea->setWidget(tilesContainer);
     tilesLayout->addWidget(tilesScrollArea);
     
@@ -87,7 +87,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     solidsScrollArea = new QScrollArea();
     solidsScrollArea->setWidgetResizable(true);
     QWidget* solidsContainer = new QWidget();
-    QGridLayout* solidsGrid = new QGridLayout(solidsContainer);
+    new QGridLayout(solidsContainer);
     solidsScrollArea->setWidget(solidsContainer);
     solidsLayout->addWidget(solidsScrollArea);
     
@@ -108,7 +108,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     zonesScrollArea = new QScrollArea();
     zonesScrollArea->setWidgetResizable(true);
     QWidget* zonesContainer = new QWidget();
-    QGridLayout* zonesGrid = new QGridLayout(zonesContainer);
+    new QGridLayout(zonesContainer);
     zonesScrollArea->setWidget(zonesContainer);
     zonesLayout->addWidget(zonesScrollArea);
     
@@ -129,7 +129,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     weaponsScrollArea = new QScrollArea();
     weaponsScrollArea->setWidgetResizable(true);
     QWidget* weaponsContainer = new QWidget();
-    QGridLayout* weaponsGrid = new QGridLayout(weaponsContainer);
+    new QGridLayout(weaponsContainer);
     weaponsScrollArea->setWidget(weaponsContainer);
     weaponsLayout->addWidget(weaponsScrollArea);
     
@@ -173,23 +173,9 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     zoomLayout->addWidget(zoomOutButton);
     zoomGroup->setLayout(zoomLayout);
     
-    // Sección de selección de tiles (se llenará dinámicamente)
-    tilesGroup = new QGroupBox("Tiles disponibles", toolPanel);
-    QVBoxLayout *tilesLayout = new QVBoxLayout(tilesGroup);
-    
-    // Añadir un área de scroll para los tiles
-    tilesScrollArea = new QScrollArea(tilesGroup);
-    tilesScrollArea->setWidgetResizable(true);
+    // Configurar el área de selección de tiles que ya se declaró anteriormente
     tilesScrollArea->setMinimumHeight(200);
     tilesScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    
-    // Widget para contener los botones de tiles
-    QWidget *tilesContainer = new QWidget();
-    new QGridLayout(tilesContainer); // Aplicar layout directamente, no necesitamos guardar la referencia
-    tilesScrollArea->setWidget(tilesContainer);
-    
-    tilesLayout->addWidget(tilesScrollArea);
-    tilesGroup->setLayout(tilesLayout);
     
     // Añadir todas las secciones al panel de herramientas
     QVBoxLayout* mainToolLayout = new QVBoxLayout(toolPanel);
