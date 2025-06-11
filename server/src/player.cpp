@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 
+#include "server/include/id_generator.h"
+
 Player::Player(const std::string& name, const Team team):
         name(name),
         team(team),
@@ -13,7 +15,8 @@ Player::Player(const std::string& name, const Team team):
         secondaryWeapon(WeaponFactory::create(Weapon::Glock)),
         equippedWeapon(TypeWeapon::Knife),
         money(800),
-        kills(0) {}
+        kills(0),
+        serverId(IdGenerator::getNextId()){}
 
 
 void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
@@ -105,6 +108,11 @@ std::vector<Projectile> Player::shoot(float dirX, float dirY, uint64_t currentTi
 std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() {
     return std::move(primaryWeapon);
 }
+
+uint32_t Player::getServerId() const {
+    return serverId;
+}
+
 
 
 

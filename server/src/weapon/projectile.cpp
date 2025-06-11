@@ -11,7 +11,8 @@ Projectile::Projectile(float posX, float posY, float dirX, float dirY, float spe
     maxDistance(maxDistance),
     shooter(shooter),
     active(true),
-    weaponUsed(weaponUsed) {}
+    weaponUsed(weaponUsed),
+    serverId(IdGenerator::getNextId()){}
 
 void Projectile::update(float deltaTime) {
     if (!active)
@@ -43,6 +44,7 @@ float Projectile::getDirX() const { return dirX; }
 float Projectile::getDirY() const { return dirY; }
 float Projectile::getMaxDistance() const { return maxDistance; }
 Weapon Projectile::getWeaponUsed() const { return weaponUsed; }
+uint32_t Projectile::getServerId() const { return serverId; }
 
 
 

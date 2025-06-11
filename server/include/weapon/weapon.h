@@ -4,13 +4,15 @@
 #include <cstdint>
 #include "common/types.h"
 #include "server/include/weapon/projectile.h"
+#include "server/include/id_generator.h"
 
 class Weapon_ {
 protected:
     int damage;
+    uint32_t serverId;
 
 public:
-    explicit Weapon_(const int damage): damage(damage) {}
+    explicit Weapon_(const int damage): damage(damage), serverId(IdGenerator::getNextId()) {}
     virtual ~Weapon_() = default;
 
     virtual bool canShoot(uint64_t currentTimeMs) const = 0;
@@ -24,6 +26,8 @@ public:
     virtual int getDamage() const { return damage; }
 
     virtual std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY, const std::string& shooter, uint64_t currentTimeMs) = 0;
+
+    uint32_t getServerId() const { return serverId; }
 };
 
 #endif

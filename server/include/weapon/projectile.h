@@ -2,6 +2,7 @@
 #define PROJECTILE_H
 
 #include "../../../common/types.h"
+#include "../id_generator.h"
 
 class Projectile {
 private:
@@ -13,6 +14,7 @@ private:
     std::string shooter;
     bool active;
     Weapon weaponUsed;
+    uint32_t serverId;
 
 public:
     Projectile(float posX, float posY, float dirX, float dirY, float speed, float maxDistance, std::string shooter, Weapon weaponUsed);
@@ -29,6 +31,8 @@ public:
     float getDirY() const;
     float getMaxDistance() const;
     Weapon getWeaponUsed() const;
+
+    uint32_t getServerId() const;
 };
 
 #endif

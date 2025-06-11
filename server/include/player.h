@@ -7,6 +7,7 @@
 #include "../../common/types.h"
 #include "weapon/weapon.h"
 #include "weapon/weapon_factory.h"
+#include "id_generator.h"
 
 class Player {
 private:
@@ -24,6 +25,8 @@ private:
 
     float money;
     int kills;
+
+    uint32_t serverId;
 
 public:
     explicit Player(const std::string& name, const Team playerTeam);
@@ -49,6 +52,8 @@ public:
     std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
     Weapon_* getEquippedWeaponInstance();
     std::unique_ptr<Weapon_> dropPrimaryWeapon();
+
+    uint32_t getServerId() const;
 };
 
 
