@@ -213,19 +213,8 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     resize(1024, 700);
     setWindowTitle("Counter-Strike Editor de Mapas");
     
-    try {
-        // Inicializar con el fondo de desierto por defecto - usar try-catch para identificar donde está el segfault
-        qDebug() << "A punto de llamar a backgroundSelection(0)";
-        backgroundSelection(0); // Carga los tiles disponibles y configura el fondo
-        qDebug() << "backgroundSelection completado con éxito";
-    } catch (const std::exception& e) {
-        qCritical() << "Excepción en el constructor de MapEditor:" << e.what();
-    } catch (...) {
-        qCritical() << "Excepción desconocida en el constructor de MapEditor";
-    }
-    
-    // Añadir mensaje final para confirmar que el constructor se completó
-    qDebug() << "Constructor de MapEditor finalizado";
+    // Inicializar con el fondo de desierto por defecto
+    backgroundSelection(0); // Carga los tiles disponibles y configura el fondo
 }
 
 // Implementación del destructor
@@ -455,132 +444,10 @@ QString MapEditor::getResourcePath(int elementType, int subType) {
             }
             
         default:
-            qWarning() << "Tipo de elemento desconocido:" << elementType;
-            return basePath + "unknown.png";
-    }
-}
-
-// Método genérico para cargar elementos desde una carpeta
 void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pixmapMap,
                                    QButtonGroup* buttonGroup, QScrollArea* scrollArea,
                                    void (MapEditor::*selectCallback)(int))
 {
-    try {
-        // Validación de parámetros para evitar segmentation fault
-        if (!buttonGroup || !scrollArea) {
-            qCritical() << "Error: buttonGroup o scrollArea son nullptr en loadElementsFromPath";
-            return;
-        }
-        
-        // Clear previous elements
-        pixmapMap.clear();
-        QDir elementsDir(path);
-        
-        // Si la carpeta no existe, solo registramos el mensaje pero continuamos sin error fatal
-        if (!elementsDir.exists()) {
-            qWarning() << "No se encontró la carpeta de elementos:" << path << ". Agregue archivos .png o .bmp para verlos aquí.";
-            // Nótese que NO retornamos, permitimos que el método continúe para configurar los widgets incluso sin archivos
-        }
-        
-        // Filtrar por archivos de imagen
-        QStringList filters;
-        filters << "*.bmp" << "*.png";
-        elementsDir.setNameFilters(filters);
-        
-        // Obtener la lista de archivos
-        QStringList elementFiles = elementsDir.entryList(filters, QDir::Files);
-        qDebug() << "Elementos encontrados:" << elementFiles.count() << "en" << path;
-        
-        // Validación y creación de widgets si es necesario
-        QWidget* elementsContainer = scrollArea->widget();
-        if (!elementsContainer) {
-            qWarning() << "ScrollArea sin widget contenedor. Creando uno nuevo.";
-            elementsContainer = new QWidget();
-            scrollArea->setWidget(elementsContainer);
-            scrollArea->setWidgetResizable(true);
-        }
-        
-        QGridLayout* elementsGridLayout = qobject_cast<QGridLayout*>(elementsContainer->layout());
-        if (!elementsGridLayout) {
-            qDebug() << "Creando nuevo layout para el contenedor de elementos";
-            if (elementsContainer->layout()) {
-                delete elementsContainer->layout();
-            }
-            elementsGridLayout = new QGridLayout(elementsContainer);
-            elementsGridLayout->setSpacing(2);
-            elementsGridLayout->setContentsMargins(2, 2, 2, 2);
-        }
-        
-        // Eliminar botones existentes
-        QList<QAbstractButton*> buttons = buttonGroup->buttons();
-        for (QAbstractButton* button : buttons) {
-            buttonGroup->removeButton(button);
-            delete button;
-        }
-        
-        // Desconectar conexiones anteriores para evitar conexiones duplicadas
-        disconnect(buttonGroup, nullptr, this, nullptr);
-
-        // Conectar el grupo de botones al callback de selección
-        if (selectCallback) {
-            connect(buttonGroup, &QButtonGroup::idClicked,
-                    this, selectCallback);
-        }
-        
-        // Cargar cada archivo de elemento
-        int elementId = 0;
-        int row = 0;
-        int col = 0;
-        
-        for (const QString& elementFile : elementFiles) {
-            // Solo procesar archivos de imagen
-            if (elementFile.endsWith(".bmp", Qt::CaseInsensitive) || 
-                elementFile.endsWith(".png", Qt::CaseInsensitive)) {
-                
-                QString elementPath = path + elementFile;
-                QPixmap elementPixmap(elementPath);
-                
-                if (!elementPixmap.isNull()) {
-                    // Almacenar el pixmap
-                    pixmapMap[elementId] = elementPixmap;
-                    
-                    // Crear un botón con una miniatura del elemento
-                    QPushButton* elementButton = new QPushButton();
-                    elementButton->setFixedSize(40, 40);
-                    
-                    // Crear una versión escalada para el botón
-                    QPixmap scaledPixmap = elementPixmap.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-                    QIcon buttonIcon(scaledPixmap);
-                    elementButton->setIcon(buttonIcon);
-                    elementButton->setIconSize(QSize(36, 36));
-                    elementButton->setToolTip(elementFile);
-                    
-                    // Añadir al grupo de botones
-                    buttonGroup->addButton(elementButton, elementId);
-                    
-                    // Añadir a la cuadrícula
-                    elementsGridLayout->addWidget(elementButton, row, col % 3);
-                    
-                    // Actualizar posición para el siguiente elemento
-                    col++;
-                    if (col % 3 == 0) {
-                        row++;
-                        col = 0;
-                    }
-                    
-                    elementId++;
-                }
-            }
-        }
-        
-        qDebug() << "Se cargaron" << elementId << "elementos";
-    } catch (const std::exception& e) {
-        qCritical() << "Excepción en loadElementsFromPath:" << e.what();
-    } catch (...) {
-        qCritical() << "Excepción desconocida en loadElementsFromPath";
-    }
-}
-
 void MapEditor::loadAvailableTiles()
 {
     try {
@@ -962,25 +829,18 @@ QPoint MapEditor::getTileGridPosition(const QPointF& scenePos) {
 // Método para actualizar la interfaz de usuario según el tipo de terreno
 void MapEditor::updateTerrainUI(int terrainType)
 {
-    try {
-        // Se podría usar para cambiar colores, estilos o comportamientos específicos
-        // según el tipo de terreno seleccionado
-        switch (terrainType) {
-            case 0: // DESERT
-                setWindowTitle("Counter-Strike Editor - Mapa Desierto");
-                break;
-            case 1: // AZTEC_VILLAGE
-                setWindowTitle("Counter-Strike Editor - Mapa Pueblito Azteca");
-                break;
-            case 2: // TRAINING_ZONE
-                setWindowTitle("Counter-Strike Editor - Mapa Zona de Entrenamiento");
-                break;
-            default:
-                setWindowTitle("Counter-Strike Editor de Mapas");
-                break;
-        }
-    } catch (...) {
-        qCritical() << "Excepción en updateTerrainUI";
+    // Se podría usar para cambiar colores, estilos o comportamientos específicos
+    // según el tipo de terreno seleccionado
+    switch (terrainType) {
+        case DESERT:
+            setWindowTitle("Counter-Strike Editor - Mapa Desierto");
+            break;
+        case AZTEC_VILLAGE:
+            setWindowTitle("Counter-Strike Editor - Mapa Pueblito Azteca");
+            break;
+        case TRAINING_ZONE:
+            setWindowTitle("Counter-Strike Editor - Mapa Zona de Entrenamiento");
+            break;
     }
 }
 
