@@ -733,6 +733,10 @@ void MapEditor::loadAvailableTiles()
         
         loadElementsFromPath(tilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
         
+        // Cargar también los extra-tiles que se pueden usar en cualquier terreno
+        QString extraTilesPath = resourceBasePath + "extra-tiles/";
+        loadElementsFromPath(extraTilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
+        
         // Verificar todos los punteros antes de cargar otros elementos
         if (!tilesScrollArea || !tileButtons || !solidsScrollArea || !solidButtons || !zonesScrollArea || !zoneButtons 
             || !bombZonesScrollArea || !bombZoneButtons || !weaponsScrollArea || !weaponButtons) {
