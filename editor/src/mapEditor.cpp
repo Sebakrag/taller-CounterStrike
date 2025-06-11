@@ -796,14 +796,14 @@ void MapEditor::placeTile(QPointF scenePos)
     qreal x = gridX * 32.0;
     qreal y = gridY * 32.0;
     
-    // Buscar y eliminar cualquier tile existente en la misma posición
+    // Buscar y eliminar CUALQUIER elemento existente en la misma posición
     QList<QGraphicsItem*> itemsToRemove;
     for (QGraphicsItem* item : scene->items()) {
-        QGraphicsPixmapItem* existingItem = dynamic_cast<QGraphicsPixmapItem*>(item);
-        if (existingItem && existingItem->data(1).toInt() == TILE) {
-            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+        // Verificar si es un elemento de mapa (usando data)
+        if ((item->data(1).isValid())) {
+            QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
-                itemsToRemove.append(existingItem);
+                itemsToRemove.append(item);
             }
         }
     }
@@ -848,14 +848,14 @@ void MapEditor::placeSolid(QPointF scenePos)
     qreal x = gridPos.x() * 32.0;
     qreal y = gridPos.y() * 32.0;
     
-    // Buscar y eliminar cualquier elemento existente de tipo sólido en la misma posición
+    // Buscar y eliminar CUALQUIER elemento existente en la misma posición
     QList<QGraphicsItem*> itemsToRemove;
     for (QGraphicsItem* item : scene->items()) {
-        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
-        if (existingItem && existingItem->data(1).toInt() == SOLID_STRUCTURE) {
-            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+        // Verificar si es un elemento de mapa (usando data)
+        if ((item->data(1).isValid())) {
+            QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
-                itemsToRemove.append(existingItem);
+                itemsToRemove.append(item);
             }
         }
     }
@@ -943,14 +943,14 @@ void MapEditor::placeZone(QPointF scenePos)
         delete itemToRemove;
     }
     
-    // SEGUNDO: Eliminar cualquier elemento (de otro tipo) que exista en la posición seleccionada
+    // SEGUNDO: Eliminar cualquier elemento que exista en la posición seleccionada
     QList<QGraphicsItem*> itemsAtPosition;
     for (QGraphicsItem* item : scene->items()) {
-        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
-        if (existingItem) {
-            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+        // Verificar si es un elemento de mapa (usando data)
+        if ((item->data(1).isValid())) {
+            QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
-                itemsAtPosition.append(existingItem);
+                itemsAtPosition.append(item);
             }
         }
     }
@@ -1001,14 +1001,14 @@ void MapEditor::placeWeapon(QPointF scenePos)
     qreal x = gridPos.x() * 32.0;
     qreal y = gridPos.y() * 32.0;
     
-    // Buscar y eliminar cualquier elemento existente de tipo arma en la misma posición
+    // Buscar y eliminar CUALQUIER elemento existente en la misma posición
     QList<QGraphicsItem*> itemsToRemove;
     for (QGraphicsItem* item : scene->items()) {
-        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
-        if (existingItem && existingItem->data(1).toInt() == WEAPON) {
-            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+        // Verificar si es un elemento de mapa (usando data)
+        if ((item->data(1).isValid())) {
+            QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
-                itemsToRemove.append(existingItem);
+                itemsToRemove.append(item);
             }
         }
     }
@@ -1060,14 +1060,17 @@ void MapEditor::removeTile(QPointF scenePos) {
     bool tileRemoved = false;
     QList<QGraphicsItem*> itemsToRemove;
     
-    // Buscar elementos gráficos que sean tiles en esa posición
+    // Buscar CUALQUIER elemento del mapa en esa posición
     for (QGraphicsItem* item : scene->items()) {
-        QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item);
-        if (pixmapItem && pixmapItem->data(1).toInt() == TILE) {
-            QPoint itemGridPos = getTileGridPosition(pixmapItem->pos());
+        // Verificamos si tiene metadatos de elementos del mapa
+        if (item->data(1).isValid()) {
+            QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
-                itemsToRemove.append(pixmapItem);
-                tileRemoved = true;
+                // Si es un tile, marcamos que hemos eliminado un tile para limpiar el registro
+                if (item->data(1).toInt() == TILE) {
+                    tileRemoved = true;
+                }
+                itemsToRemove.append(item);
             }
         }
     }
