@@ -11,7 +11,8 @@ enum ElementType {
     BOMB_ZONE = 2,
     SOLID_STRUCTURE = 3,
     WEAPON = 4,
-    TILE = 5 // Nuevo tipo para los tiles del mapa
+    TILE = 5, // Nuevo tipo para los tiles del mapa
+    EXTRA_TILE = 6 // Tipo para los tiles extra
 };
 
 // Tipos de terreno

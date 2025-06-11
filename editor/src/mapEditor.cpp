@@ -11,14 +11,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QDir>
 
-// Tipo de elementos
-const int TILE = 0;
-const int SOLID = 1;
-const int ZONE = 2;
-const int WEAPON = 3;
-const int BOMB_ZONE = 4;
-const int EXTRA_TILE = 5;
-
 MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(nullptr),
     currentTerrainType(0)
     // Nota: Estas variables ya están inicializadas en la declaración de la clase (mapEditor.h)
@@ -1055,11 +1047,11 @@ void MapEditor::placeExtraTile(QPointF scenePos)
     
     // Crear un nuevo elemento de mapa de tipo extra-tile
     QPointF worldPos(gridPos.x(), gridPos.y());
-    MapElement* newElement = new MapElement(worldPos, EXTRA_TILE);
+    MapElement* newElement = new MapElement(worldPos, ElementType::EXTRA_TILE);
     
     // Asociar el elemento gráfico con una identificación interna
     extraTileItem->setData(0, currentExtraTileId); // Almacenar el ID del extra-tile
-    extraTileItem->setData(1, EXTRA_TILE); // Almacenar el tipo de elemento
+    extraTileItem->setData(1, ElementType::EXTRA_TILE); // Almacenar el tipo de elemento
     
     // Añadir a la lista de elementos
     mapElements.append(newElement);
