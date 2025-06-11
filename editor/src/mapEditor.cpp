@@ -1336,9 +1336,12 @@ void MapEditor::placeWeapon(QPointF scenePos)
     
     // Crear un nuevo elemento arma
     QPixmap weaponPixmap = weaponPixmaps[currentWeaponId];
-    DragAndDrop* weaponItem = new DragAndDrop(weaponPixmap);
+    DragAndDrop* weaponItem = new DragAndDrop(weaponPixmap, 1.0, scene);
     weaponItem->setPos(x, y);
     scene->addItem(weaponItem);
+    
+    // Configurar el elemento como arma para habilitar el arrastre
+    weaponItem->setWeaponType(currentWeaponId);
     
     // Crear un nuevo elemento de mapa de tipo arma
     QPointF worldPos(gridPos.x(), gridPos.y());
@@ -1347,6 +1350,9 @@ void MapEditor::placeWeapon(QPointF scenePos)
     // Asociar el elemento gráfico con una identificación interna
     weaponItem->setData(0, currentWeaponId); // Almacenar el ID del arma
     weaponItem->setData(1, WEAPON); // Almacenar el tipo de elemento
+    
+    // Configurar el cursor para indicar que es arrastrable
+    weaponItem->setCursor(Qt::OpenHandCursor);
     
     // Añadir a la lista de elementos
     mapElements.append(newElement);
