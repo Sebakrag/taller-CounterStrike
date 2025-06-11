@@ -62,6 +62,7 @@ private slots:
     // Sistema de tiles
     void tileSelected(int id);
     void placeTile(QPointF scenePos);
+    void placeExtraTile(QPointF scenePos); // Colocar un tile extra
     void removeTile(QPointF scenePos);
     
     // Métodos para manipular sólidos, zonas y armas
@@ -76,6 +77,7 @@ private slots:
     void solidSelected(int id);
     void weaponSelected(int id);
     void bombZoneSelected(int id); // Seleccionar zona de bomba
+    void extraTileSelected(int id); // Seleccionar tile extra
     
     // Método para actualizar el indicador de selección
     void updateSelectionIndicator(QPointF scenePos);
@@ -130,6 +132,13 @@ private:
     QGroupBox* bombZonesGroup; // Contenedor para la paleta de zonas de bomba
     QButtonGroup* bombZoneButtons; // Grupo de botones para las zonas de bomba
     
+    // Sistema de extra-tiles
+    QMap<int, QPixmap> extraTilePixmaps; // Almacena todos los tiles extra disponibles
+    int currentExtraTileId = -1; // ID del tile extra seleccionado actualmente
+    QScrollArea* extraTilesScrollArea; // Área de desplazamiento para la paleta de tiles extra
+    QGroupBox* extraTilesGroup; // Contenedor para la paleta de tiles extra
+    QButtonGroup* extraTileButtons; // Grupo de botones para los tiles extra
+    
     // Sistema de armas
     QMap<int, QPixmap> weaponPixmaps; // Almacena todas las armas disponibles
     int currentWeaponId = -1; // ID del arma seleccionada actualmente
@@ -174,6 +183,7 @@ private:
     void loadAvailableSolids(); // Cargar los elementos sólidos
     void loadAvailableZones(); // Cargar las zonas
     void loadAvailableBombZones(); // Cargar las zonas de bomba
+    void loadAvailableExtraTiles(); // Cargar los tiles extra
     void loadAvailableWeapons(); // Cargar las armas
     
     // Métodos de selección de elementos

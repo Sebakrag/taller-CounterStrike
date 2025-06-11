@@ -143,6 +143,31 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     bombZonesTabLayout->addWidget(bombZonesGroup);
     elementsTabWidget->addTab(bombZonesTab, "Zonas de Bomba");
     
+    // Pestaña para extra-tiles
+    QWidget* extraTilesTab = new QWidget();
+    QVBoxLayout* extraTilesTabLayout = new QVBoxLayout(extraTilesTab);
+    
+    // Área de desplazamiento para extra-tiles
+    extraTilesGroup = new QGroupBox("Extra Tiles");
+    QVBoxLayout* extraTilesLayout = new QVBoxLayout(extraTilesGroup);
+    
+    extraTilesScrollArea = new QScrollArea();
+    extraTilesScrollArea->setWidgetResizable(true);
+    extraTilesScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    extraTilesScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    
+    QWidget* extraTilesContainer = new QWidget();
+    extraTilesScrollArea->setWidget(extraTilesContainer);
+    new QGridLayout(extraTilesContainer);
+    extraTilesLayout->addWidget(extraTilesScrollArea);
+    
+    // Grupo de botones para extra-tiles
+    extraTileButtons = new QButtonGroup(this);
+    
+    // Añadir la pestaña de extra-tiles a las pestañas
+    extraTilesTabLayout->addWidget(extraTilesGroup);
+    elementsTabWidget->addTab(extraTilesTab, "Extra Tiles");
+    
     // Pestaña para armas
     QWidget* weaponsTab = new QWidget();
     QVBoxLayout* weaponsTabLayout = new QVBoxLayout(weaponsTab);
@@ -733,13 +758,10 @@ void MapEditor::loadAvailableTiles()
         
         loadElementsFromPath(tilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
         
-        // Cargar también los extra-tiles que se pueden usar en cualquier terreno
-        QString extraTilesPath = resourceBasePath + "extra-tiles/";
-        loadElementsFromPath(extraTilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
-        
         // Verificar todos los punteros antes de cargar otros elementos
         if (!tilesScrollArea || !tileButtons || !solidsScrollArea || !solidButtons || !zonesScrollArea || !zoneButtons 
-            || !bombZonesScrollArea || !bombZoneButtons || !weaponsScrollArea || !weaponButtons) {
+            || !bombZonesScrollArea || !bombZoneButtons || !extraTilesScrollArea || !extraTileButtons
+            || !weaponsScrollArea || !weaponButtons) {
             qWarning() << "Algunos punteros son nullptr! No se cargarán más recursos para evitar fallos.";
             return;
         }
@@ -748,6 +770,7 @@ void MapEditor::loadAvailableTiles()
         loadAvailableSolids();
         loadAvailableZones();
         loadAvailableBombZones();
+        loadAvailableExtraTiles();
         loadAvailableWeapons();
     } catch (const std::exception& e) {
         qCritical() << "Excepción capturada en loadAvailableTiles:" << e.what();
@@ -771,6 +794,11 @@ void MapEditor::loadAvailableBombZones() {
     loadElementsFromPath(bombZonesPath, bombZonePixmaps, bombZoneButtons, bombZonesScrollArea, &MapEditor::bombZoneSelected);
 }
 
+void MapEditor::loadAvailableExtraTiles() {
+    QString extraTilesPath = getResourcesPath() + "extra-tiles/";
+    loadElementsFromPath(extraTilesPath, extraTilePixmaps, extraTileButtons, extraTilesScrollArea, &MapEditor::extraTileSelected);
+}
+
 void MapEditor::loadAvailableWeapons() {
     QString weaponsPath = getResourcesPath() + "weapons/";
     loadElementsFromPath(weaponsPath, weaponPixmaps, weaponButtons, weaponsScrollArea, &MapEditor::weaponSelected);
@@ -783,6 +811,7 @@ void MapEditor::tileSelected(int id) {
     currentZoneId = -1;
     currentWeaponId = -1;
     currentBombZoneId = -1;
+    currentExtraTileId = -1;
     
     // Activar el tile seleccionado
     currentTileId = id;
@@ -794,6 +823,7 @@ void MapEditor::tileSelected(int id) {
     updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de sólidos
@@ -803,6 +833,7 @@ void MapEditor::solidSelected(int id) {
     currentZoneId = -1;
     currentWeaponId = -1;
     currentBombZoneId = -1;
+    currentExtraTileId = -1;
     
     // Activar el sólido seleccionado
     currentSolidId = id;
@@ -814,6 +845,7 @@ void MapEditor::solidSelected(int id) {
     updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de zonas
@@ -823,6 +855,7 @@ void MapEditor::zoneSelected(int id) {
     currentSolidId = -1;
     currentWeaponId = -1;
     currentBombZoneId = -1;
+    currentExtraTileId = -1;
     
     // Activar la zona seleccionada
     currentZoneId = id;
@@ -834,6 +867,7 @@ void MapEditor::zoneSelected(int id) {
     updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de zonas de bomba
@@ -843,6 +877,7 @@ void MapEditor::bombZoneSelected(int id) {
     currentSolidId = -1;
     currentZoneId = -1;
     currentWeaponId = -1;
+    currentExtraTileId = -1;
     
     // Activar la zona de bomba seleccionada
     currentBombZoneId = id;
@@ -854,6 +889,29 @@ void MapEditor::bombZoneSelected(int id) {
     updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
+}
+
+// Método para manejar la selección de extra-tiles
+void MapEditor::extraTileSelected(int id) {
+    // Desactivar otros tipos de elementos
+    currentTileId = -1;
+    currentSolidId = -1;
+    currentZoneId = -1;
+    currentWeaponId = -1;
+    currentBombZoneId = -1;
+    
+    // Activar el extra-tile seleccionado
+    currentExtraTileId = id;
+    qDebug() << "Extra-tile seleccionado:" << id;
+    
+    // Actualizar visualización de botones seleccionados
+    updateSelectedButtonStyle(extraTileButtons, id);
+    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de armas
@@ -863,6 +921,7 @@ void MapEditor::weaponSelected(int id) {
     currentSolidId = -1;
     currentZoneId = -1;
     currentBombZoneId = -1;
+    currentExtraTileId = -1;
     
     // Activar el arma seleccionada
     currentWeaponId = id;
@@ -874,6 +933,7 @@ void MapEditor::weaponSelected(int id) {
     updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
 }
 
 // Método para colocar un tile en la posición del clic
@@ -939,6 +999,62 @@ void MapEditor::placeTile(QPointF scenePos)
     // Guardar la referencia del tile colocado
     QPair<int, int> newGridKey(gridX, gridY);
     placedTiles[newGridKey] = currentTileId;
+}
+
+// Método para colocar un extra-tile en la posición del clic
+void MapEditor::placeExtraTile(QPointF scenePos)
+{
+    if (currentExtraTileId < 0) {
+        return; // No hay extra-tile seleccionado
+    }
+    
+    QPoint gridPos = getTileGridPosition(scenePos);
+    qreal x = gridPos.x() * 32.0;
+    qreal y = gridPos.y() * 32.0;
+    
+    // Buscar y eliminar cualquier elemento existente en la misma posición
+    QList<QGraphicsItem*> itemsToRemove;
+    for (QGraphicsItem* item : scene->items()) {
+        // Verificar si es un elemento de mapa (usando data)
+        if ((item->data(1).isValid())) {
+            QPointF itemPos = item->pos();
+            QRectF itemRect = item->boundingRect().adjusted(0, 0, -1, -1); // Ajustar para evitar bordes compartidos
+            
+            // Si el elemento ocupa la posición objetivo
+            if (itemRect.contains(QPointF(x, y).x() - itemPos.x(), QPointF(x, y).y() - itemPos.y())) {
+                itemsToRemove.append(item);
+            }
+        }
+    }
+    
+    // Eliminar los elementos encontrados
+    for (QGraphicsItem* item : itemsToRemove) {
+        scene->removeItem(item);
+        delete item;
+    }
+    
+    // Colocar el nuevo extra-tile
+    QPixmap extraTilePixmap;
+    if (extraTilePixmaps.contains(currentExtraTileId)) {
+        extraTilePixmap = extraTilePixmaps[currentExtraTileId];
+    } else {
+        return; // No se encuentra el pixmap
+    }
+    
+    QGraphicsPixmapItem* extraTileItem = new QGraphicsPixmapItem(extraTilePixmap);
+    extraTileItem->setPos(x, y);
+    scene->addItem(extraTileItem);
+    
+    // Crear un nuevo elemento de mapa de tipo extra-tile
+    QPointF worldPos(gridPos.x(), gridPos.y());
+    MapElement* newElement = new MapElement(worldPos, EXTRA_TILE);
+    
+    // Asociar el elemento gráfico con una identificación interna
+    extraTileItem->setData(0, currentExtraTileId); // Almacenar el ID del extra-tile
+    extraTileItem->setData(1, EXTRA_TILE); // Almacenar el tipo de elemento
+    
+    // Añadir a la lista de elementos
+    mapElements.append(newElement);
 }
 
 // Método para colocar un sólido en la posición del clic
@@ -1576,6 +1692,10 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
                     } else if (currentBombZoneId >= 0 && bombZonePixmaps.contains(currentBombZoneId)) {
                         // Colocar una zona de bomba
                         placeBombZone(scenePos);
+                        return true;
+                    } else if (currentExtraTileId >= 0 && extraTilePixmaps.contains(currentExtraTileId)) {
+                        // Colocar un extra-tile
+                        placeExtraTile(scenePos);
                         return true;
                     } else if (currentWeaponId >= 0 && weaponPixmaps.contains(currentWeaponId)) {
                         // Colocar un arma
