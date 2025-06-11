@@ -1821,7 +1821,8 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     if (!item) return nullptr;
     
     QPointF position = item->scenePos();
-    int elementType = item->getTipoElemento();
+    // Usar data(1) para obtener el tipo de elemento, que es donde lo almacenamos al colocar elementos
+    int elementType = item->data(1).toInt();
     
     // Convertir posición de pixeles a unidades de mundo si es necesario
     float elementWidth = (item->pixmap().width()) / 25.6;
@@ -1834,7 +1835,8 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     switch (elementType) {
         case TEAM_SPAWN_CT:
         case TEAM_SPAWN_T: {
-            int teamId = item->getTeamId();
+            // Usar data(0) para obtener el ID de la zona, que es donde lo almacenamos al colocar zonas
+            int teamId = item->data(0).toInt();
             return new TeamSpawn(worldPos, teamId);
         }
         
@@ -1844,13 +1846,20 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
         }
         
         case SOLID_STRUCTURE: {
-            int structType = item->getStructureType();
+            // Usar data(0) para obtener el tipo de estructura, que es donde lo almacenamos al colocar estructuras
+            int structType = item->data(0).toInt();
             return new SolidStructure(worldPos, structType);
         }
         
         case WEAPON: {
-            int weaponType = item->getWeaponType();
+            // Usar data(0) para obtener el tipo de arma, que es donde lo almacenamos al colocar armas
+            int weaponType = item->data(0).toInt();
             return new Weapon(worldPos, weaponType);
+        }
+        
+        case EXTRA_TILE: {
+            // Para extra-tiles, simplemente devolvemos un MapElement genérico
+            return new MapElement(worldPos, EXTRA_TILE);
         }
         
         default:
