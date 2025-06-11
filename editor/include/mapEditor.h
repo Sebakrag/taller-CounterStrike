@@ -173,12 +173,11 @@ private:
     void loadAvailableTiles(); // Cargar los tiles disponibles según el terreno
     void loadAvailableSolids(); // Cargar los elementos sólidos
     void loadAvailableZones(); // Cargar las zonas
+    void loadAvailableBombZones(); // Cargar las zonas de bomba
     void loadAvailableWeapons(); // Cargar las armas
     
     // Métodos de selección de elementos
-    void solidSelected(int id);
-    void zoneSelected(int id);
-    void weaponSelected(int id);
+    // Las funciones de selección están definidas más arriba
     
     void createTilesPanel(); // Crear el panel de selección de tiles
     QPoint getTileGridPosition(const QPointF& scenePos); // Convertir posición de la escena a coordenadas de cuadrícula
