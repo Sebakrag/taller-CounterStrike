@@ -70,6 +70,9 @@ private slots:
     void placeWeapon(QPointF scenePos); // Colocar un arma en la posición del ratón
     void removeElementAt(QPointF scenePos); // Eliminar cualquier elemento en la posición del ratón
     
+    // Método para actualizar el indicador de selección
+    void updateSelectionIndicator(QPointF scenePos);
+    
     // Acciones de archivo
     void generarMapaClicked();
     void loadMapClicked();
@@ -78,9 +81,10 @@ private slots:
 
 private:
     // Recursos y escena
-    BackgroundItem *currentBackground;
+    BackgroundItem *currentBackground = nullptr;
     QGraphicsScene *scene;
     QGraphicsView *view;
+    QGraphicsRectItem* selectionIndicator = nullptr; // Indicador de selección
     int widthBeam = 0;
     int currentTerrainType = 0;
     QString currentMapName;

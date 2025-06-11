@@ -195,8 +195,16 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     connect(zoomInButton, &QPushButton::clicked, this, &MapEditor::zoomIn);
     connect(zoomOutButton, &QPushButton::clicked, this, &MapEditor::zoomOut);
     
-    // Instalamos un event filter en la vista para capturar clicks
+    // Instalamos un event filter en la vista para capturar clicks y movimientos
     view->viewport()->installEventFilter(this);
+    
+    // Crear el indicador de selección (un rectángulo con borde que muestra la celda seleccionada)
+    selectionIndicator = new QGraphicsRectItem(0, 0, 32, 32);
+    selectionIndicator->setPen(QPen(QColor(255, 255, 0), 2)); // Borde amarillo
+    selectionIndicator->setBrush(QBrush(QColor(255, 255, 0, 50))); // Relleno amarillo semi-transparente
+    selectionIndicator->setZValue(1000); // Siempre visible por encima de otros elementos
+    scene->addItem(selectionIndicator);
+    selectionIndicator->hide(); // Inicialmente oculto
     
     // Estos métodos se llamarán más abajo en backgroundSelection(0)
     
@@ -325,14 +333,7 @@ void MapEditor::backgroundSelection(int index)
 
 // Método para aumentar el zoom
 void MapEditor::zoomIn() {
-    // Incrementar el zoom en 25%
-    currentZoomFactor += 0.25;
-    // Limitar el zoom máximo
-    if (currentZoomFactor > 4.0) {
-        currentZoomFactor = 4.0;
-    }
-    
-    qDebug() << "Zoom aumentado a: " << currentZoomFactor;
+    view->scale(1.2, 1.2);
     applyZoom();
 }
 
@@ -1331,6 +1332,26 @@ bool MapEditor::validateMap()
     return isValid;
 }
 
+// Método para actualizar el indicador de selección cuando el cursor se mueve
+void MapEditor::updateSelectionIndicator(QPointF scenePos)
+{
+    // Obtener la posición de cuadrícula
+    QPoint gridPos = getTileGridPosition(scenePos);
+    
+    // Verificar que esté dentro de los límites de la cuadrícula
+    if (gridPos.x() >= 0 && gridPos.x() < 1000/32 && gridPos.y() >= 0 && gridPos.y() < 1000/32) {
+        // Calcular la posición exacta en la escena (alineada con la cuadrícula)
+        qreal x = gridPos.x() * 32.0;
+        qreal y = gridPos.y() * 32.0;
+        
+        // Actualizar la posición del indicador
+        if (selectionIndicator) {
+            selectionIndicator->setPos(x, y);
+            selectionIndicator->show(); // Asegurar que sea visible
+        }
+    }
+}
+
 bool MapEditor::eventFilter(QObject* watched, QEvent* event)
 {
     try {
@@ -1351,6 +1372,11 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
             
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
             QPointF scenePos = view->mapToScene(mouseEvent->pos());
+            
+            // Actualizar el indicador de selección para cualquier evento de mouse
+            if (event->type() == QEvent::MouseMove) {
+                updateSelectionIndicator(scenePos);
+            }
             
             if (event->type() == QEvent::MouseButtonPress) {
                 if (mouseEvent->button() == Qt::LeftButton) {
