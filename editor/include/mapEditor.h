@@ -67,8 +67,15 @@ private slots:
     // Métodos para manipular sólidos, zonas y armas
     void placeSolid(QPointF scenePos); // Colocar un sólido en la posición del ratón
     void placeZone(QPointF scenePos); // Colocar una zona en la posición del ratón
+    void placeBombZone(QPointF scenePos); // Colocar una zona de bomba en la posición del ratón
     void placeWeapon(QPointF scenePos); // Colocar un arma en la posición del ratón
     void removeElementAt(QPointF scenePos); // Eliminar cualquier elemento en la posición del ratón
+    
+    // Métodos de selección
+    void zoneSelected(int id);
+    void solidSelected(int id);
+    void weaponSelected(int id);
+    void bombZoneSelected(int id); // Seleccionar zona de bomba
     
     // Método para actualizar el indicador de selección
     void updateSelectionIndicator(QPointF scenePos);
@@ -115,6 +122,13 @@ private:
     QScrollArea* zonesScrollArea; // Área de desplazamiento para la paleta de zonas
     QGroupBox* zonesGroup; // Contenedor para la paleta de zonas
     QButtonGroup* zoneButtons; // Grupo de botones para las zonas
+    
+    // Sistema de zonas de bomba
+    QMap<int, QPixmap> bombZonePixmaps; // Almacena todas las zonas de bomba disponibles
+    int currentBombZoneId = -1; // ID de la zona de bomba seleccionada actualmente
+    QScrollArea* bombZonesScrollArea; // Área de desplazamiento para la paleta de zonas de bomba
+    QGroupBox* bombZonesGroup; // Contenedor para la paleta de zonas de bomba
+    QButtonGroup* bombZoneButtons; // Grupo de botones para las zonas de bomba
     
     // Sistema de armas
     QMap<int, QPixmap> weaponPixmaps; // Almacena todas las armas disponibles

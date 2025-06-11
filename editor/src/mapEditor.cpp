@@ -118,6 +118,31 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     zonesTabLayout->addWidget(zonesGroup);
     elementsTabWidget->addTab(zonesTab, "Zonas");
     
+    // Pestaña para zonas de bomba
+    QWidget* bombZonesTab = new QWidget();
+    QVBoxLayout* bombZonesTabLayout = new QVBoxLayout(bombZonesTab);
+    
+    // Área de desplazamiento para zonas de bomba
+    bombZonesGroup = new QGroupBox("Zonas de Bomba");
+    QVBoxLayout* bombZonesLayout = new QVBoxLayout(bombZonesGroup);
+    
+    bombZonesScrollArea = new QScrollArea();
+    bombZonesScrollArea->setWidgetResizable(true);
+    bombZonesScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    bombZonesScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    
+    QWidget* bombZonesContainer = new QWidget();
+    bombZonesScrollArea->setWidget(bombZonesContainer);
+    new QGridLayout(bombZonesContainer);
+    bombZonesLayout->addWidget(bombZonesScrollArea);
+    
+    // Grupo de botones para zonas de bomba
+    bombZoneButtons = new QButtonGroup(this);
+    
+    // Añadir la pestaña de zonas de bomba a las pestañas
+    bombZonesTabLayout->addWidget(bombZonesGroup);
+    elementsTabWidget->addTab(bombZonesTab, "Zonas de Bomba");
+    
     // Pestaña para armas
     QWidget* weaponsTab = new QWidget();
     QVBoxLayout* weaponsTabLayout = new QVBoxLayout(weaponsTab);
@@ -646,6 +671,7 @@ void MapEditor::loadAvailableTiles()
             resourceBasePath + "tiles/",
             resourceBasePath + "solid/",
             resourceBasePath + "zones/",
+            resourceBasePath + "bombzone/",
             resourceBasePath + "weapons/"
         };
         
@@ -708,8 +734,8 @@ void MapEditor::loadAvailableTiles()
         loadElementsFromPath(tilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
         
         // Verificar todos los punteros antes de cargar otros elementos
-        if (!solidsScrollArea || !solidButtons || !zonesScrollArea || !zoneButtons 
-            || !weaponsScrollArea || !weaponButtons) {
+        if (!tilesScrollArea || !tileButtons || !solidsScrollArea || !solidButtons || !zonesScrollArea || !zoneButtons 
+            || !bombZonesScrollArea || !bombZoneButtons || !weaponsScrollArea || !weaponButtons) {
             qWarning() << "Algunos punteros son nullptr! No se cargarán más recursos para evitar fallos.";
             return;
         }
@@ -717,6 +743,7 @@ void MapEditor::loadAvailableTiles()
         // También cargar otros tipos de elementos
         loadAvailableSolids();
         loadAvailableZones();
+        loadAvailableBombZones();
         loadAvailableWeapons();
     } catch (const std::exception& e) {
         qCritical() << "Excepción capturada en loadAvailableTiles:" << e.what();
@@ -735,6 +762,11 @@ void MapEditor::loadAvailableZones() {
     loadElementsFromPath(zonesPath, zonePixmaps, zoneButtons, zonesScrollArea, &MapEditor::zoneSelected);
 }
 
+void MapEditor::loadAvailableBombZones() {
+    QString bombZonesPath = getResourcesPath() + "bombzone/";
+    loadElementsFromPath(bombZonesPath, bombZonePixmaps, bombZoneButtons, bombZonesScrollArea, &MapEditor::bombZoneSelected);
+}
+
 void MapEditor::loadAvailableWeapons() {
     QString weaponsPath = getResourcesPath() + "weapons/";
     loadElementsFromPath(weaponsPath, weaponPixmaps, weaponButtons, weaponsScrollArea, &MapEditor::weaponSelected);
@@ -746,6 +778,7 @@ void MapEditor::tileSelected(int id) {
     currentSolidId = -1;
     currentZoneId = -1;
     currentWeaponId = -1;
+    currentBombZoneId = -1;
     
     // Activar el tile seleccionado
     currentTileId = id;
@@ -756,6 +789,7 @@ void MapEditor::tileSelected(int id) {
     updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de sólidos
@@ -764,6 +798,7 @@ void MapEditor::solidSelected(int id) {
     currentTileId = -1;
     currentZoneId = -1;
     currentWeaponId = -1;
+    currentBombZoneId = -1;
     
     // Activar el sólido seleccionado
     currentSolidId = id;
@@ -774,6 +809,7 @@ void MapEditor::solidSelected(int id) {
     updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de zonas
@@ -782,6 +818,7 @@ void MapEditor::zoneSelected(int id) {
     currentTileId = -1;
     currentSolidId = -1;
     currentWeaponId = -1;
+    currentBombZoneId = -1;
     
     // Activar la zona seleccionada
     currentZoneId = id;
@@ -792,6 +829,27 @@ void MapEditor::zoneSelected(int id) {
     updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
+}
+
+// Método para manejar la selección de zonas de bomba
+void MapEditor::bombZoneSelected(int id) {
+    // Desactivar otros tipos de elementos
+    currentTileId = -1;
+    currentSolidId = -1;
+    currentZoneId = -1;
+    currentWeaponId = -1;
+    
+    // Activar la zona de bomba seleccionada
+    currentBombZoneId = id;
+    qDebug() << "Zona de bomba seleccionada:" << id;
+    
+    // Actualizar visualización de botones seleccionados
+    updateSelectedButtonStyle(bombZoneButtons, id);
+    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
 }
 
 // Método para manejar la selección de armas
@@ -800,6 +858,7 @@ void MapEditor::weaponSelected(int id) {
     currentTileId = -1;
     currentSolidId = -1;
     currentZoneId = -1;
+    currentBombZoneId = -1;
     
     // Activar el arma seleccionada
     currentWeaponId = id;
@@ -810,6 +869,7 @@ void MapEditor::weaponSelected(int id) {
     updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
+    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
 }
 
 // Método para colocar un tile en la posición del clic
@@ -939,6 +999,77 @@ void MapEditor::placeSolid(QPointF scenePos)
 
 // Método para colocar una zona en la posición del clic
 // Solo debe existir una zona de cada tipo en todo el mapa
+// Método para colocar una zona de bomba en la posición del clic
+void MapEditor::placeBombZone(QPointF scenePos)
+{
+    if (currentBombZoneId < 0) {
+        return; // No hay zona de bomba seleccionada
+    }
+    
+    QPoint gridPos = getTileGridPosition(scenePos);
+    qreal x = gridPos.x() * 32.0;
+    qreal y = gridPos.y() * 32.0;
+    
+    // Buscar y eliminar cualquier elemento existente en la misma posición
+    QList<QGraphicsItem*> itemsToRemove;
+    for (QGraphicsItem* item : scene->items()) {
+        // Verificar si es un elemento de mapa (usando data)
+        if ((item->data(1).isValid())) {
+            QPointF itemPos = item->pos();
+            QRectF itemRect = item->boundingRect().adjusted(0, 0, -1, -1); // Ajustar para evitar bordes compartidos
+            
+            // Si el elemento ocupa la posición objetivo
+            if (itemRect.contains(QPointF(x, y).x() - itemPos.x(), QPointF(x, y).y() - itemPos.y())) {
+                itemsToRemove.append(item);
+            }
+        }
+    }
+    
+    // Eliminar los elementos encontrados
+    for (QGraphicsItem* item : itemsToRemove) {
+        scene->removeItem(item);
+        delete item;
+    }
+    
+    // También eliminar cualquier zona de bomba existente en todo el mapa (solo debe haber una)
+    QList<QGraphicsItem*> bombZoneItems;
+    for (QGraphicsItem* item : scene->items()) {
+        if (item->data(1).isValid() && item->data(1).toInt() == BOMB_ZONE) {
+            if (!itemsToRemove.contains(item)) { // Si no está ya en la lista para eliminar
+                bombZoneItems.append(item);
+            }
+        }
+    }
+    
+    for (QGraphicsItem* item : bombZoneItems) {
+        scene->removeItem(item);
+        delete item;
+    }
+    
+    // Colocar la nueva zona de bomba
+    QPixmap bombZonePixmap;
+    if (bombZonePixmaps.contains(currentBombZoneId)) {
+        bombZonePixmap = bombZonePixmaps[currentBombZoneId];
+    } else {
+        return; // No se encuentra el pixmap
+    }
+    
+    DragAndDrop* bombZoneItem = new DragAndDrop(bombZonePixmap);
+    bombZoneItem->setPos(x, y);
+    scene->addItem(bombZoneItem);
+    
+    // Crear un nuevo elemento de mapa de tipo zona de bomba
+    QPointF worldPos(gridPos.x(), gridPos.y());
+    MapElement* newElement = new MapElement(worldPos, BOMB_ZONE);
+    
+    // Asociar el elemento gráfico con una identificación interna
+    bombZoneItem->setData(0, currentBombZoneId); // Almacenar el ID de la zona de bomba
+    bombZoneItem->setData(1, BOMB_ZONE); // Almacenar el tipo de elemento
+    
+    // Añadir a la lista de elementos
+    mapElements.append(newElement);
+}
+
 void MapEditor::placeZone(QPointF scenePos)
 {
     if (currentZoneId < 0) {
@@ -1437,6 +1568,10 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
                     } else if (currentZoneId >= 0 && zonePixmaps.contains(currentZoneId)) {
                         // Colocar una zona
                         placeZone(scenePos);
+                        return true;
+                    } else if (currentBombZoneId >= 0 && bombZonePixmaps.contains(currentBombZoneId)) {
+                        // Colocar una zona de bomba
+                        placeBombZone(scenePos);
                         return true;
                     } else if (currentWeaponId >= 0 && weaponPixmaps.contains(currentWeaponId)) {
                         // Colocar un arma
