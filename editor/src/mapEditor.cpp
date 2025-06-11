@@ -198,11 +198,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     // Instalamos un event filter en la vista para capturar clicks
     view->viewport()->installEventFilter(this);
     
-    // Cargar los tiles disponibles
-    loadAvailableTiles();
-    
-    // Inicializar con el fondo vacío con cuadrícula
-    backgroundSelection(0);
+    // Estos métodos se llamarán más abajo en backgroundSelection(0)
     
     // Crear el layout principal con el panel de herramientas y la vista
     QHBoxLayout *mainLayout = new QHBoxLayout();
@@ -218,7 +214,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     setWindowTitle("Counter-Strike Editor de Mapas");
     
     // Inicializar con el fondo de desierto por defecto
-    backgroundSelection(0);
+    backgroundSelection(0); // Carga los tiles disponibles y configura el fondo
 }
 
 // Implementación del destructor
