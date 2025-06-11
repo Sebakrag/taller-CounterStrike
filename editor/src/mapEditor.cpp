@@ -820,11 +820,43 @@ void MapEditor::placeSolid(QPointF scenePos)
     }
     
     QPoint gridPos = getTileGridPosition(scenePos);
+    qreal x = gridPos.x() * 32.0;
+    qreal y = gridPos.y() * 32.0;
+    
+    // Buscar y eliminar cualquier elemento existente de tipo sólido en la misma posición
+    QList<QGraphicsItem*> itemsToRemove;
+    for (QGraphicsItem* item : scene->items()) {
+        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
+        if (existingItem && existingItem->data(1).toInt() == SOLID_STRUCTURE) {
+            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+            if (itemGridPos == gridPos) {
+                itemsToRemove.append(existingItem);
+            }
+        }
+    }
+    
+    // Remover de la escena y de la lista de elementos del mapa
+    for (QGraphicsItem* itemToRemove : itemsToRemove) {
+        // También eliminar el elemento de mapElements
+        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
+        for (int i = 0; i < mapElements.size(); ++i) {
+            MapElement* element = mapElements[i];
+            if (element->position().x() == removeGridPos.x() && 
+                element->position().y() == removeGridPos.y() && 
+                element->type() == SOLID_STRUCTURE) {
+                mapElements.removeAt(i);
+                delete element;
+                break;
+            }
+        }
+        scene->removeItem(itemToRemove);
+        delete itemToRemove;
+    }
     
     // Crear un nuevo elemento sólido
     QPixmap solidPixmap = solidPixmaps[currentSolidId];
     DragAndDrop* solidItem = new DragAndDrop(solidPixmap);
-    solidItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
+    solidItem->setPos(x, y);
     scene->addItem(solidItem);
     
     // Crear un nuevo elemento de mapa de tipo sólido
@@ -847,11 +879,43 @@ void MapEditor::placeZone(QPointF scenePos)
     }
     
     QPoint gridPos = getTileGridPosition(scenePos);
+    qreal x = gridPos.x() * 32.0;
+    qreal y = gridPos.y() * 32.0;
+    
+    // Buscar y eliminar cualquier elemento existente de tipo zona en la misma posición
+    QList<QGraphicsItem*> itemsToRemove;
+    for (QGraphicsItem* item : scene->items()) {
+        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
+        if (existingItem && existingItem->data(1).toInt() == BOMB_ZONE) {
+            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+            if (itemGridPos == gridPos) {
+                itemsToRemove.append(existingItem);
+            }
+        }
+    }
+    
+    // Remover de la escena y de la lista de elementos del mapa
+    for (QGraphicsItem* itemToRemove : itemsToRemove) {
+        // También eliminar el elemento de mapElements
+        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
+        for (int i = 0; i < mapElements.size(); ++i) {
+            MapElement* element = mapElements[i];
+            if (element->position().x() == removeGridPos.x() && 
+                element->position().y() == removeGridPos.y() && 
+                element->type() == BOMB_ZONE) {
+                mapElements.removeAt(i);
+                delete element;
+                break;
+            }
+        }
+        scene->removeItem(itemToRemove);
+        delete itemToRemove;
+    }
     
     // Crear un nuevo elemento zona
     QPixmap zonePixmap = zonePixmaps[currentZoneId];
     DragAndDrop* zoneItem = new DragAndDrop(zonePixmap);
-    zoneItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
+    zoneItem->setPos(x, y);
     scene->addItem(zoneItem);
     
     // Crear un nuevo elemento de mapa de tipo zona
@@ -874,11 +938,43 @@ void MapEditor::placeWeapon(QPointF scenePos)
     }
     
     QPoint gridPos = getTileGridPosition(scenePos);
+    qreal x = gridPos.x() * 32.0;
+    qreal y = gridPos.y() * 32.0;
+    
+    // Buscar y eliminar cualquier elemento existente de tipo arma en la misma posición
+    QList<QGraphicsItem*> itemsToRemove;
+    for (QGraphicsItem* item : scene->items()) {
+        DragAndDrop* existingItem = dynamic_cast<DragAndDrop*>(item);
+        if (existingItem && existingItem->data(1).toInt() == WEAPON) {
+            QPoint itemGridPos = getTileGridPosition(existingItem->pos());
+            if (itemGridPos == gridPos) {
+                itemsToRemove.append(existingItem);
+            }
+        }
+    }
+    
+    // Remover de la escena y de la lista de elementos del mapa
+    for (QGraphicsItem* itemToRemove : itemsToRemove) {
+        // También eliminar el elemento de mapElements
+        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
+        for (int i = 0; i < mapElements.size(); ++i) {
+            MapElement* element = mapElements[i];
+            if (element->position().x() == removeGridPos.x() && 
+                element->position().y() == removeGridPos.y() && 
+                element->type() == WEAPON) {
+                mapElements.removeAt(i);
+                delete element;
+                break;
+            }
+        }
+        scene->removeItem(itemToRemove);
+        delete itemToRemove;
+    }
     
     // Crear un nuevo elemento arma
     QPixmap weaponPixmap = weaponPixmaps[currentWeaponId];
     DragAndDrop* weaponItem = new DragAndDrop(weaponPixmap);
-    weaponItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
+    weaponItem->setPos(x, y);
     scene->addItem(weaponItem);
     
     // Crear un nuevo elemento de mapa de tipo arma
