@@ -11,14 +11,15 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QDir>
 
-MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(nullptr), currentTerrainType(0)
+MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(nullptr),
+    currentTerrainType(0)
+    // Nota: Estas variables ya están inicializadas en la declaración de la clase (mapEditor.h)
 {
     // Configurar una escena de 1000x1000 para el mapa de tiles
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, 1000, 1000); // Tamaño exacto para mapa de 1000x1000
     
-    // Inicializar el sistema de tiles
-    currentTileId = -1;
+    // Inicializar los button groups
     tileButtons = new QButtonGroup(this);
 
     view = new QGraphicsView(scene, this);
@@ -39,7 +40,6 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
 
     // Panel derecho para controles y selección de elementos del mapa
     toolPanel = new QWidget();
-    new QVBoxLayout(toolPanel); // No necesitamos guardar la referencia
     
     // Grupo para opciones de terreno
     QGroupBox* terrainGroup = new QGroupBox("Tipo de Terreno");
@@ -140,14 +140,12 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     weaponsTabLayout->addWidget(weaponsGroup);
     elementsTabWidget->addTab(weaponsTab, "Armas");
     
-    // Añadir el widget de pestañas al layout principal
-    QVBoxLayout* toolPanelLayout = new QVBoxLayout();
+    // Layout principal para elementos en groupBox
+    toolPanelLayout = new QVBoxLayout(toolPanel);
+    toolPanelLayout->setContentsMargins(0, 0, 0, 0);
+    toolPanelLayout->setSpacing(5);
     toolPanelLayout->addWidget(terrainGroup);
     toolPanelLayout->addWidget(elementsTabWidget);
-    
-    // Crear panel de herramientas
-    QWidget* toolPanel = new QWidget();
-    toolPanel->setLayout(toolPanelLayout);
     
     // Sección de archivo
     QGroupBox *fileGroup = new QGroupBox("Archivo", toolPanel);
@@ -177,13 +175,13 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     tilesScrollArea->setMinimumHeight(200);
     tilesScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     
-    // Añadir todas las secciones al panel de herramientas
-    QVBoxLayout* mainToolLayout = new QVBoxLayout(toolPanel);
-    mainToolLayout->addWidget(terrainGroup);
-    mainToolLayout->addWidget(elementsTabWidget); // Añadir el widget de pestañas
-    mainToolLayout->addWidget(zoomGroup);
-    mainToolLayout->addWidget(fileGroup);
-    mainToolLayout->addStretch(1); // Espacio flexible al final
+    // Añadir secciones restantes al panel de herramientas
+    // Usamos el toolPanelLayout ya creado anteriormente 
+    if (toolPanelLayout) { // Si existe, añadimos los widgets restantes
+        toolPanelLayout->addWidget(zoomGroup);
+        toolPanelLayout->addWidget(fileGroup);
+        toolPanelLayout->addStretch(1); // Espacio flexible al final
+    }
     
     // Conectar señales
     connect(terrainCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -248,51 +246,13 @@ void MapEditor::addBox()
     scene->addItem(boxItem);
 }
 
-void MapEditor::addSpawn()
-{
-    // Este método se mantiene por compatibilidad
-    // pero ahora usamos los métodos específicos para cada equipo
-    addTeamSpawnCT();
-}
 
-void MapEditor::addTeamSpawnCT()
-{
-    // Añadir una zona de inicio para Counter-Terrorists
-    QPixmap ctPixmap(getResourcePath(TEAM_SPAWN_CT));
-    DragAndDrop *ctItem = new DragAndDrop(ctPixmap, 0.8, scene);
-    ctItem->setTipoElemento(TEAM_SPAWN_CT);
-    ctItem->setTeamId(0); // CT = 0
-    scene->addItem(ctItem);
-}
+// Método eliminado - ahora los elementos se colocan directamente con el clic
 
-void MapEditor::addTeamSpawnT()
-{
-    // Añadir una zona de inicio para Terrorists
-    QPixmap tPixmap(getResourcePath(TEAM_SPAWN_T));
-    DragAndDrop *tItem = new DragAndDrop(tPixmap, 0.8, scene);
-    tItem->setTipoElemento(TEAM_SPAWN_T);
-    tItem->setTeamId(1); // T = 1
-    scene->addItem(tItem);
-}
+// Método eliminado - ahora los elementos se colocan directamente con el clic
 
-void MapEditor::addBombZone()
-{
-    // Añadir una zona para plantar bombas
-    QPixmap bombZonePixmap(getResourcePath(BOMB_ZONE));
-    DragAndDrop *bombZoneItem = new DragAndDrop(bombZonePixmap, 1.0, scene);
-    bombZoneItem->setTipoElemento(BOMB_ZONE);
-    bombZoneItem->setBombZoneSize(QSizeF(50, 50)); // Tamaño por defecto
-    scene->addItem(bombZoneItem);
-}
-void MapEditor::addWeapon(int weaponType)
-{
-    // Añadir un arma al mapa
-    QPixmap weaponPixmap(getResourcePath(WEAPON, weaponType));
-    DragAndDrop *weaponItem = new DragAndDrop(weaponPixmap, 0.6, scene);
-    weaponItem->setTipoElemento(WEAPON);
-    weaponItem->setWeaponType(weaponType);
-    scene->addItem(weaponItem);
-}
+// Método eliminado - ahora los elementos se colocan directamente con el clic
+// Método eliminado - ahora los elementos se colocan directamente con el clic
 
 void MapEditor::backgroundSelection(int index)
 {
@@ -421,40 +381,41 @@ float MapEditor::worldToPixelY(float worldY) {
 
 // Método para obtener la ruta base a los recursos
 QString MapEditor::getResourcesPath() {
-    // Directorio actual desde donde se ejecuta la aplicación
-    QDir currentDir = QDir::current();
-    qDebug() << "Directorio actual:" << currentDir.absolutePath();
+    QString projectDir = QDir::currentPath();
     
-    // Ruta al directorio editor/resources
-    QString editorResourcesPath = currentDir.absolutePath() + "/../editor/resources/";
+    // Imprimimos el directorio actual para debug
+    qDebug() << "Directorio actual:" << projectDir;
     
-    // Verificar si la carpeta existe
-    if (QDir(editorResourcesPath).exists()) {
-        qDebug() << "Usando ruta de recursos:" << editorResourcesPath;
-        return editorResourcesPath;
+    // Opciones de rutas relativas desde diferentes puntos de compilación
+    QStringList possiblePaths = {
+        "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/",
+        "../editor/resources/",
+        "resources/",
+        "../resources/",
+        "../../editor/resources/",
+        QCoreApplication::applicationDirPath() + "/resources/",
+        QCoreApplication::applicationDirPath() + "/../editor/resources/"
+    };
+    
+    // Buscar la primera ruta válida
+    for (const QString& path : possiblePaths) {
+        if (QDir(path).exists()) {
+            qDebug() << "Encontrada carpeta de recursos en:" << path;
+            return path;
+        }
     }
     
-    // Verificar si existe en la ruta relativa al directorio actual
-    if (QDir("../editor/resources/").exists()) {
-        qDebug() << "Usando ruta de recursos relativa: ../editor/resources/";
-        return "../editor/resources/";
-    }
-    
-    // Alternativa: intentar con una ruta directa a resources
-    if (QDir("resources/").exists()) {
-        qDebug() << "Usando ruta de recursos simple: resources/";
-        return "resources/";
-    }
-    
-    // Último intento: buscar en el directorio de la aplicación
-    QString appDirPath = QCoreApplication::applicationDirPath() + "/resources/";
-    if (QDir(appDirPath).exists()) {
-        qDebug() << "Usando ruta de recursos desde directorio de aplicación:" << appDirPath;
-        return appDirPath;
+    // Si ninguna de las rutas anteriores funciona, intentamos encontrar la ruta en relación 
+    // al directorio de compilación
+    QString buildDir = QDir::currentPath();
+    QString targetPath = buildDir + "/../editor/resources/";
+    if (QDir(targetPath).exists()) {
+        qDebug() << "Usando ruta de recursos relativa a build:" << targetPath;
+        return targetPath;
     }
     
     qWarning() << "No se encontró la carpeta de recursos. Usando ruta predeterminada.";
-    return "resources/";
+    return "../editor/resources/";
 }
 
 // Método para obtener la ruta completa de un recurso según su tipo
@@ -504,23 +465,34 @@ void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pi
     // Clear previous elements
     pixmapMap.clear();
     QDir elementsDir(path);
+    
+    // Si la carpeta no existe, solo registramos el mensaje pero continuamos sin error fatal
     if (!elementsDir.exists()) {
-        qWarning() << "No se encontró la carpeta de elementos:" << path;
-        return;
+        qWarning() << "No se encontró la carpeta de elementos:" << path << ". Agregue archivos .png o .bmp para verlos aquí.";
+        // Nótese que NO retornamos, permitimos que el método continúe para configurar los widgets incluso sin archivos
     }
-
-    // Filtrar por archivos BMP y PNG
+    
+    // Filtrar por archivos de imagen
     QStringList filters;
     filters << "*.bmp" << "*.png";
     elementsDir.setNameFilters(filters);
     
     // Obtener la lista de archivos
     QStringList elementFiles = elementsDir.entryList(filters, QDir::Files);
-    qDebug() << "Elementos encontrados:" << elementFiles.count();
+    qDebug() << "Elementos encontrados:" << elementFiles.count() << "en" << path;
     
     // Limpiar los widgets existentes en el área de scroll
     QWidget* elementsContainer = scrollArea->widget();
+    if (!elementsContainer) {
+        qWarning() << "ScrollArea sin widget contenedor";
+        return;
+    }
+    
     QGridLayout* elementsGridLayout = qobject_cast<QGridLayout*>(elementsContainer->layout());
+    if (!elementsGridLayout) {
+        qDebug() << "Creando nuevo layout para el contenedor de elementos";
+        elementsGridLayout = new QGridLayout(elementsContainer);
+    }
     
     // Eliminar botones existentes
     QList<QAbstractButton*> buttons = buttonGroup->buttons();
@@ -585,24 +557,77 @@ void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pi
 
 void MapEditor::loadAvailableTiles()
 {
-    // Determinar la ruta de los tiles según el tipo de terreno
-    QString tilesPath;
+    QString resourceBasePath = getResourcesPath();
+    qDebug() << "Usando ruta de recursos base:" << resourceBasePath;
     
-    switch (currentTerrainType) {
-        case DESERT: // Desierto
-            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_desert/";
-            break;
-        case AZTEC_VILLAGE: // Aztec
-            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_aztec/";
-            break;
-        case TRAINING_ZONE: // Zona de entrenamiento
-            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_training/";
-            break;
-        default:
-            tilesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/tiles/tiles_desert/";
+    // Crear la estructura de carpetas básica con privilegios adecuados
+    // Intentamos crear primero solo la carpeta base de recursos
+    QDir baseDir;
+    if (!QDir(resourceBasePath).exists()) {
+        bool created = baseDir.mkpath(resourceBasePath);
+        qDebug() << "Intento de crear carpeta base:" << resourceBasePath << ", resultado:" << created;
+        
+        if (!created) {
+            qWarning() << "No se puede crear la carpeta de recursos base. Usar una ubicación alternativa.";
+            // Intentar con una ubicación alternativa - directorio actual
+            resourceBasePath = QDir::currentPath() + "/editor_resources/";
+            created = baseDir.mkpath(resourceBasePath);
+            qDebug() << "Intento alternativo en:" << resourceBasePath << ", resultado:" << created;
+            
+            if (!created) {
+                qWarning() << "No se pueden crear carpetas de recursos. El editor funcionará con limitaciones.";
+            }
+        }
     }
     
-    // Usar el método genérico para cargar los tiles
+    // Definir la estructura de carpetas requerida
+    QStringList requiredDirs = {
+        resourceBasePath + "tiles/",
+        resourceBasePath + "solid/",
+        resourceBasePath + "zones/",
+        resourceBasePath + "weapons/"
+    };
+    
+    // Crear subcarpetas de terrenos
+    QStringList terrainTypes = {"desert", "aztec", "training"};
+    for (const auto& terrain : terrainTypes) {
+        requiredDirs << resourceBasePath + "tiles/tiles_" + terrain + "/";
+    }
+    
+    // Crear todas las carpetas necesarias
+    bool allCreated = true;
+    for (const auto& dir : requiredDirs) {
+        if (!QDir(dir).exists()) {
+            bool created = QDir().mkpath(dir);
+            qDebug() << "Creando directorio:" << dir << ", resultado:" << created;
+            allCreated = allCreated && created;
+        }
+    }
+    
+    if (!allCreated) {
+        qWarning() << "No se pudieron crear todas las carpetas de recursos. El editor funcionará con limitaciones.";
+    } else {
+        qDebug() << "Estructura de directorios creada correctamente.";
+    }
+    
+    // Cargar los recursos disponibles según el tipo de terreno actual
+    QString terrainFolder;
+    switch (currentTerrainType) {
+        case 0: // DESERT_TERRAIN
+            terrainFolder = "desert";
+            break;
+        case 1: // AZTEC_VILLAGE
+            terrainFolder = "aztec";
+            break;
+        case 2: // TRAINING_GROUND
+            terrainFolder = "training";
+            break;
+        default:
+            terrainFolder = "desert";
+            break;
+    }
+    
+    QString tilesPath = resourceBasePath + "tiles/tiles_" + terrainFolder + "/";
     loadElementsFromPath(tilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
     
     // También cargar otros tipos de elementos
@@ -611,24 +636,18 @@ void MapEditor::loadAvailableTiles()
     loadAvailableWeapons();
 }
 
-// Cargar elementos sólidos
-void MapEditor::loadAvailableSolids()
-{
-    QString solidsPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/solid/";
+void MapEditor::loadAvailableSolids() {
+    QString solidsPath = getResourcesPath() + "solid/";
     loadElementsFromPath(solidsPath, solidPixmaps, solidButtons, solidsScrollArea, &MapEditor::solidSelected);
 }
 
-// Cargar zonas
-void MapEditor::loadAvailableZones()
-{
-    QString zonesPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/zones/";
+void MapEditor::loadAvailableZones() {
+    QString zonesPath = getResourcesPath() + "zones/";
     loadElementsFromPath(zonesPath, zonePixmaps, zoneButtons, zonesScrollArea, &MapEditor::zoneSelected);
 }
 
-// Cargar armas
-void MapEditor::loadAvailableWeapons()
-{
-    QString weaponsPath = "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/weapons/";
+void MapEditor::loadAvailableWeapons() {
+    QString weaponsPath = getResourcesPath() + "weapons/";
     loadElementsFromPath(weaponsPath, weaponPixmaps, weaponButtons, weaponsScrollArea, &MapEditor::weaponSelected);
 }
 

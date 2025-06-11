@@ -49,13 +49,7 @@ public:
     bool validateMap();
     
 private slots:
-    // Elementos del mapa
-    void addBox();
-    void addSpawn();
-    void addBombZone();
-    void addWeapon(int weaponType = 0);
-    void addTeamSpawnCT();
-    void addTeamSpawnT();
+    // Ya no necesitamos estos métodos, ahora los elementos se colocan directamente con clicks
     
     // Selección de terreno
     void backgroundSelection(int index);
@@ -123,7 +117,7 @@ private:
     QButtonGroup* weaponButtons; // Grupo de botones para las armas
     
     // Lista de elementos del mapa (no tiles)
-    QList<MapElement*> mapElements; // Lista para almacenar todos los elementos del mapa
+    QList<MapElement*> mapElements{}; // Lista para almacenar todos los elementos del mapa
     
     // Elementos de la UI
     QTabWidget* elementsTabWidget; // Widget de pestañas para los diferentes elementos
