@@ -11,6 +11,7 @@
 #include "client/include/client.h"
 #include "client/include/model/Game.h"
 #include "common/dtos/MatchInfo.h"
+#include "client/include/model/EC/EntityType.h" // Incluir la versión correcta de EntityType.h
 
 GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ctrl; }
 
@@ -49,7 +50,8 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         }
         const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
 
-        const MatchInfo match_info("Partidita", first_snap, win_config, map_info);
+        // Crear MatchInfo con los parámetros correctos: nombre, configuración de ventana, mapa de tiles, número de jugadores
+        const MatchInfo match_info("Partidita", win_config, map_info.tileMap, 1);
 
         // Client client("localhost", "8080", "seba");
         const auto client = controller->getClient();
