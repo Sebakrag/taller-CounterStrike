@@ -46,8 +46,8 @@ std::optional<AppStateCode> GameMatchAppState::update() {
         const MapInfo map_info(tileMapData, SpriteType::DESERT_MAP, w, h);
         
         // Crear un objeto TileMap a partir de los datos del mapa
-        // Usamos TypeTileMap::DESERT como ejemplo, ajustar según sea necesario
-        TileMap tileMap(TypeTileMap::DESERT, tileMapData);
+        // Usamos TypeTileMap::Desert como ejemplo, ajustar según sea necesario
+        TileMap tileMap(TypeTileMap::Desert, tileMapData);
 
         // Crear MatchInfo con los parámetros correctos: nombre, configuración de ventana, mapa de tiles, número de jugadores
         const MatchInfo match_info("Partidita", win_config, tileMap, 1);

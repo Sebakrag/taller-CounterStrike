@@ -6,9 +6,9 @@
 #include "mapElements.h"
 
 bool YamlHandler::saveMapToYaml(const QString &fileName, 
-                               const QList<MapElement*> &elements, 
-                               int terrainType,
-                               const QString &mapName) {
+                                const QList<MapElement*> &elements, 
+                                int terrainType,
+                                const QString &mapName) {
     try {
         YAML::Emitter out;
         
@@ -99,6 +99,35 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         out << YAML::EndSeq;
         
         // Los extra tiles se manejan como tiles normales, ya están incluidos en la sección de tiles
+        
+        // Generar una matriz de tiles para compatibilidad con la aplicación
+        // Primero encontramos las dimensiones del mapa
+        int maxX = 0;
+        int maxY = 0;
+        for (const Tile* tile : tiles) {
+            int gridX = tile->getGridX();
+            int gridY = tile->getGridY();
+            if (gridX > maxX) maxX = gridX;
+            if (gridY > maxY) maxY = gridY;
+        }
+        
+        // Crear una matriz vacía con un valor predeterminado (0 = sin tile)
+        std::vector<std::vector<int>> tileMatrix(maxY + 1, std::vector<int>(maxX + 1, 0));
+        
+        // Llenar la matriz con los IDs de los tiles
+        for (const Tile* tile : tiles) {
+            int gridX = tile->getGridX();
+            int gridY = tile->getGridY();
+            tileMatrix[gridY][gridX] = tile->getTileId();
+        }
+        
+        // Guardar la matriz de tiles para compatibilidad con la aplicación
+        out << YAML::Key << "tile_matrix";
+        out << YAML::Value << YAML::BeginSeq;
+        for (const auto& row : tileMatrix) {
+            out << YAML::Flow << row;
+        }
+        out << YAML::EndSeq;
         
         // Cerrar mapa
         out << YAML::EndMap; // map
@@ -221,6 +250,17 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
                     qDebug() << "Cargado extra tile (como tile normal) desde archivo:" << tileId << "en posición" 
                             << pos.x() << "," << pos.y();
                 }
+            }
+        }
+        
+        // Verificar si existe la matriz de tiles para compatibilidad con la aplicación
+        // Esto es solo para información, ya que los tiles individuales ya se cargaron arriba
+        if (mapNode["tile_matrix"]) {
+            YAML::Node matrixNode = mapNode["tile_matrix"];
+            qDebug() << "Encontrada matriz de tiles para compatibilidad con la aplicación";
+            qDebug() << "Dimensiones de la matriz: " << matrixNode.size() << " filas";
+            if (matrixNode.size() > 0) {
+                qDebug() << "Primera fila tiene " << matrixNode[0].size() << " columnas";
             }
         }
         
