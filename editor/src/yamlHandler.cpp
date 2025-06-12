@@ -129,6 +129,26 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         }
         out << YAML::EndSeq;
         
+        // Añadir información adicional para compatibilidad con la aplicación
+        out << YAML::Key << "application_info";
+        out << YAML::Value << YAML::BeginMap;
+        
+        // Tipo de mapa (Desert, Aztec, Training)
+        std::string mapTypeStr;
+        switch (terrainType) {
+            case 0: mapTypeStr = "Desert"; break;
+            case 1: mapTypeStr = "Aztec"; break;
+            case 2: mapTypeStr = "Training"; break;
+            default: mapTypeStr = "Desert"; break;
+        }
+        out << YAML::Key << "map_type" << YAML::Value << mapTypeStr;
+        
+        // Dimensiones
+        out << YAML::Key << "width" << YAML::Value << (maxX + 1);
+        out << YAML::Key << "height" << YAML::Value << (maxY + 1);
+        
+        out << YAML::EndMap;
+        
         // Cerrar mapa
         out << YAML::EndMap; // map
         out << YAML::EndMap; // documento
@@ -261,6 +281,28 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
             qDebug() << "Dimensiones de la matriz: " << matrixNode.size() << " filas";
             if (matrixNode.size() > 0) {
                 qDebug() << "Primera fila tiene " << matrixNode[0].size() << " columnas";
+            }
+        }
+        
+        // Verificar si existe la información adicional para la aplicación
+        if (mapNode["application_info"]) {
+            YAML::Node appInfoNode = mapNode["application_info"];
+            qDebug() << "Encontrada información adicional para la aplicación";
+            
+            if (appInfoNode["map_type"]) {
+                std::string mapTypeStr = appInfoNode["map_type"].as<std::string>();
+                qDebug() << "Tipo de mapa: " << QString::fromStdString(mapTypeStr);
+                
+                // Actualizar el terrainType basado en el map_type
+                if (mapTypeStr == "Desert") terrainType = 0;
+                else if (mapTypeStr == "Aztec") terrainType = 1;
+                else if (mapTypeStr == "Training") terrainType = 2;
+            }
+            
+            if (appInfoNode["width"] && appInfoNode["height"]) {
+                int width = appInfoNode["width"].as<int>();
+                int height = appInfoNode["height"].as<int>();
+                qDebug() << "Dimensiones del mapa: " << width << "x" << height;
             }
         }
         
