@@ -22,6 +22,7 @@ void DragAndDrop::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     // Solo permitir arrastre para elementos de tipo WEAPON
     if (event->button() == Qt::LeftButton && tipoElemento == WEAPON) {
         startPos = event->scenePos();
+        originalPos = pos(); // Guardar la posición original antes del arrastre
         isDragging = true;
         setCursor(Qt::ClosedHandCursor); // Cambiar el cursor durante el arrastre
     }
@@ -31,7 +32,7 @@ void DragAndDrop::mousePressEvent(QGraphicsSceneMouseEvent* event) {
 void DragAndDrop::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
     if (event->button() == Qt::LeftButton && tipoElemento == WEAPON) {
         isDragging = false;
-        setCursor(Qt::ArrowCursor); // Restaurar el cursor normal
+        setCursor(Qt::OpenHandCursor); // Restaurar el cursor de mano abierta
         
         // Ajustar a la cuadrícula al soltar
         if (scene) {
@@ -39,10 +40,35 @@ void DragAndDrop::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
             // Redondear a la cuadrícula más cercana (asumiendo cuadrícula de 32x32)
             qreal gridX = qRound(currentPos.x() / 32.0) * 32.0;
             qreal gridY = qRound(currentPos.y() / 32.0) * 32.0;
-            setPos(gridX, gridY);
             
-            // Emitir señal de que el arma ha sido movida (si implementamos una señal)
-            // emit weaponMoved(this);
+            // Verificar si hay un tile o extra-tile en la posición donde se quiere soltar el arma
+            bool tileFound = false;
+            QPoint gridPos(gridX / 32, gridY / 32);
+            
+            // Buscar tiles o extra-tiles en la posición
+            QList<QGraphicsItem*> itemsAtPos = scene->items(QRectF(gridX, gridY, 1, 1));
+            for (QGraphicsItem* item : itemsAtPos) {
+                if (item != this && item->data(1).isValid() && 
+                    (item->data(1).toInt() == TILE || item->data(1).toInt() == EXTRA_TILE)) {
+                    tileFound = true;
+                    break;
+                }
+            }
+            
+            // Si no hay un tile o extra-tile, volver a la posición original
+            if (!tileFound) {
+                // Mostrar un mensaje de error
+                QGraphicsView* view = scene->views().first();
+                QMessageBox::warning(view, "Posición no válida", 
+                                   "Las armas solo pueden colocarse sobre tiles o extra-tiles.");
+                
+                // Volver a la posición original
+                setPos(originalPos);
+            } else {
+                // Posición válida, actualizar posición
+                setPos(gridX, gridY);
+                qDebug() << "Arma movida a posición válida sobre tile:" << gridPos.x() << "," << gridPos.y();
+            }
         }
     }
     QGraphicsPixmapItem::mouseReleaseEvent(event);

@@ -1303,11 +1303,39 @@ void MapEditor::placeWeapon(QPointF scenePos)
     qreal x = gridPos.x() * 32.0;
     qreal y = gridPos.y() * 32.0;
     
-    // Buscar y eliminar CUALQUIER elemento existente en la misma posición
+    // Verificar si hay un tile o extra-tile en esta posición
+    bool tileFound = false;
+    QPair<int, int> gridKey(gridPos.x(), gridPos.y());
+    
+    // Comprobar en el mapa de tiles colocados
+    if (placedTiles.contains(gridKey)) {
+        tileFound = true;
+    } else {
+        // Comprobar si hay un tile o extra-tile en la escena
+        for (QGraphicsItem* item : scene->items()) {
+            if (item->data(1).isValid() && 
+                (item->data(1).toInt() == TILE || item->data(1).toInt() == EXTRA_TILE)) {
+                QPoint itemGridPos = getTileGridPosition(item->pos());
+                if (itemGridPos == gridPos) {
+                    tileFound = true;
+                    break;
+                }
+            }
+        }
+    }
+    
+    // Si no hay un tile o extra-tile, no permitir la colocación del arma
+    if (!tileFound) {
+        QMessageBox::warning(this, "Colocación no válida", 
+                           "Las armas solo pueden colocarse sobre tiles o extra-tiles.");
+        return;
+    }
+    
+    // Buscar y eliminar CUALQUIER arma existente en la misma posición
     QList<QGraphicsItem*> itemsToRemove;
     for (QGraphicsItem* item : scene->items()) {
-        // Verificar si es un elemento de mapa (usando data)
-        if ((item->data(1).isValid())) {
+        // Verificar si es un arma (usando data)
+        if (item->data(1).isValid() && item->data(1).toInt() == WEAPON) {
             QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
                 itemsToRemove.append(item);
@@ -1356,6 +1384,8 @@ void MapEditor::placeWeapon(QPointF scenePos)
     
     // Añadir a la lista de elementos
     mapElements.append(newElement);
+    
+    qDebug() << "Arma colocada sobre tile en posición:" << gridPos.x() << "," << gridPos.y();
 }
 
 // Método para eliminar un tile en la posición del clic derecho
@@ -1830,45 +1860,65 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     // Usar data(1) para obtener el tipo de elemento, que es donde lo almacenamos al colocar elementos
     int elementType = item->data(1).toInt();
     
+    // Verificar que el tipo de elemento sea válido
+    if (elementType <= 0) {
+        qDebug() << "Error: Tipo de elemento inválido o no definido:" << elementType;
+        return nullptr;
+    }
+    
     // Convertir posición de pixeles a unidades de mundo si es necesario
+    // Ajustar a la cuadrícula para asegurar alineación correcta
+    QPoint gridPos = getTileGridPosition(position);
+    QPointF alignedPos(gridPos.x() * 32.0, gridPos.y() * 32.0);
+    
     float elementWidth = (item->pixmap().width()) / 25.6;
     float elementHeight = (item->pixmap().height()) / 25.6;
-    float x = MapEditor::pixelToWorldX(position.x(), elementWidth);
-    float y = MapEditor::pixelToWorldY(position.y(), elementHeight);
+    float x = MapEditor::pixelToWorldX(alignedPos.x(), elementWidth);
+    float y = MapEditor::pixelToWorldY(alignedPos.y(), elementHeight);
     
     QPointF worldPos(x, y);
+    
+    qDebug() << "Convirtiendo elemento tipo:" << elementType << "en posición:" << worldPos.x() << "," << worldPos.y();
     
     switch (elementType) {
         case TEAM_SPAWN_CT:
         case TEAM_SPAWN_T: {
             // Usar data(0) para obtener el ID de la zona, que es donde lo almacenamos al colocar zonas
             int teamId = item->data(0).toInt();
+            qDebug() << "  - Zona de equipo ID:" << teamId;
             return new TeamSpawn(worldPos, teamId);
         }
         
         case BOMB_ZONE: {
             QSizeF size = item->getBombZoneSize();
+            qDebug() << "  - Zona de bomba tamaño:" << size.width() << "x" << size.height();
             return new BombZone(worldPos, size);
         }
         
         case SOLID_STRUCTURE: {
             // Usar data(0) para obtener el tipo de estructura, que es donde lo almacenamos al colocar estructuras
             int structType = item->data(0).toInt();
+            qDebug() << "  - Estructura sólida tipo:" << structType;
             return new SolidStructure(worldPos, structType);
         }
         
         case WEAPON: {
             // Usar data(0) para obtener el tipo de arma, que es donde lo almacenamos al colocar armas
             int weaponType = item->data(0).toInt();
+            qDebug() << "  - Arma tipo:" << weaponType;
             return new Weapon(worldPos, weaponType);
         }
         
         case EXTRA_TILE: {
-            // Para extra-tiles, simplemente devolvemos un MapElement genérico
-            return new MapElement(worldPos, EXTRA_TILE);
+            // Para extra-tiles, usar data(0) para obtener el ID del extra-tile
+            int extraTileId = item->data(0).toInt();
+            qDebug() << "  - Extra-tile (como tile normal) ID:" << extraTileId;
+            // Crear un tile normal con el ID del extra tile
+            return new Tile(worldPos, extraTileId);
         }
         
         default:
+            qDebug() << "  - Tipo de elemento no reconocido:" << elementType;
             return nullptr;
     }
 }

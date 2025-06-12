@@ -2,6 +2,8 @@
 #include <QFile>
 #include <QDebug>
 #include <fstream>
+#include "yamlHandler.h"
+#include "mapElements.h"
 
 bool YamlHandler::saveMapToYaml(const QString &fileName, 
                                const QList<MapElement*> &elements, 
@@ -27,54 +29,76 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         out << YAML::Key << "height" << YAML::Value << 1024;
         out << YAML::EndMap;
         
-        // Zonas de inicio de equipos
-        out << YAML::Key << "team_spawns";
-        out << YAML::Value << YAML::BeginSeq;
+        // Separar los elementos por tipo
+        QList<const TeamSpawn*> teamSpawns;
+        QList<const BombZone*> bombZones;
+        QList<const SolidStructure*> solidStructures;
+        QList<const Weapon*> weapons;
+        QList<const Tile*> tiles;
         
-        // Zonas de bombas
-        out << YAML::Key << "bomb_zones";
-        out << YAML::Value << YAML::BeginSeq;
-        
-        // Estructuras sólidas
-        out << YAML::Key << "solid_structures";
-        out << YAML::Value << YAML::BeginSeq;
-        
-        // Armas
-        out << YAML::Key << "weapons";
-        out << YAML::Value << YAML::BeginSeq;
-        
-        // Tiles
-        out << YAML::Key << "tiles";
-        out << YAML::Value << YAML::BeginSeq;
-        
-        // Procesar cada elemento según su tipo
+        // Clasificar los elementos según su tipo
         for (const MapElement* element : elements) {
             switch (element->getType()) {
                 case TEAM_SPAWN_CT:
                 case TEAM_SPAWN_T:
-                    serializeTeamSpawn(out, static_cast<const TeamSpawn*>(element));
+                    teamSpawns.append(static_cast<const TeamSpawn*>(element));
                     break;
                 case BOMB_ZONE:
-                    serializeBombZone(out, static_cast<const BombZone*>(element));
+                    bombZones.append(static_cast<const BombZone*>(element));
                     break;
                 case SOLID_STRUCTURE:
-                    serializeSolidStructure(out, static_cast<const SolidStructure*>(element));
+                    solidStructures.append(static_cast<const SolidStructure*>(element));
                     break;
                 case WEAPON:
-                    serializeWeapon(out, static_cast<const Weapon*>(element));
+                    weapons.append(static_cast<const Weapon*>(element));
                     break;
                 case TILE:
-                    serializeTile(out, static_cast<const Tile*>(element));
+                    tiles.append(static_cast<const Tile*>(element));
                     break;
             }
         }
         
-        // Cerrar secuencias
-        out << YAML::EndSeq; // tiles
-        out << YAML::EndSeq; // weapons
-        out << YAML::EndSeq; // solid_structures
-        out << YAML::EndSeq; // bomb_zones
-        out << YAML::EndSeq; // team_spawns
+        // Guardar zonas de inicio de equipos
+        out << YAML::Key << "team_spawns";
+        out << YAML::Value << YAML::BeginSeq;
+        for (const TeamSpawn* spawn : teamSpawns) {
+            serializeTeamSpawn(out, spawn);
+        }
+        out << YAML::EndSeq;
+        
+        // Guardar zonas de bombas
+        out << YAML::Key << "bomb_zones";
+        out << YAML::Value << YAML::BeginSeq;
+        for (const BombZone* zone : bombZones) {
+            serializeBombZone(out, zone);
+        }
+        out << YAML::EndSeq;
+        
+        // Guardar estructuras sólidas
+        out << YAML::Key << "solid_structures";
+        out << YAML::Value << YAML::BeginSeq;
+        for (const SolidStructure* structure : solidStructures) {
+            serializeSolidStructure(out, structure);
+        }
+        out << YAML::EndSeq;
+        
+        // Guardar armas
+        out << YAML::Key << "weapons";
+        out << YAML::Value << YAML::BeginSeq;
+        for (const Weapon* weapon : weapons) {
+            serializeWeapon(out, weapon);
+        }
+        out << YAML::EndSeq;
+        
+        // Guardar tiles
+        out << YAML::Key << "tiles";
+        out << YAML::Value << YAML::BeginSeq;
+        for (const Tile* tile : tiles) {
+            serializeTile(out, tile);
+        }
+        out << YAML::EndSeq;
+        
+        // Los extra tiles se manejan como tiles normales, ya están incluidos en la sección de tiles
         
         // Cerrar mapa
         out << YAML::EndMap; // map
@@ -178,6 +202,24 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
                     elements.append(tile);
                     qDebug() << "Cargado tile desde archivo:" << tile->getTileId() << "en posición" 
                             << tile->getPosition().x() << "," << tile->getPosition().y();
+                }
+            }
+        }
+        
+        // Para compatibilidad con archivos antiguos que puedan tener extra_tiles
+        if (mapNode["extra_tiles"]) {
+            YAML::Node extraTilesNode = mapNode["extra_tiles"];
+            for (const auto& extraTileNode : extraTilesNode) {
+                if (extraTileNode["extra_tile_id"] && extraTileNode["position"]) {
+                    int tileId = extraTileNode["extra_tile_id"].as<int>();
+                    auto posNode = extraTileNode["position"];
+                    QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
+                    
+                    // Crear un tile normal con el ID del extra tile
+                    Tile* tile = new Tile(pos, tileId);
+                    elements.append(tile);
+                    qDebug() << "Cargado extra tile (como tile normal) desde archivo:" << tileId << "en posición" 
+                            << pos.x() << "," << pos.y();
                 }
             }
         }
@@ -296,3 +338,5 @@ Tile* YamlHandler::deserializeTile(const YAML::Node &node) {
     
     return new Tile(pos, tileId);
 }
+
+// Los métodos para ExtraTile han sido eliminados ya que los extra tiles se manejan como tiles normales

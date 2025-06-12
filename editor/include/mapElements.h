@@ -98,3 +98,5 @@ public:
 private:
     int tileId; // ID del tile (corresponde al índice en tilePixmaps)
 };
+
+

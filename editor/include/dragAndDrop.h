@@ -41,6 +41,7 @@ protected:
 
 private:
     QPointF startPos;
+    QPointF originalPos; // Posición original antes de comenzar el arrastre
     bool isDragging;
 
     QGraphicsScene* scene;
