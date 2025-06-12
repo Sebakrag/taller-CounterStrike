@@ -11,7 +11,9 @@
 #include "client/include/client.h"
 #include "client/include/model/Game.h"
 #include "common/dtos/MatchInfo.h"
-#include "client/include/model/EC/EntityType.h" // Incluir la versión correcta de EntityType.h
+#include "client/include/model/EC/EntityType.h"
+#include "common/tile_map.h" // Para TileMap
+#include "common/types.h" // Para TypeTileMap
 
 GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ctrl; }
 
@@ -23,35 +25,32 @@ GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ct
 
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
-        constexpr int SERVER_ENTITY_ID = 1;
-        constexpr float pos_x = 31000, pos_y = 31000, angle = 0, money = 500;
-        constexpr int hp = 100;  // health
-        constexpr auto sprite_type = SpriteType::SEAL_FORCE;
-        constexpr auto entt_type = EntityType::ANTI_TERRORIST;
-        constexpr bool is_alive = true;
-        const EntitySnapshot first_snap(SERVER_ENTITY_ID, pos_x, pos_y, angle, sprite_type,
-                                        entt_type, hp, money, Team::Terrorist, PlayerState::Idle,
-                                        is_alive);
+        // Configuración de la ventana
         const WindowConfig win_config(
                 SCREEN_WIDTH, SCREEN_HEIGHT,
                 SDL_WINDOW_SHOWN);  // SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN
 
+        // Crear un mapa de tiles aleatorio
         constexpr int w = 1000;
         constexpr int h = 1000;
-        std::vector<std::vector<int>> tileMap(h, std::vector<int>(w));
+        std::vector<std::vector<int>> tileMapData(h, std::vector<int>(w));
         std::random_device rd;                        // fuente de entropía
         std::mt19937 gen(rd());                       // motor de generación
         std::uniform_int_distribution<> dist(1, 46);  // distribución uniforme
 
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
-                tileMap[y][x] = dist(gen);
+                tileMapData[y][x] = dist(gen);
             }
         }
-        const MapInfo map_info(tileMap, SpriteType::DESERT_MAP, w, h);
+        const MapInfo map_info(tileMapData, SpriteType::DESERT_MAP, w, h);
+        
+        // Crear un objeto TileMap a partir de los datos del mapa
+        // Usamos TypeTileMap::DESERT como ejemplo, ajustar según sea necesario
+        TileMap tileMap(TypeTileMap::DESERT, tileMapData);
 
         // Crear MatchInfo con los parámetros correctos: nombre, configuración de ventana, mapa de tiles, número de jugadores
-        const MatchInfo match_info("Partidita", win_config, map_info.tileMap, 1);
+        const MatchInfo match_info("Partidita", win_config, tileMap, 1);
 
         // Client client("localhost", "8080", "seba");
         const auto client = controller->getClient();
