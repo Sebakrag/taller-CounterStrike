@@ -29,6 +29,7 @@ private:
     ClientReceiver receiver;
 
     // Borrar esto una vez tengamos conexion con el servidor (sirve para probar el renderizado).
+    // EntitySnapshot inicializado en la lista de inicialización del constructor
     EntitySnapshot snap;
     float x;
     float y;

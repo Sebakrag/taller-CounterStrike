@@ -14,7 +14,12 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
         protocol(ip.c_str(), port.c_str(), user_name),
         username(user_name),
         sender(protocol, send_queue),
-        receiver(protocol, recv_queue) {
+        receiver(protocol, recv_queue),
+        // Inicializar snap con valores válidos (ID 1, tipo PLAYER, sprite PHEONIX, posición (0,0), ángulo 0, vivo)
+        snap(1, EntityType::PLAYER, SpriteType::PHEONIX, 0.0f, 0.0f, 0.0f, true),
+        x(0.0f),
+        y(0.0f),
+        angle(0.0f) {
     protocol.sendUserName(user_name);
     bool ok = protocol.recvConfirmation();
     if (!ok) {
