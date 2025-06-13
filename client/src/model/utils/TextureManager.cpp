@@ -56,9 +56,6 @@ void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std
                                         colorKey.GetGreen(), colorKey.GetBlue());
     surface.SetColorKey(SDL_TRUE, mappedKey);
     textures[type] = std::make_shared<Texture>(ren, surface);
-    // auto texture = std::make_shared<Texture>(ren, surface);
-    // texture->SetBlendMode(SDL_BLENDMODE_BLEND);
-    // textures[type] = texture;
 }
 
 std::shared_ptr<Texture> TextureManager::getTexture(SpriteType type) { return textures[type]; }

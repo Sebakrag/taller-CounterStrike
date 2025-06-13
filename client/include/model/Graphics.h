@@ -25,7 +25,7 @@ class Graphics {
 private:
     SDL sdl;
     SDLImage sdl_image;
-    SDLTTF sdl_ttf;
+    SDLTTF sdl_ttf;  // TODO: determinar si lo necesito (por ahora no lo usamos)
 
     Window window;
     Renderer renderer;

@@ -33,6 +33,7 @@ public:
     /// commonly used in graphics
     ///
     float calculateAngle(float correctionDegrees = 0.0f) const;
+    float calculateNormSquared() const;
 
     void set(float x, float y);
     void setX(float x);

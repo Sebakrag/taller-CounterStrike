@@ -28,16 +28,19 @@ void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
 }
 
 void World::render(Graphics& graphics) {
-    camera.follow(getPlayerPosition());
+    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
+    const Vec2D playerPos = tCompLocalPlayer->getPosition();
+    camera.follow(playerPos);
 
     map.render(graphics, camera);
 
+    // Renderizar Field of View
+    player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngle());
+
+    // TODO: Limitar el renderizado con usando el FOV.
     render_sys.renderEntities(graphics, comp_mgr, camera);
 
-    // Renderizar el alpha blending (para simular el Field of View)
-
-    player_HUD.render(graphics);  // Esto seria el frame que tiene la vida, la cant de
-    // balas y la plata
+    player_HUD.render(graphics);
 }
 
 AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {

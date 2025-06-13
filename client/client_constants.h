@@ -44,6 +44,14 @@
 
 // Sprites
 #define SPRITE_SIZE 32   // in pixels
-#define SCALE_SPRITES 2  // va a dibujar los sprites al doble de su tamaño original
+#define RENDER_SCALAR 1  // va a dibujar los sprites al doble de su tamaño original
+
+// Stencil (Field Of View)
+#define FOV_CIRCLE_RADIUS \
+    32                // in pixels (before assigning a value, consider the player sprite size)
+#define FOV_ANGLE 40  // in degrees
+#define PERCENTAGE_OF_TRANSPARENCY 0.75
+#define STENCIL_ALPHA static_cast<int>(255 * PERCENTAGE_OF_TRANSPARENCY)
+
 
 #endif  // CLIENTCONSTANTS_H

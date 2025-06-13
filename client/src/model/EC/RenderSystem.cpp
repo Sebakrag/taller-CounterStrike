@@ -2,12 +2,11 @@
 
 #include <cmath>
 
+#include "client/client_constants.h"
 #include "client/include/model/EC/components/EquippedWeaponComponent.h"
 #include "client/include/model/EC/components/PlayerSpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
-
-#define RENDER_SCALAR 2
 
 void RenderSystem::renderEntities(Graphics& graphics, ComponentManager& comp_mgr,
                                   const Camera& camera) {

@@ -12,6 +12,7 @@
 #include "common/dtos/WindowConfig.h"
 
 #include "Camera.h"
+#include "FieldOfView.h"
 #include "HUD.h"
 #include "Map.h"
 
@@ -25,6 +26,7 @@ private:
 
     Map map;
     Camera camera;
+    FieldOfView player_FOV;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
     HUD player_HUD;
