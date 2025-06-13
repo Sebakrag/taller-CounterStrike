@@ -9,8 +9,12 @@ Game::Game(const MatchInfo& match_info, Client& client):
         graphics(match_info.win_config, match_name),
         world(
             // Si hay datos de juego, usar el primer snapshot para el jugador local
-            // Si no hay, usar un EntitySnapshot vacío como fallback
-            !client.getGameInfo().empty() ? client.getGameInfo().front() : EntitySnapshot(),
+            // Si no hay, crear un EntitySnapshot básico para el jugador local
+            !client.getGameInfo().empty() ? 
+                client.getGameInfo().front() : 
+                // Crear un EntitySnapshot con los valores mínimos requeridos
+                // ID 1, tipo PLAYER, sprite PHEONIX, posición (0,0), ángulo 0, vivo
+                EntitySnapshot(1, EntityType::PLAYER, SpriteType::PHEONIX, 0.0f, 0.0f, 0.0f, true),
             // Convertir TileMap a formato MapInfo
             [&match_info]() {
                 // Crear una matriz de enteros basada en TileMap
@@ -30,15 +34,15 @@ Game::Game(const MatchInfo& match_info, Client& client):
                 // Determinar el tipo de sprite basado en el tipo de TileMap
                 SpriteType tileSetType;
                 switch (match_info.tileMap.getType()) {
-                    case TypeTileMap::Forest:
-                        tileSetType = SpriteType::FOREST_TILE_SET;
+                    case TypeTileMap::Aztec:
+                        tileSetType = SpriteType::AZTEC_MAP;
                         break;
-                    case TypeTileMap::Snow:
-                        tileSetType = SpriteType::SNOW_TILE_SET;
+                    case TypeTileMap::Training:
+                        tileSetType = SpriteType::TRAINING_MAP;
                         break;
                     case TypeTileMap::Desert:
                     default:
-                        tileSetType = SpriteType::DESERT_TILE_SET;
+                        tileSetType = SpriteType::DESERT_MAP;
                         break;
                 }
                 
