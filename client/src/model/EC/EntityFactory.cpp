@@ -1,21 +1,35 @@
 #include "client/include/model/EC/EntityFactory.h"
-
 #include "client/include/model/EC/components/RenderComponent.h"
 #include "client/include/model/EC/components/SpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
+#include "common/dtos/EntitySnapshot.h"
+#include "common/types.h"
+
+#include <variant>
+#include <utility>
 
 
 EntityFactory::EntityFactory(ComponentManager& cm): comp_mgr(cm) {}
 
 void EntityFactory::create_specific_entity(const Entity& new_entt,
                                            const EntitySnapshot& snap) const {
-    switch (snap.entt_type) {
-        // case EntityType::TERRORIST: {
-        //     create_terrorist_entt();
-        //     break;
-        // }
-        case EntityType::ANTI_TERRORIST: {
-            create_anti_terrorist_entt(new_entt, snap);
+    // Usar el campo 'type' que existe en EntitySnapshot
+    switch (snap.type) {
+        case EntityType::PLAYER: {
+            // Determinar si es terrorista o anti-terrorista basado en otros datos
+            // Como ejemplo, usamos PlayerSnapshot si está disponible
+            if (std::holds_alternative<PlayerSnapshot>(snap.data)) {
+                const auto& player_data = std::get<PlayerSnapshot>(snap.data);
+                if (player_data.team == Team::CounterTerrorist) {
+                    create_anti_terrorist_entt(new_entt, snap);
+                } else {
+                    // Manejar terroristas si es necesario
+                    // create_terrorist_entt(new_entt, snap);
+                }
+            } else {
+                // Si no hay datos específicos, tratar como anti-terrorista por defecto
+                create_anti_terrorist_entt(new_entt, snap);
+            }
             break;
         }
             // case EntityType::WEAPON: {
