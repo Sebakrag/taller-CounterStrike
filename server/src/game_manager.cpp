@@ -156,7 +156,7 @@ std::vector<MapInfo> GameManager::getAvailableMaps() const {
 
 TileMap GameManager::getMap(const std::string& mapFileName) const {
     try {
-        return mapManager.getTileMap(mapFileName);
+        return mapManager.loadMap(mapFileName);
     } catch (const std::exception& e) {
         std::cerr << "Error al obtener el mapa " << mapFileName << ": " << e.what() << std::endl;
         // Devolver un mapa predeterminado en caso de error
