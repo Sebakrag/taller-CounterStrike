@@ -18,6 +18,7 @@ target_sources(taller_server
         src/weapon/weapon_knife.cpp
         src/weapon/fire_weapon.cpp
         src/weapon/weapon_ak47.cpp
+        src/map_manager.cpp
 
     PUBLIC
     # .h files
@@ -39,4 +40,5 @@ target_sources(taller_server
         include/weapon/weapon.h
         include/weapon/fire_weapon.h
         include/weapon/weapon_ak47.h
+        include/map_manager.h
 )

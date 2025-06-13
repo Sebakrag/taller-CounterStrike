@@ -38,8 +38,14 @@ void ClientProtocol::sendMenuAction(const MenuAction& action) {
     if (action.type == Create || action.type == Join) {
         insertBigEndian16(length, buffer);
         insertStringBytes(action.name_match, buffer);
-        if (action.type == Create)
+        if (action.type == Create) {
             buffer.push_back(action.id_scenary);
+            
+            // Enviamos el nombre del archivo del mapa seleccionado
+            int mapFileNameLength = action.map_file_name.length();
+            insertBigEndian16(mapFileNameLength, buffer);
+            insertStringBytes(action.map_file_name, buffer);
+        }
     }
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
@@ -170,4 +176,50 @@ GameInfo ClientProtocol::recvGameInfo() {
     } else {
         throw std::runtime_error("Error. Byte incorrecto");
     }
+}
+
+std::vector<ClientMapInfo> ClientProtocol::recvAvailableMaps() {
+    std::vector<ClientMapInfo> mapList;
+    
+    uint8_t byte = 0;
+    int r = socket.recvall(&byte, sizeof(uint8_t));
+    if (r == 0) {
+        throw std::runtime_error(
+                "Error. No se recibió ningún byte. Probablemente se cerró el Server.");
+    }
+    
+    if (byte != BYTE_MAPS_LIST) {
+        throw std::runtime_error(
+                "Error. Se esperaba recibir la lista de mapas y llegó otro mensaje.");
+    }
+    
+    // Recibo la cantidad de mapas
+    uint16_t mapCount = recvBigEndian16();
+    
+    // Para cada mapa, recibo su información
+    for (int i = 0; i < mapCount; i++) {
+        ClientMapInfo mapInfo;
+        
+        // Nombre del mapa
+        uint16_t nameLength = recvBigEndian16();
+        mapInfo.name.resize(nameLength);
+        socket.recvall(mapInfo.name.data(), sizeof(uint8_t) * nameLength);
+        
+        // Nombre del archivo
+        uint16_t fileNameLength = recvBigEndian16();
+        mapInfo.fileName.resize(fileNameLength);
+        socket.recvall(mapInfo.fileName.data(), sizeof(uint8_t) * fileNameLength);
+        
+        // Tipo de mapa
+        socket.recvall(&byte, sizeof(uint8_t));
+        mapInfo.type = static_cast<TypeTileMap>(byte);
+        
+        // Dimensiones
+        mapInfo.width = recvBigEndian16();
+        mapInfo.height = recvBigEndian16();
+        
+        mapList.push_back(mapInfo);
+    }
+    
+    return mapList;
 }

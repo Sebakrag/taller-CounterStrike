@@ -16,8 +16,10 @@ void MatchRoom::init(size_t amountPlayers) {
 
 // Constructor: inicializa nombre, host, crea Match y cola de acciones
 MatchRoom::MatchRoom(const std::string& name_match, const std::string& username_host,
-                     std::shared_ptr<Queue<GameInfo>> playerQueue):
-        name_match(name_match), player_host(username_host), match() {
+                     std::shared_ptr<Queue<GameInfo>> playerQueue,
+                     const std::string& map_file_name):
+        name_match(name_match), player_host(username_host), match(), 
+        map_file_name(map_file_name) {
     // Crear la cola para el cliente (GameInfo sender queue)
     // players[username_host] = playerQueue;
     addPlayer(username_host, playerQueue);
@@ -74,5 +76,13 @@ std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
         playerQueues.push_back(pair.second);
     }
     started = true;
-    return std::make_shared<GameLoop>(std::move(match), playerQueues);
+    return std::make_shared<GameLoop>(std::move(match), playerQueues, map_file_name);
+}
+
+void MatchRoom::setMapFileName(const std::string& fileName) {
+    map_file_name = fileName;
+}
+
+std::string MatchRoom::getMapFileName() const {
+    return map_file_name;
 }

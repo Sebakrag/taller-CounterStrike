@@ -74,7 +74,12 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
     bool aux = false;
     switch (menuAction.type) {
         case MenuActionType::Create:
-            aux = gameManager.createMatch(menuAction.name_match, username, senderQueue);
+            // Enviar la lista de mapas disponibles al cliente
+            protocol.sendAvailableMaps(gameManager.getAvailableMaps());
+            
+            // Crear la partida con el mapa seleccionado
+            aux = gameManager.createMatch(menuAction.name_match, username, senderQueue, 
+                                         menuAction.map_file_name);
             protocol.sendConfirmation(aux);
             break;
         case MenuActionType::Join:
@@ -100,7 +105,13 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         std::cout << username << " entro al lobby" << std::endl;
         status = InLobby;
         myMatch = menuAction.name_match;
-        //...protocol.sendTilemap(...);
+        
+        // Guardar el nombre del archivo del mapa seleccionado si estamos creando una partida
+        if (menuAction.type == MenuActionType::Create && !menuAction.map_file_name.empty()) {
+            std::cout << "Mapa seleccionado: " << menuAction.map_file_name << std::endl;
+            // En una implementación completa, aquí guardaríamos el nombre del mapa para usarlo al iniciar la partida
+            // Por ahora lo manejamos en el StartMatch
+        }
     }
 }
 

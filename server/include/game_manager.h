@@ -11,6 +11,7 @@
 #include "../../common/game_info/game_info.h"
 #include "../../common/queue.h"
 
+#include "map_manager.h"
 #include "match.h"
 #include "match_room.h"
 
@@ -21,13 +22,18 @@ class GameManager {
 
     std::mutex m;
     bool server_closed = false;
+    
+    // Gestor de mapas YAML
+    MapManager mapManager;
 
 public:
-    //    GameManager(lista de escenarios, configuraciones, etc) // redefinir el constructor despues
+    GameManager(const std::string& mapsDirectory);
+    ~GameManager() = default;
 
     // devuelve true si pudo crear la partida correctamente
     bool createMatch(const std::string& matchName, const std::string& username,
-                     std::shared_ptr<Queue<GameInfo>> playerQueue);
+                     std::shared_ptr<Queue<GameInfo>> playerQueue,
+                     const std::string& map_file_name = "");
 
     // devuelve true si pudo unirse a la partida correctamente
     bool JoinMatch(const std::string& matchName, const std::string& username,
@@ -45,6 +51,12 @@ public:
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue(const std::string& matchName);
 
     void killAllMatchs();
+
+    // Retorna la lista de mapas disponibles
+    std::vector<MapInfo> getAvailableMaps() const;
+    
+    // Retorna el mapa con el nombre de archivo especificado
+    TileMap getMap(const std::string& mapFileName) const;
 
 private:
     // void reapDeadGameloops();

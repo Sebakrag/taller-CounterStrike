@@ -7,8 +7,9 @@
 #include "../../common/game_info/game_info.h"
 #include "../../common/protocol.h"
 #include "../../common/socket.h"
+#include "map_manager.h"
 
-enum TypeMessage { ListMatchs, ListPlayers };
+enum TypeMessage { ListMatchs, ListPlayers, ListMaps };
 
 class ServerProtocol: public Protocol_ {
 public:
@@ -28,6 +29,8 @@ public:
     void sendMatchRoomInfo(const MatchRoomInfo& matchRoomInfo);
 
     void sendGameInfo(const GameInfo& gameInfo);
+
+    void sendAvailableMaps(const std::vector<MapInfo>& mapList);
 
     std::string recvUsername();
 

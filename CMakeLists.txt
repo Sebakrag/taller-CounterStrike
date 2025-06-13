@@ -104,8 +104,8 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
     FetchContent_MakeAvailable(SDL2 SDL2_image SDL2_mixer SDL2_ttf libSDL2pp)
 endif()
 
-# Agregar yaml-cpp para el editor
-if(TALLER_EDITOR)
+# Agregar yaml-cpp para el editor y servidor
+if(TALLER_EDITOR OR TALLER_SERVER)
     include(FetchContent)
     FetchContent_Declare(
         yaml-cpp
@@ -174,7 +174,11 @@ if(TALLER_SERVER)
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    target_link_libraries(taller_server 
+        PRIVATE
+        taller_common
+        yaml-cpp
+    )
 endif()
 
 if(TALLER_EDITOR)

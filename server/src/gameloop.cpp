@@ -6,10 +6,17 @@
 #include <thread>
 #include <utility>
 
-GameLoop::GameLoop(Match&& match, std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers):
+GameLoop::GameLoop(Match&& match, std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers, 
+                 const std::string& map_file_name):
         match(std::move(match)),
         queueActionsPlayers(std::make_shared<Queue<PlayerAction>>()),
-        queuesPlayers(queuesPlayers) {}
+        queuesPlayers(queuesPlayers),
+        map_file_name(map_file_name) {
+    // Si se proporciona un nombre de archivo de mapa, lo usamos
+    // Si no, continuamos con el mapa predeterminado
+    std::cout << "GameLoop iniciado con mapa: " << 
+              (map_file_name.empty() ? "predeterminado" : map_file_name) << std::endl;
+}
 
 void GameLoop::run() {
     std::cout << "Gameloop Start." << std::endl;
