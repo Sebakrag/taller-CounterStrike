@@ -3,9 +3,9 @@
 
 #include <memory>
 
-#include "common/utils/Vec2D.h"
-#include "client/dtos/FOVInfo.h"
 #include "SDL2pp/Texture.hh"
+#include "client/dtos/FOVInfo.h"
+#include "common/utils/Vec2D.h"
 
 class Graphics;
 
@@ -30,9 +30,9 @@ private:
 public:
     FieldOfView();
 
-    void render(Graphics& graphics, const Vec2D& playerPos, float rotAngle) const;
+    void render(Graphics& graphics, float rotAngle) const;
 
     bool isInFOV(const Vec2D& enttWorldPos, const Vec2D& playerPos, float playerAimAngle);
 };
 
-#endif //FIELDOFVIEW_H
+#endif  // FIELDOFVIEW_H

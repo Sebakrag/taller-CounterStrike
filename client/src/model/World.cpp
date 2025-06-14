@@ -29,13 +29,13 @@ void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
 
 void World::render(Graphics& graphics) {
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-    const Vec2D playerPos = tCompLocalPlayer->getPosition();
-    camera.follow(playerPos);
+
+    camera.follow(tCompLocalPlayer->getPosition());
 
     map.render(graphics, camera);
 
     // Renderizar Field of View
-    player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngle());
+    player_FOV.render(graphics, tCompLocalPlayer->getRotationAngle());
 
     // TODO: Limitar el renderizado con usando el FOV.
     render_sys.renderEntities(graphics, comp_mgr, camera);
@@ -51,7 +51,7 @@ AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
 
     Vec2D aimDir = mouseWorldPos - getPlayerPosition();
     aimDir.normalize();
-    const float angle = aimDir.calculateAngle(-90.0f);
+    const float angle = aimDir.calculateAngle();
 
     return {aimDir, angle};
 }
