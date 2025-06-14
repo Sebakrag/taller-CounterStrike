@@ -567,7 +567,7 @@ void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pi
         
         // Filtrar por archivos de imagen
         QStringList filters;
-        filters << "*.bmp" << "*.png";
+        filters << "*.bmp" << "*.png" << "*.jpg";
         elementsDir.setNameFilters(filters);
         
         // Obtener la lista de archivos

@@ -105,8 +105,10 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         int maxX = 0;
         int maxY = 0;
         for (const Tile* tile : tiles) {
-            int gridX = tile->getGridX();
-            int gridY = tile->getGridY();
+            QPointF pos = tile->getPosition();
+            // Convertir posición a coordenadas de grilla (asumiendo una grilla de 32x32)
+            int gridX = static_cast<int>(pos.x() / 32);
+            int gridY = static_cast<int>(pos.y() / 32);
             if (gridX > maxX) maxX = gridX;
             if (gridY > maxY) maxY = gridY;
         }
@@ -116,8 +118,10 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         
         // Llenar la matriz con los IDs de los tiles
         for (const Tile* tile : tiles) {
-            int gridX = tile->getGridX();
-            int gridY = tile->getGridY();
+            QPointF pos = tile->getPosition();
+            // Convertir posición a coordenadas de grilla (asumiendo una grilla de 32x32)
+            int gridX = static_cast<int>(pos.x() / 32);
+            int gridY = static_cast<int>(pos.y() / 32);
             tileMatrix[gridY][gridX] = tile->getTileId();
         }
         

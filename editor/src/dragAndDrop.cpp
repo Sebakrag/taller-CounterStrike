@@ -1,4 +1,5 @@
 #include "dragAndDrop.h"
+#include <QMessageBox>
 
 DragAndDrop::DragAndDrop(const QPixmap &pixmap, qreal scale, QGraphicsScene* scene)
     : QGraphicsPixmapItem(pixmap), 

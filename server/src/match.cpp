@@ -228,7 +228,11 @@ GameInfo Match::generateGameInfo() const {
         playersInfo.push_back(info);
     }
 
-    GameInfo gameInfo(this->phase, roundTimer, playersInfo);
+    // Crear un vector vacío de ProjectileInfo para el cuarto parámetro requerido
+    std::vector<ProjectileInfo> projectiles;
+    
+    // Ahora usamos el constructor con los 4 parámetros necesarios
+    GameInfo gameInfo(this->phase, static_cast<float>(roundTimer), playersInfo, projectiles);
     return gameInfo;
 }
 
