@@ -6,6 +6,7 @@
 
 #include "map.h"
 #include "player.h"
+#include "weapon/bomb.h"
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
 #include "weapon/projectile.h"
@@ -19,16 +20,13 @@ private:
     Map map;
     GamePhase phase;
     int roundsPlayed = 0;
-    bool bombPlanted = false;
-    int bombPosX, bombPosY;
-    double bombTimer;
-    const double TIME_TO_EXPLODE = 40.0;
     double roundTimer = 1.0;
     const double ROUND_DURATION = 120.0;
     bool roundOver = false;
     Team roundWinner;
     std::vector<Projectile> projectiles;
     std::vector<DroppedWeapon> droppedWeapons;
+    Bomb bomb;
 
 public:
     explicit Match(const TileMap& tilemap);

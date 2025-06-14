@@ -123,6 +123,14 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                     break;
                 }
             }
+
+            if (bomb.isDropped() &&
+                PhysicsEngine::playerTouchingItem(player->getX(), player->getY(), bomb.getX(), bomb.getY())) {
+                if (player->getTeam() == Team::Terrorist) {
+                    bomb.pickUp(player->getId());
+                    std::cout << "Jugador " << player->getId() << " agarro la bomba. \n";
+                }
+            }
             return;
         }
 
@@ -145,13 +153,12 @@ void Match::updateState(double elapsedTime) {
         return;
 
     roundTimer -= elapsedTime;
-    if (bombPlanted) {
-        bombTimer -= elapsedTime;
-        if (bombTimer <= 0) {
-            std::cout << "La bomba exploto!\n";
-            roundOver = true;
-            roundWinner = Team::Terrorist;
-        }
+
+    bomb.update(elapsedTime);
+    if (bomb.hasExploded()) {
+        std::cout << "La bomba exploto!\n";
+        roundOver = true;
+        roundWinner = Team::Terrorist;
     }
 
 
@@ -173,6 +180,9 @@ void Match::updateState(double elapsedTime) {
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
                     if (droppedWeapon)
                         droppedWeapons.emplace_back(std::move(droppedWeapon), Vec2D(target.getX(), target.getY()));
+                    if (bomb.isCarriedBy(target.getId())) {
+                        bomb.drop(target.getX(), target.getY());
+                    }
                 }
 
 
@@ -201,40 +211,28 @@ void Match::processPlant(const std::string& playerName) {
     Player* player = getPlayer(playerName);
     if (!player || !player->isAlive() || player->getTeam() != Team::Terrorist)
         return;
-    if (bombPlanted)
+
+    if (!bomb.isCarriedBy(playerName))
         return;
 
-    int x = player->getX();
-    int y = player->getY();
-    // if (!map.isBombSite(x, y))
-    //   return;
-
-    bombPlanted = true;
-    bombPosX = x;
-    bombPosY = y;
-    bombTimer = TIME_TO_EXPLODE;
-
-    std::cout << "Player " << playerName << " planted the bomb at (" << x << ", " << y << ")\n";
+    if (bomb.plant(player->getX(), player->getY(), map)) {
+        std::cout << "Player " << playerName << " planted the bomb at (" << player->getX() << ", " << player->getY() << ")\n";
+    }
 }
 
 void Match::processDefuse(const std::string& playerName) {
     Player* player = getPlayer(playerName);
     if (!player || !player->isAlive() || player->getTeam() != Team::CounterTerrorist)
         return;
-    if (!bombPlanted)
-        return;
 
-    int x = player->getX();
-    int y = player->getY();
-    if (x != bombPosX || y != bombPosY)
-        return;
-
-    bombPlanted = false;
-    bombTimer = 0;
-    roundOver = true;
-    roundWinner = Team::CounterTerrorist;
-
-    std::cout << "Player " << playerName << " defused the bomb!\n";
+    if (bomb.isPlanted() &&
+        PhysicsEngine::playerTouchingItem(player->getX(), player->getY(), bomb.getX(), bomb.getY())) {
+        if (bomb.defuse()) {
+            std::cout << "Player " << playerName << " defused the bomb!\n";
+            roundOver = true;
+            roundWinner = Team::CounterTerrorist;
+        }
+    }
 }
 
 void Match::checkRoundEnd() {
@@ -262,11 +260,11 @@ void Match::checkRoundEnd() {
         roundWinner = Team::Terrorist;
         std::cout << "Todos los antiterroristas murieron. Ganan los terroristas. \n";
     }
-    // else if (roundTimer <= 0 && !bombPlanted) {
-    //     roundOver = true;
-    //     roundWinner = Team::CounterTerrorist;
-    //     std::cout << "Se acabó el tiempo sin bomba. Ganan los antiterroristas. \n";
-    // }
+     else if (roundTimer <= 0 && !bomb.isPlanted()) {
+         roundOver = true;
+         roundWinner = Team::CounterTerrorist;
+         std::cout << "Se acabó el tiempo sin bomba. Ganan los antiterroristas. \n";
+     }
 }
 
 GameInfo Match::generateGameInfo() const {

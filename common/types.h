@@ -10,6 +10,7 @@ enum class Weapon { None, Glock, Ak47, M3, Awp, Knife };
 enum class TypeWeapon { Primary, Secondary, Knife, Bomb };
 enum class Team { Terrorist, CounterTerrorist };
 enum class GamePhase { Preparation, Combat, EndOfMatch };
+enum class BombState { Dropped, Carried, Planted, Exploded, Defused };
 
 enum class PlayerState : unsigned char { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
 enum class WeaponState : unsigned char { DROPPED, EQUIPPED, HIDDEN };
