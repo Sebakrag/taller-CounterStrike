@@ -18,7 +18,7 @@ Graphics::Graphics(const WindowConfig& config, const std::string& match_name):
         renderer(create_renderer(window)) {
     TextureManager::init(renderer);
     DynamicStencil::init(renderer, config.width, config.height, FOV_CIRCLE_RADIUS, FOV_ANGLE,
-                         STENCIL_ALPHA);
+                         STENCIL_ALPHA, VISIBILITY_DISTANCE);
 }
 
 Window Graphics::create_window(const WindowConfig& config, const std::string& match_name) const {

@@ -50,7 +50,8 @@
 // Stencil (Field Of View)
 #define FOV_CIRCLE_RADIUS \
     32                // in pixels (before assigning a value, consider the player sprite size)
-#define FOV_ANGLE 40  // in degrees
+#define FOV_ANGLE 50  // in degrees
+#define VISIBILITY_DISTANCE 0  // 0 value means to adapt to the window dimensions
 #define PERCENTAGE_OF_TRANSPARENCY 0.75
 #define STENCIL_ALPHA static_cast<int>(255 * PERCENTAGE_OF_TRANSPARENCY)
 
