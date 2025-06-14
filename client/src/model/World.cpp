@@ -29,16 +29,16 @@ void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
 
 void World::render(Graphics& graphics) {
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-
-    camera.follow(tCompLocalPlayer->getPosition());
+    const Vec2D playerPos = tCompLocalPlayer->getPosition();
+    camera.follow(playerPos);
 
     map.render(graphics, camera);
 
     // Renderizar Field of View
-    player_FOV.render(graphics, tCompLocalPlayer->getRotationAngle());
+    player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngle());
 
     // TODO: Limitar el renderizado con usando el FOV.
-    render_sys.renderEntities(graphics, comp_mgr, camera);
+    render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
     player_HUD.render(graphics);
 }

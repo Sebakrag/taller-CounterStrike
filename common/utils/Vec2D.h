@@ -16,6 +16,8 @@ private:
 public:
     Vec2D();
     Vec2D(float x, float y);
+    Vec2D(const Vec2D& other) = default;
+    Vec2D& operator=(const Vec2D& other) = default;
 
     Vec2D& operator+=(const Vec2D& other);
     Vec2D& operator-=(const Vec2D& other);

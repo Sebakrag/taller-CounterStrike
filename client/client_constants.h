@@ -17,7 +17,7 @@
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix.bmp")
 #define L377_KREW_IMG (PLAYER_PATH + "/t_L377_krew.bmp")
 // #define ARTIC_AVENGER_IMG (PLAYER_PATH + "/t_artic_avenger.bmp")
-#define ARTIC_AVENGER_IMG (PLAYER_PATH + "/t3.png")
+#define ARTIC_AVENGER_IMG (PLAYER_PATH + "/t_artic_avenger.png")
 #define GUERRILLA_IMG (PLAYER_PATH + "/t_guerrilla.bmp")
 #define SEAL_FORCE_IMG (PLAYER_PATH + "/ct_seal_force.bmp")
 #define GERMAN_GSG_9_IMG (PLAYER_PATH + "/ct_german_csg_9.bmp")

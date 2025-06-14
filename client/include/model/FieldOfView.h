@@ -18,6 +18,8 @@ class FieldOfView {
 private:
     std::shared_ptr<SDL2pp::Texture> stencil;
     FOVInfo info;
+    Vec2D currentPlayerPos;
+    float currentPlayerAimAngle;
 
     ///
     /// @brief Wraps any angle to keep it within the range [-π, π].
@@ -25,14 +27,18 @@ private:
     /// @param angle Angle in radians.
     /// @return Angle equivalent in direction to the given, but within the range [-π, π].
     ///
-    float WrapAngle(float angle);
+    float WrapAngle(float angle) const;
 
 public:
     FieldOfView();
 
-    void render(Graphics& graphics, float rotAngle) const;
+    ///
+    /// @brief It renders the Field Of View of the player rotate in the given angle, setting
+    /// the player position as the rotation axe. At the same time, it updates those values.
+    ///
+    void render(Graphics& graphics, const Vec2D& playerPos, float rotAngle);
 
-    bool isInFOV(const Vec2D& enttWorldPos, const Vec2D& playerPos, float playerAimAngle);
+    bool isInFOV(const Vec2D& enttWorldPos) const;
 };
 
 #endif  // FIELDOFVIEW_H
