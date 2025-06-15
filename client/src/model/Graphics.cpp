@@ -3,8 +3,10 @@
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
+#include "client/client_constants.h"
 #include "client/include/model/World.h"
 #include "client/include/model/utils/TextureManager.h"
+#include "model/utils/DynamicStencil.h"
 
 #define GAME_NAME "Counter Strike"
 
@@ -15,6 +17,8 @@ Graphics::Graphics(const WindowConfig& config, const std::string& match_name):
         window(create_window(config, match_name)),
         renderer(create_renderer(window)) {
     TextureManager::init(renderer);
+    DynamicStencil::init(renderer, config.width, config.height, FOV_CIRCLE_RADIUS, FOV_ANGLE,
+                         STENCIL_ALPHA, VISIBILITY_DISTANCE);
 }
 
 Window Graphics::create_window(const WindowConfig& config, const std::string& match_name) const {

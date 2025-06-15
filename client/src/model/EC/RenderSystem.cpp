@@ -2,22 +2,24 @@
 
 #include <cmath>
 
+#include "client/client_constants.h"
 #include "client/include/model/EC/components/EquippedWeaponComponent.h"
 #include "client/include/model/EC/components/PlayerSpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
 
-#define RENDER_SCALAR 2
+RenderSystem::RenderSystem(const Entity localPlayer): local_player(localPlayer) {}
+
 
 void RenderSystem::renderEntities(Graphics& graphics, ComponentManager& comp_mgr,
-                                  const Camera& camera) {
-    renderDroppedWeapons(graphics, comp_mgr, camera);
-    // renderBullets(graphics, comp_mgr, camera);
-    renderPlayers(graphics, comp_mgr, camera);
+                                  const Camera& camera, const FieldOfView& player_FOV) {
+    renderDroppedWeapons(graphics, comp_mgr, camera, player_FOV);
+    // renderBullets(graphics, comp_mgr, camera, player_FOV);
+    renderPlayers(graphics, comp_mgr, camera, player_FOV);
 }
 
 void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& comp_mgr,
-                                        const Camera& camera) {
+                                        const Camera& camera, const FieldOfView& player_FOV) {
     comp_mgr.forEach<WeaponSpriteComponent>([&](WeaponSpriteComponent& weaponSpr, const Entity e) {
         if (weaponSpr.getState() != WeaponState::DROPPED) {
             return;
@@ -32,7 +34,7 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
         const int width = weaponSpr.getWidth();
         const int height = weaponSpr.getHeight();
 
-        if (!camera.isVisible(enttMapPos, width, height))
+        if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
             return;
 
         // Calculamos la posición de la entidad relativa a la cámara
@@ -47,7 +49,7 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
 }
 
 // void RenderSystem::renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera&
-// camera) {
+// camera, const FieldOfView& player_FOV) {
 //     comp_mgr.forEach<BulletSpriteComponent>([&](BulletSpriteComponent& bulletSpr, const Entity e)
 //     {
 //         const auto transform = comp_mgr.getComponent<TransformComponent>(e);
@@ -58,7 +60,7 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
 //         const int width = bulletSpr.getWidth();
 //         const int height = bulletSpr.getHeight();
 //
-//         if (!camera.isVisible(enttMapPos, width, height))
+//         if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
 //             return;
 //
 //         // Calculamos la posición de la entidad relativa a la cámara
@@ -76,7 +78,7 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
 // }
 
 void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
-                                 const Camera& camera) {
+                                 const Camera& camera, const FieldOfView& player_FOV) {
     comp_mgr.forEach<PlayerSpriteComponent>([&](PlayerSpriteComponent& playerSpr, const Entity e) {
         const auto transform = comp_mgr.getComponent<TransformComponent>(e);
         if (!transform)
@@ -87,7 +89,8 @@ void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
         const int width = playerSpr.getWidth();
         const int height = playerSpr.getHeight();
 
-        if (!camera.isVisible(playerMapPos, width, height))
+        if (e != local_player &&
+            (!camera.isVisible(playerMapPos, width, height) || !player_FOV.isInFOV(playerMapPos)))
             return;
 
         // Calculamos la posición de la entidad relativa a la cámara

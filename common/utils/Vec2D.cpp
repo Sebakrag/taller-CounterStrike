@@ -71,6 +71,8 @@ float Vec2D::calculateAngle(const float correctionDegrees) const {
     return degrees;
 }
 
+float Vec2D::calculateNormSquared() const { return ((this->x * this->x) + (this->y * this->y)); }
+
 void Vec2D::set(const float x, const float y) {
     setX(x);
     setY(y);
