@@ -1,8 +1,8 @@
-#include "client/include/model/HUD.h"
+#include "../../../client/include/model/HUD.h"
 
 #include <iomanip>
 
-#include "client/include/model/Graphics.h"
+#include "../../../client/include/model/Graphics.h"
 
 
 HUD::HUD(): numberRenderer(SpriteType::HUD_NUMBERS), symbolsRenderer(SpriteType::HUD_SYMBOLS) {
@@ -19,6 +19,14 @@ void HUD::updateFromSnapshot(const EntitySnapshot& snap) {
                 player->ammo;  // TODO: eliminar ammo de player. AHora hay que obtenerlo del arma.
         ammoInfo.ammoLoaded = 5;
     }
+}
+
+void HUD::updateFromSnapshot(const LocalPlayerInfo& player, float _timeLeft) {
+    timeLeft = _timeLeft;
+    health = player.health;
+    money = player.money;
+    ammoInfo.totalAmmo = player.ammo_weapon;
+    ammoInfo.ammoLoaded = 5;  // TODO: AGREGAR campo en LocalPlayerInfo
 }
 
 void HUD::render(Graphics& graphics) {

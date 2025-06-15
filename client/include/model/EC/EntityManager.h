@@ -4,7 +4,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "common/dtos/EntitySnapshot.h"
+#include "../../../../common/dtos/EntitySnapshot.h"
+#include "../../../../common/game_info/game_info.h"
 
 #include "ComponentManager.h"
 #include "Entity.h"
@@ -24,6 +25,7 @@ public:
     EntityManager(ComponentManager& cm, int numPlayers);
 
     Entity create_entity(const EntitySnapshot& snap);
+    Entity create_local_player(const LocalPlayerInfo& snap);
 
     ///
     /// @brief Destroy the entity that corresponds to the id received from the server.

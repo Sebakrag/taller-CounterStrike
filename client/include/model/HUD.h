@@ -3,8 +3,9 @@
 
 #include <string>
 
-#include "common/dtos/AmmoInfo.h"
-#include "common/dtos/EntitySnapshot.h"
+#include "../../../common/dtos/AmmoInfo.h"
+#include "../../../common/dtos/EntitySnapshot.h"
+#include "../../../common/game_info/local_player_info.h"
 #include "utils/NumberRenderer.h"
 #include "utils/SymbolsRenderer.h"
 
@@ -41,8 +42,11 @@ private:
 
 public:
     HUD();
-
+    // TODO: eliminar esta y reemplazarla por la de abajo
     void updateFromSnapshot(const EntitySnapshot& snap);
+
+    void updateFromSnapshot(const LocalPlayerInfo& localPlayerInfo, float timeLeft);
+
     void render(Graphics& graphics);
 };
 

@@ -1,4 +1,4 @@
-#include "client/include/model/EC/EntityManager.h"
+#include "../../../../client/include/model/EC/EntityManager.h"
 
 #include <stdexcept>
 
@@ -21,6 +21,24 @@ Entity EntityManager::create_entity(const EntitySnapshot& snap) {
     entt_factory.create_specific_entity(new_entt, snap);
     return new_entt;
 }
+
+Entity EntityManager::create_local_player(const LocalPlayerInfo& localPlayerInfo) {
+    Entity new_entt;
+    if (!free_ids.empty()) {
+        const auto it = free_ids.begin();
+        new_entt = *it;
+        free_ids.erase(it);
+    } else if (next_id <= MAX_ENTITIES) {
+        new_entt = next_id++;
+    } else {
+        throw std::runtime_error("Cannot create entity because the game reached the MAX_ENTITIES");
+    }
+
+    server_entt_id_to_entity[localPlayerInfo.server_entt_id] = new_entt;
+    entt_factory.createEntityPlayer(new_entt, localPlayerInfo);
+    return new_entt;
+}
+
 
 void EntityManager::destroy_entity_immediately(const ServerEntityID& serv_entt_id) {
     auto it = server_entt_id_to_entity.find(serv_entt_id);
