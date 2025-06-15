@@ -8,7 +8,8 @@ World::World(const TileMap& tileMap, const WindowConfig& winConfig, const int nu
         comp_updater(entt_mgr, comp_mgr),
         map(tileMap),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
-        local_player(entt_mgr.create_entity(firstLocalPlayerSnap)) {}
+        local_player(entt_mgr.create_entity(firstLocalPlayerSnap)),
+        render_sys(local_player) {}
 
 void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
     // std::cout << dt << std::endl;

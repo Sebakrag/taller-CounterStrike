@@ -8,6 +8,7 @@
 
 class RenderSystem {
 private:
+    Entity local_player;
     void renderDroppedWeapons(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
                               const FieldOfView& player_FOV);
     // void renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
@@ -17,7 +18,7 @@ private:
                               const Rect& player_dest_rect, double rotAngle);
 
 public:
-    RenderSystem() = default;
+    explicit RenderSystem(Entity localPlayer);
 
     void renderEntities(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
                         const FieldOfView& player_FOV);

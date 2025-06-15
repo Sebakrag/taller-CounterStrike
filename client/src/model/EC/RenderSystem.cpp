@@ -8,6 +8,9 @@
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
 
+RenderSystem::RenderSystem(const Entity localPlayer): local_player(localPlayer) {}
+
+
 void RenderSystem::renderEntities(Graphics& graphics, ComponentManager& comp_mgr,
                                   const Camera& camera, const FieldOfView& player_FOV) {
     renderDroppedWeapons(graphics, comp_mgr, camera, player_FOV);
@@ -85,8 +88,9 @@ void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
 
         const int width = playerSpr.getWidth();
         const int height = playerSpr.getHeight();
-        // TODO: diferenciar al jugador local de este chequeo.
-        if (!camera.isVisible(playerMapPos, width, height) || !player_FOV.isInFOV(playerMapPos))
+
+        if (e != local_player &&
+            (!camera.isVisible(playerMapPos, width, height) || !player_FOV.isInFOV(playerMapPos)))
             return;
 
         // Calculamos la posición de la entidad relativa a la cámara
