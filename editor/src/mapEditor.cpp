@@ -1204,9 +1204,19 @@ void MapEditor::placeZone(QPointF scenePos)
     qreal x = gridPos.x() * 32.0;
     qreal y = gridPos.y() * 32.0;
     
-    // Determinar el tipo de zona basado en el ID
-    // Asumimos que currentZoneId 0 es TEAM_SPAWN_CT y 1 es TEAM_SPAWN_T
-    int zoneType = (currentZoneId == 0) ? TEAM_SPAWN_CT : TEAM_SPAWN_T;
+    // CLAVE: Asignamos de manera explícita los tipos de zona
+    // La imagen dust_klin_tile_62.png con la letra 'A' (índice 0) SIEMPRE es Counter-Terrorist
+    // La imagen dust_klin_tile_63.png con la letra 'B' (índice 1) SIEMPRE es Terrorist
+    
+    // FORZAR los tipos correctos sin ambigüedad
+    int zoneType;
+    if (currentZoneId == 0) { // 'A'
+        zoneType = TEAM_SPAWN_CT; // Counter-Terrorist (0)
+        qDebug() << "Colocando zona tipo: Counter-Terrorist (FORZADO) con ID: 0 (letra A)";
+    } else { // 'B'
+        zoneType = TEAM_SPAWN_T; // Terrorist (1)
+        qDebug() << "Colocando zona tipo: Terrorist (FORZADO) con ID: 1 (letra B)";
+    }
     
     // PRIMERO: Eliminar cualquier zona DEL MISMO TIPO (zoneType) que ya exista en cualquier parte del mapa
     // Ya que solo debe haber una zona de cada tipo en todo el mapa
@@ -1860,10 +1870,17 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     // Usar data(1) para obtener el tipo de elemento, que es donde lo almacenamos al colocar elementos
     int elementType = item->data(1).toInt();
     
-    // Verificar que el tipo de elemento sea válido
-    if (elementType <= 0) {
+    // Verificar que el tipo de elemento sea válido (TEAM_SPAWN_CT es 0, por lo que debemos aceptarlo)
+    if (elementType < 0) {
         qDebug() << "Error: Tipo de elemento inválido o no definido:" << elementType;
         return nullptr;
+    }
+    
+    // Mensaje de depuración para confirmar el tipo correcto
+    if (elementType == TEAM_SPAWN_CT) {
+        qDebug() << "Elemento validado: Counter-Terrorist (tipo 0)";
+    } else if (elementType == TEAM_SPAWN_T) {
+        qDebug() << "Elemento validado: Terrorist (tipo 1)";
     }
     
     // Convertir posición de pixeles a unidades de mundo si es necesario
@@ -1883,10 +1900,22 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     switch (elementType) {
         case TEAM_SPAWN_CT:
         case TEAM_SPAWN_T: {
-            // Usar data(0) para obtener el ID de la zona, que es donde lo almacenamos al colocar zonas
-            int teamId = item->data(0).toInt();
-            qDebug() << "  - Zona de equipo ID:" << teamId;
-            return new TeamSpawn(worldPos, teamId);
+            // NOTA IMPORTANTE: Determinamos explícitamente el tipo de equipo correcto
+            // basado en el tipo de elemento almacenado (eliminando la ambigüedad)
+            
+            // El tipo de elemento ya viene establecido correctamente desde placeZone
+            int correctTeamId;
+            
+            if (elementType == TEAM_SPAWN_CT) {
+                correctTeamId = 0;  // Counter-Terrorist
+                qDebug() << "  - Convirtiendo zona CT (letra A) a TeamSpawn con ID 0";
+            } else { // TEAM_SPAWN_T
+                correctTeamId = 1;  // Terrorist
+                qDebug() << "  - Convirtiendo zona T (letra B) a TeamSpawn con ID 1";
+            }
+            
+            // Creamos el TeamSpawn con el ID correcto
+            return new TeamSpawn(worldPos, correctTeamId);
         }
         
         case BOMB_ZONE: {

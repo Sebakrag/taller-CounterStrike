@@ -17,7 +17,14 @@ void MapElement::setPosition(const QPointF &pos) {
 
 // TeamSpawn implementation
 TeamSpawn::TeamSpawn(const QPointF &pos, int team) 
-    : MapElement(pos, team == 0 ? TEAM_SPAWN_CT : TEAM_SPAWN_T), teamId(team) {}
+    : MapElement(pos, team == 0 ? TEAM_SPAWN_CT : TEAM_SPAWN_T), teamId(team) {
+    // Verificación adicional para asegurar consistencia de tipos
+    if ((team == 0 && elementType != TEAM_SPAWN_CT) ||
+        (team == 1 && elementType != TEAM_SPAWN_T)) {
+        qDebug() << "¡ALERTA! Inconsistencia en tipo de equipo detectada y corregida.";
+        elementType = (team == 0) ? TEAM_SPAWN_CT : TEAM_SPAWN_T;
+    }
+}
 
 int TeamSpawn::getTeamId() const {
     return teamId;
