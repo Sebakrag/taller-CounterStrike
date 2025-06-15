@@ -113,8 +113,17 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     socket.recvall(bytes_tilemap.data(), sizeof(uint8_t) * size_buffer_tilemap);
 
     TileMap tilemap(bytes_tilemap);
-    // TODO: Recibir numPlayers y agregarlo al constructor de MatchInfo (ahora lo hardcodeo).
-    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), tilemap, 10);
+    // numero de jugadores
+    int numPlayers = recvBigEndian16();
+
+    // playerInfo
+    int size_buffer = recvBigEndian16();
+    std::vector<uint8_t> playerInfobytes(size_buffer);
+    socket.recvall(playerInfobytes.data(), sizeof(uint8_t) * size_buffer);
+    LocalPlayerInfo localPlayerInfo(playerInfobytes);
+
+    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), tilemap,
+                     numPlayers, localPlayerInfo);
 }
 
 

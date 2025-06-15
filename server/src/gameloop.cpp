@@ -6,7 +6,8 @@
 #include <thread>
 #include <utility>
 
-GameLoop::GameLoop(Match&& match, std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers):
+GameLoop::GameLoop(Match&& match,
+                   const std::map<std::string, std::shared_ptr<Queue<GameInfo>>>& queuesPlayers):
         match(std::move(match)),
         queueActionsPlayers(std::make_shared<Queue<PlayerAction>>()),
         queuesPlayers(queuesPlayers) {}
@@ -31,14 +32,16 @@ void GameLoop::run() {
 
             // 2. envío el estado de juego a cada jugador
             for (auto it = queuesPlayers.begin(); it != queuesPlayers.end();) {
+                std::string user_name = it->first;
+                auto queue = it->second;
                 try {
-                    (*it)->try_push(match.generateGameInfo());
+                    queue->try_push(match.generateGameInfo(user_name));
                     ++it;
                 } catch (ClosedQueue& e) {  // si un jugador se fue de la partida (cerró el juego)
                     it = queuesPlayers.erase(it);  // borro queue y continúo
                     std::cout << "borro queue" << std::endl;
-                    if (queuesPlayers.size() ==
-                        0) {  // si se fueron todos los jugadores, termina el gameloop
+                    if (queuesPlayers.size() == 0) {
+                        // si se fueron todos los jugadores, termina el gameloop
                         stop();
                     }
                 }
@@ -73,4 +76,13 @@ void GameLoop::kill() {
     }
     stop();
 }
+
+// bool GameLoop::containsPlayer(const std::string& username) const {
+//     return match.containsPlayer(username);
+// }
+
+// PlayerInfo GameLoop::getPlayerInfo(const std::string& username) const {
+//     return match.generatePlayerInfo(username);
+// }
+const Match& GameLoop::getMatch() const { return match; }
 std::shared_ptr<Queue<PlayerAction>> GameLoop::getActionsQueue() { return queueActionsPlayers; }

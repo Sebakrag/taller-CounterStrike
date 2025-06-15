@@ -2,17 +2,18 @@
 #define WEAPON_FACTORY_H
 
 #include <memory>
-#include "weapon_glock.h"
+
+#include "../../../common/types.h"
+
 #include "weapon_ak47.h"
-#include "weapon_m3.h"
 #include "weapon_awp.h"
+#include "weapon_glock.h"
 #include "weapon_knife.h"
-#include "common/types.h"
+#include "weapon_m3.h"
 
 class WeaponFactory {
 public:
     static std::unique_ptr<Weapon_> create(Weapon type);
-
 };
 
 #endif

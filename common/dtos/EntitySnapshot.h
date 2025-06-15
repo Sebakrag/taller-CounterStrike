@@ -5,9 +5,9 @@
 #include <type_traits>
 #include <variant>
 
-#include "client/include/model/utils/SpriteType.h"
-#include "common/types.h"
-#include "common/utils/EntityType.h"
+#include "../../client/include/model/utils/SpriteType.h"
+#include "../../common/types.h"
+#include "../../common/utils/EntityType.h"
 
 struct PlayerSnapshot;
 struct WeaponSnapshot;
@@ -41,11 +41,19 @@ struct EntitySnapshot {
 
     // TODO: conviene distinguir entre el local player y los demas players?
     ///
-    /// @brief Constructor para un PLAYER.
+    /// @brief Constructor para el LOCAL PLAYER.
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive, int hp, int money, int ammo,
                    PlayerState state, ServerEntityID equipped_weapon_id, Team team);
+
+    ///
+    /// @brief Constructor para el LOCAL PLAYER.
+    ///
+    EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
+                   float pos_y, float angle, bool alive, PlayerState state,
+                   ServerEntityID equipped_weapon_id, Team team);
+
 
     ///
     /// @brief Constructor para un WEAPON.

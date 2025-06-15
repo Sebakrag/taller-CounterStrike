@@ -4,9 +4,10 @@
 #include <iostream>
 #include <string>
 
-#include "server/include/id_generator.h"
+#include "../../server/include/id_generator.h"
 
 Player::Player(const std::string& name, const Team team):
+        serverId(IdGenerator::getNextId()),
         name(name),
         team(team),
         posX(320),
@@ -14,11 +15,16 @@ Player::Player(const std::string& name, const Team team):
         health(100),
         state(PlayerState::Idle),
         knife(WeaponFactory::create(Weapon::Knife)),
+        primaryWeapon(WeaponFactory::create(
+                Weapon::Ak47)),  // esto hay que quitarlo cuando se pueda comprar armas.
         secondaryWeapon(WeaponFactory::create(Weapon::Glock)),
         equippedWeapon(TypeWeapon::Knife),
         money(800),
         kills(0),
-        serverId(IdGenerator::getNextId()){}
+        skinT(PlayerSkin::Terrorist3),
+        skinCT(PlayerSkin::CounterTerrorist3) {
+    std::cout << "Server ID del Player: " << serverId << std::endl;
+}
 
 
 void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
@@ -74,9 +80,7 @@ Weapon_* Player::getEquippedWeaponInstance() {
     }
 }
 
-Weapon_ *Player::getPrimaryWeapon() const {
-    return primaryWeapon.get();
-}
+Weapon_* Player::getPrimaryWeapon() const { return primaryWeapon.get(); }
 
 bool Player::isAlive() const { return state != PlayerState::Dead; }
 
@@ -94,7 +98,8 @@ bool Player::canShoot(uint64_t currentTimeMs) const {
 }
 
 void Player::takeDamage(int dmg) {
-    if (!isAlive()) return;
+    if (!isAlive())
+        return;
 
     health -= dmg;
     if (health <= 0) {
@@ -105,19 +110,50 @@ void Player::takeDamage(int dmg) {
 
 std::vector<Projectile> Player::shoot(float dirX, float dirY, uint64_t currentTimeMs) {
     Weapon_* weapon = getEquippedWeaponInstance();
-    if (!weapon || !weapon->canShoot(currentTimeMs)) return {};
+    if (!weapon || !weapon->canShoot(currentTimeMs))
+        return {};
 
     return weapon->shoot(posX, posY, dirX, dirY, name, currentTimeMs);
 }
 
-std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() {
-    return std::move(primaryWeapon);
+std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() { return std::move(primaryWeapon); }
+
+uint32_t Player::getServerId() const { return serverId; }
+
+LocalPlayerInfo Player::generateLocalPlayerInfo() const {
+    PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
+    int ammo = 0;
+    if (equippedWeapon == TypeWeapon::Primary) {
+        ammo = primaryWeapon->getBullets();
+    } else if (equippedWeapon == TypeWeapon::Secondary) {
+        ammo = secondaryWeapon->getBullets();
+    }
+    Weapon currentWeapon = Weapon::None;
+    if (equippedWeapon == TypeWeapon::Primary) {
+        currentWeapon = primaryWeapon->getWeaponType();
+    } else if (equippedWeapon == TypeWeapon::Secondary) {
+        currentWeapon = secondaryWeapon->getWeaponType();
+    } else if (equippedWeapon == TypeWeapon::Knife) {
+        currentWeapon = Weapon::Knife;
+    } else if (equippedWeapon == TypeWeapon::Bomb) {
+        currentWeapon = Weapon::Bomb;
+    }
+    return LocalPlayerInfo(serverId, team, currentSkin, Vec2D(posX, posY), angle, currentWeapon,
+                           health, money, ammo);
 }
 
-uint32_t Player::getServerId() const {
-    return serverId;
+PlayerInfo Player::generatePlayerInfo() const {
+    PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
+    Weapon currentWeapon = Weapon::None;
+    if (equippedWeapon == TypeWeapon::Primary) {
+        currentWeapon = primaryWeapon->getWeaponType();
+    } else if (equippedWeapon == TypeWeapon::Secondary) {
+        currentWeapon = secondaryWeapon->getWeaponType();
+    } else if (equippedWeapon == TypeWeapon::Knife) {
+        currentWeapon = Weapon::Knife;
+    } else if (equippedWeapon == TypeWeapon::Bomb) {
+        currentWeapon = Weapon::Bomb;
+    }
+
+    return PlayerInfo(serverId, name, team, currentSkin, Vec2D(posX, posY), angle, currentWeapon);
 }
-
-
-
-

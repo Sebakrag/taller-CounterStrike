@@ -102,15 +102,24 @@ MatchRoomInfo GameManager::getMatchRoomInfo(const std::string& matchName) {
     return it->second.getMatchRoomInfo();
 }
 
-MatchInfo GameManager::getMatchInfo(const std::string& matchName) {
-    auto it = lobbies.find(matchName);
-    if (it == lobbies.end()) {  // no existe la partida
+MatchInfo GameManager::getMatchInfo(const std::string& matchName, const std::string& username) {
+    auto it2 = gameLoops.find(matchName);
+    if (it2 == gameLoops.end()) {  // no existe la partida
         throw std::runtime_error("No existe la partida.");
     }
-    std::string id_scenary = it->second.getIdScenary();
-    // TODO: Enviar numPlayers a traves de MatchInfo (ahora hardcodeo).
+    const Match& match = it2->second->getMatch();
+    if (match.containsPlayer(username) == false) {
+        throw std::runtime_error("El usuario no está unido a esa partida.");
+    }
+    auto localPlayerInfo = match.generateLocalPlayerInfo(username);
+    std::string id_scenary = match.getIdScenario();
+    int numPlayers = match.countPlayers();
+
+    // PlayerInfo localPlayerInfo(1, username,Team::CounterTerrorist, PlayerSkin::CounterTerrorist1,
+    // Vec2D(20, 20), 0,TypeWeapon::Secondary,100,200,  30); //
+    //  TODO: Enviar numPlayers a traves de MatchInfo (ahora hardcodeo).
     return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
-                     ScenarioRegistry::getTileMap(id_scenary), 10);
+                     ScenarioRegistry::getTileMap(id_scenary), numPlayers, localPlayerInfo);
 }
 
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {

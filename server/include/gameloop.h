@@ -2,6 +2,7 @@
 #define GAMELOOP_H_
 
 #include <list>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -23,12 +24,19 @@ private:
     std::shared_ptr<Queue<PlayerAction>> queueActionsPlayers;  // recurso compartido
 
     // queues senders. cada queue es un recurso compartido con los senders
-    std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers;
+    // std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers;
+    std::map<std::string, std::shared_ptr<Queue<GameInfo>>> queuesPlayers;
 
 public:
-    GameLoop(Match&& match, std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers);
+    GameLoop(Match&& match,
+             const std::map<std::string, std::shared_ptr<Queue<GameInfo>>>& queuesPlayers);
 
+    /**
+     * Devuelve un puntero a la Queue donde llegarán todas las acciones de los jugadores.
+     */
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue();
+
+    const Match& getMatch() const;
 
     void kill();
 

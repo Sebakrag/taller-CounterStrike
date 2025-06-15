@@ -10,6 +10,7 @@
 
 #include "bullet_info.h"
 #include "item_info.h"
+#include "local_player_info.h"
 #include "player_info.h"
 #include "projectile_info.h"
 
@@ -18,8 +19,7 @@
 
 class GameInfo {
 private:
-    std::vector<EntitySnapshot>
-            entities;  // TODO. Aplicar logica de generar el vector en cada constructor.
+    std::vector<EntitySnapshot> entities;
 
 public:
     GamePhase gamePhase;
@@ -30,29 +30,28 @@ public:
                      // juego. En el juego, indica cuanto falta para que explote la bomba, luego de
                      // ser colocada.
 
-    std::vector<PlayerInfo> players;
+    LocalPlayerInfo localPlayer;
+    std::vector<PlayerInfo> otherPlayers;
     std::vector<BulletInfo> bullets;
     std::vector<ItemInfo> items;
-    std::vector<ProjectileInfo> projectiles;
 
     GameInfo() {}
 
-    explicit GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles);
-
     explicit GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
-                      const std::vector<PlayerInfo>& players,
+                      const LocalPlayerInfo& localPlayer,
+                      const std::vector<PlayerInfo>& otherPlayers,
                       const std::vector<BulletInfo>& bullets, const std::vector<ItemInfo>& items);
 
 
     GameInfo(const GameInfo& other);
     GameInfo& operator=(const GameInfo& other);
 
+    // private:
     explicit GameInfo(const std::vector<uint8_t>& bytes);
 
     std::vector<uint8_t> toBytes() const;
 
-    // nota. por ahora solo funciona si se usa el constructor con el buffer.
-    std::vector<EntitySnapshot> getSnapshots();
+    std::vector<EntitySnapshot> getSnapshots() const;
 
     void print() const;
 };

@@ -7,30 +7,23 @@
 #include "../protocol.h"
 
 #include "bullet_info.h"
+#include "local_player_info.h"
 #include "player_info.h"
 
 // GameInfo::GameInfo():
 //         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30)
 //         {}
 
-GameInfo::GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles):
-        gamePhase(gamePhase),
-        bombPlanted(false),
-        bombX(0),
-        bombY(0),
-        timeLeft(timeLeft),
-        players(players),
-        projectiles(projectiles) {}
-
 GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
-                   const std::vector<PlayerInfo>& players, const std::vector<BulletInfo>& bullets,
-                   const std::vector<ItemInfo>& items):
+                   const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
+                   const std::vector<BulletInfo>& bullets, const std::vector<ItemInfo>& items):
         gamePhase(gamePhase),
         bombPlanted(bombPlanted),
         bombX(bombX),
         bombY(bombY),
         timeLeft(timeLeft),
-        players(players),
+        localPlayer(localPlayer),
+        otherPlayers(otherPlayers),
         bullets(bullets),
         items(items) {}
 
@@ -41,7 +34,8 @@ GameInfo::GameInfo(const GameInfo& other):
         bombX(other.bombX),
         bombY(other.bombY),
         timeLeft(other.timeLeft),
-        players(other.players),
+        localPlayer(other.localPlayer),
+        otherPlayers(other.otherPlayers),
         bullets(other.bullets),
         items(other.items) {}
 
@@ -53,7 +47,8 @@ GameInfo& GameInfo::operator=(const GameInfo& other) {
         bombX = other.bombX;
         bombY = other.bombY;
         timeLeft = other.timeLeft;
-        players = other.players;
+        localPlayer = other.localPlayer;
+        otherPlayers = other.otherPlayers;
         bullets = other.bullets;
         items = other.items;
     }
@@ -64,9 +59,36 @@ GameInfo& GameInfo::operator=(const GameInfo& other) {
 GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     // GamePhase (1 byte)
     gamePhase = Protocol_::decodeGamePhase(bytes[0]);
-
-    // Players
     size_t index = 1;
+
+    // Bomb info
+    bombPlanted = Protocol_::decodeBool(bytes[index]);
+    index += 1;
+    bombX = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    index += 2;
+    bombY = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    index += 2;
+
+    // Time left
+    timeLeft =
+            Protocol_::getFloat(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
+    index += 4;
+    // local Player.
+    std::vector<uint8_t> localPlayerBytes(bytes.begin() + index,
+                                          bytes.begin() + index + SIZE_LOCAL_PLAYER_INFO);
+    localPlayer = LocalPlayerInfo(localPlayerBytes);
+    index += SIZE_LOCAL_PLAYER_INFO;
+
+    // cargo snapshot
+    const auto x = localPlayer.position.getX();
+    const auto y = localPlayer.position.getY();
+    EntitySnapshot entity(localPlayer.server_entt_id, EntityType::PLAYER, SpriteType::ARTIC_AVENGER,
+                          x, y, localPlayer.angle_direction, true, localPlayer.health,
+                          localPlayer.money, localPlayer.ammo_weapon, localPlayer.state, 6,
+                          localPlayer.team);
+    entities.emplace_back(entity);
+
+    // other players
     uint16_t numPlayers = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
 
@@ -74,18 +96,17 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         uint16_t size = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
         index += 2;
 
-        std::vector<uint8_t> playerBytes(
-                bytes.begin() + index,
-                bytes.begin() + index + size);  // 19 bytes después del username
+        std::vector<uint8_t> playerBytes(bytes.begin() + index, bytes.begin() + index + size);
+        otherPlayers.emplace_back(playerBytes);
 
-        players.emplace_back(playerBytes);
-        PlayerInfo& p = players.back();
+        // cargo snapshots. TODO: refactorizar cliente para no utilizar el vector de snapshots
+        PlayerInfo& p = otherPlayers.back();
 
-        const auto x = static_cast<float>(p.position.getX());
-        const auto y = static_cast<float>(p.position.getY());
+        const float x = p.position.getX();
+        const float y = p.position.getY();
 
         EntitySnapshot entity(p.server_entt_id, EntityType::PLAYER, SpriteType::ARTIC_AVENGER, x, y,
-                              p.angle_direction, true, p.health, p.money, 0, p.state, 6, p.team);
+                              p.angle_direction, true, p.state, 3, p.team);
         entities.emplace_back(entity);
 
         index += size;
@@ -99,15 +120,13 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> bulletBytes(bytes.begin() + index,
                                          bytes.begin() + index + SIZE_BULLET_INFO);
         bullets.emplace_back(bulletBytes);
+
+        // cargo snapshot
         BulletInfo& b = bullets.back();
-
-        const auto x = static_cast<float>(b.pos_x);
-        const auto y = static_cast<float>(b.pos_y);
-
-        EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, x, y,
+        EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, b.pos_x, b.pos_y,
                               b.direction.calculateAngle(), true);
-
         entities.emplace_back(entity);
+
         index += SIZE_BULLET_INFO;
     }
 
@@ -119,29 +138,14 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> itemBytes(bytes.begin() + index,
                                        bytes.begin() + index + SIZE_ITEM_INFO);
         items.emplace_back(itemBytes);
-        ItemInfo& item = items.back();
 
-        const auto x = static_cast<float>(item.pos_x);
-        const auto y = static_cast<float>(item.pos_y);
-        // TODO: esta bueno generalizar a items dropeados. Pero como por ahora solo tenemos
-        // armas dropeadas lo simplificamos.
-        EntitySnapshot entity(item.server_entt_id, EntityType::WEAPON, item.getSpriteType(), x, y,
-                              0, true, WeaponState::DROPPED);
+        // cargo snapshot
+        ItemInfo& item = items.back();
+        EntitySnapshot entity(item.server_entt_id, EntityType::WEAPON, item.getSpriteType(),
+                              item.pos_x, item.pos_y, 0, true, WeaponState::DROPPED);
         entities.emplace_back(entity);
         index += SIZE_ITEM_INFO;
     }
-
-    // Bomb info
-    bombPlanted = Protocol_::decodeBool(bytes[index]);
-    index += 1;
-    bombX = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
-    bombY = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
-
-    // Time left
-    timeLeft =
-            Protocol_::getFloat(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
 }
 
 std::vector<uint8_t> GameInfo::toBytes() const {
@@ -149,9 +153,22 @@ std::vector<uint8_t> GameInfo::toBytes() const {
 
     buffer.push_back(Protocol_::encodeGamePhase(gamePhase));
 
-    // players.
-    Protocol_::insertBigEndian16(players.size(), buffer);
-    for (auto& p: players) {
+    // bomb
+    buffer.push_back(Protocol_::encodeBool(bombPlanted));
+    Protocol_::insertBigEndian16(bombX, buffer);
+    Protocol_::insertBigEndian16(bombY, buffer);
+
+    // time
+    Protocol_::insertFloat4Bytes(timeLeft, buffer);
+
+    // localPlayer
+    for (uint8_t& b: localPlayer.toBytes()) {
+        buffer.push_back(b);
+    }
+
+    // otherPlayers.
+    Protocol_::insertBigEndian16(otherPlayers.size(), buffer);
+    for (auto& p: otherPlayers) {
         auto p_bytes = p.toBytes();
         Protocol_::insertBigEndian16(p_bytes.size(), buffer);
         for (uint8_t byte: p_bytes) {
@@ -173,24 +190,17 @@ std::vector<uint8_t> GameInfo::toBytes() const {
         auto item_bytes = item.toBytes();
         buffer.insert(buffer.end(), item_bytes.begin(), item_bytes.end());
     }
-    // bomb
-    buffer.push_back(Protocol_::encodeBool(bombPlanted));
-    Protocol_::insertBigEndian16(bombX, buffer);
-    Protocol_::insertBigEndian16(bombY, buffer);
-
-    // time
-    Protocol_::insertFloat4Bytes(timeLeft, buffer);
 
     return buffer;
 }
 
-std::vector<EntitySnapshot> GameInfo::getSnapshots() { return entities; }
+std::vector<EntitySnapshot> GameInfo::getSnapshots() const { return entities; }
 
 void GameInfo::print() const {
     std::cout << "Game Phase: " << static_cast<int>(gamePhase) << std::endl;
 
-    std::cout << "\nPlayers (" << players.size() << "):" << std::endl;
-    for (auto& p: players) {
+    std::cout << "\nPlayers (" << otherPlayers.size() << "):" << std::endl;
+    for (auto& p: otherPlayers) {
         p.print();
     }
 

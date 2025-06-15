@@ -1,16 +1,21 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <string>
-
 #include <memory>
+#include <string>
+#include <vector>
+
+#include "../../common/game_info/local_player_info.h"
+#include "../../common/game_info/player_info.h"
 #include "../../common/types.h"
 #include "weapon/weapon.h"
 #include "weapon/weapon_factory.h"
+
 #include "id_generator.h"
 
 class Player {
 private:
+    uint32_t serverId;
     std::string name;  // id
     Team team;
     float posX, posY;
@@ -26,10 +31,11 @@ private:
 
     float money;
     int kills;
-
-    uint32_t serverId;
+    const PlayerSkin skinT;   // para cuando es terrorista
+    const PlayerSkin skinCT;  // para cuando es anti terrorista
 
 public:
+    // TODO: Recibir las 2 skin en el constructor
     explicit Player(const std::string& name, const Team playerTeam);
 
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
@@ -57,6 +63,9 @@ public:
     std::unique_ptr<Weapon_> dropPrimaryWeapon();
 
     uint32_t getServerId() const;
+
+    LocalPlayerInfo generateLocalPlayerInfo() const;
+    PlayerInfo generatePlayerInfo() const;
 };
 
 
