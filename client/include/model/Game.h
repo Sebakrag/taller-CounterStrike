@@ -14,10 +14,9 @@ private:
     Graphics graphics;
     World world;
     EventHandler eventHandler;
-    bool is_running;
-
     GameInfo gameInfo;
 
+    bool is_running;
     void update(float dt);
     void render();
 

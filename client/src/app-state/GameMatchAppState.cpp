@@ -9,24 +9,17 @@
 
 GameMatchAppState::GameMatchAppState(AppStateController* ctrl) { controller = ctrl; }
 
-// Todas las configuraciones iniciales de la partida las tiene que recibir el constructor
-// de GameMatchAppState, que provienen del MainMenuState, cuando el usuario
-// selecciona la partida a la que se quiere unir o cuando crea una.
-// Esta info que recibe corresponde a la info estatica de la que el profe nos hablaba.
-// GameMatchAppState::GameMatchAppState(const MatchInfo& match_info) {}
-
 std::optional<AppStateCode> GameMatchAppState::update() {
     try {
-        const MatchInfo matchInfo = controller->getClient()->getMatchInfo();
-        matchInfo.print();
-
         const auto client = controller->getClient();
+        const auto matchInfo = client->getMatchInfo();
+        matchInfo.print(); // TODO: eliminar
 
         Game game(*client, matchInfo);
 
         game.start();
 
-        return AppStateCode::QUIT;
+        return AppStateCode::QUIT; // TODO: enviar a menu luego de terminar la partida.
     } catch (const SDL2pp::Exception& e) {
         std::cerr << "Fatal error: " << e.what() << ", SDL error: " << e.GetSDLError() << std::endl;
         // Deberia lanzar otro tipo de excepcion para manejar en el AppStateController?
