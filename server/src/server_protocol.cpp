@@ -1,7 +1,6 @@
 #include "../include/server_protocol.h"
 
 #include <cstdint>
-#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -21,18 +20,38 @@ void ServerProtocol::sendConfirmation(bool ok) {
     socket.sendall(&byte, sizeof(uint8_t));
 }
 
-void ServerProtocol::sendInitMsg() {
-    // std::vector<uint8_t> buffer;
+void ServerProtocol::sendMatchInfo(const MatchInfo& matchInfo) {
+    std::vector<uint8_t> buffer;
+    buffer.push_back(BYTE_MATCH_INFO);
 
-    // Implementación de sendInitMsg
+    // cargo name
+    insertBigEndian16(matchInfo.name.length(), buffer);
+    insertStringBytes(matchInfo.name, buffer);
+
+    // cargo win_config
+    insertBigEndian16(matchInfo.win_config.width, buffer);
+    insertBigEndian16(matchInfo.win_config.height, buffer);
+    insertBigEndian32(matchInfo.win_config.flags, buffer);
+
+    // cargo tilemap
+
+    std::vector<uint8_t> tilemap_bytes = matchInfo.tileMap.toBytes();
+
+    insertBigEndian32(tilemap_bytes.size(), buffer);
+    for (uint8_t& b: tilemap_bytes) {
+        buffer.push_back(b);
+    }
+    socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
-void ServerProtocol::sendMessage(TypeMessage typeMessage, const std::string& msg) {
+
+void ServerProtocol::sendListOfMatchs(std::list<std::string> matchs_names) {
     std::vector<uint8_t> buffer;
-    if (typeMessage == ListMatchs)
-        buffer.push_back(BYTE_MATCH_LIST);
-    else  // if (typeMessage == ListPlayers)
-        buffer.push_back(BYTE_PLAYERS_LIST);
+    std::string msg;
+    for (const auto& match: matchs_names) {
+        msg += match + "\n";
+    }
+    buffer.push_back(BYTE_MATCH_LIST);
 
     insertBigEndian16(msg.length(), buffer);
     insertStringBytes(msg, buffer);
@@ -163,6 +182,8 @@ GameAction ServerProtocol::recvGameAction() {
         float dir_x = recvFloatNormalized();
         float dir_y = recvFloatNormalized();
         gameAction.direction = Vec2D(dir_x, dir_y);
+    } else if (type == Rotate) {
+        gameAction.angle = recvFloat();
     }
 
     return gameAction;

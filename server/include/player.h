@@ -3,9 +3,11 @@
 
 #include <string>
 
+#include <memory>
 #include "../../common/types.h"
-#include "weapon/fire_weapon.h"
-#include "weapon/weapon_knife.h"
+#include "weapon/weapon.h"
+#include "weapon/weapon_factory.h"
+#include "id_generator.h"
 
 class Player {
 private:
@@ -15,36 +17,46 @@ private:
     int health;
     PlayerState state;
     float speed = 80.0f;
+    float angle = 0;
 
-    WeaponKnife knife;
-    FireWeapon* primaryWeapon;
-    FireWeapon* secondaryWeapon;
+    std::unique_ptr<Weapon_> knife;
+    std::unique_ptr<Weapon_> primaryWeapon;
+    std::unique_ptr<Weapon_> secondaryWeapon;
     TypeWeapon equippedWeapon;
 
     float money;
     int kills;
 
+    uint32_t serverId;
+
 public:
     explicit Player(const std::string& name, const Team playerTeam);
 
-    void receiveDamage(const int dmg);
-    void setPrimaryWeapon(FireWeapon* weapon);
+    void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
     void setEquippedWeapon(TypeWeapon type);
-    int attack(float targetX, float targetY);
 
     float getX() const;
     void setX(const float x);
     float getY() const;
     void setY(const float y);
+    float getAngle() const;
+    void setAngle(float angle);
     std::string getId() const;
     Team getTeam() const;
     int getHealth() const;
     float getMoney() const;
     float getSpeed() const;
     TypeWeapon getEquippedWeapon() const;
-    FireWeapon* getPrimaryWeapon() const;
-    FireWeapon* getSecondaryWeapon() const;
+    Weapon getSpecificEquippedWeapon() const;
+    Weapon_* getPrimaryWeapon() const;
     bool isAlive() const;
+    bool canShoot(uint64_t currentTimeMs) const;
+    void takeDamage(int dmg);
+    std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
+    Weapon_* getEquippedWeaponInstance();
+    std::unique_ptr<Weapon_> dropPrimaryWeapon();
+
+    uint32_t getServerId() const;
 };
 
 

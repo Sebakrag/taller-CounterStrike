@@ -25,15 +25,19 @@ target_sources(taller_client
         src/model/Game.cpp
         src/model/Map.cpp
         src/model/Graphics.cpp
+        src/model/HUD.cpp
         src/model/World.cpp
         src/model/EC/ComponentUpdater.cpp
         src/model/EC/EntityFactory.cpp
         src/model/EC/EntityManager.cpp
+        src/model/EC/RenderSystem.cpp
         src/model/EC/components/TransformComponent.cpp
-        src/model/EC/components/RenderComponent.cpp
         src/model/EC/components/SpriteComponent.cpp
+        src/model/EC/components/WeaponSpriteComponent.cpp
         src/model/utils/EventHandler.cpp
+        src/model/utils/NumberRenderer.cpp
         src/model/utils/SpriteMetadaProvider.cpp
+        src/model/utils/SymbolsRenderer.cpp
         src/model/utils/TextureManager.cpp
         # protocol:
         src/client_protocol.cpp
@@ -65,20 +69,25 @@ target_sources(taller_client
         include/model/Camera.h
         include/model/Game.h
         include/model/Graphics.h
+        include/model/HUD.h
         include/model/Map.h
         include/model/World.h
         include/model/EC/Entity.h
         include/model/EC/EntityFactory.h
         include/model/EC/EntityManager.h
-        include/model/EC/EntityType.h
         include/model/EC/ComponentManager.h
         include/model/EC/ComponentPool.h
         include/model/EC/ComponentUpdater.h
-        include/model/EC/components/TransformComponent.h
-        include/model/EC/components/RenderComponent.h
+        include/model/EC/RenderSystem.h
+        include/model/EC/components/EquippedWeaponComponent.h
+        include/model/EC/components/PlayerSpriteComponent.h
         include/model/EC/components/SpriteComponent.h
+        include/model/EC/components/TransformComponent.h
+        include/model/EC/components/WeaponSpriteComponent.h
         include/model/utils/EventHandler.h
+        include/model/utils/NumberRenderer.h
         include/model/utils/SpriteMetadataProvider.h
+        include/model/utils/SymbolsRenderer.h
         include/model/utils/TextureManager.h
         # dtos:
         dtos/AimInfo.h

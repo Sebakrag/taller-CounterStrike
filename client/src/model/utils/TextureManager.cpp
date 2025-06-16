@@ -12,7 +12,7 @@ std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::texture
 
 void TextureManager::init(Renderer& ren) {
     // Players textures
-    const Color playerColorKey = {0, 0, 0, 255};
+    const Color playerColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
     loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
     loadTexture(ren, SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);
@@ -22,24 +22,53 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::UK_SAS, UK_SAS_IMG, playerColorKey);
     loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
 
+    // Weapons textures
+    const Color weaponColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
+    loadTexture(ren, SpriteType::AK47, AK47_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::AWP, AWP_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::KNIFE, KNIFE_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::M3, M3_IMG, weaponColorKey);
+
     // Map textures
     loadTexture(ren, SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);
     loadTexture(ren, SpriteType::DESERT_MAP, DESERT_TILE_SET_IMG);
     loadTexture(ren, SpriteType::AZTEC_MAP, AZTEC_TILE_SET_IMG);
+
+    // HUD textures:
+    const Color hudColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
+    loadTexture(ren, SpriteType::HUD_NUMBERS, HUD_NUMS, hudColorKey);
+    loadTexture(ren, SpriteType::HUD_SYMBOLS, HUD_SYMB, hudColorKey);
 }
 
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path) {
     Surface surface(path);
+    // auto texture = std::make_shared<Texture>(ren, surface);
+    // texture->SetBlendMode(SDL_BLENDMODE_BLEND);  // Asegura el alpha blending
+    // textures[type] = texture;
     textures[type] = std::make_shared<Texture>(ren, surface);
 }
 
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path,
                                  const Color& colorKey) {
     Surface surface(path);
-    Uint32 keyMapped = SDL_MapRGB(surface.Get()->format, colorKey.GetRed(), colorKey.GetGreen(),
-                                  colorKey.GetBlue());
-    surface.SetColorKey(true, keyMapped);
+    const Uint32 mappedKey = SDL_MapRGB(surface.Get()->format, colorKey.GetRed(),
+                                        colorKey.GetGreen(), colorKey.GetBlue());
+    surface.SetColorKey(SDL_TRUE, mappedKey);
     textures[type] = std::make_shared<Texture>(ren, surface);
+    // auto texture = std::make_shared<Texture>(ren, surface);
+    // texture->SetBlendMode(SDL_BLENDMODE_BLEND);
+    // textures[type] = texture;
 }
 
 std::shared_ptr<Texture> TextureManager::getTexture(SpriteType type) { return textures[type]; }
+
+std::shared_ptr<Texture> TextureManager::getTextureMap(const TypeTileMap& typeTileMap) {
+    if (typeTileMap == TypeTileMap::Desert) {
+        return textures[SpriteType::DESERT_MAP];
+    } else if (typeTileMap == TypeTileMap::Aztec) {
+        return textures[SpriteType::AZTEC_MAP];
+    } else {
+        return textures[SpriteType::TRAINING_MAP];
+    }
+}

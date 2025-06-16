@@ -9,9 +9,10 @@
 #define SCREEN_HEIGHT 400
 
 // Paths
-
 #define PLAYER_PATH std::string("client/assets/player")
 #define TILE_SETS_PATH std::string("client/assets/tiles")
+#define WEAPON_PATH std::string("client/assets/weapons")
+#define HUD_PATH std::string("client/assets/hud")
 
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix.bmp")
 #define L377_KREW_IMG (PLAYER_PATH + "/t_L377_krew.bmp")
@@ -22,11 +23,27 @@
 #define UK_SAS_IMG (PLAYER_PATH + "/ct_uk_sas.bmp")
 #define FRENCH_GIGN_IMG (PLAYER_PATH + "/ct_french_gign.bmp")
 
-#define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/desert_tiles.png")
+// Weapons
+#define AK47_IMG (WEAPON_PATH + "/ak47_spritesheet.png")
+#define AWP_IMG (WEAPON_PATH + "/awp_spritesheet.png")
+#define GLOCK_IMG (WEAPON_PATH + "/glock_spritesheet.png")
+#define KNIFE_IMG (WEAPON_PATH + "/knife_spritesheet.bmp")
+#define M3_IMG (WEAPON_PATH + "/m3_spritesheet.png")
+
+// Maps
+#define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/tileset_desierto_(4x11).png")
 #define AZTEC_TILE_SET_IMG (TILE_SETS_PATH + "/aztec_tiles.png")
 #define TRAINING_TILE_SET_IMG (TILE_SETS_PATH + "/training_tiles.png")
 
+// HUD:
+#define HUD_NUMS (HUD_PATH + "/hud_nums.bmp")
+#define HUD_SYMB (HUD_PATH + "/hud_symbols.bmp")
+
 // Map
 #define TILE_SIZE 32  // in pixels
+
+// Sprites
+#define SPRITE_SIZE 32   // in pixels
+#define SCALE_SPRITES 2  // va a dibujar los sprites al doble de su tamaño original
 
 #endif  // CLIENTCONSTANTS_H

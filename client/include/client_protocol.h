@@ -20,6 +20,10 @@ public:
                    const std::string& username);
 
     void sendUserName(const std::string& username);
+
+    void recvListScenaries();
+
+    MatchInfo recvMatchInfo();
     /**
      * Se utiliza para enviar los mensajes de:
      * - Crear una partida.

@@ -6,6 +6,7 @@
 #include <SDL2pp/SDL2pp.hh>
 
 #include "common/dtos/WindowConfig.h"
+#include "common/utils/Vec2D.h"
 
 using SDL2pp::NullOpt;
 using SDL2pp::Optional;
@@ -40,6 +41,8 @@ public:
               const Optional<Rect>& dstRect = NullOpt);
     void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,
               double angle, const Optional<Point>& center = NullOpt, int flip = 0);
+
+    Vec2D getDrawableWindowDimension() const;
 };
 
 #endif  // GRAPHICS_H

@@ -25,11 +25,11 @@ private:
     std::string map_file_name;
     // Por cada jugador: <username, senderQueue>
     std::map<std::string, std::shared_ptr<Queue<GameInfo>>> players;
+    std::string id_scenario;
 
 public:
     MatchRoom(const std::string& name_match, const std::string& username_host,
-              std::shared_ptr<Queue<GameInfo>> playerQueue, 
-              const std::string& map_file_name = "");
+              std::shared_ptr<Queue<GameInfo>> playerQueue, const std::string& id_scenario);
 
     bool addPlayer(const std::string& username, std::shared_ptr<Queue<GameInfo>> playerQueue);
 
@@ -47,13 +47,7 @@ public:
     bool isPlayerHost(const std::string& username) const;
 
     MatchRoomInfo getMatchRoomInfo();
-    
-    // Establece el nombre del archivo del mapa
-    void setMapFileName(const std::string& fileName);
-    
-    // Obtiene el nombre del archivo del mapa
-    std::string getMapFileName() const;
-
+    const std::string& getIdScenary();
     // No se puede copiar.
     MatchRoom(const MatchRoom&) = delete;
     MatchRoom& operator=(const MatchRoom&) = delete;

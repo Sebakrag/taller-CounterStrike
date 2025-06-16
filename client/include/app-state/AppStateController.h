@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "client/include/client.h"
+#include "../../../client/include/client.h"
 
 #include "AppState.h"
 
@@ -14,6 +14,7 @@ private:
     AppState* current_state;
 
     std::unique_ptr<Client> client;
+
 
     void transition_to(const AppStateCode& new_state);
 

@@ -6,24 +6,19 @@
 #include <stdexcept>
 #include <filesystem>
 
-GameManager::GameManager(const std::string& mapsDirectory) : mapManager(mapsDirectory) {
-    // Inicializar el MapManager con la carpeta de mapas
-    try {
-        std::cout << "Inicializando MapManager con directorio: " << mapsDirectory << std::endl;
-        if (!std::filesystem::exists(mapsDirectory)) {
-            std::cout << "El directorio de mapas no existe. Creando directorio..." << std::endl;
-            std::filesystem::create_directories(mapsDirectory);
-        }
-        // El mapManager ya fue inicializado con el directorio en la lista de inicialización
-    } catch (const std::exception& e) {
-        std::cerr << "Error al inicializar el MapManager: " << e.what() << std::endl;
-    }
+#include "../include/scenario_registry.h"
+
+/*GameManager::GameManager(const std::list<std::string>& escenarios) {
+    // YOUR CODE
 }
 bool GameManager::createMatch(const std::string& matchName, const std::string& username,
                               std::shared_ptr<Queue<GameInfo>> playerQueue,
-                              const std::string& map_file_name) {
+                              const std::string& id_scenary) {
     // chequeo que no sea un nombre sin caracteres
     if (matchName.empty() || std::all_of(matchName.begin(), matchName.end(), ::isspace)) {
+        return false;
+    }
+    if (!ScenarioRegistry::existsScenario(id_scenary)) {
         return false;
     }
     std::lock_guard<std::mutex> lock(m);
@@ -31,32 +26,7 @@ bool GameManager::createMatch(const std::string& matchName, const std::string& u
     if (server_closed || lobbies.find(matchName) != lobbies.end()) {  // si la partida ya existe
         return false;
     }
-    
-    // Validar que el archivo del mapa exista en el MapManager si se proporciona uno
-    if (!map_file_name.empty()) {
-        try {
-            // Verificar que el mapa existe
-            bool mapExists = false;
-            auto maps = mapManager.getAvailableMaps();
-            for (const auto& map : maps) {
-                if (map.fileName == map_file_name) {
-                    mapExists = true;
-                    break;
-                }
-            }
-            
-            if (!mapExists) {
-                std::cerr << "El mapa '" << map_file_name << "' no existe en el directorio de mapas." << std::endl;
-                return false;
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "Error al verificar el mapa: " << e.what() << std::endl;
-            return false;
-        }
-    }
-    
-    // Crear la sala con el mapa especificado
-    lobbies.try_emplace(matchName, matchName, username, playerQueue, map_file_name);
+    lobbies.try_emplace(matchName, matchName, username, playerQueue, id_scenary);
 
     std::cout << username << " creó la partida " << matchName;
     if (!map_file_name.empty()) {
@@ -136,11 +106,23 @@ MatchRoomInfo GameManager::getMatchRoomInfo(const std::string& matchName) {
     return it->second.getMatchRoomInfo();
 }
 
+MatchInfo GameManager::getMatchInfo(const std::string& matchName) {
+    auto it = lobbies.find(matchName);
+    if (it == lobbies.end()) {  // no existe la partida
+        throw std::runtime_error("No existe la partida.");
+    }
+    std::string id_scenary = it->second.getIdScenary();
+    // TODO: Enviar numPlayers a traves de MatchInfo (ahora hardcodeo).
+    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
+                     ScenarioRegistry::getTileMap(id_scenary), 10);
+}
+
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {
     std::lock_guard<std::mutex> lock(m);
     return gameLoops.at(matchName)->getActionsQueue();
 }
 
+// asegurarse de que solo la clase server pueda llamar a este metodo.
 void GameManager::killAllMatchs() {
     std::lock_guard<std::mutex> lock(m);
     for (auto& [matchName, gameLoop]: gameLoops) {
