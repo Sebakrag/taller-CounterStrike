@@ -80,5 +80,5 @@ std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
         playerQueues.push_back(pair.second);
     }
     started = true;
-    return std::make_shared<GameLoop>(std::move(match), playerQueues, map_file_name);
+    return std::make_shared<GameLoop>(std::move(match), playerQueues);
 }

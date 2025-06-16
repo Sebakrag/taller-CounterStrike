@@ -17,7 +17,6 @@ target_sources(taller_client
         src/ui/LobbyWindow.cpp
         src/ui/LoginWindow.cpp
         src/ui/MainMenuWindow.cpp
-        src/ui/MapSelectionDialog.cpp
         src/ui/NameInputDialog.cpp
         src/ui/StyledMessageBox.cpp
         # model:
@@ -61,7 +60,6 @@ target_sources(taller_client
         include/ui/LobbyWindow.h
         include/ui/LoginWindow.h
         include/ui/MainMenuWindow.h
-        include/ui/MapSelectionDialog.h
         include/ui/NameInputDialog.h
         include/ui/StyledMessageBox.h
         include/ui/UIConstants.h
