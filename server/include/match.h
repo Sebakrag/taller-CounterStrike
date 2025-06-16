@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <random>
 
 #include "map.h"
 #include "player.h"
@@ -20,13 +21,16 @@ private:
     Map map;
     GamePhase phase;
     int roundsPlayed = 0;
-    double roundTimer = 1.0;
+    double roundTimer = 30.0;
     const double ROUND_DURATION = 120.0;
-    bool roundOver = false;
+    bool roundOver;
     Team roundWinner;
     std::vector<Projectile> projectiles;
     std::vector<DroppedWeapon> droppedWeapons;
     Bomb bomb;
+
+    static constexpr int MAX_ROUNDS = 10;
+    static constexpr double PREPARATION_TIME = 30.0;
 
 public:
     explicit Match(const TileMap& tilemap);
@@ -41,6 +45,8 @@ public:
     void processPlant(const std::string& playerName);
     void processDefuse(const std::string& playerName);
     void checkRoundEnd();
+    void advancePhase();
+    GamePhase getGamePhase() const;
 
     GameInfo generateGameInfo() const;
     MatchInfo generateMatchInfo() const;

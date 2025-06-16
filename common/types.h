@@ -66,7 +66,7 @@ struct MenuAction {
 enum class LobbyAction { QuitMatch, StartMatch, ListPlayers };
 
 // game
-enum GameActionType { Null, BuyWeapon, BuyAmmo, Attack, Walk, ChangeWeapon, PickUp, Rotate };
+enum GameActionType { Null, BuyWeapon, BuyAmmo, Attack, Walk, ChangeWeapon, PickUp, Rotate, PlantBomb, DefuseBomb };
 
 struct GameAction {
     GameActionType type = Null;
