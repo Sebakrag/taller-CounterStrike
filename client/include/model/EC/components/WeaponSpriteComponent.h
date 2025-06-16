@@ -5,8 +5,8 @@
 
 #include "SpriteComponent.h"
 
-#define HORIZONTAL_RENDER_OFFSET 0
-#define VERTICAL_RENDER_OFFSET 17
+#define HORIZONTAL_RENDER_OFFSET 17
+#define VERTICAL_RENDER_OFFSET 0
 
 class WeaponSpriteComponent: public SpriteComponent {
 private:

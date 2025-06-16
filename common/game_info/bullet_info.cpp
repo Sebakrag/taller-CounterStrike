@@ -2,28 +2,9 @@
 
 #include <stdexcept>
 
-BulletInfo::BulletInfo(unsigned int id, Weapon weapon, int pos_x, int pos_y,
-                       const Vec2D& direction):
+BulletInfo::BulletInfo(const ServerEntityID id, const Weapon weapon, const int pos_x,
+                       const int pos_y, const Vec2D& direction):
         id(id), weapon(weapon), pos_x(pos_x), pos_y(pos_y), direction(direction) {}
-
-BulletInfo::BulletInfo(const BulletInfo& other):
-        id(other.id),
-        weapon(other.weapon),
-        pos_x(other.pos_x),
-        pos_y(other.pos_y),
-        direction(other.direction) {}
-
-BulletInfo& BulletInfo::operator=(const BulletInfo& other) {
-    if (this != &other) {
-        id = other.id;
-        weapon = other.weapon;
-        pos_x = other.pos_x;
-        pos_y = other.pos_y;
-        direction = other.direction;
-    }
-    return *this;
-}
-
 
 BulletInfo::BulletInfo(const std::vector<uint8_t>& bytes) {
     // Chequear el size y lanzar excepcion

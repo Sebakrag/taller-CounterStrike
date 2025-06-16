@@ -16,7 +16,7 @@
 
 GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
                    const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
-                   const std::vector<BulletInfo>& bullets, const std::vector<ItemInfo>& items):
+                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items):
         gamePhase(gamePhase),
         bombPlanted(bombPlanted),
         bombX(bombX),
@@ -25,35 +25,7 @@ GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, 
         localPlayer(localPlayer),
         otherPlayers(otherPlayers),
         bullets(bullets),
-        items(items) {}
-
-GameInfo::GameInfo(const GameInfo& other):
-        entities(other.entities),
-        gamePhase(other.gamePhase),
-        bombPlanted(other.bombPlanted),
-        bombX(other.bombX),
-        bombY(other.bombY),
-        timeLeft(other.timeLeft),
-        localPlayer(other.localPlayer),
-        otherPlayers(other.otherPlayers),
-        bullets(other.bullets),
-        items(other.items) {}
-
-GameInfo& GameInfo::operator=(const GameInfo& other) {
-    if (this != &other) {
-        entities = other.entities;
-        gamePhase = other.gamePhase;
-        bombPlanted = other.bombPlanted;
-        bombX = other.bombX;
-        bombY = other.bombY;
-        timeLeft = other.timeLeft;
-        localPlayer = other.localPlayer;
-        otherPlayers = other.otherPlayers;
-        bullets = other.bullets;
-        items = other.items;
-    }
-    return *this;
-}
+        weapons(items) {}
 
 // TODO: modularizar. (Hacer 4 metodos privados)
 GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
@@ -82,10 +54,11 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     // cargo snapshot
     const auto x = localPlayer.position.getX();
     const auto y = localPlayer.position.getY();
-    EntitySnapshot entity(localPlayer.server_entt_id, EntityType::PLAYER, SpriteType::ARTIC_AVENGER,
-                          x, y, localPlayer.angle_direction, true, localPlayer.health,
-                          localPlayer.money, localPlayer.ammo_weapon, localPlayer.state,
-                          localPlayer.id_weapon, localPlayer.team);
+    EntitySnapshot entity(localPlayer.server_entt_id, EntityType::PLAYER,
+                          localPlayer.generateSpriteType(), x, y, localPlayer.angle_direction, true,
+                          localPlayer.health, localPlayer.money, localPlayer.state,
+                          localPlayer.equipped_weapon_id, localPlayer.team,
+                          localPlayer.weapon_type);
     entities.emplace_back(entity);
 
     // other players
@@ -97,16 +70,15 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         index += 2;
 
         std::vector<uint8_t> playerBytes(bytes.begin() + index, bytes.begin() + index + size);
-        otherPlayers.emplace_back(playerBytes);
 
-        // cargo snapshots. TODO: refactorizar cliente para no utilizar el vector de snapshots
-        PlayerInfo& p = otherPlayers.back();
+        PlayerInfo p(playerBytes);
 
         const float x = p.position.getX();
         const float y = p.position.getY();
 
         EntitySnapshot entity(p.server_entt_id, EntityType::PLAYER, p.generateSpriteType(), x, y,
-                              p.angle_direction, true, p.state, p.id_weapon, p.team);
+                              p.angle_direction, true, p.state, p.equipped_weapon_id, p.team,
+                              p.weapon_type);
         entities.emplace_back(entity);
 
         index += size;
@@ -119,10 +91,8 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     for (uint16_t i = 0; i < numBullets; i++) {
         std::vector<uint8_t> bulletBytes(bytes.begin() + index,
                                          bytes.begin() + index + SIZE_BULLET_INFO);
-        bullets.emplace_back(bulletBytes);
 
-        // cargo snapshot
-        BulletInfo& b = bullets.back();
+        BulletInfo b(bulletBytes);
         EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, b.pos_x, b.pos_y,
                               b.direction.calculateAngle(), true);
         entities.emplace_back(entity);
@@ -131,18 +101,17 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     }
 
     // Items
-    uint16_t numItems = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    uint16_t numWeapons = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
 
-    for (uint16_t i = 0; i < numItems; i++) {
-        std::vector<uint8_t> itemBytes(bytes.begin() + index,
-                                       bytes.begin() + index + SIZE_ITEM_INFO);
-        items.emplace_back(itemBytes);
+    for (uint16_t i = 0; i < numWeapons; i++) {
+        std::vector<uint8_t> weaponBytes(bytes.begin() + index,
+                                         bytes.begin() + index + SIZE_ITEM_INFO);
 
-        // cargo snapshot
-        ItemInfo& item = items.back();
-        EntitySnapshot entity(item.server_entt_id, EntityType::WEAPON, item.getSpriteType(),
-                              item.pos_x, item.pos_y, 0, true, WeaponState::DROPPED);
+        WeaponInfo weapon(weaponBytes);
+        /// TODO: Recibir si esta viva o no.
+        EntitySnapshot entity(weapon.server_entt_id, EntityType::WEAPON, weapon.getSpriteType(),
+                              weapon.pos_x, weapon.pos_y, 0, true, weapon.state);
         entities.emplace_back(entity);
         index += SIZE_ITEM_INFO;
     }
@@ -185,8 +154,8 @@ std::vector<uint8_t> GameInfo::toBytes() const {
         }
     }
     // items.
-    Protocol_::insertBigEndian16(items.size(), buffer);
-    for (const auto& item: items) {
+    Protocol_::insertBigEndian16(weapons.size(), buffer);
+    for (const auto& item: weapons) {
         auto item_bytes = item.toBytes();
         buffer.insert(buffer.end(), item_bytes.begin(), item_bytes.end());
     }
@@ -207,10 +176,10 @@ void GameInfo::print() const {
     std::cout << "\nBullets (" << bullets.size() << "):" << std::endl;
 
 
-    std::cout << "\nItems (" << items.size() << "):" << std::endl;
-    for (const ItemInfo& item: items) {
-        std::cout << "Type: " << static_cast<int>(item.type) << ", Ammo: " << item.ammo
-                  << ", Position: (" << item.pos_x << "," << item.pos_y << ")" << std::endl;
+    std::cout << "\nItems (" << weapons.size() << "):" << std::endl;
+    for (const WeaponInfo& weapon: weapons) {
+        std::cout << "Type: " << static_cast<int>(weapon.weapon) << ", Ammo: " << weapon.ammo
+                  << ", Position: (" << weapon.pos_x << "," << weapon.pos_y << ")" << std::endl;
     }
 
     std::cout << "\nBomb:" << std::endl;

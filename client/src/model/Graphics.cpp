@@ -16,6 +16,7 @@ Graphics::Graphics(const WindowConfig& config, const std::string& match_name):
         sdl_ttf(),
         window(create_window(config, match_name)),
         renderer(create_renderer(window)) {
+    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
     TextureManager::init(renderer);
     DynamicStencil::init(renderer, config.width, config.height, FOV_CIRCLE_RADIUS, FOV_ANGLE,
                          STENCIL_ALPHA, VISIBILITY_DISTANCE);

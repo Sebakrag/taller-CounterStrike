@@ -18,14 +18,15 @@ using SpecificData = std::variant<std::monostate, PlayerSnapshot, WeaponSnapshot
 struct PlayerSnapshot {
     int hp;  // health
     int money;
-    int ammo;
     PlayerState state;
     ServerEntityID equipped_weapon_id;
     Team team;
+    TypeWeapon weapon_type;
 };
 
 struct WeaponSnapshot {
     WeaponState state;
+    // AmmoInfo ammoInfo;
 };
 
 struct EntitySnapshot {
@@ -39,21 +40,19 @@ struct EntitySnapshot {
 
     SpecificData data;
 
-    // TODO: conviene distinguir entre el local player y los demas players?
     ///
     /// @brief Constructor para el LOCAL PLAYER.
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
-                   float pos_y, float angle, bool alive, int hp, int money, int ammo,
-                   PlayerState state, ServerEntityID equipped_weapon_id, Team team);
+                   float pos_y, float angle, bool alive, int hp, int money, PlayerState state,
+                   ServerEntityID equipped_weapon_id, Team team, TypeWeapon weapon_type);
 
     ///
-    /// @brief Constructor para el LOCAL PLAYER.
+    /// @brief Constructor para el PLAYER.
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive, PlayerState state,
-                   ServerEntityID equipped_weapon_id, Team team);
-
+                   ServerEntityID equipped_weapon_id, Team team, TypeWeapon weapon_type);
 
     ///
     /// @brief Constructor para un WEAPON.

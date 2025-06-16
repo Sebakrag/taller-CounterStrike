@@ -1,18 +1,20 @@
 #include "server/include/weapon/projectile.h"
+
 #include <cmath>
 
-Projectile::Projectile(float posX, float posY, float dirX, float dirY, float speed, float maxDistance, std::string shooter, Weapon weaponUsed) :
-    posX(posX),
-    posY(posY),
-    dirX(dirX),
-    dirY(dirY),
-    speed(speed),
-    traveledDistance(0),
-    maxDistance(maxDistance),
-    shooter(shooter),
-    active(true),
-    weaponUsed(weaponUsed),
-    serverId(IdGenerator::getNextId()){}
+Projectile::Projectile(float posX, float posY, float dirX, float dirY, float speed,
+                       float maxDistance, std::string shooter, Weapon weaponUsed):
+        posX(posX),
+        posY(posY),
+        dirX(dirX),
+        dirY(dirY),
+        speed(speed),
+        traveledDistance(0),
+        maxDistance(maxDistance),
+        shooter(shooter),
+        active(true),
+        weaponUsed(weaponUsed),
+        serverId(IdGenerator::getNextId()) {}
 
 void Projectile::update(float deltaTime) {
     if (!active)
@@ -45,7 +47,3 @@ float Projectile::getDirY() const { return dirY; }
 float Projectile::getMaxDistance() const { return maxDistance; }
 Weapon Projectile::getWeaponUsed() const { return weaponUsed; }
 uint32_t Projectile::getServerId() const { return serverId; }
-
-
-
-

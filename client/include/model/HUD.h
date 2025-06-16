@@ -43,7 +43,7 @@ private:
 public:
     HUD();
     // TODO: eliminar esta y reemplazarla por la de abajo
-    void updateFromSnapshot(const EntitySnapshot& snap);
+    // void updateFromSnapshot(const EntitySnapshot& snap);
 
     void updateFromSnapshot(const LocalPlayerInfo& localPlayerInfo, float timeLeft);
 

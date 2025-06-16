@@ -9,20 +9,21 @@ HUD::HUD(): numberRenderer(SpriteType::HUD_NUMBERS), symbolsRenderer(SpriteType:
     numberRenderer.setRenderSize(SYMBOL_W, SYMBOL_H);
 }
 
-void HUD::updateFromSnapshot(const EntitySnapshot& snap) {
-    // TODO: Recibir el timeLeft en segundos.
-    timeLeft++;
-    if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
-        health = player->hp;
-        money = player->money;
-        ammoInfo.totalAmmo =
-                player->ammo;  // TODO: eliminar ammo de player. AHora hay que obtenerlo del arma.
-        ammoInfo.ammoLoaded = 5;
-    }
-}
+// void HUD::updateFromSnapshot(const EntitySnapshot& snap) {
+//     // TODO: Recibir el timeLeft en segundos.
+//     timeLeft++;
+//     if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
+//         health = player->hp;
+//         money = player->money;
+//         ammoInfo.totalAmmo =
+//                 player->ammo;  // TODO: eliminar ammo de player. AHora hay que obtenerlo del
+//                 arma.
+//         ammoInfo.ammoLoaded = 5;
+//     }
+// }
 
 void HUD::updateFromSnapshot(const LocalPlayerInfo& player, float _timeLeft) {
-    timeLeft = _timeLeft;
+    timeLeft = static_cast<int>(_timeLeft);
     health = player.health;
     money = player.money;
     ammoInfo.totalAmmo = player.ammo_weapon;
@@ -101,21 +102,21 @@ std::string HUD::formatAmmo(const AmmoInfo& ammoInfo) {
 }
 
 
-/// TODO: Refactorizar utilizando componentes.
-/// Version de update utilizando ComponentManager:
-/// void HUD::update(ComponentManager& comp_mgr, Entity player_id) {
-///     if (auto healthComp = comp_mgr.getComponent<HealthComponent>(player_id)) {
-///         health = healthComp->getCurrent();
-///     }
-///
-///     if (auto weapon = comp_mgr.getComponent<EquippedWeaponComponent>(player_id)) {
-///         Entity weapon_id = weapon->getID();
-///         if (auto ammoComp = comp_mgr.getComponent<AmmoComponent>(weapon_id)) {
-///             ammoInfo = ammoComp->getAmmoInfo();
-///         }
-///     }
-///
-///     if (auto moneyComp = comp_mgr.getComponent<MoneyComponent>(player_id)) {
-///         money = moneyComp->getAmount();
-///     }
-/// }
+// TODO: Refactorizar utilizando componentes.
+// Version de update utilizando ComponentManager:
+// void HUD::update(ComponentManager& comp_mgr, Entity player_id) {
+//     if (auto healthComp = comp_mgr.getComponent<HealthComponent>(player_id)) {
+//         health = healthComp->getCurrent();
+//     }
+//
+//     if (auto weapon = comp_mgr.getComponent<EquippedWeaponComponent>(player_id)) {
+//         Entity weapon_id = weapon->getID();
+//         if (auto ammoComp = comp_mgr.getComponent<AmmoComponent>(weapon_id)) {
+//             ammoInfo = ammoComp->getAmmoInfo();
+//         }
+//     }
+//
+//     if (auto moneyComp = comp_mgr.getComponent<MoneyComponent>(player_id)) {
+//         money = moneyComp->getAmount();
+//     }
+// }

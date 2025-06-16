@@ -10,27 +10,24 @@
 
 #define SIZE_LOCAL_PLAYER_INFO 29
 
-// class GameInfo;  // forward declaration
-
-
 struct LocalPlayerInfo {
-    unsigned int server_entt_id;
+    ServerEntityID server_entt_id;
     Team team;
     PlayerSkin skin;
     PlayerState state;
     Vec2D position;
     float angle_direction;
-    Weapon weapon_selected;
+    TypeWeapon weapon_type;
     int health;
     int money;
-    int ammo_weapon;
-    unsigned int id_weapon;
+    int ammo_weapon;  // TODO: AmmoInfo
+    ServerEntityID equipped_weapon_id;
 
     LocalPlayerInfo() {}
 
-    explicit LocalPlayerInfo(unsigned int server_entt_id, Team team, PlayerSkin skin,
-                             const Vec2D& position, float angle_direction, Weapon weapon,
-                             int health, int money, int ammo, unsigned int id_weapon);
+    LocalPlayerInfo(ServerEntityID server_entt_id, Team team, PlayerSkin skin,
+                    const Vec2D& position, float angle_direction, TypeWeapon weapon_type,
+                    int health, int money, int ammo, ServerEntityID equipped_weapon_id);
 
     LocalPlayerInfo(const LocalPlayerInfo& other) = default;
     LocalPlayerInfo& operator=(const LocalPlayerInfo& other) = default;
@@ -38,9 +35,6 @@ struct LocalPlayerInfo {
     SpriteType generateSpriteType() const;
 
     void print() const;
-
-    // private:  // metodos solo utilizados por GameInfo
-    //     friend class GameInfo;
 
     explicit LocalPlayerInfo(const std::vector<uint8_t>& bytes);
 

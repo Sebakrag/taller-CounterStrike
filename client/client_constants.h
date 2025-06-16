@@ -27,7 +27,7 @@
 #define AK47_IMG (WEAPON_PATH + "/ak47_spritesheet.png")
 #define AWP_IMG (WEAPON_PATH + "/awp_spritesheet.png")
 #define GLOCK_IMG (WEAPON_PATH + "/glock_spritesheet.png")
-#define KNIFE_IMG (WEAPON_PATH + "/knife_spritesheet.bmp")
+#define KNIFE_IMG (WEAPON_PATH + "/knife_spritesheet.png")
 #define M3_IMG (WEAPON_PATH + "/m3_spritesheet.png")
 
 // Maps

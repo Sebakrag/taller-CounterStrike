@@ -14,6 +14,7 @@ public:
     bool canShoot(uint64_t currentTimeMs) const override;
     uint64_t getCooldownMs() const override;
     Weapon getWeaponType() const override;
+    WeaponInfo generateWeaponInfo(const WeaponState& state) override;
     std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY,
                                   const std::string& shooter, uint64_t currentTimeMs) override;
 };

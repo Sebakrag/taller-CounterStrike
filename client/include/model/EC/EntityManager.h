@@ -21,6 +21,8 @@ private:
 
     EntityFactory entt_factory;
 
+    Entity tryGetNextID();
+
 public:
     EntityManager(ComponentManager& cm, int numPlayers);
 

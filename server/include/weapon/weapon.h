@@ -5,9 +5,11 @@
 #include <string>
 #include <vector>
 
+#include "../../../common/game_info/weapon_info.h"
 #include "../../../common/types.h"
 #include "../../../server/include/id_generator.h"
 #include "../../../server/include/weapon/projectile.h"
+
 class Weapon_ {
 protected:
     int damage;
@@ -29,6 +31,8 @@ public:
 
     virtual std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY,
                                           const std::string& shooter, uint64_t currentTimeMs) = 0;
+
+    virtual WeaponInfo generateWeaponInfo(const WeaponState& state) = 0;
 
     uint32_t getServerId() const { return serverId; }
 };

@@ -33,7 +33,6 @@ void DynamicStencil::init(Renderer& ren, const int screenW, const int screenH,
     const float cx = stencilW / 2.0f;
     const float cy = stencilH / 2.0f;
 
-    // TODO: si no funciona asi, tendria que usar Surface con color key. (ver el repo de clases.)
     // Transparent Circle (player vision center)
     ren.SetDrawColor(0, 0, 0, 0);
     drawCircle(ren, cx, cy);
@@ -45,41 +44,6 @@ void DynamicStencil::init(Renderer& ren, const int screenW, const int screenH,
     // Reset render target to default
     ren.SetTarget();
 }
-
-
-// void DynamicStencil::init(Renderer& ren, const int screenW, const int screenH, const float
-// circleRadius, const float fovAngleDegrees, const uint8_t stencilAlpha, const float
-// fovVisibleDistance) {
-//     screenWidth = screenW * 2;
-//     screenHeight = screenH * 2;
-//     stencil = std::make_shared<Texture>(ren, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-//     screenWidth, screenHeight);
-//     stencil->SetBlendMode(SDL_BLENDMODE_BLEND).SetAlphaMod(stencilAlpha);
-//     cirRadius = circleRadius;
-//     fovAngle = fovAngleDegrees;
-//     fovRadius = fovVisibleDistance;
-//
-//     // Set render target to the texture
-//     ren.SetTarget(*stencil);
-//     ren.SetDrawColor(0, 0, 0, 255);  // Full black (shadow)
-//     ren.Clear();
-//
-//     // Center of the screen
-//     const float cx = screenW / 2.0f;
-//     const float cy = screenH / 2.0f;
-//
-//     // TODO: si no funciona asi, tendria que usar Surface con color key. (ver el repo de clases.)
-//     // Transparent Circle (player vision center)
-//     ren.SetDrawColor(0, 0, 0, 0);
-//     drawCircle(ren, cx, cy);
-//
-//     // Transparent Triangle (field of view)
-//     ren.SetDrawColor(0, 0, 0, 0);
-//     drawFOVTriangle(ren, cx, cy);
-//
-//     // Reset render target to default
-//     ren.SetTarget();
-// }
 
 void DynamicStencil::drawCircle(const Renderer& ren, const float cx, const float cy) {
     constexpr int numSegments = 100;
