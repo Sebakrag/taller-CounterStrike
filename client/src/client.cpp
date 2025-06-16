@@ -15,8 +15,9 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
         username(user_name),
         sender(protocol, send_queue),
         receiver(protocol, recv_queue),
-        // Inicializar snap con valores válidos (ID 1, tipo PLAYER, sprite PHEONIX, posición (0,0), ángulo 0, vivo)
-        snap(1, EntityType::PLAYER, SpriteType::PHEONIX, 0.0f, 0.0f, 0.0f, true),
+        // Inicializar snap con valores válidos para PLAYER (usando el constructor completo para PLAYER)
+        // Parámetros adicionales: hp=100, money=1000, ammo=30, estado=Idle, weapon_id=0, team=CounterTerrorist
+        snap(1, EntityType::PLAYER, SpriteType::PHEONIX, 0.0f, 0.0f, 0.0f, true, 100, 1000, 30, PlayerState::Idle, 0, Team::CounterTerrorist),
         x(0.0f),
         y(0.0f),
         angle(0.0f) {
@@ -88,19 +89,75 @@ void Client::ExitGame() {
     status = Disconnected;
     protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
 }
+#include "client/include/ui/MapSelectionDialog.h"
+#include <QApplication>
+
 bool Client::CreateMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, 0));
-    bool created = protocol.recvConfirmation();
-    if (created) {
-        std::cout << "La partida se creó correctamente." << std::endl;
-        status = InLobby;
-        player_creator = true;
-        this->match_name = match_name;
-        // protocol.recvTileMap
-    } else {
-        std::cout << "La partida No se pudo crear." << std::endl;
+    
+    // Primero recibimos la lista de mapas disponibles
+    std::vector<ClientMapInfo> availableMaps;
+    try {
+        availableMaps = protocol.recvAvailableMaps();
+        std::cout << "Mapas disponibles recibidos: " << availableMaps.size() << std::endl;
+        
+        // Verificar que tengamos mapas disponibles
+        if (availableMaps.empty()) {
+            std::cerr << "No hay mapas disponibles para crear una partida" << std::endl;
+            return false;
+        }
+        
+        // Mostrar diálogo de selección de mapas
+        std::string selectedMapFile;
+        
+        // Necesitamos usar QApplication::instance para crear diálogos desde una clase no-Qt
+        if (QApplication::instance()) {
+            MapSelectionDialog mapDialog(availableMaps);
+            
+            // Si el usuario cancela la selección, abortamos la creación de partida
+            if (mapDialog.exec() != QDialog::Accepted) {
+                std::cout << "Usuario canceló la selección de mapa" << std::endl;
+                return false;
+            }
+            
+            // Obtener el mapa seleccionado
+            selectedMapFile = mapDialog.selectedMapFileName().toStdString();
+            std::cout << "Mapa seleccionado: " << selectedMapFile << std::endl;
+        } else {
+            // Fallback si no hay interfaz gráfica disponible
+            selectedMapFile = availableMaps[0].fileName;
+            std::cout << "Interfaz gráfica no disponible, seleccionando primer mapa: " << selectedMapFile << std::endl;
+        }
+        
+        // Enviamos el nombre del mapa seleccionado al servidor
+        protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, 0, selectedMapFile));
+        
+        // Ahora esperamos la confirmación
+        bool created = protocol.recvConfirmation();
+        if (created) {
+            std::cout << "La partida se creó correctamente." << std::endl;
+            status = InLobby;
+            player_creator = true;
+            this->match_name = match_name;
+            
+            // Esperamos un momento antes de solicitar la lista de jugadores para evitar problemas de protocolo
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            
+            // Luego solicitamos la lista de jugadores
+            try {
+                refreshMatchRoom();
+            } catch(const std::exception& e) {
+                std::cerr << "Error al actualizar la sala: " << e.what() << std::endl;
+                // No fallamos toda la operación si esto falla, ya estamos en el lobby
+            }
+        } else {
+            std::cout << "La partida No se pudo crear." << std::endl;
+        }
+        return created;
+    } catch(const std::exception& e) {
+        std::cerr << "Error al crear partida: " << e.what() << std::endl;
+        return false;
     }
-    return created;
 }
 void Client::JoinMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Join, match_name));
