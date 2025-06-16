@@ -23,6 +23,7 @@ void FieldOfView::render(Graphics& graphics, const Vec2D& playerPos, const float
 
 bool FieldOfView::isInFOV(const Vec2D& enttWorldPos) const {
     const Vec2D dif = enttWorldPos - currentPlayerPos;
+    std::cout << "[Visibility radius]: " << info.visibilityRadius << std::endl;
     if (dif.calculateNormSquared() > info.visibilityRadius * info.visibilityRadius)
         return false;
 

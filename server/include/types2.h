@@ -18,7 +18,14 @@ struct DroppedWeapon {
     std::unique_ptr<Weapon_> weapon;
     Vec2D position;
 
-    DroppedWeapon(std::unique_ptr<Weapon_> w, Vec2D pos): weapon(std::move(w)), position(pos) {}
+    DroppedWeapon(std::unique_ptr<Weapon_> w, const Vec2D pos):
+            weapon(std::move(w)), position(pos) {}
+    WeaponInfo generateWeaponInfo() const {
+        WeaponInfo weaponInfo(weapon->generateWeaponInfo(WeaponState::DROPPED));
+        weaponInfo.pos_x = position.getX();
+        weaponInfo.pos_y = position.getY();
+        return weaponInfo;
+    }
 };
 
 

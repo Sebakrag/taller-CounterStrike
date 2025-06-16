@@ -34,9 +34,13 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
         const int width = weaponSpr.getWidth();
         const int height = weaponSpr.getHeight();
 
-        if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
+        // if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
+        //     return;
+        if (!camera.isVisible(enttMapPos, width, height))
             return;
-
+        if (!player_FOV.isInFOV(enttMapPos)) {
+            std::cout << "NO TIENE QUE RENDERIZARSE" << std::endl;
+        }
         // Calculamos la posición de la entidad relativa a la cámara
         const Vec2D screenPos = camera.projectToScreen(enttMapPos, width, height);
 

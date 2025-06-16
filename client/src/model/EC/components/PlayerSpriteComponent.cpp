@@ -25,4 +25,3 @@ void PlayerSpriteComponent::setTypeWeaponEquipped(const TypeWeapon weapon_type) 
 
     setFrame(row, 0);
 }
-

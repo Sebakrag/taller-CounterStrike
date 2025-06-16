@@ -11,7 +11,17 @@ Match::Match(const std::string& id_scenario):
         id_scenario(id_scenario),
         map(ScenarioRegistry::getTileMap(id_scenario)),
         phase(GamePhase::Preparation),
-        roundsPlayed(0) {}
+        roundsPlayed(0) {
+    // TODO: Harcodeo un dropped weapon para probar. Eliminarlo.
+    auto ak47 = std::make_unique<WeaponAk47>();
+    droppedWeapons.emplace_back(DroppedWeapon{std::move(ak47), {300, 300}});
+    auto m3 = std::make_unique<WeaponM3>();
+    droppedWeapons.emplace_back(DroppedWeapon{std::move(m3), {400, 300}});
+    auto awp = std::make_unique<WeaponAwp>();
+    droppedWeapons.emplace_back(DroppedWeapon{std::move(awp), {600, 300}});
+    // auto bomb = std::make_unique<Bomb>();
+    // droppedWeapons.emplace_back(DroppedWeapon{std::move(bomb), {300, 300}});
+}
 
 void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
@@ -95,6 +105,9 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             break;
         }
         case GameActionType::Attack: {
+            const Vec2D dir = gameAction.direction.normalize();
+            player->setAngle(dir.calculateAngle());
+
             if (player->getEquippedWeapon() == TypeWeapon::Bomb) {
                 processPlant(action.player_username);
                 break;
@@ -105,21 +118,13 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 break;
             }
 
-            Vec2D dir = gameAction.direction;
-            float norm = std::sqrt(dir.getX() * dir.getX() + dir.getY() * dir.getY());
-            if (norm == 0)
-                break;
-
-            float dirX = dir.getX() / norm;
-            float dirY = dir.getY() / norm;
-
             if (player->getEquippedWeapon() == TypeWeapon::Knife) {
                 std::cout << "ataque con cuchillo" << std::endl;
                 handleKnifeAttack(player, gameAction.direction);
                 break;
             }
 
-            std::vector<Projectile> newProjectiles = player->shoot(dirX, dirY, 0);
+            std::vector<Projectile> newProjectiles = player->shoot(dir.getX(), dir.getY(), 0);
             projectiles.insert(projectiles.end(), newProjectiles.begin(), newProjectiles.end());
             break;
         }
@@ -335,6 +340,10 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
     for (auto& p: projectiles) {
         bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
                                  Vec2D(p.getDirX(), p.getDirY()));
+    }
+
+    for (auto& droppedWeapon: droppedWeapons) {
+        weaponsInfo.emplace_back(droppedWeapon.generateWeaponInfo());
     }
 
     float timeLeft = roundTimer;

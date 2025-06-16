@@ -27,6 +27,7 @@ void World::update(float dt, const GameInfo& gameInfo) {
 void World::render(Graphics& graphics) {
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
     const Vec2D playerPos = tCompLocalPlayer->getPosition();
+    std::cout << playerPos << std::endl;
     camera.follow(playerPos);
 
     map.render(graphics, camera);
