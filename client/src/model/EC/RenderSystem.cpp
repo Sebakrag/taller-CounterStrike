@@ -2,22 +2,25 @@
 
 #include <cmath>
 
+#include "client/client_constants.h"
 #include "client/include/model/EC/components/EquippedWeaponComponent.h"
 #include "client/include/model/EC/components/PlayerSpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
+#include "common/utils/AngleUtils.h"
 
-#define RENDER_SCALAR 2
+RenderSystem::RenderSystem(const Entity localPlayer): local_player(localPlayer) {}
+
 
 void RenderSystem::renderEntities(Graphics& graphics, ComponentManager& comp_mgr,
-                                  const Camera& camera) {
-    renderDroppedWeapons(graphics, comp_mgr, camera);
-    // renderBullets(graphics, comp_mgr, camera);
-    renderPlayers(graphics, comp_mgr, camera);
+                                  const Camera& camera, const FieldOfView& player_FOV) {
+    renderDroppedWeapons(graphics, comp_mgr, camera, player_FOV);
+    // renderBullets(graphics, comp_mgr, camera, player_FOV);
+    renderPlayers(graphics, comp_mgr, camera, player_FOV);
 }
 
 void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& comp_mgr,
-                                        const Camera& camera) {
+                                        const Camera& camera, const FieldOfView& player_FOV) {
     comp_mgr.forEach<WeaponSpriteComponent>([&](WeaponSpriteComponent& weaponSpr, const Entity e) {
         if (weaponSpr.getState() != WeaponState::DROPPED) {
             return;
@@ -32,7 +35,7 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
         const int width = weaponSpr.getWidth();
         const int height = weaponSpr.getHeight();
 
-        if (!camera.isVisible(enttMapPos, width, height))
+        if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
             return;
 
         // Calculamos la posición de la entidad relativa a la cámara
@@ -47,7 +50,7 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
 }
 
 // void RenderSystem::renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera&
-// camera) {
+// camera, const FieldOfView& player_FOV) {
 //     comp_mgr.forEach<BulletSpriteComponent>([&](BulletSpriteComponent& bulletSpr, const Entity e)
 //     {
 //         const auto transform = comp_mgr.getComponent<TransformComponent>(e);
@@ -58,7 +61,7 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
 //         const int width = bulletSpr.getWidth();
 //         const int height = bulletSpr.getHeight();
 //
-//         if (!camera.isVisible(enttMapPos, width, height))
+//         if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
 //             return;
 //
 //         // Calculamos la posición de la entidad relativa a la cámara
@@ -68,15 +71,15 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
 //         width,
 //                       height);
 //
-//         const double rotAngle = transform->getRotationAngle();
+//         const double rotAngleDeg = transform->getRotationAngleDegrees();
 //
 //         graphics.draw(*bulletSpr.getTexture(), Optional<Rect>(bulletSpr.getSpriteRect()),
-//                       Optional<Rect>(destRect), rotAngle);
+//                       Optional<Rect>(destRect), rotAngleDeg);
 //     });
 // }
 
 void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
-                                 const Camera& camera) {
+                                 const Camera& camera, const FieldOfView& player_FOV) {
     comp_mgr.forEach<PlayerSpriteComponent>([&](PlayerSpriteComponent& playerSpr, const Entity e) {
         const auto transform = comp_mgr.getComponent<TransformComponent>(e);
         if (!transform)
@@ -87,7 +90,8 @@ void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
         const int width = playerSpr.getWidth();
         const int height = playerSpr.getHeight();
 
-        if (!camera.isVisible(playerMapPos, width, height))
+        if ((e != local_player) &&
+            (!camera.isVisible(playerMapPos, width, height) || !player_FOV.isInFOV(playerMapPos)))
             return;
 
         // Calculamos la posición de la entidad relativa a la cámara
@@ -96,23 +100,23 @@ void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
         Rect playerDestRect(static_cast<int>(screenPos.getX()), static_cast<int>(screenPos.getY()),
                             width * RENDER_SCALAR, height * RENDER_SCALAR);
 
-        const double rotAngle = transform->getRotationAngle();
+        const float rotAngleDeg = transform->getRotationAngleDegrees();
         // Renderizo el player.
         graphics.draw(*playerSpr.getTexture(), Optional<Rect>(playerSpr.getSpriteRect()),
-                      Optional<Rect>(playerDestRect), rotAngle);
+                      Optional<Rect>(playerDestRect), rotAngleDeg);
 
         // Verificamos si tiene un arma equipada y la renderizamos junto con el jugador.
         const auto equippedWeapon = comp_mgr.getComponent<EquippedWeaponComponent>(e);
         Entity weaponID = INVALID_ENTITY;
         if (equippedWeapon && ((weaponID = equippedWeapon->getID()) != INVALID_ENTITY)) {
-            renderEquippedWeapon(graphics, comp_mgr, weaponID, playerDestRect, rotAngle);
+            renderEquippedWeapon(graphics, comp_mgr, weaponID, playerDestRect, rotAngleDeg);
         }
     });
 }
 
 void RenderSystem::renderEquippedWeapon(Graphics& graphics, ComponentManager& comp_mgr,
                                         const Entity weapon_id, const Rect& player_dest_rect,
-                                        const double rotAngle) {
+                                        const float rotAngleDeg) {
     if (const auto weaponSpr = comp_mgr.getComponent<WeaponSpriteComponent>(weapon_id)) {
         const Vec2D offset = weaponSpr->getRenderOffset();
         const auto width = weaponSpr->getWidth();
@@ -128,7 +132,7 @@ void RenderSystem::renderEquippedWeapon(Graphics& graphics, ComponentManager& co
         const float oy = -offset.getY() * RENDER_SCALAR;  // eje Y invertido en pantalla
 
         // Rotar offset alrededor del centro del jugador
-        const float radians = static_cast<float>(rotAngle) * static_cast<float>(M_PI) / 180.0f;
+        const float radians = AngleUtils::degreesToRadians(rotAngleDeg);
         const float rx = ox * std::cos(radians) - oy * std::sin(radians);
         const float ry = ox * std::sin(radians) + oy * std::cos(radians);
 
@@ -140,6 +144,6 @@ void RenderSystem::renderEquippedWeapon(Graphics& graphics, ComponentManager& co
                             height * RENDER_SCALAR, height * RENDER_SCALAR);
 
         graphics.draw(*weaponSpr->getTexture(), Optional<Rect>(weaponSpr->getSpriteRect()),
-                      Optional<Rect>(weaponDestRect), rotAngle);
+                      Optional<Rect>(weaponDestRect), rotAngleDeg);
     }
 }

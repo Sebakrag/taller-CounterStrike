@@ -1,10 +1,12 @@
-#include "client/include/model/Graphics.h"
+#include "../../../client/include/model/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
-#include "client/include/model/World.h"
-#include "client/include/model/utils/TextureManager.h"
+#include "../../../client/client_constants.h"
+#include "../../../client/include/model/World.h"
+#include "../../../client/include/model/utils/DynamicStencil.h"
+#include "../../../client/include/model/utils/TextureManager.h"
 
 #define GAME_NAME "Counter Strike"
 
@@ -15,6 +17,8 @@ Graphics::Graphics(const WindowConfig& config, const std::string& match_name):
         window(create_window(config, match_name)),
         renderer(create_renderer(window)) {
     TextureManager::init(renderer);
+    DynamicStencil::init(renderer, config.width, config.height, FOV_CIRCLE_RADIUS, FOV_ANGLE,
+                         STENCIL_ALPHA, VISIBILITY_DISTANCE);
 }
 
 Window Graphics::create_window(const WindowConfig& config, const std::string& match_name) const {
@@ -47,4 +51,18 @@ void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<
 Vec2D Graphics::getDrawableWindowDimension() const {
     const Point dimension = window.GetDrawableSize();
     return {static_cast<float>(dimension.GetX()), static_cast<float>(dimension.GetY())};
+}
+
+std::shared_ptr<Texture> Graphics::createTargetTexture(int width, int height) {
+    return std::make_shared<Texture>(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+                                     width, height);
+}
+
+void Graphics::setRenderTarget(Texture& tex) { renderer.SetTarget(tex); }
+
+void Graphics::resetRenderTarget() { renderer.SetTarget(); }
+
+void Graphics::clearWithTransparentBlack() {
+    renderer.SetDrawColor(0, 0, 0, 0);
+    renderer.Clear();
 }

@@ -1,6 +1,9 @@
 #ifndef PROJECTILE_H
 #define PROJECTILE_H
 
+#include <string>
+#include <vector>
+
 #include "../../../common/types.h"
 #include "../id_generator.h"
 
@@ -17,7 +20,8 @@ private:
     uint32_t serverId;
 
 public:
-    Projectile(float posX, float posY, float dirX, float dirY, float speed, float maxDistance, std::string shooter, Weapon weaponUsed);
+    Projectile(float posX, float posY, float dirX, float dirY, float speed, float maxDistance,
+               std::string shooter, Weapon weaponUsed);
 
     void update(float deltaTime);
     bool hasExceededRange() const;

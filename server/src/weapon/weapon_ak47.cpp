@@ -2,12 +2,17 @@
 
 WeaponAk47::WeaponAk47(): FireWeapon(35, 2700, 30, 24) {}
 
-Weapon WeaponAk47::getWeaponType() const {
-    return Weapon::Ak47;
+Weapon WeaponAk47::getWeaponType() const { return Weapon::Ak47; }
+
+WeaponInfo WeaponAk47::generateWeaponInfo(const WeaponState& state) {
+    return {serverId, Weapon::Ak47, state, bullets, 0, 0};
 }
 
-std::vector<Projectile> WeaponAk47::shoot(float posX, float posY, float dirX, float dirY, const std::string &shooter, uint64_t currentTimeMs) {
-    if (!canShoot(currentTimeMs)) return {};
+
+std::vector<Projectile> WeaponAk47::shoot(float posX, float posY, float dirX, float dirY,
+                                          const std::string& shooter, uint64_t currentTimeMs) {
+    if (!canShoot(currentTimeMs))
+        return {};
 
     lastShotTimeMs = currentTimeMs;
 
@@ -22,4 +27,3 @@ std::vector<Projectile> WeaponAk47::shoot(float posX, float posY, float dirX, fl
 
     return projectiles;
 }
-

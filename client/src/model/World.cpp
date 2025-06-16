@@ -1,43 +1,43 @@
-#include "client/include/model/World.h"
+#include "../../../client/include/model/World.h"
 
-#include "client/include/model/EC/components/TransformComponent.h"
+#include <vector>
 
-World::World(const TileMap& tileMap, const WindowConfig& winConfig, const int numPlayers,
-             const EntitySnapshot& firstLocalPlayerSnap):
+#include "../../../client/include/model/EC/components/TransformComponent.h"
+
+World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig,
+             const int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap):
         entt_mgr(comp_mgr, numPlayers),
         comp_updater(entt_mgr, comp_mgr),
-        map(tileMap),
+        map(tileMap, graphics),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
-        local_player(entt_mgr.create_entity(firstLocalPlayerSnap)) {}
+        local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
+        render_sys(local_player) {}
 
-void World::update(float dt, const std::vector<EntitySnapshot>& snapshots) {
-    // std::cout << dt << std::endl;
-    if (dt == 1) {}
+
+void World::update(float dt, const GameInfo& gameInfo) {
+    if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
+    gameInfo.print();
+    const std::vector<EntitySnapshot> snapshots = gameInfo.getSnapshots();
     comp_updater.update(snapshots);
-    // TODO: otra opcion para actualizar el HUD podria ser definiendo los componentes:
-    // HealthComponent y MoneyComponent, y luego actualizar utilizando ComponentManager y
-    // local_player_id. player_HUD.update(comp_mgr, local_player);
-    for (const auto& snap: snapshots) {
-        if (entt_mgr.get(snap.server_entt_id) == local_player) {
-            player_HUD.updateFromSnapshot(snap);
-            break;
-        }
-    }
+
+    player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
 
     // audio_sys.update(); // Play the sound effects.
 }
 
 void World::render(Graphics& graphics) {
-    camera.follow(getPlayerPosition());
+    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
+    const Vec2D playerPos = tCompLocalPlayer->getPosition();
+    std::cout << playerPos << std::endl;
+    camera.follow(playerPos);
 
     map.render(graphics, camera);
 
-    render_sys.renderEntities(graphics, comp_mgr, camera);
+    player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngleDegrees());
 
-    // Renderizar el alpha blending (para simular el Field of View)
+    render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
-    player_HUD.render(graphics);  // Esto seria el frame que tiene la vida, la cant de
-    // balas y la plata
+    // player_HUD.render(graphics);
 }
 
 AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
@@ -48,7 +48,7 @@ AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
 
     Vec2D aimDir = mouseWorldPos - getPlayerPosition();
     aimDir.normalize();
-    const float angle = aimDir.calculateAngle(-90.0f);
+    const float angle = aimDir.calculateAngleDegrees();
 
     return {aimDir, angle};
 }

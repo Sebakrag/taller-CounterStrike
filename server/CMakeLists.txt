@@ -24,6 +24,7 @@ target_sources(taller_server
         src/weapon/weapon_glock.cpp
         src/weapon/weapon_factory.cpp
         src/weapon/projectile.cpp
+        src/weapon/bomb.cpp
 
         src/scenario_registry.cpp
 
@@ -53,5 +54,6 @@ target_sources(taller_server
         include/weapon/weapon_glock.h
         include/weapon/weapon_factory.h
         include/weapon/projectile.h
+        include/weapon/bomb.h
         include/scenario_registry.h
 )

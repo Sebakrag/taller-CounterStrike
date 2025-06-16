@@ -1,11 +1,9 @@
-#include "client/include/client.h"
+#include "../../client/include/client.h"
 
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
 #include <string>
-
-#include "client/include/client_protocol.h"
 
 Client::Client(const std::string& ip, const std::string& port, const std::string& user_name):
         protocol(ip.c_str(), port.c_str(), user_name),
@@ -23,8 +21,15 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
 }
 
 void Client::ExitGame() {
+    if (status == InMenu) {
+        protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
+    } else if (status == InGame) {
+        receiver.kill();
+        sender.kill();
+        receiver.join();
+        sender.join();
+    }
     status = Disconnected;
-    protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
 }
 
 bool Client::CreateMatch(const std::string& match_name) {
@@ -33,7 +38,6 @@ bool Client::CreateMatch(const std::string& match_name) {
     if (created) {
         std::cout << "La partida se creó correctamente." << std::endl;
         status = InLobby;
-        matchInfo = protocol.recvMatchInfo();
         player_creator = true;
         this->match_name = match_name;
     } else {
@@ -47,7 +51,6 @@ void Client::JoinMatch(const std::string& match_name) {
     if (united) {
         std::cout << "Te uniste a la partida!" << std::endl;
         status = InLobby;
-        matchInfo = protocol.recvMatchInfo();
         player_creator = false;
         this->match_name = match_name;
     } else {
@@ -82,48 +85,28 @@ void Client::StartMatch() {
     bool ok = protocol.recvConfirmation();
     if (ok) {
         std::cout << "Empezó la partida" << std::endl;
-        status = InGame;
-        sender.start();
-        receiver.start();
+        startThreads();
     } else {
         std::cout << "No empezó la partida. No sos el anfitrion." << std::endl;
     }
 }
 
-std::vector<PlayerInfoLobby> Client::refreshMatchRoom() {
-    protocol.sendLobbyAction(LobbyAction::ListPlayers);
-    MatchRoomInfo info = protocol.recvUpdateMatchRoom();
-    // std::cout << "Players en la sala: " << std::endl;
-    // for (const auto& p: info.players) {
-    //     std::cout << " - " << p.username << std::endl;
-    // }
-    if (info.matchStarted) {
-        status = InGame;
-        sender.start();
-        receiver.start();
-    }
-    return info.players;
-}
-
 std::vector<PlayerInfoLobby> Client::refreshPlayersList() {
+    if (status != InLobby) {
+        throw std::runtime_error(
+                "No puedes realizar Client::refreshPlayersList() si no estás en el lobby");
+    }
     protocol.sendLobbyAction(LobbyAction::ListPlayers);
+
     MatchRoomInfo info = protocol.recvUpdateMatchRoom();
-
-    // std::cout << "Players en la sala: " << std::endl;
-    // for (const auto& p: info.players) {
-    //     std::cout << " - " << p.username << std::endl;
-    // }
-
     if (info.matchStarted) {
-        status = InGame;
-        sender.start();
-        receiver.start();
+        startThreads();
     }
     return info.players;
 }
 
 MatchInfo Client::getMatchInfo() {
-    if (status == Status::Disconnected || status == Status::InMenu) {
+    if (status != InGame) {
         throw std::runtime_error("Error. El matchInfo aún no fue recibido del servidor.");
     }
     return matchInfo;
@@ -132,6 +115,7 @@ MatchInfo Client::getMatchInfo() {
 
 GameInfo Client::getGameInfo() {
     GameInfo g = recv_queue.pop();
+    // g.print();
     return g;
 }
 
@@ -152,12 +136,21 @@ void Client::shoot(const AimInfo& aimInfo) {
 void Client::rotate(const float angle) {
     send_queue.try_push(GameAction(GameActionType::Rotate, angle));
 }
-
-// TODO: implementar pickUpItem
-void Client::pickUpItem(const Vec2D& playerPosition) {
-    std::cout << "playerPos: " << playerPosition << std::endl;
+void Client::changeWeapon(const TypeWeapon& typeWeapon) {
+    send_queue.try_push(GameAction(GameActionType::ChangeWeapon, typeWeapon));
 }
+
+
+void Client::pickUpItem() { send_queue.try_push(GameAction(GameActionType::PickUp)); }
 
 Client::~Client() {}
 
 Status Client::getStatus() { return status; }
+
+// metodos privados:
+void Client::startThreads() {
+    status = InGame;
+    matchInfo = protocol.recvMatchInfo();
+    sender.start();
+    receiver.start();
+}
