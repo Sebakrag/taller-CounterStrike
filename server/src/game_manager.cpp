@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
-#include <filesystem>
 
 #include "../include/scenario_registry.h"
 
@@ -28,10 +27,7 @@ bool GameManager::createMatch(const std::string& matchName, const std::string& u
     }
     lobbies.try_emplace(matchName, matchName, username, playerQueue, id_scenary);
 
-    std::cout << username << " creó la partida " << matchName;
-    if (!map_file_name.empty()) {
-        std::cout << " con el mapa '" << map_file_name << "'";
-    }
+    std::cout << username << " creó la partida " << matchName << std::endl;
     std::cout << std::endl;
 
     return true;

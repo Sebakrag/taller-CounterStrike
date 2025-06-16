@@ -24,14 +24,9 @@ private:
 
     // queues senders. cada queue es un recurso compartido con los senders
     std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers;
-    
-    // Nombre del archivo del mapa seleccionado
-    std::string map_file_name;
 
 public:
-    GameLoop(Match&& match, 
-            std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers,
-            const std::string& map_file_name = "");
+GameLoop(Match&& match, std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers);
 
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue();
 

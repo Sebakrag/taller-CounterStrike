@@ -21,8 +21,6 @@ private:
     std::string player_host;
     Match match;
     bool started = false;
-    // Archivo del mapa seleccionado
-    std::string map_file_name;
     // Por cada jugador: <username, senderQueue>
     std::map<std::string, std::shared_ptr<Queue<GameInfo>>> players;
     std::string id_scenario;

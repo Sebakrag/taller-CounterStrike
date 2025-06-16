@@ -87,34 +87,6 @@ void ServerProtocol::sendGameInfo(const GameInfo& gameInfo) {
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
-void ServerProtocol::sendAvailableMaps(const std::vector<MapInfo>& mapList) {
-    std::vector<uint8_t> buffer;
-    buffer.push_back(BYTE_MAPS_LIST); // Necesitaremos añadir esta constante
-    
-    // Enviamos la cantidad de mapas disponibles
-    insertBigEndian16(mapList.size(), buffer);
-    
-    // Para cada mapa, enviamos su información
-    for (const auto& map : mapList) {
-        // Enviamos el nombre del mapa
-        insertBigEndian16(map.name.length(), buffer);
-        insertStringBytes(map.name, buffer);
-        
-        // Enviamos el nombre del archivo
-        insertBigEndian16(map.fileName.length(), buffer);
-        insertStringBytes(map.fileName, buffer);
-        
-        // Enviamos el tipo de mapa
-        buffer.push_back(static_cast<uint8_t>(map.type));
-        
-        // Enviamos las dimensiones
-        insertBigEndian16(map.width, buffer);
-        insertBigEndian16(map.height, buffer);
-    }
-    
-    socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
-}
-
 std::string ServerProtocol::recvUsername() {
     uint8_t byte = 0;
     socket.recvall(&byte, sizeof(uint8_t));
@@ -137,7 +109,6 @@ MenuAction ServerProtocol::recvMenuAction() {
     MenuActionType type = decodeMenuActionType(byte);
     std::string name = "";
     int id_scenary = 0;
-    std::string map_file_name = "";
     
     if (type == Create || type == Join) {
         uint16_t length = recvBigEndian16();
@@ -147,14 +118,9 @@ MenuAction ServerProtocol::recvMenuAction() {
         if (type == Create) {
             socket.recvall(&byte, sizeof(uint8_t));
             id_scenary = byte;
-            
-            // Recibir el nombre del archivo del mapa seleccionado
-            uint16_t mapFileNameLength = recvBigEndian16();
-            map_file_name.resize(mapFileNameLength);
-            socket.recvall(map_file_name.data(), sizeof(uint8_t) * mapFileNameLength);
         }
     }
-    return MenuAction(type, name, id_scenary, map_file_name);
+    return MenuAction(type, name, id_scenary);
 }
 
 

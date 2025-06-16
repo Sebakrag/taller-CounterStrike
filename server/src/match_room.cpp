@@ -82,11 +82,3 @@ std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
     started = true;
     return std::make_shared<GameLoop>(std::move(match), playerQueues, map_file_name);
 }
-
-void MatchRoom::setMapFileName(const std::string& fileName) {
-    map_file_name = fileName;
-}
-
-std::string MatchRoom::getMapFileName() const {
-    return map_file_name;
-}

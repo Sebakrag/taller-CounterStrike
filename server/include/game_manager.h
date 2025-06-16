@@ -23,8 +23,8 @@ class GameManager {
     bool server_closed = false;
 
 public:
-    GameManager(const std::string& mapsDirectory);
-    ~GameManager() = default;
+
+    // GameManager(lista de escenarios, configuraciones, etc) // redefinir el constructor despues
 
     // devuelve true si pudo crear la partida correctamente
     bool createMatch(const std::string& matchName, const std::string& username,
@@ -48,13 +48,7 @@ public:
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue(const std::string& matchName);
 
     void killAllMatchs();
-
-    // Retorna la lista de mapas disponibles
-    std::vector<MapInfo> getAvailableMaps() const;
-    
-    // Retorna el mapa con el nombre de archivo especificado
-    TileMap getMap(const std::string& mapFileName) const;
-
+        
 private:
     // void reapDeadGameloops();
 
