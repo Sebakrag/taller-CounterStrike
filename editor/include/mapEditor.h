@@ -89,6 +89,9 @@ private slots:
     void generarMapaClicked();
     void loadMapClicked();
     void loadMapFromFile(const QString &fileName);
+    
+    // Precargar mapa con tile base
+    void preloadMapWithBaseTile();
 
 
 private:

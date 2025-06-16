@@ -203,9 +203,12 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     
     QPushButton *loadMapButton = new QPushButton("Cargar Mapa", fileGroup);
     QPushButton *saveMapButton = new QPushButton("Guardar Mapa", fileGroup);
+    QPushButton *preloadMapButton = new QPushButton("Precargar", fileGroup);
+    preloadMapButton->setToolTip("Llenar todo el mapa con un tile base del terreno seleccionado");
     
     fileLayout->addWidget(loadMapButton);
     fileLayout->addWidget(saveMapButton);
+    fileLayout->addWidget(preloadMapButton);
     fileGroup->setLayout(fileLayout);
     
     // Sección de control de zoom
@@ -240,6 +243,7 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     // Conectar botones de carga y guardado
     connect(loadMapButton, &QPushButton::clicked, this, &MapEditor::loadMapClicked);
     connect(saveMapButton, &QPushButton::clicked, this, &MapEditor::generarMapaClicked);
+    connect(preloadMapButton, &QPushButton::clicked, this, &MapEditor::preloadMapWithBaseTile);
     
     // Conectar botones de zoom
     connect(zoomInButton, &QPushButton::clicked, this, &MapEditor::zoomIn);
@@ -1415,8 +1419,11 @@ void MapEditor::removeTile(QPointF scenePos) {
             QPoint itemGridPos = getTileGridPosition(item->pos());
             if (itemGridPos == gridPos) {
                 // Si es un tile, marcamos que hemos eliminado un tile para limpiar el registro
-                if (item->data(1).toInt() == TILE) {
+                // Verificamos ambos posibles tipos de tiles (TILE o TILE_ELEMENT)
+                int elementType = item->data(1).toInt();
+                if (elementType == TILE || elementType == TILE_ELEMENT) {
                     tileRemoved = true;
+                    qDebug() << "Eliminando tile en posición:" << itemGridPos << "con tipo:" << elementType;
                 }
                 itemsToRemove.append(item);
             }
@@ -1761,7 +1768,28 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
                     }
                 } else if (mouseEvent->button() == Qt::RightButton) {
                     // Clic derecho para eliminar elementos
-                    if (currentTileId >= 0) {
+                    // Primero intentamos eliminar tiles en esa posición, independientemente de la herramienta
+                    QPoint gridPos = getTileGridPosition(scenePos);
+                    QPair<int, int> gridKey(gridPos.x(), gridPos.y());
+                    
+                    // Verificar si hay un tile en la posición para eliminar (verificar tanto TILE como TILE_ELEMENT)
+                    bool tileExists = false;
+                    QList<QGraphicsItem*> itemsAtPos = scene->items(QRectF(gridPos.x() * 32, gridPos.y() * 32, 32, 32));
+                    for (QGraphicsItem* item : itemsAtPos) {
+                        // Comprobar si es un tile, nos aseguramos de verificar ambos posibles tipos
+                        if (item->data(1).isValid() && (item->data(1).toInt() == TILE_ELEMENT || item->data(1).toInt() == TILE)) {
+                            tileExists = true;
+                            qDebug() << "Tile encontrado para eliminar con ID:" << item->data(1).toInt();
+                            break;
+                        }
+                    }
+                    
+                    if (tileExists) {
+                        // Si hay un tile, eliminarlo sin importar la herramienta seleccionada
+                        removeTile(scenePos);
+                        return true;
+                    } else if (currentTileId >= 0) {
+                        // Si no hay tile pero estamos en modo tile, intentar eliminar de todas formas
                         removeTile(scenePos);
                         return true;
                     } else if (currentSolidId >= 0 || currentZoneId >= 0 || currentWeaponId >= 0) {
@@ -1782,6 +1810,160 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
         qCritical() << "Excepción desconocida en eventFilter";
         return false;
     }
+}
+
+// Método para precargar el mapa con un tile base del terreno actual
+void MapEditor::preloadMapWithBaseTile()
+{
+    // Si no hay tiles disponibles para el terreno actual, no hacer nada
+    if (tilePixmaps.isEmpty()) {
+        qDebug() << "No hay tiles disponibles para precargar el mapa";
+        QMessageBox::warning(this, "Precargar Mapa", "No hay tiles disponibles para el terreno seleccionado.");
+        return;
+    }
+    
+    // Preguntar confirmación al usuario
+    QMessageBox::StandardButton reply = QMessageBox::question(this, 
+        "Precargar Mapa", 
+        "¿Desea llenar todo el mapa con el tile base del terreno actual?\n\nEsto eliminará todos los tiles existentes.", 
+        QMessageBox::Yes|QMessageBox::No);
+    
+    if (reply == QMessageBox::No) {
+        return;
+    }
+    
+    // Primero eliminamos todos los tiles existentes en el mapa
+    for (QGraphicsItem* item : scene->items()) {
+        if (TileItem* tileItem = dynamic_cast<TileItem*>(item)) {
+            scene->removeItem(tileItem);
+            delete tileItem;
+        }
+    }
+    
+    // Limpiamos el mapa de tiles colocados
+    placedTiles.clear();
+    
+    // Determinar el nombre de la carpeta según el tipo de terreno actual
+    QString terrainName;
+    QString terrainFolder;
+    switch (currentTerrainType) {
+        case 0: // DESERT_TERRAIN
+            terrainName = "Desert";
+            terrainFolder = "desert";
+            break;
+        case 1: // AZTEC_VILLAGE
+            terrainName = "Aztec";
+            terrainFolder = "aztec";
+            break;
+        case 2: // TRAINING_GROUND
+            terrainName = "Training";
+            terrainFolder = "training";
+            break;
+        default:
+            terrainName = "Unknown";
+            terrainFolder = "desert"; // Default a desert como respaldo
+            break;
+    }
+    
+    // Construir la ruta a la carpeta específica del terreno
+    QString resourceBasePath = getResourcesPath();
+    QString tilesPath = resourceBasePath + "tiles/tiles_" + terrainFolder + "/";
+    
+    // Buscar archivos de imagen en la carpeta
+    QDir elementsDir(tilesPath);
+    if (!elementsDir.exists()) {
+        QMessageBox::warning(this, "Precargar Mapa", 
+            QString("No se encontró la carpeta de tiles para el terreno %1: %2").arg(terrainName).arg(tilesPath));
+        return;
+    }
+    
+    // Filtrar por archivos de imagen
+    QStringList filters;
+    filters << "*.bmp" << "*.png" << "*.jpg";
+    elementsDir.setNameFilters(filters);
+    
+    // Obtener la lista de archivos y ordenarlos alfabéticamente
+    // Esto generalmente asegura que el primer tile básico (con nombre como 01.png) sea el primero
+    QStringList elementFiles = elementsDir.entryList(filters, QDir::Files, QDir::Name);
+    
+    if (elementFiles.isEmpty()) {
+        QMessageBox::warning(this, "Precargar Mapa", 
+            QString("No hay tiles disponibles en la carpeta %1").arg(tilesPath));
+        return;
+    }
+    
+    // Cargar el primer tile de la carpeta (asumiendo que el primer archivo es el tile base)
+    QString firstTilePath = tilesPath + elementFiles.first();
+    QPixmap basePixmap(firstTilePath);
+    
+    if (basePixmap.isNull()) {
+        QMessageBox::warning(this, "Precargar Mapa", 
+            QString("No se pudo cargar el tile base: %1").arg(firstTilePath));
+        return;
+    }
+    
+    // Para registro y depuración
+    int baseTileId = 0; // Usamos ID 0 para el tile base cargado directamente
+    qDebug() << "Cargando tile base desde:" << firstTilePath;
+    
+    qDebug() << "Precargando mapa con tile ID:" << baseTileId;
+    
+    // Dimensiones del mapa en tiles (considerando que el mapa es de 1000x1000 pixeles y cada tile es de 32x32)
+    int mapWidth = 1000 / 32;
+    int mapHeight = 1000 / 32;
+    
+    // Primero, eliminar cualquier tile existente en la escena antes de la precarga
+    // para asegurar que no hay conflictos
+    QList<QGraphicsItem*> allItems = scene->items();
+    for (QGraphicsItem* item : allItems) {
+        // Solo eliminar items que sean TileItem pero no otros elementos como zonas
+        TileItem* tileItem = dynamic_cast<TileItem*>(item);
+        if (tileItem) {
+            scene->removeItem(item);
+            delete item;
+        }
+    }
+    
+    // Colocamos el tile base en todas las posiciones del mapa - alineados a la cuadrícula 32x32
+    for (int x = 0; x < mapWidth; ++x) {
+        for (int y = 0; y < mapHeight; ++y) {
+            // Alineamos correctamente a la cuadrícula multiplicando por 32
+            QPointF tilePos(x * 32, y * 32);
+            
+            // Crear tile con un ID válido del tileset actual (usamos baseTileId)
+            QString tileName = QString("Tile_%1_%2").arg(x).arg(y);
+            
+            // Crear el tile con los parámetros correctos para que pueda ser manipulado
+            TileItem* tileItem = new TileItem(basePixmap, baseTileId, tileName, scene);
+            
+            // Posicionarlo correctamente en la cuadrícula
+            tileItem->setPos(tilePos);
+            
+            // Desactivar la capacidad de ser movido con drag and drop
+            tileItem->setFlag(QGraphicsItem::ItemIsMovable, false);
+            
+            // Pero permitir que siga siendo seleccionable para eliminar con clic derecho
+            tileItem->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            
+            // Asegurarnos explícitamente de que el tile tenga el tipo correcto en setData
+            // Esto garantiza que sea detectable por el código de eliminación
+            tileItem->setData(1, QVariant(TILE)); // Usamos TILE (5) como lo espera removeTile
+            
+            // Añadir a la escena 
+            scene->addItem(tileItem);
+            
+            // Registrar en el mapa de tiles colocados para el correcto seguimiento
+            placedTiles[qMakePair(x, y)] = baseTileId;
+            
+            // Debug para verificar colocación
+            if ((x == 0 && y == 0) || (x == mapWidth-1 && y == mapHeight-1)) {
+                qDebug() << "Tile colocado en:" << tilePos << "ID:" << baseTileId;
+            }
+        }
+    }
+    
+    QMessageBox::information(this, "Precargar Mapa", 
+        QString("Mapa precargado exitosamente con tile base de %1 (ID: %2).").arg(terrainName).arg(baseTileId));
 }
 
 void MapEditor::generateMapFile(const QString &fileName)
