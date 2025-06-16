@@ -12,6 +12,7 @@
 #include "../../common/types.h"
 #include "weapon/projectile.h"
 #include "types2.h"
+#include "shop.h"
 
 #include "physics_engine.h"
 
@@ -31,6 +32,9 @@ private:
 
     static constexpr int MAX_ROUNDS = 10;
     static constexpr double PREPARATION_TIME = 30.0;
+    static constexpr float BASE_MONEY_BONUS = 300.0f;
+    static constexpr float KILL_BONUS = 10.0f;
+    static constexpr float WIN_BONUS = 100.0f;
 
 public:
     explicit Match(const TileMap& tilemap);

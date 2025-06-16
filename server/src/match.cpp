@@ -152,6 +152,25 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 std::cout << "Accion no implementada\n";
                 break;
         }
+    } else if (phase == GamePhase::Preparation) {
+        switch (gameAction.type) {
+            case GameActionType::BuyWeapon: {
+                if (Shop::buyPrimaryWeapon(*player, gameAction.weapon, droppedWeapons)) {
+                    std::cout << "Compra de arma fallida. Revise su saldo\n";
+                }
+                break;
+            }
+            case GameActionType::BuyAmmo: {
+                if (!Shop::buyAmmo(*player, gameAction.weapon, gameAction.count_ammo)) {
+                    std::cout << "Compra de munición fallida. Revise su saldo\n";
+                }
+                break;
+            }
+            default:
+                std::cout << "Accion invalida en fase de preparacion\n";
+                break;
+
+        }
     }
 }
 
@@ -191,6 +210,12 @@ void Match::updateState(double elapsedTime) {
                 target.takeDamage(weapon->getDamage());
 
                 if (!target.isAlive()) {
+                    //Aplicar bonus de saldo por kill
+                    Player* killer = getPlayer(proj.getShooter());
+                    if (killer)
+                        killer->addMoney(KILL_BONUS);
+
+                    //Dropeo de arma
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
                     if (droppedWeapon)
                         droppedWeapons.emplace_back(std::move(droppedWeapon), Vec2D(target.getX(), target.getY()));
@@ -392,6 +417,15 @@ void Match::advancePhase() {
         //Pasar a la fase de preparacion
         roundTimer = PREPARATION_TIME;
         phase = GamePhase::Preparation;
+
+        //Aplicar nuevo saldo a los jugadores segun bonificaciones
+        for (auto& p: players) {
+            float moneyBonus = BASE_MONEY_BONUS;
+            if (p.getTeam() == roundWinner) {
+                moneyBonus += WIN_BONUS;
+            }
+            p.addMoney(moneyBonus);
+        }
     }
 }
 

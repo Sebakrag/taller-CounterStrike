@@ -128,6 +128,25 @@ void Player::setTeam(Team newTeam) {
     team = newTeam;
 }
 
+bool Player::canAfford(int amount) const {
+    return money >= amount;
+}
+
+bool Player::spendMoney(int amount) {
+    if (money >= amount) {
+        money -= amount;
+        return true;
+    }
+    return false;
+}
+
+void Player::addMoney(int amount) {
+    money += amount;
+}
+
+
+
+
 
 
 

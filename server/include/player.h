@@ -32,33 +32,45 @@ private:
 public:
     explicit Player(const std::string& name, const Team playerTeam);
 
+    //Getters y Setters
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
     void setEquippedWeapon(TypeWeapon type);
+    TypeWeapon getEquippedWeapon() const;
+    Weapon getSpecificEquippedWeapon() const;
+    Weapon_* getPrimaryWeapon() const;
+    Weapon_* getEquippedWeaponInstance();
 
     float getX() const;
     void setX(const float x);
     float getY() const;
     void setY(const float y);
+
     float getAngle() const;
     void setAngle(float angle);
+
     std::string getId() const;
+
     Team getTeam() const;
+    void setTeam(Team newTeam);
+
     int getHealth() const;
     float getMoney() const;
     float getSpeed() const;
-    TypeWeapon getEquippedWeapon() const;
-    Weapon getSpecificEquippedWeapon() const;
-    Weapon_* getPrimaryWeapon() const;
-    bool isAlive() const;
-    bool canShoot(uint64_t currentTimeMs) const;
-    void takeDamage(int dmg);
-    std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
-    Weapon_* getEquippedWeaponInstance();
-    std::unique_ptr<Weapon_> dropPrimaryWeapon();
-    void revive();
-    void setTeam(Team newTeam);
 
     uint32_t getServerId() const;
+
+    //Validadores de estado
+    bool isAlive() const;
+    bool canShoot(uint64_t currentTimeMs) const;
+    bool canAfford(int amount) const;
+
+    //Acciones
+    void takeDamage(int dmg);
+    std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
+    void revive();
+    std::unique_ptr<Weapon_> dropPrimaryWeapon();
+    bool spendMoney(int amount);
+    void addMoney(int amount);
 };
 
 
