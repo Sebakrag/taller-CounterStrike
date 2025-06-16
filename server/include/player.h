@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -28,6 +29,7 @@ private:
     std::unique_ptr<Weapon_> primaryWeapon;
     std::unique_ptr<Weapon_> secondaryWeapon;
     TypeWeapon equippedWeapon;
+    uint32_t id_weapon;  // necesito esto
 
     float money;
     int kills;

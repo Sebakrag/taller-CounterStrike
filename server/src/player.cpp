@@ -19,11 +19,13 @@ Player::Player(const std::string& name, const Team team):
                 Weapon::Ak47)),  // esto hay que quitarlo cuando se pueda comprar armas.
         secondaryWeapon(WeaponFactory::create(Weapon::Glock)),
         equippedWeapon(TypeWeapon::Knife),
+        id_weapon(knife->getServerId()),
         money(800),
         kills(0),
         skinT(PlayerSkin::Terrorist3),
         skinCT(PlayerSkin::CounterTerrorist3) {
     std::cout << "Server ID del Player: " << serverId << std::endl;
+    std::cout << "Server ID de la weapon: " << id_weapon << std::endl;
 }
 
 
@@ -139,11 +141,12 @@ LocalPlayerInfo Player::generateLocalPlayerInfo() const {
         currentWeapon = Weapon::Bomb;
     }
     return LocalPlayerInfo(serverId, team, currentSkin, Vec2D(posX, posY), angle, currentWeapon,
-                           health, money, ammo);
+                           health, money, ammo, id_weapon);
 }
 
 PlayerInfo Player::generatePlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
+    // defino el arma actual.
     Weapon currentWeapon = Weapon::None;
     if (equippedWeapon == TypeWeapon::Primary) {
         currentWeapon = primaryWeapon->getWeaponType();
@@ -155,5 +158,6 @@ PlayerInfo Player::generatePlayerInfo() const {
         currentWeapon = Weapon::Bomb;
     }
 
-    return PlayerInfo(serverId, name, team, currentSkin, Vec2D(posX, posY), angle, currentWeapon);
+    return PlayerInfo(serverId, name, team, currentSkin, Vec2D(posX, posY), angle, currentWeapon,
+                      id_weapon);
 }

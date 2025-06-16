@@ -5,7 +5,7 @@
 
 LocalPlayerInfo::LocalPlayerInfo(unsigned int server_entt_id, Team team, PlayerSkin skin,
                                  const Vec2D& position, float angle_direction, Weapon weapon,
-                                 int health, int money, int ammo):
+                                 int health, int money, int ammo, unsigned int id_weapon):
         server_entt_id(server_entt_id),
         team(team),
         skin(skin),
@@ -15,7 +15,8 @@ LocalPlayerInfo::LocalPlayerInfo(unsigned int server_entt_id, Team team, PlayerS
         weapon_selected(weapon),
         health(health),
         money(money),
-        ammo_weapon(ammo) {}
+        ammo_weapon(ammo),
+        id_weapon(id_weapon) {}
 
 SpriteType LocalPlayerInfo::generateSpriteType() const {
     switch (skin) {
@@ -65,6 +66,9 @@ std::vector<uint8_t> LocalPlayerInfo::toBytes() const {
     buffer.push_back(health);
     Protocol_::insertBigEndian16(money, buffer);
     Protocol_::insertBigEndian16(ammo_weapon, buffer);
+
+    Protocol_::insertBigEndian32(id_weapon, buffer);
+
     return buffer;
 }
 
@@ -99,6 +103,11 @@ LocalPlayerInfo::LocalPlayerInfo(const std::vector<uint8_t>& bytes) {
     money = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
     ammo_weapon = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    index += 2;
+
+    id_weapon = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2],
+                                          bytes[index + 3]);
+    index += 4;
 }
 
 void LocalPlayerInfo::print() const {
@@ -110,6 +119,7 @@ void LocalPlayerInfo::print() const {
     std::cout << "Position: (" << position.getX() << ", " << position.getY() << ")" << std::endl;
     std::cout << "Angle Direction: " << angle_direction << " radians" << std::endl;
     std::cout << "Weapon Selected: " << static_cast<int>(weapon_selected) << std::endl;
+    std::cout << "Weapon id: " << static_cast<int>(id_weapon) << std::endl;
     std::cout << "Health: " << health << std::endl;
     std::cout << "Money: $" << money << std::endl;
     std::cout << "Ammo: " << ammo_weapon << std::endl;

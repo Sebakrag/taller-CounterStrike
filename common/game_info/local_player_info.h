@@ -8,7 +8,7 @@
 #include "../../client/include/model/utils/SpriteType.h"
 #include "../types.h"
 
-#define SIZE_LOCAL_PLAYER_INFO 25
+#define SIZE_LOCAL_PLAYER_INFO 29
 
 // class GameInfo;  // forward declaration
 
@@ -24,12 +24,13 @@ struct LocalPlayerInfo {
     int health;
     int money;
     int ammo_weapon;
+    unsigned int id_weapon;
 
     LocalPlayerInfo() {}
 
     explicit LocalPlayerInfo(unsigned int server_entt_id, Team team, PlayerSkin skin,
                              const Vec2D& position, float angle_direction, Weapon weapon,
-                             int health, int money, int ammo);
+                             int health, int money, int ammo, unsigned int id_weapon);
 
     LocalPlayerInfo(const LocalPlayerInfo& other) = default;
     LocalPlayerInfo& operator=(const LocalPlayerInfo& other) = default;

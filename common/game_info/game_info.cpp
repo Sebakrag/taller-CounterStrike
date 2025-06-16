@@ -84,8 +84,8 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     const auto y = localPlayer.position.getY();
     EntitySnapshot entity(localPlayer.server_entt_id, EntityType::PLAYER, SpriteType::ARTIC_AVENGER,
                           x, y, localPlayer.angle_direction, true, localPlayer.health,
-                          localPlayer.money, localPlayer.ammo_weapon, localPlayer.state, 6,
-                          localPlayer.team);
+                          localPlayer.money, localPlayer.ammo_weapon, localPlayer.state,
+                          localPlayer.id_weapon, localPlayer.team);
     entities.emplace_back(entity);
 
     // other players
@@ -105,8 +105,8 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         const float x = p.position.getX();
         const float y = p.position.getY();
 
-        EntitySnapshot entity(p.server_entt_id, EntityType::PLAYER, SpriteType::ARTIC_AVENGER, x, y,
-                              p.angle_direction, true, p.state, 3, p.team);
+        EntitySnapshot entity(p.server_entt_id, EntityType::PLAYER, p.generateSpriteType(), x, y,
+                              p.angle_direction, true, p.state, p.id_weapon, p.team);
         entities.emplace_back(entity);
 
         index += size;

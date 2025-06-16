@@ -17,6 +17,7 @@ struct PlayerInfo {
     Vec2D position;
     float angle_direction;  // a dónde está mirando el player
     Weapon weapon_selected;
+    unsigned int id_weapon;
     // int health;
     // int money;
     // int ammo_weapon;
@@ -28,7 +29,7 @@ struct PlayerInfo {
     //            int money, int ammo);
     explicit PlayerInfo(unsigned int server_entt_id, const std::string& username, Team team,
                         PlayerSkin skin, const Vec2D& position, float angle_direction,
-                        Weapon weapon_selected);
+                        Weapon weapon_selected, unsigned int id_weapon);
 
     SpriteType generateSpriteType() const;
 
