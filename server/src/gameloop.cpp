@@ -6,9 +6,9 @@
 #include <thread>
 #include <utility>
 
-GameLoop::GameLoop(Match&& match,
+GameLoop::GameLoop(Match& match,
                    const std::map<std::string, std::shared_ptr<Queue<GameInfo>>>& queuesPlayers):
-        match(std::move(match)),
+        match(match),
         queueActionsPlayers(std::make_shared<Queue<PlayerAction>>()),
         queuesPlayers(queuesPlayers) {}
 

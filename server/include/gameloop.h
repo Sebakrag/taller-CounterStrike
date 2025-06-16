@@ -20,7 +20,7 @@
 class GameLoop: public Thread {
     //    friend class GameManager;  // 🔒 Solo GameManager puede ver lo privado de Match
 private:
-    Match match;
+    Match& match;
     std::shared_ptr<Queue<PlayerAction>> queueActionsPlayers;  // recurso compartido
 
     // queues senders. cada queue es un recurso compartido con los senders
@@ -28,7 +28,7 @@ private:
     std::map<std::string, std::shared_ptr<Queue<GameInfo>>> queuesPlayers;
 
 public:
-    GameLoop(Match&& match,
+    GameLoop(Match& match,
              const std::map<std::string, std::shared_ptr<Queue<GameInfo>>>& queuesPlayers);
 
     /**

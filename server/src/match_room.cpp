@@ -1,6 +1,7 @@
 #include "../include/match_room.h"
 
 #include <memory>
+#include <stdexcept>
 #include <utility>
 
 #include "../include/scenario_registry.h"
@@ -64,7 +65,11 @@ bool MatchRoom::isPlayerHost(const std::string& username) const { return usernam
 MatchRoomInfo MatchRoom::getMatchRoomInfo() {
     std::vector<PlayerInfoLobby> infos;
     for (const auto& [username, queuePtr]: players) {
-        infos.push_back(PlayerInfoLobby(username, Team::Terrorist));  // team hardcodeado
+        auto p = match.getPlayer(username);
+        if (p == nullptr) {
+            throw std::runtime_error("ERROR en MatchRoom::getMatchRoomInfo()");
+        }
+        infos.push_back(PlayerInfoLobby(username, p->getTeam()));
     }
 
     return MatchRoomInfo(infos, started);
@@ -72,5 +77,5 @@ MatchRoomInfo MatchRoom::getMatchRoomInfo() {
 
 std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
     started = true;
-    return std::make_shared<GameLoop>(std::move(match), players);
+    return std::make_shared<GameLoop>(match, players);
 }
