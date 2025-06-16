@@ -9,7 +9,7 @@
 
 /*GameManager::GameManager(const std::list<std::string>& escenarios) {
     // YOUR CODE
-}
+}*/
 bool GameManager::createMatch(const std::string& matchName, const std::string& username,
                               std::shared_ptr<Queue<GameInfo>> playerQueue,
                               const std::string& id_scenary) {
@@ -126,18 +126,4 @@ void GameManager::killAllMatchs() {
         gameLoop->join();
     }
     gameLoops.clear();
-}
-
-std::vector<MapInfo> GameManager::getAvailableMaps() const {
-    return mapManager.getAvailableMaps();
-}
-
-TileMap GameManager::getMap(const std::string& mapFileName) const {
-    try {
-        return mapManager.loadMap(mapFileName);
-    } catch (const std::exception& e) {
-        std::cerr << "Error al obtener el mapa " << mapFileName << ": " << e.what() << std::endl;
-        // Devolver un mapa predeterminado en caso de error
-        return TileMap::getCurrentLevel();
-    }
 }
