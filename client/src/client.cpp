@@ -12,13 +12,7 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
         username(user_name),
         sender(protocol, send_queue),
         receiver(protocol, recv_queue),
-        // Inicializar snap con valores válidos para PLAYER (usando el constructor completo para PLAYER)
-        // Parámetros adicionales: hp=100, money=1000, ammo=30, estado=Idle, weapon_id=0, team=CounterTerrorist
-        snap(1, EntityType::PLAYER, SpriteType::PHEONIX, 0.0f, 0.0f, 0.0f, true, 100, 1000, 30, PlayerState::Idle, 0, Team::CounterTerrorist),
-        x(0.0f),
-        y(0.0f),
-        angle(0.0f) {
-    protocol.sendUserName(user_name);
+        protocol.sendUserName(user_name);
     bool ok = protocol.recvConfirmation();
     if (!ok) {
         throw std::runtime_error(
@@ -32,8 +26,6 @@ void Client::ExitGame() {
     status = Disconnected;
     protocol.sendMenuAction(MenuAction(MenuActionType::Exit));
 }
-#include "client/include/ui/MapSelectionDialog.h"
-#include <QApplication>
 
 bool Client::CreateMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, 0));
@@ -47,6 +39,7 @@ bool Client::CreateMatch(const std::string& match_name) {
     } else {
         std::cout << "La partida No se pudo crear." << std::endl;
     }
+    return created;
 }
 void Client::JoinMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Join, match_name));

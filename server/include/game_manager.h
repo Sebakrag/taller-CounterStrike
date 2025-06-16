@@ -11,7 +11,6 @@
 #include "../../common/game_info/game_info.h"
 #include "../../common/queue.h"
 
-#include "map_manager.h"
 #include "match.h"
 #include "match_room.h"
 
@@ -22,9 +21,6 @@ class GameManager {
 
     std::mutex m;
     bool server_closed = false;
-    
-    // Gestor de mapas YAML
-    MapManager mapManager;
 
 public:
     GameManager(const std::string& mapsDirectory);

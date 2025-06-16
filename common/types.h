@@ -55,11 +55,10 @@ struct MenuAction {
     const MenuActionType type;
     const std::string name_match;
     const int id_scenary = 0;
-    const std::string map_file_name = "";
 
     explicit MenuAction(MenuActionType type, const std::string& name_match = "",
-                        int id_scenary = 0, const std::string& map_file_name = ""):
-            type(type), name_match(name_match), id_scenary(id_scenary), map_file_name(map_file_name) {}
+        int id_scenary = 0):
+        type(type), name_match(name_match), id_scenary(id_scenary) {}
 };
 
 // lobby

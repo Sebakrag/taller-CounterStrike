@@ -8,7 +8,6 @@
 #include "../../common/game_info/game_info.h"
 #include "../../common/protocol.h"
 #include "../../common/socket.h"
-#include "map_info.h"
 
 
 class ClientProtocol: public Protocol_ {
@@ -69,12 +68,6 @@ public:
     bool recvConfirmation();
 
     std::vector<std::string> recvListMatchs();
-
-    /**
-     * Recibe la lista de mapas disponibles del servidor
-     * @return Vector con la información de los mapas disponibles
-     */
-    std::vector<ClientMapInfo> recvAvailableMaps();
 
     // recibe la lista de jugadores en la sala
     // y si la partida comenzó
