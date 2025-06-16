@@ -13,13 +13,13 @@ std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         const auto client = controller->getClient();
         const auto matchInfo = client->getMatchInfo();
-        matchInfo.print(); // TODO: eliminar
+        matchInfo.print();  // TODO: eliminar
 
         Game game(*client, matchInfo);
 
         game.start();
 
-        return AppStateCode::QUIT; // TODO: enviar a menu luego de terminar la partida.
+        return AppStateCode::QUIT;  // TODO: enviar a menu luego de terminar la partida.
     } catch (const SDL2pp::Exception& e) {
         std::cerr << "Fatal error: " << e.what() << ", SDL error: " << e.GetSDLError() << std::endl;
         // Deberia lanzar otro tipo de excepcion para manejar en el AppStateController?

@@ -1,8 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <vector>
-
 #include "../../../client/dtos/AimInfo.h"
 #include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/game_info/game_info.h"
@@ -16,7 +14,6 @@
 #include "FieldOfView.h"
 #include "HUD.h"
 #include "Map.h"
-
 
 class Graphics;
 

@@ -4,6 +4,7 @@
 // capaz que este archivo no hace falta. Si no hay mas
 // structs para definir, se puede definir en otro lado
 #include <memory>
+#include <utility>
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/queue.h"
@@ -17,7 +18,7 @@ struct DroppedWeapon {
     std::unique_ptr<Weapon_> weapon;
     Vec2D position;
 
-    DroppedWeapon(std::unique_ptr<Weapon_> w, Vec2D pos) : weapon(std::move(w)), position(pos) {}
+    DroppedWeapon(std::unique_ptr<Weapon_> w, Vec2D pos): weapon(std::move(w)), position(pos) {}
 };
 
 

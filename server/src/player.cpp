@@ -33,7 +33,25 @@ void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
     primaryWeapon = std::move(weapon);
 }
 
-void Player::setEquippedWeapon(TypeWeapon type) { equippedWeapon = type; }
+void Player::setEquippedWeapon(TypeWeapon type) {
+    switch (type) {
+        case TypeWeapon::Knife:
+            id_weapon = knife->getServerId();
+            break;
+        case TypeWeapon::Primary:
+            id_weapon = primaryWeapon->getServerId();
+            break;
+        case TypeWeapon::Secondary:
+            id_weapon = secondaryWeapon->getServerId();
+            break;
+        case TypeWeapon::Bomb:
+            // id_weapon = knife->getServerId(); // TODO: id para la bomba.
+            break;
+        default:
+            break;
+    }
+    equippedWeapon = type;
+}
 
 float Player::getX() const { return posX; }
 void Player::setX(const float x) { posX = x; }
@@ -69,7 +87,7 @@ Weapon Player::getSpecificEquippedWeapon() const {
     }
 }
 
-Weapon_* Player::getEquippedWeaponInstance() {
+Weapon_* Player::getEquippedWeaponInstance() const {
     switch (equippedWeapon) {
         case TypeWeapon::Knife:
             return knife.get();
@@ -130,34 +148,14 @@ LocalPlayerInfo Player::generateLocalPlayerInfo() const {
     } else if (equippedWeapon == TypeWeapon::Secondary) {
         ammo = secondaryWeapon->getBullets();
     }
-    Weapon currentWeapon = Weapon::None;
-    if (equippedWeapon == TypeWeapon::Primary) {
-        currentWeapon = primaryWeapon->getWeaponType();
-    } else if (equippedWeapon == TypeWeapon::Secondary) {
-        currentWeapon = secondaryWeapon->getWeaponType();
-    } else if (equippedWeapon == TypeWeapon::Knife) {
-        currentWeapon = Weapon::Knife;
-    } else if (equippedWeapon == TypeWeapon::Bomb) {
-        currentWeapon = Weapon::Bomb;
-    }
-    return LocalPlayerInfo(serverId, team, currentSkin, Vec2D(posX, posY), angle, currentWeapon,
+
+    return LocalPlayerInfo(serverId, team, currentSkin, Vec2D(posX, posY), angle, equippedWeapon,
                            health, money, ammo, id_weapon);
 }
 
 PlayerInfo Player::generatePlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
-    // defino el arma actual.
-    Weapon currentWeapon = Weapon::None;
-    if (equippedWeapon == TypeWeapon::Primary) {
-        currentWeapon = primaryWeapon->getWeaponType();
-    } else if (equippedWeapon == TypeWeapon::Secondary) {
-        currentWeapon = secondaryWeapon->getWeaponType();
-    } else if (equippedWeapon == TypeWeapon::Knife) {
-        currentWeapon = Weapon::Knife;
-    } else if (equippedWeapon == TypeWeapon::Bomb) {
-        currentWeapon = Weapon::Bomb;
-    }
 
-    return PlayerInfo(serverId, name, team, currentSkin, Vec2D(posX, posY), angle, currentWeapon,
+    return PlayerInfo(serverId, name, team, currentSkin, Vec2D(posX, posY), angle, equippedWeapon,
                       id_weapon);
 }

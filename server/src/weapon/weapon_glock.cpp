@@ -2,12 +2,16 @@
 
 WeaponGlock::WeaponGlock(): FireWeapon(45, 0, 40, 700) {}
 
-Weapon WeaponGlock::getWeaponType() const {
-    return Weapon::Glock;
+Weapon WeaponGlock::getWeaponType() const { return Weapon::Glock; }
+
+WeaponInfo WeaponGlock::generateWeaponInfo(const WeaponState& state) {
+    return {serverId, Weapon::Glock, state, bullets, 0, 0};
 }
 
-std::vector<Projectile> WeaponGlock::shoot(float posX, float posY, float dirX, float dirY, const std::string& shooter, uint64_t currentTimeMs) {
-    if (!canShoot(currentTimeMs)) return {};
+std::vector<Projectile> WeaponGlock::shoot(float posX, float posY, float dirX, float dirY,
+                                           const std::string& shooter, uint64_t currentTimeMs) {
+    if (!canShoot(currentTimeMs))
+        return {};
 
     lastShotTimeMs = currentTimeMs;
     bullets--;

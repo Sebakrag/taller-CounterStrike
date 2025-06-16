@@ -318,7 +318,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
 
     LocalPlayerInfo localPlayerInfo;
     std::vector<PlayerInfo> playersInfo;
-
+    std::vector<WeaponInfo> weaponsInfo;  // armas dropeadas. se puede cambiar el nombre capaz
     // std::cout << "hay " << players.size() << " players" << std::endl;
     for (const Player& p: players) {
         if (p.getId() == username) {
@@ -326,6 +326,9 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         } else {
             playersInfo.emplace_back(p.generatePlayerInfo());
         }
+        WeaponInfo weaponInfo(
+                p.getEquippedWeaponInstance()->generateWeaponInfo(WeaponState::EQUIPPED));
+        weaponsInfo.emplace_back(weaponInfo);
     }
 
     std::vector<BulletInfo> bulletsInfo;
@@ -333,7 +336,6 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
                                  Vec2D(p.getDirX(), p.getDirY()));
     }
-    std::vector<ItemInfo> itemsInfo;  // armas dropeadas. se puede cambiar el nombre capaz
 
     float timeLeft = roundTimer;
     if (bombPlanted) {
@@ -341,7 +343,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
     }
 
     return GameInfo(this->phase, this->bombPlanted, this->bombPosX, this->bombPosY, timeLeft,
-                    localPlayerInfo, playersInfo, bulletsInfo, itemsInfo);
+                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo);
 }
 
 // void Match::showPlayers() const {

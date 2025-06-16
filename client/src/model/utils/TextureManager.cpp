@@ -43,9 +43,6 @@ void TextureManager::init(Renderer& ren) {
 
 void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path) {
     Surface surface(path);
-    // auto texture = std::make_shared<Texture>(ren, surface);
-    // texture->SetBlendMode(SDL_BLENDMODE_BLEND);  // Asegura el alpha blending
-    // textures[type] = texture;
     textures[type] = std::make_shared<Texture>(ren, surface);
 }
 
@@ -58,7 +55,9 @@ void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std
     textures[type] = std::make_shared<Texture>(ren, surface);
 }
 
-std::shared_ptr<Texture> TextureManager::getTexture(SpriteType type) { return textures[type]; }
+std::shared_ptr<Texture> TextureManager::getTexture(const SpriteType type) {
+    return textures[type];
+}
 
 std::shared_ptr<Texture> TextureManager::getTextureMap(const TypeTileMap& typeTileMap) {
     if (typeTileMap == TypeTileMap::Desert) {

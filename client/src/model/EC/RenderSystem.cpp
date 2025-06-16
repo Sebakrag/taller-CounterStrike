@@ -89,9 +89,14 @@ void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
         const int width = playerSpr.getWidth();
         const int height = playerSpr.getHeight();
 
-        if (e != local_player &&
-            (!camera.isVisible(playerMapPos, width, height) || !player_FOV.isInFOV(playerMapPos)))
+        // if (e != local_player &&
+        //     (!camera.isVisible(playerMapPos, width, height) ||
+        //     !player_FOV.isInFOV(playerMapPos))) return;
+        if (e != local_player && (!camera.isVisible(playerMapPos, width, height))) {
+            bool b = player_FOV.isInFOV(playerMapPos);
+            std::cout << b << std::endl;
             return;
+        }
 
         // Calculamos la posición de la entidad relativa a la cámara
         const Vec2D screenPos = camera.projectToScreen(playerMapPos, width, height);

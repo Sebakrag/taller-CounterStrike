@@ -31,6 +31,7 @@ target_sources(taller_client
         src/model/EC/EntityFactory.cpp
         src/model/EC/EntityManager.cpp
         src/model/EC/RenderSystem.cpp
+        src/model/EC/components/PlayerSpriteComponent.cpp
         src/model/EC/components/TransformComponent.cpp
         src/model/EC/components/SpriteComponent.cpp
         src/model/EC/components/WeaponSpriteComponent.cpp

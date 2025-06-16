@@ -40,45 +40,32 @@ void EntityFactory::create_specific_entity(const Entity& new_entt,
     }
 }
 
-
-void EntityFactory::createEntityPlayer(const Entity& new_entt, const PlayerInfo& p) {
-    const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
-    tComp->init(p.position.getX(), p.position.getY(), p.angle_direction);
-
-    const auto spriteComp = comp_mgr.addComponent<PlayerSpriteComponent>(new_entt);
-    spriteComp->init(p.generateSpriteType());
-
-    // esto podría hacerce de otra forma, como parte de la entidad player, en vez de que cada weapon
-    // sea una entidad.
-    // const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
-    // equippedWeapon->setID(
-    //        INVALID_ENTITY);  // TODO: Si lo dejamos asi, todo jugador empieza desarmado.
-}
-
 void EntityFactory::createEntityPlayer(const Entity& new_entt, const LocalPlayerInfo& p) {
     const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
     tComp->init(p.position.getX(), p.position.getY(), p.angle_direction);
 
     const auto spriteComp = comp_mgr.addComponent<PlayerSpriteComponent>(new_entt);
-    spriteComp->init(p.generateSpriteType());
-
-    // esto podría hacerce de otra forma, como parte de la entidad player, en vez de que cada weapon
-    // sea una entidad.
-    // const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
-    // equippedWeapon->setID(
-    //        INVALID_ENTITY);  // TODO: Si lo dejamos asi, todo jugador empieza desarmado.
-}
-
-void EntityFactory::create_player_entt(const Entity& new_entt, const EntitySnapshot& snap) const {
-    const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
-    tComp->init(snap.pos_x, snap.pos_y, snap.angle);
-
-    const auto spriteComp = comp_mgr.addComponent<PlayerSpriteComponent>(new_entt);
-    spriteComp->init(snap.sprite_type);
+    spriteComp->init(p.generateSpriteType(), p.weapon_type);
 
     const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
     equippedWeapon->setID(
             INVALID_ENTITY);  // TODO: Si lo dejamos asi, todo jugador empieza desarmado.
+}
+
+void EntityFactory::create_player_entt(const Entity& new_entt, const EntitySnapshot& snap) const {
+    if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
+        const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
+        tComp->init(snap.pos_x, snap.pos_y, snap.angle);
+
+        const auto spriteComp = comp_mgr.addComponent<PlayerSpriteComponent>(new_entt);
+        spriteComp->init(snap.sprite_type, player->weapon_type);
+
+        const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
+        equippedWeapon->setID(
+                INVALID_ENTITY);  // TODO: Si lo dejamos asi, todo jugador empieza desarmado.
+    } else {
+        throw std::runtime_error("Error trying to create a Player entity.");
+    }
 }
 
 void EntityFactory::create_weapon_entt(const Entity& new_entt, const EntitySnapshot& snap) const {

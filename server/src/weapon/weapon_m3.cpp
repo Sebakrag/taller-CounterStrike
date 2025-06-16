@@ -4,12 +4,16 @@
 
 WeaponM3::WeaponM3(): FireWeapon(70, 3000, 20, 60) {}
 
-Weapon WeaponM3::getWeaponType() const {
-    return Weapon::M3;
+Weapon WeaponM3::getWeaponType() const { return Weapon::M3; }
+
+WeaponInfo WeaponM3::generateWeaponInfo(const WeaponState& state) {
+    return {serverId, Weapon::M3, state, bullets, 0, 0};
 }
 
-std::vector<Projectile> WeaponM3::shoot(float posX, float posY, float dirX, float dirY, const std::string &shooter, uint64_t currentTimeMs) {
-    if (!canShoot(currentTimeMs)) return {};
+std::vector<Projectile> WeaponM3::shoot(float posX, float posY, float dirX, float dirY,
+                                        const std::string& shooter, uint64_t currentTimeMs) {
+    if (!canShoot(currentTimeMs))
+        return {};
 
     lastShotTimeMs = currentTimeMs;
     bullets--;

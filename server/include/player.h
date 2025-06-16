@@ -61,7 +61,7 @@ public:
     bool canShoot(uint64_t currentTimeMs) const;
     void takeDamage(int dmg);
     std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
-    Weapon_* getEquippedWeaponInstance();
+    Weapon_* getEquippedWeaponInstance() const;
     std::unique_ptr<Weapon_> dropPrimaryWeapon();
 
     uint32_t getServerId() const;
