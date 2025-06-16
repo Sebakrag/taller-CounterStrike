@@ -4,14 +4,16 @@
 
 #include "../../../client/include/model/EC/components/TransformComponent.h"
 
-World::World(const TileMap& tileMap, const WindowConfig& winConfig, const int numPlayers,
+World::World(Graphics &graphics, const TileMap& tileMap, const WindowConfig& winConfig, const int numPlayers,
              const LocalPlayerInfo& firstLocalPlayerSnap):
         entt_mgr(comp_mgr, numPlayers),
         comp_updater(entt_mgr, comp_mgr),
-        map(tileMap),
+        map(tileMap, graphics),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
         render_sys(local_player) {}
+
+
 
 void World::update(float dt, const GameInfo& gameInfo) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'

@@ -38,7 +38,7 @@ public:
     /// @param numPlayers number of players that will play the game match.
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// ///
-    World(const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
+    World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
           const LocalPlayerInfo& firstLocalPlayerSnap);
 
     void update(float dt, const GameInfo& gameInfo);

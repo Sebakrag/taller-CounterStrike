@@ -5,8 +5,8 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "common/dtos/WindowConfig.h"
-#include "common/utils/Vec2D.h"
+#include "../../../common/dtos/WindowConfig.h"
+#include "../../../common/utils/Vec2D.h"
 
 using SDL2pp::NullOpt;
 using SDL2pp::Optional;
@@ -25,7 +25,7 @@ class Graphics {
 private:
     SDL sdl;
     SDLImage sdl_image;
-    SDLTTF sdl_ttf;  // TODO: determinar si lo necesito (por ahora no lo usamos)
+    SDLTTF sdl_ttf;
 
     Window window;
     Renderer renderer;
@@ -37,12 +37,21 @@ public:
     Graphics(const WindowConfig& config, const std::string& match_name);
 
     void render(World& world);
+    //void clear();
+    //void present();
     void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,
               const Optional<Rect>& dstRect = NullOpt);
     void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,
               double angle, const Optional<Point>& center = NullOpt, int flip = 0);
 
     Vec2D getDrawableWindowDimension() const;
+
+    //agrego metodos par usar en el map
+    std::shared_ptr<Texture> createTargetTexture(int w, int h);
+    void setRenderTarget(Texture& tex);
+    void resetRenderTarget();
+    void clearWithTransparentBlack();
+
 };
 
 #endif  // GRAPHICS_H
