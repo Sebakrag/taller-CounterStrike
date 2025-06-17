@@ -20,6 +20,27 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         out << YAML::Value << YAML::BeginMap;
         
         out << YAML::Key << "name" << YAML::Value << mapName.toStdString();
+        
+        // Determinar el tipo de mapa basado en el terrainType
+        QString mapType;
+        switch (terrainType) {
+            case 0: // DESERT_TERRAIN
+                mapType = "Desert";
+                break;
+            case 1: // AZTEC_VILLAGE
+                mapType = "Aztec";
+                break;
+            case 2: // TRAINING_GROUND
+                mapType = "Training";
+                break;
+            default:
+                mapType = "Desert";
+                break;
+        }
+        
+        // Agregar el nuevo campo map_type
+        out << YAML::Key << "map_type" << YAML::Value << mapType.toStdString();
+        // Mantener terrain_type por compatibilidad
         out << YAML::Key << "terrain_type" << YAML::Value << terrainType;
         
         // Tamaño del mapa (por defecto)

@@ -669,82 +669,53 @@ void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pi
     }
 }
 
+// Nuevo método para cortar una imagen de tileset en tiles individuales
+QMap<int, QPixmap> MapEditor::sliceTilesetImage(const QString& tilesetPath, int tileWidth, int tileHeight) {
+    QMap<int, QPixmap> tileMap;
+    
+    // Cargar la imagen del tileset
+    QPixmap tilesetImage(tilesetPath);
+    if (tilesetImage.isNull()) {
+        qWarning() << "No se pudo cargar el tileset:" << tilesetPath;
+        return tileMap;
+    }
+    
+    // Dimensiones del tileset
+    int tilesetWidth = tilesetImage.width();
+    int tilesetHeight = tilesetImage.height();
+    
+    // Calcular número de filas y columnas
+    int cols = tilesetWidth / tileWidth;
+    int rows = tilesetHeight / tileHeight;
+    
+    // ID inicial para los tiles
+    int tileId = 1; // Empezamos desde 1 como solicitó el usuario
+    
+    // Cortar el tileset en tiles individuales
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+            // Calcular la posición del tile en la imagen original
+            int posX = x * tileWidth;
+            int posY = y * tileHeight;
+            
+            // Cortar el tile
+            QPixmap tilePix = tilesetImage.copy(posX, posY, tileWidth, tileHeight);
+            
+            if (!tilePix.isNull()) {
+                // Almacenar el tile con su ID
+                tileMap[tileId] = tilePix;
+                tileId++;
+            }
+        }
+    }
+    
+    qDebug() << "Se cortaron" << tileMap.size() << "tiles del tileset" << tilesetPath;
+    return tileMap;
+}
+
 void MapEditor::loadAvailableTiles()
 {
     try {
-        QString resourceBasePath = getResourcesPath();
-        qDebug() << "Usando ruta de recursos base:" << resourceBasePath;
-        
-        // Crear la estructura de carpetas básica con privilegios adecuados
-        // Intentamos crear primero solo la carpeta base de recursos
-        QDir baseDir;
-        if (!QDir(resourceBasePath).exists()) {
-            bool created = baseDir.mkpath(resourceBasePath);
-            qDebug() << "Intento de crear carpeta base:" << resourceBasePath << ", resultado:" << created;
-            
-            if (!created) {
-                qWarning() << "No se puede crear la carpeta de recursos base. Usar una ubicación alternativa.";
-                // Intentar con una ubicación alternativa - directorio actual
-                resourceBasePath = QDir::currentPath() + "/editor_resources/";
-                created = baseDir.mkpath(resourceBasePath);
-                qDebug() << "Intento alternativo en:" << resourceBasePath << ", resultado:" << created;
-                
-                if (!created) {
-                    qWarning() << "No se pueden crear carpetas de recursos. El editor funcionará con limitaciones.";
-                }
-            }
-        }
-        
-        // Definir la estructura de carpetas requerida
-        QStringList requiredDirs = {
-            resourceBasePath + "tiles/",
-            resourceBasePath + "solid/",
-            resourceBasePath + "zones/",
-            resourceBasePath + "bombzone/",
-            resourceBasePath + "weapons/"
-        };
-        
-        // Crear subcarpetas de terrenos
-        QStringList terrainTypes = {"desert", "aztec", "training"};
-        for (const auto& terrain : terrainTypes) {
-            requiredDirs << resourceBasePath + "tiles/tiles_" + terrain + "/";
-        }
-        
-        // Crear todas las carpetas necesarias
-        bool allCreated = true;
-        for (const auto& dir : requiredDirs) {
-            if (!QDir(dir).exists()) {
-                bool created = QDir().mkpath(dir);
-                qDebug() << "Creando directorio:" << dir << ", resultado:" << created;
-                allCreated = allCreated && created;
-            }
-        }
-        
-        if (!allCreated) {
-            qWarning() << "No se pudieron crear todas las carpetas de recursos. El editor funcionará con limitaciones.";
-        } else {
-            qDebug() << "Estructura de directorios creada correctamente.";
-        }
-        
-        // Cargar los recursos disponibles según el tipo de terreno actual
-        QString terrainFolder;
-        switch (currentTerrainType) {
-            case 0: // DESERT_TERRAIN
-                terrainFolder = "desert";
-                break;
-            case 1: // AZTEC_VILLAGE
-                terrainFolder = "aztec";
-                break;
-            case 2: // TRAINING_GROUND
-                terrainFolder = "training";
-                break;
-            default:
-                terrainFolder = "desert";
-                break;
-        }
-        
-        QString tilesPath = resourceBasePath + "tiles/tiles_" + terrainFolder + "/";
-        
         // Comprobar que los containers y scroll areas existen antes de usarlos
         if (!tilesScrollArea) {
             qWarning() << "tilesScrollArea es nullptr! Inicializando...";
@@ -760,7 +731,104 @@ void MapEditor::loadAvailableTiles()
             tileButtons = new QButtonGroup(this);
         }
         
-        loadElementsFromPath(tilesPath, tilePixmaps, tileButtons, tilesScrollArea, &MapEditor::tileSelected);
+        // Limpiar los pixmaps y botones anteriores
+        tilePixmaps.clear();
+        QList<QAbstractButton*> buttons = tileButtons->buttons();
+        for (QAbstractButton* button : buttons) {
+            tileButtons->removeButton(button);
+            delete button;
+        }
+        
+        // Desconectar conexiones anteriores para evitar duplicados
+        disconnect(tileButtons, nullptr, this, nullptr);
+        
+        // Reconectar la señal de selección
+        connect(tileButtons, &QButtonGroup::idClicked,
+                this, &MapEditor::tileSelected);
+        
+        // Cargar los tilesets según el tipo de terreno actual
+        QString terrainType;
+        QString tilesetFile;
+        
+        switch (currentTerrainType) {
+            case 0: // DESERT_TERRAIN
+                terrainType = "Desert";
+                tilesetFile = "desert_tiles.png";
+                break;
+            case 1: // AZTEC_VILLAGE
+                terrainType = "Aztec";
+                tilesetFile = "aztec_tiles.png";
+                break;
+            case 2: // TRAINING_GROUND
+                terrainType = "Training";
+                tilesetFile = "training_tiles.png";
+                break;
+            default:
+                terrainType = "Desert";
+                tilesetFile = "desert_tiles.png";
+                break;
+        }
+        
+        // Ruta al tileset
+        QString tilesetPath = QString("../client/assets/tiles/%1").arg(tilesetFile);
+        
+        // Cortar el tileset en tiles individuales (32x32 pixeles)
+        tilePixmaps = sliceTilesetImage(tilesetPath, 32, 32);
+        
+        // Obtener el widget contenedor para los botones
+        QWidget* elementsContainer = tilesScrollArea->widget();
+        if (!elementsContainer) {
+            elementsContainer = new QWidget();
+            tilesScrollArea->setWidget(elementsContainer);
+            tilesScrollArea->setWidgetResizable(true);
+        }
+        
+        // Obtener o crear el layout
+        QGridLayout* elementsGridLayout = qobject_cast<QGridLayout*>(elementsContainer->layout());
+        if (!elementsGridLayout) {
+            if (elementsContainer->layout()) {
+                delete elementsContainer->layout();
+            }
+            elementsGridLayout = new QGridLayout(elementsContainer);
+            elementsGridLayout->setSpacing(2);
+            elementsGridLayout->setContentsMargins(2, 2, 2, 2);
+        }
+        
+        // Crear botones para cada tile
+        int row = 0;
+        int col = 0;
+        
+        for (auto it = tilePixmaps.begin(); it != tilePixmaps.end(); ++it) {
+            int tileId = it.key();
+            QPixmap tilePixmap = it.value();
+            
+            // Crear un botón con una miniatura del tile
+            QPushButton* tileButton = new QPushButton();
+            tileButton->setFixedSize(40, 40);
+            
+            // Crear una versión escalada para el botón
+            QPixmap scaledPixmap = tilePixmap.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            QIcon buttonIcon(scaledPixmap);
+            tileButton->setIcon(buttonIcon);
+            tileButton->setIconSize(QSize(36, 36));
+            tileButton->setToolTip(QString("Tile %1").arg(tileId));
+            tileButton->setStyleSheet(""); // Inicializar sin estilo especial
+            
+            // Añadir al grupo de botones
+            tileButtons->addButton(tileButton, tileId);
+            
+            // Añadir a la cuadrícula
+            elementsGridLayout->addWidget(tileButton, row, col % 3);
+            
+            // Actualizar posición para el siguiente elemento
+            col++;
+            if (col % 3 == 0) {
+                row++;
+                col = 0;
+            }
+        }
+        
+        qDebug() << "Se cargaron" << tilePixmaps.size() << "tiles del terreno" << terrainType;
         
         // Verificar todos los punteros antes de cargar otros elementos
         if (!tilesScrollArea || !tileButtons || !solidsScrollArea || !solidButtons || !zonesScrollArea || !zoneButtons 

@@ -161,6 +161,9 @@ private:
     // Método para obtener la ruta base a los recursos
     static QString getResourcesPath();
     
+    // Método para cortar una imagen de tileset en tiles individuales
+    QMap<int, QPixmap> sliceTilesetImage(const QString& tilesetPath, int tileWidth, int tileHeight);
+    
     // Métodos privados
     QString getResourcePath(int elementType, int subType = 0);
     void updateTerrainUI(int terrainType);
