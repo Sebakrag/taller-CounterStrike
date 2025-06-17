@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <random>
+
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
@@ -11,6 +13,7 @@
 #include "map.h"
 #include "physics_engine.h"
 #include "player.h"
+#include "weapon/bomb.h"
 #include "types2.h"
 
 class Match {
@@ -20,16 +23,16 @@ private:
     Map map;
     GamePhase phase;
     int roundsPlayed = 0;
-    bool bombPlanted = false;
-    int bombPosX, bombPosY = 0;
-    double bombTimer = 15;
-    const double TIME_TO_EXPLODE = 40.0;
-    double roundTimer = 1.0;
+    double roundTimer = 30.0;
     const double ROUND_DURATION = 120.0;
-    bool roundOver = false;
+    bool roundOver;
     Team roundWinner;
     std::vector<Projectile> projectiles;
     std::vector<DroppedWeapon> droppedWeapons;
+    Bomb bomb;
+
+    static constexpr int MAX_ROUNDS = 10;
+    static constexpr double PREPARATION_TIME = 30.0;
 
 public:
     explicit Match(const std::string& id_scenario);
@@ -44,6 +47,8 @@ public:
     void processPlant(const std::string& playerName);
     void processDefuse(const std::string& playerName);
     void checkRoundEnd();
+    void advancePhase();
+    GamePhase getGamePhase() const;
 
     // MatchInfo generateMatchInfo() const; (necesitaría recibir el nameMatch en el constructor)
     bool containsPlayer(const std::string& username) const;

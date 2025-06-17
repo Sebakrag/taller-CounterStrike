@@ -13,6 +13,7 @@ private:
 public:
     explicit Map(const TileMap& tilemap);
     bool isWalkable(int x, int y);
+    bool isBombZone(int x, int y);
 };
 
 #endif

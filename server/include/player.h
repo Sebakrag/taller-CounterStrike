@@ -63,6 +63,8 @@ public:
     std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
     Weapon_* getEquippedWeaponInstance() const;
     std::unique_ptr<Weapon_> dropPrimaryWeapon();
+    void revive();
+    void setTeam(Team newTeam);
 
     uint32_t getServerId() const;
 

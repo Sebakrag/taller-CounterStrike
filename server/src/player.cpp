@@ -140,6 +140,17 @@ std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() { return std::move(primaryW
 
 uint32_t Player::getServerId() const { return serverId; }
 
+void Player::revive() {
+    health = 100;
+    state = PlayerState::Idle;
+    // deberiamos resetear la posicion a la del spawn segun equipo
+}
+
+void Player::setTeam(Team newTeam) {
+    team = newTeam;
+}
+
+
 LocalPlayerInfo Player::generateLocalPlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
     int ammo = 0;

@@ -7,12 +7,14 @@
 
 #include "utils/Vec2D.h"
 
+
 using ServerEntityID = uint32_t;
 
 enum class Weapon : unsigned char { None, Glock, Ak47, M3, Awp, Knife, Bomb };
 enum class TypeWeapon : unsigned char { Primary, Secondary, Knife, Bomb };
 enum class Team : unsigned char { Terrorist, CounterTerrorist };
 enum class GamePhase : unsigned char { Preparation, Combat, EndOfMatch };
+enum class BombState : unsigned char { Dropped, Carried, Planted, Exploded, Defused };
 
 enum class PlayerState : unsigned char { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
 enum class WeaponState : unsigned char { DROPPED, EQUIPPED, HIDDEN };
@@ -68,7 +70,7 @@ struct MenuAction {
 enum class LobbyAction { QuitMatch, StartMatch, ListPlayers };
 
 // game
-enum GameActionType { Null, BuyWeapon, BuyAmmo, Attack, Walk, ChangeWeapon, PickUp, Rotate };
+enum GameActionType { Null, BuyWeapon, BuyAmmo, Attack, Walk, ChangeWeapon, PickUp, Rotate, PlantBomb, DefuseBomb };
 
 struct GameAction {
     GameActionType type = Null;

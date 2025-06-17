@@ -13,12 +13,15 @@ class Tile {
 private:
     int id_tile;
     bool is_solid;  // dato que le sirve al server
+    bool is_bomb_zone;
 
 public:
     explicit Tile(int id_tile);
     explicit Tile(int id_tile, bool is_solid);
+    explicit Tile(int id_tile, bool is_solid, bool is_bomb_zone);
 
     bool isSolid() const;
+    bool isBombZone() const;
 
     int getIdTile() const;
 };
