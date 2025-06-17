@@ -31,6 +31,7 @@ void Client::ExitGame() {
     }
     status = Disconnected;
 }
+
 bool Client::CreateMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, 0));
     bool created = protocol.recvConfirmation();

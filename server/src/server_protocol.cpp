@@ -117,6 +117,7 @@ MenuAction ServerProtocol::recvMenuAction() {
     MenuActionType type = decodeMenuActionType(byte);
     std::string name = "";
     int id_scenary = 0;
+    
     if (type == Create || type == Join) {
         uint16_t length = recvBigEndian16();
         name.resize(length);

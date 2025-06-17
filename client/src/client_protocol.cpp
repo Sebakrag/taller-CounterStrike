@@ -38,8 +38,9 @@ void ClientProtocol::sendMenuAction(const MenuAction& action) {
     if (action.type == Create || action.type == Join) {
         insertBigEndian16(length, buffer);
         insertStringBytes(action.name_match, buffer);
-        if (action.type == Create)
+        if (action.type == Create) {
             buffer.push_back(action.id_scenary);
+        }
     }
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }

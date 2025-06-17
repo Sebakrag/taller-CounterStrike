@@ -9,8 +9,7 @@
 
 /*GameManager::GameManager(const std::list<std::string>& escenarios) {
     // YOUR CODE
-}
-*/
+}*/
 bool GameManager::createMatch(const std::string& matchName, const std::string& username,
                               std::shared_ptr<Queue<GameInfo>> playerQueue,
                               const std::string& id_scenary) {
@@ -29,6 +28,7 @@ bool GameManager::createMatch(const std::string& matchName, const std::string& u
     lobbies.try_emplace(matchName, matchName, username, playerQueue, id_scenary);
 
     std::cout << username << " creó la partida " << matchName << std::endl;
+    std::cout << std::endl;
 
     return true;
 }

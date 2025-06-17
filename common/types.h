@@ -62,8 +62,8 @@ struct MenuAction {
     const int id_scenary = 0;
 
     explicit MenuAction(MenuActionType type, const std::string& name_match = "",
-                        int id_scenary = 0):
-            type(type), name_match(name_match), id_scenary(id_scenary) {}
+        int id_scenary = 0):
+        type(type), name_match(name_match), id_scenary(id_scenary) {}
 };
 
 // lobby
