@@ -106,7 +106,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
         }
         case GameActionType::Attack: {
             const Vec2D dir = gameAction.direction.normalize();
-            player->setAngle(dir.calculateAngle());
+            player->setAngle(dir.calculateAngleDegrees());
 
             if (player->getEquippedWeapon() == TypeWeapon::Bomb) {
                 processPlant(action.player_username);

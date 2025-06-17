@@ -26,9 +26,7 @@ private:
 
 public:
     explicit Map(const TileMap& tileMap, Graphics& graphics);
-    //explicit Map(const TileMap& tileMap);
 
-    //void render(Graphics& graphics, const Camera& camera) const;
     void render(Graphics& graphics, const Camera& camera) const;
 
     Map(Map&& other) noexcept = default;

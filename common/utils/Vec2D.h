@@ -29,12 +29,19 @@ public:
     Vec2D operator*(const Vec2D& other) const;
     Vec2D operator/(const Vec2D& other) const;
 
+    float dot(const Vec2D& other) const;
+
     Vec2D& normalize();
     ///
     /// @brief calculates the angle (in degrees) relative to the reference system
     /// commonly used in graphics
     ///
-    float calculateAngle(float correctionDegrees = 0.0f) const;
+    float calculateAngleDegrees(float correctionDegrees = 0.0f) const;
+
+    ///
+    /// @brief calculates the angle (in radian) returning a value in the range [-π, π]
+    ///
+    float calculateAngleRadian() const;
     float calculateNormSquared() const;
 
     void set(float x, float y);

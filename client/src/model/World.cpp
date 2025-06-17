@@ -4,15 +4,14 @@
 
 #include "../../../client/include/model/EC/components/TransformComponent.h"
 
-World::World(Graphics &graphics, const TileMap& tileMap, const WindowConfig& winConfig, const int numPlayers,
-             const LocalPlayerInfo& firstLocalPlayerSnap):
+World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig,
+             const int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap):
         entt_mgr(comp_mgr, numPlayers),
         comp_updater(entt_mgr, comp_mgr),
         map(tileMap, graphics),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
         render_sys(local_player) {}
-
 
 
 void World::update(float dt, const GameInfo& gameInfo) {
@@ -34,7 +33,7 @@ void World::render(Graphics& graphics) {
 
     map.render(graphics, camera);
 
-    player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngle());
+    player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngleDegrees());
 
     render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
@@ -49,7 +48,7 @@ AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
 
     Vec2D aimDir = mouseWorldPos - getPlayerPosition();
     aimDir.normalize();
-    const float angle = aimDir.calculateAngle();
+    const float angle = aimDir.calculateAngleDegrees();
 
     return {aimDir, angle};
 }

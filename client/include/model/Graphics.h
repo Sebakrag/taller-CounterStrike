@@ -1,6 +1,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include <memory>
 #include <string>
 
 #include <SDL2pp/SDL2pp.hh>
@@ -37,8 +38,6 @@ public:
     Graphics(const WindowConfig& config, const std::string& match_name);
 
     void render(World& world);
-    //void clear();
-    //void present();
     void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,
               const Optional<Rect>& dstRect = NullOpt);
     void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,
@@ -46,12 +45,11 @@ public:
 
     Vec2D getDrawableWindowDimension() const;
 
-    //agrego metodos par usar en el map
+    // agrego metodos par usar en el map
     std::shared_ptr<Texture> createTargetTexture(int w, int h);
     void setRenderTarget(Texture& tex);
     void resetRenderTarget();
     void clearWithTransparentBlack();
-
 };
 
 #endif  // GRAPHICS_H

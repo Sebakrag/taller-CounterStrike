@@ -22,7 +22,8 @@ void DynamicStencil::init(Renderer& ren, const int screenW, const int screenH,
                                         stencilW, stencilH);
     cirRadius = circleRadius;
     fovAngle = fovAngleDegrees;
-    fovRadius = fovVisibleDistance;
+    fovRadius = (fovVisibleDistance != 0) ? fovVisibleDistance :
+                                            static_cast<float>(std::max(screenWidth, screenHeight));
 
     // Set render target to the texture
     ren.SetTarget(*stencil);
@@ -71,16 +72,14 @@ void DynamicStencil::drawCircle(const Renderer& ren, const float cx, const float
 }
 
 void DynamicStencil::drawFOVTriangle(const Renderer& ren, const float cx, const float cy) {
-    float radius =
-            (fovRadius != 0) ? fovRadius : static_cast<float>(std::max(screenWidth, screenHeight));
     float angleRad = 0.0f;  // Facing right
     float halfFOV = (fovAngle / 2.0f) * (M_PI / 180.0f);
 
     SDL_FPoint a = {cx, cy};
-    SDL_FPoint b = {cx + radius * std::cos(angleRad - halfFOV),
-                    cy + radius * std::sin(angleRad - halfFOV)};
-    SDL_FPoint c = {cx + radius * std::cos(angleRad + halfFOV),
-                    cy + radius * std::sin(angleRad + halfFOV)};
+    SDL_FPoint b = {cx + fovRadius * std::cos(angleRad - halfFOV),
+                    cy + fovRadius * std::sin(angleRad - halfFOV)};
+    SDL_FPoint c = {cx + fovRadius * std::cos(angleRad + halfFOV),
+                    cy + fovRadius * std::sin(angleRad + halfFOV)};
 
     SDL_Vertex triangle[3] = {{a, SDL_Color{0, 0, 0, 0}, SDL_FPoint{}},
                               {b, SDL_Color{0, 0, 0, 0}, SDL_FPoint{}},

@@ -4,40 +4,42 @@
 
 #include "client/include/model/Graphics.h"
 #include "client/include/model/utils/DynamicStencil.h"
+#include "common/utils/AngleUtils.h"
 
 
 FieldOfView::FieldOfView():
         stencil(DynamicStencil::getStencil()),
         info(DynamicStencil::getFOVInfo()),
-        currentPlayerAimAngle(0) {}
+        currentPlayerAimAngleRad(0) {}
 
-void FieldOfView::render(Graphics& graphics, const Vec2D& playerPos, const float rotAngle) {
+void FieldOfView::render(Graphics& graphics, const Vec2D& playerPos, const float rotAngleDeg) {
     currentPlayerPos = playerPos;
-    currentPlayerAimAngle = rotAngle;
+    currentPlayerAimAngleRad = AngleUtils::degreesToRadians(rotAngleDeg);
 
     Rect destRect(-info.screenWidth / 2, -info.screenHeight / 2, info.screenWidth * 2,
                   info.screenHeight * 2);
     Point rotCenter(info.screenWidth, info.screenHeight);
-    graphics.draw(*stencil, SDL2pp::NullOpt, destRect, rotAngle, rotCenter);
+    graphics.draw(*stencil, SDL2pp::NullOpt, destRect, rotAngleDeg, rotCenter);
 }
 
 bool FieldOfView::isInFOV(const Vec2D& enttWorldPos) const {
-    const Vec2D dif = enttWorldPos - currentPlayerPos;
-    std::cout << "[Visibility radius]: " << info.visibilityRadius << std::endl;
-    if (dif.calculateNormSquared() > info.visibilityRadius * info.visibilityRadius)
+    // Vector desde el player hacia la entidad
+    const Vec2D toEntity = enttWorldPos - currentPlayerPos;
+
+    // Chequeo por radio de visibilidad
+    const float distSquared = toEntity.calculateNormSquared();
+    const float maxDistSquared = info.visibilityRadius * info.visibilityRadius;
+    if (distSquared > maxDistSquared)
         return false;
 
-    // Calculate the angle between the player and the entity
-    float angleToEntity = std::atan2(dif.getY(), dif.getX());
+    // Ángulo hacia entre la entidad y el player
+    const float angleToEntity = toEntity.calculateAngleRadian();
 
-    float deltaAngle = std::abs(WrapAngle(angleToEntity - currentPlayerAimAngle));
-    float halfFOVRad = (info.fovAngle / 2.0f) * M_PI / 180.0f;
+    // Diferencia angular normalizada a [-π, π]
+    float deltaAngle = AngleUtils::normalizeRadians_PI(angleToEntity - currentPlayerAimAngleRad);
 
-    return deltaAngle <= halfFOVRad;
-}
+    // Comparación contra el ángulo del FOV
+    const float halfFOVRad = AngleUtils::degreesToRadians(info.fovAngle * 0.5f);
 
-float FieldOfView::WrapAngle(float angle) const {
-    while (angle < -M_PI) angle += 2.0f * M_PI;
-    while (angle > M_PI) angle -= 2.0f * M_PI;
-    return angle;
+    return std::fabs(deltaAngle) <= halfFOVRad;
 }
