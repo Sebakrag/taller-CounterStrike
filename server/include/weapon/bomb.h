@@ -2,10 +2,11 @@
 #define BOMB_H
 
 #include <cstdint>
+#include <string>
 
-#include "server/include/map.h"
-#include "common/types.h"
-#include "server/include/id_generator.h"
+#include "../../../common/types.h"
+#include "../../../server/include/id_generator.h"
+#include "../../../server/include/map.h"
 
 class Bomb {
 private:
@@ -46,7 +47,7 @@ public:
     Vec2D getPlantedPosition() const;
     std::string getCarrierId() const;
     BombState getState() const;
-
+    double getTimer() const;
 };
 
 #endif

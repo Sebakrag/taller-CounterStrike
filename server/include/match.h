@@ -1,19 +1,18 @@
 #ifndef MATCH_H
 #define MATCH_H
 
+#include <random>
 #include <string>
 #include <vector>
-#include <random>
-
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
+#include "weapon/bomb.h"
 #include "weapon/projectile.h"
 
 #include "map.h"
 #include "physics_engine.h"
 #include "player.h"
-#include "weapon/bomb.h"
 #include "types2.h"
 
 class Match {
@@ -25,7 +24,7 @@ private:
     int roundsPlayed = 0;
     double roundTimer = 30.0;
     const double ROUND_DURATION = 120.0;
-    bool roundOver;
+    bool roundOver = false;
     Team roundWinner;
     std::vector<Projectile> projectiles;
     std::vector<DroppedWeapon> droppedWeapons;
