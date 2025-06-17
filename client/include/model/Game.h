@@ -1,12 +1,12 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "common/dtos/MatchInfo.h"
+#include "../../../client/include/client.h"
+#include "../../../common/dtos/MatchInfo.h"
 #include "utils/EventHandler.h"
 
 #include "Graphics.h"
 #include "World.h"
-#include "client.h"
 
 class Game {
 private:
@@ -14,6 +14,7 @@ private:
     Graphics graphics;
     World world;
     EventHandler eventHandler;
+    GameInfo gameInfo;
 
     bool is_running;
     void update(float dt);
@@ -27,7 +28,7 @@ public:
     /// \param[in] client class that has the connection with the server.
     /// \param[in] match_info structure containing the configuration for the game match.
     ////////////////////////////////////////////////////////////
-    Game(Client& client, const MatchInfo& match_info, const EntitySnapshot& firstLocalPlayerSnap);
+    Game(Client& client, const MatchInfo& match_info);
 
     ///
     /// \brief Initiate the game loop.

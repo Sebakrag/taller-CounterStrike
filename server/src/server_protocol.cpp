@@ -34,11 +34,19 @@ void ServerProtocol::sendMatchInfo(const MatchInfo& matchInfo) {
     insertBigEndian32(matchInfo.win_config.flags, buffer);
 
     // cargo tilemap
-
     std::vector<uint8_t> tilemap_bytes = matchInfo.tileMap.toBytes();
 
     insertBigEndian32(tilemap_bytes.size(), buffer);
     for (uint8_t& b: tilemap_bytes) {
+        buffer.push_back(b);
+    }
+    // numero de jugadores
+    insertBigEndian16(matchInfo.numPlayers, buffer);
+
+    // playerInfo
+    std::vector<uint8_t> playerInfobytes = matchInfo.localPlayerInfo.toBytes();
+    insertBigEndian16(playerInfobytes.size(), buffer);
+    for (uint8_t& b: playerInfobytes) {
         buffer.push_back(b);
     }
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());

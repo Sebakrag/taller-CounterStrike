@@ -2,9 +2,13 @@
 #define WEAPON_H
 
 #include <cstdint>
-#include "common/types.h"
-#include "server/include/weapon/projectile.h"
-#include "server/include/id_generator.h"
+#include <string>
+#include <vector>
+
+#include "../../../common/game_info/weapon_info.h"
+#include "../../../common/types.h"
+#include "../../../server/include/id_generator.h"
+#include "../../../server/include/weapon/projectile.h"
 
 class Weapon_ {
 protected:
@@ -19,13 +23,16 @@ public:
 
     virtual uint64_t getCooldownMs() const = 0;
 
-    virtual int getBullets() const { return 0;};
+    virtual int getBullets() const { return 0; }
 
     virtual Weapon getWeaponType() const = 0;
 
     virtual int getDamage() const { return damage; }
 
-    virtual std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY, const std::string& shooter, uint64_t currentTimeMs) = 0;
+    virtual std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY,
+                                          const std::string& shooter, uint64_t currentTimeMs) = 0;
+
+    virtual WeaponInfo generateWeaponInfo(const WeaponState& state) = 0;
 
     uint32_t getServerId() const { return serverId; }
 };

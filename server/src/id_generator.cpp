@@ -13,6 +13,4 @@ uint32_t IdGenerator::getNextId() {
     return nextId++;
 }
 
-void IdGenerator::releaseId(uint32_t id) {
-    freeIds.insert(id);
-}
+void IdGenerator::releaseId(uint32_t id) { freeIds.insert(id); }

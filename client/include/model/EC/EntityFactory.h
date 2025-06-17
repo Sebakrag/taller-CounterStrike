@@ -1,7 +1,8 @@
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
 
-#include "common/dtos/EntitySnapshot.h"
+#include "../../../../common/dtos/EntitySnapshot.h"
+#include "../../../../common/game_info/game_info.h"
 
 #include "ComponentManager.h"
 
@@ -22,6 +23,11 @@ public:
     EntityFactory(ComponentManager& cm, int numPlayers);
 
     void create_specific_entity(const Entity& new_entt, const EntitySnapshot& snap) const;
+
+    // agregadas
+    void createEntityPlayer(const Entity& new_entt, const PlayerInfo& playerInfo);
+    void createEntityPlayer(const Entity& new_entt, const LocalPlayerInfo& p);
+
     void destroy(const Entity& entt) const;
 };
 

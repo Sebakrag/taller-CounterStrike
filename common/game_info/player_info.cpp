@@ -1,7 +1,6 @@
 #include "player_info.h"
 
 #include <cstdint>
-#include <cstring>
 #include <iostream>
 #include <string>
 
@@ -13,27 +12,47 @@ PlayerInfo::PlayerInfo():
         skin(PlayerSkin()),
         state(PlayerState::Idle),
         position(0, 0),
-        angle_direction(0),
-        weapon_selected(TypeWeapon::Knife),
-        health(100),
-        money(100),
-        ammo_weapon(10) {}
+        angle_direction(0) {}
 
-PlayerInfo::PlayerInfo(unsigned int server_entt_id, const std::string& username, Team team,
-                       PlayerSkin skin, const Vec2D& position, float angle_direction,
-                       TypeWeapon weapon, int health, int money, int ammo):
+PlayerInfo::PlayerInfo(const ServerEntityID server_entt_id, const std::string& name,
+                       const Team team, const PlayerSkin skin, const Vec2D& position,
+                       const float angle_direction, const TypeWeapon weapon_type,
+                       const ServerEntityID equipped_weapon_id):
         server_entt_id(server_entt_id),
-        username(username),
+        username(name),
         team(team),
         skin(skin),
         state(PlayerState::Idle),
         position(position.getX(), position.getY()),
         angle_direction(angle_direction),
-        weapon_selected(weapon),
-        health(health),
-        money(money),
-        ammo_weapon(ammo) {}
+        weapon_type(weapon_type),
+        equipped_weapon_id(equipped_weapon_id) {}
 
+SpriteType PlayerInfo::generateSpriteType() const {
+    switch (skin) {
+        case PlayerSkin::Terrorist1:
+            return SpriteType::PHEONIX;
+        case PlayerSkin::Terrorist2:
+            return SpriteType::L337_KREW;
+        case PlayerSkin::Terrorist3:
+            return SpriteType::ARTIC_AVENGER;
+        case PlayerSkin::Terrorist4:
+            return SpriteType::GUERRILLA;
+        case PlayerSkin::CounterTerrorist1:
+            return SpriteType::SEAL_FORCE;
+        case PlayerSkin::CounterTerrorist2:
+            return SpriteType::GERMAN_GSG_9;
+        case PlayerSkin::CounterTerrorist3:
+            return SpriteType::UK_SAS;
+        case PlayerSkin::CounterTerrorist4:
+            return SpriteType::FRENCH_GIGN;
+        default:
+            if (team == Team::Terrorist)
+                return SpriteType::ARTIC_AVENGER;
+            else
+                return SpriteType::FRENCH_GIGN;
+    }
+}
 
 std::vector<uint8_t> PlayerInfo::toBytes() const {
     std::vector<uint8_t> buffer;
@@ -57,10 +76,14 @@ std::vector<uint8_t> PlayerInfo::toBytes() const {
     // angulo de direccion (4 bytes)
     Protocol_::insertFloat4Bytes(angle_direction, buffer);
 
-    buffer.push_back(Protocol_::encodeTypeWeapon(weapon_selected));
-    buffer.push_back(health);
-    Protocol_::insertBigEndian16(money, buffer);
-    Protocol_::insertBigEndian16(ammo_weapon, buffer);
+    buffer.push_back(Protocol_::encodeTypeWeapon(weapon_type));
+
+    // id de la weapon
+    Protocol_::insertBigEndian32(equipped_weapon_id, buffer);
+
+    // buffer.push_back(health);
+    // Protocol_::insertBigEndian16(money, buffer);
+    // Protocol_::insertBigEndian16(ammo_weapon, buffer);
     return buffer;
 }
 
@@ -95,25 +118,30 @@ PlayerInfo::PlayerInfo(const std::vector<uint8_t>& bytes) {
     index += 4;
 
     // Leer arma, salud, dinero y munición
-    weapon_selected = Protocol_::decodeTypeWeapon(bytes[index++]);
-    health = bytes[index++];
-    money = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
-    ammo_weapon = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    weapon_type = Protocol_::decodeTypeWeapon(bytes[index++]);
+
+    equipped_weapon_id = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2],
+                                                   bytes[index + 3]);
+    index += 4;
+    // health = bytes[index++];
+    // money = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    // index += 2;
+    // ammo_weapon = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
 }
 
 void PlayerInfo::print() const {
     std::cout << "===== Player Info =====" << std::endl;
-    std::cout << "Server Entity ID: " << server_entt_id << std::endl;
-    std::cout << "Username: " << username << std::endl;
-    std::cout << "Team: " << static_cast<int>(team) << std::endl;
-    std::cout << "Skin: " << static_cast<int>(skin) << std::endl;
-    std::cout << "State: " << static_cast<int>(state) << std::endl;
-    std::cout << "Position: (" << position.getX() << ", " << position.getY() << ")" << std::endl;
-    std::cout << "Angle Direction: " << angle_direction << " radians" << std::endl;
-    std::cout << "Weapon Selected: " << static_cast<int>(weapon_selected) << std::endl;
-    std::cout << "Health: " << health << std::endl;
-    std::cout << "Money: $" << money << std::endl;
-    std::cout << "Ammo: " << ammo_weapon << std::endl;
+    std::cout << "  Server Entity ID: " << server_entt_id << std::endl;
+    std::cout << "  Username: " << username << std::endl;
+    std::cout << "  Team: " << static_cast<int>(team) << std::endl;
+    std::cout << "  Skin: " << static_cast<int>(skin) << std::endl;
+    std::cout << "  State: " << static_cast<int>(state) << std::endl;
+    std::cout << "  Position: (" << position.getX() << ", " << position.getY() << ")" << std::endl;
+    std::cout << "  Angle Direction: " << angle_direction << " radians" << std::endl;
+    std::cout << "Weapon Selected: " << static_cast<int>(weapon_type) << std::endl;
+    std::cout << "Weapon id: " << static_cast<int>(equipped_weapon_id) << std::endl;
+    // std::cout << "Health: " << health << std::endl;
+    // std::cout << "Money: $" << money << std::endl;
+    // std::cout << "Ammo: " << ammo_weapon << std::endl;
     std::cout << "========================" << std::endl;
 }

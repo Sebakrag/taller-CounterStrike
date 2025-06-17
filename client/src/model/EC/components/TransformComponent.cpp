@@ -1,17 +1,23 @@
 #include "client/include/model/EC/components/TransformComponent.h"
 
-TransformComponent::TransformComponent(const float x, const float y, const float rotAngle):
-        position(x, y), rotAngle(rotAngle) {}
+#include "common/utils/AngleUtils.h"
 
-void TransformComponent::init(const float x, const float y, const float rotAngle) {
-    update(x, y, rotAngle);
+TransformComponent::TransformComponent(const float posX, const float posY, const float rotAngleDeg):
+        position(posX, posY), rotAngleDeg(AngleUtils::normalizeDegrees_0_360(rotAngleDeg)) {}
+
+void TransformComponent::init(const float x, const float y, const float rotAngleDeg) {
+    update(x, y, rotAngleDeg);
 }
 
-void TransformComponent::update(const float x, const float y, const float rotAngle) {
+void TransformComponent::update(const float x, const float y, const float rotAngleDeg) {
     position.set(x, y);
-    this->rotAngle = rotAngle;
+    this->rotAngleDeg = AngleUtils::normalizeDegrees_0_360(rotAngleDeg);
 }
 
 Vec2D TransformComponent::getPosition() const { return position; }
 
-float TransformComponent::getRotationAngle() const { return rotAngle; }
+float TransformComponent::getRotationAngleDegrees() const { return rotAngleDeg; }
+
+float TransformComponent::getRotationAngleRadian() const {
+    return AngleUtils::degreesToRadians(rotAngleDeg);
+}

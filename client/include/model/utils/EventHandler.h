@@ -3,8 +3,8 @@
 
 #include <SDL2/SDL_stdinc.h>
 
-#include "client/include/client.h"
-#include "client/include/model/World.h"
+#include "../../../../client/include/client.h"
+#include "../../../../client/include/model/World.h"
 
 class EventHandler {
 private:

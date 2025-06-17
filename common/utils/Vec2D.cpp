@@ -1,7 +1,6 @@
 #include "Vec2D.h"
 
 #include <cmath>
-#include <numbers>
 
 Vec2D::Vec2D(): x(0.0f), y(0.0f) {}
 
@@ -51,6 +50,8 @@ Vec2D Vec2D::operator*(const Vec2D& other) const { return {this->x * other.x, th
 
 Vec2D Vec2D::operator/(const Vec2D& other) const { return {this->x / other.x, this->y / other.y}; }
 
+float Vec2D::dot(const Vec2D& other) const { return x * other.x + y * other.y; }
+
 Vec2D& Vec2D::normalize() {
     float len = std::sqrt((this->x * this->x) + (this->y * this->y));
     if (len != 0) {
@@ -61,15 +62,21 @@ Vec2D& Vec2D::normalize() {
     return *this;
 }
 
-float Vec2D::calculateAngle(const float correctionDegrees) const {
-    float angle = std::atan2(this->y, this->x);  // En radianes
-    float degrees = angle * (180.0f / std::numbers::pi);
+float Vec2D::calculateAngleRadian() const {
+    return std::atan2(this->y, this->x);  // En radianes
+}
+
+float Vec2D::calculateAngleDegrees(const float correctionDegrees) const {
+    const float angleRad = calculateAngleRadian();
+    float degrees = angleRad * (180.0f / M_PI);
     degrees -= correctionDegrees;
     if (degrees < 0) {
         degrees += 360.0f;
     }
     return degrees;
 }
+
+float Vec2D::calculateNormSquared() const { return ((this->x * this->x) + (this->y * this->y)); }
 
 void Vec2D::set(const float x, const float y) {
     setX(x);

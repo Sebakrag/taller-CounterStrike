@@ -45,7 +45,7 @@ public:
     bool isPlayerHost(const std::string& username) const;
 
     MatchRoomInfo getMatchRoomInfo();
-    const std::string& getIdScenary();
+
     // No se puede copiar.
     MatchRoom(const MatchRoom&) = delete;
     MatchRoom& operator=(const MatchRoom&) = delete;

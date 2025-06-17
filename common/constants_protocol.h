@@ -12,6 +12,12 @@
 #define BYTE_WEAPON_M3 0x03
 #define BYTE_WEAPON_AWP 0x04
 
+// WeaponState
+#define BYTE_WEAPON_STATE_DROPPED 0x01
+#define BYTE_WEAPON_STATE_EQUIPPED 0x02
+#define BYTE_WEAPON_STATE_HIDDEN 0x03
+#define BYTE_WEAPON_STATE_NONE 0x04
+
 // TypeWeapon { Primary, Secondary, Knife, Bomb };
 #define BYTE_TYPE_PRIMARY 0X11
 #define BYTE_TYPE_SECONDARY 0x12

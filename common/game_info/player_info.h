@@ -5,25 +5,31 @@
 #include <string>
 #include <vector>
 
+#include "../../client/include/model/utils/SpriteType.h"
 #include "../types.h"
 
 struct PlayerInfo {
-    unsigned int server_entt_id;
-    std::string username;  // id
+    ServerEntityID server_entt_id;
+    std::string username;
     Team team;
     PlayerSkin skin;
     PlayerState state;
     Vec2D position;
     float angle_direction;  // a dónde está mirando el player
-    TypeWeapon weapon_selected;
-    int health;
-    int money;
-    int ammo_weapon;
+    TypeWeapon weapon_type;
+    ServerEntityID equipped_weapon_id;
 
     PlayerInfo();
-    PlayerInfo(unsigned int server_entt_id, const std::string& username, Team team, PlayerSkin skin,
-               const Vec2D& position, float angle_direction, TypeWeapon weapon, int health,
-               int money, int ammo);
+    PlayerInfo(ServerEntityID server_entt_id, const std::string& name, Team team, PlayerSkin skin,
+               const Vec2D& position, float angle_direction, TypeWeapon weapon_type,
+               ServerEntityID equipped_weapon_id);
+
+    SpriteType generateSpriteType() const;
+
+
+    PlayerInfo(const PlayerInfo& other) = default;
+    PlayerInfo& operator=(const PlayerInfo& other) = default;
+
 
     // private:
     explicit PlayerInfo(const std::vector<uint8_t>& bytes);
