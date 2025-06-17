@@ -1911,68 +1911,39 @@ void MapEditor::preloadMapWithBaseTile()
     // Limpiamos el mapa de tiles colocados
     placedTiles.clear();
     
-    // Determinar el nombre de la carpeta según el tipo de terreno actual
+    // Determinar el tipo de terreno y obtener el primer tile del nuevo sistema
     QString terrainName;
-    QString terrainFolder;
     switch (currentTerrainType) {
         case 0: // DESERT_TERRAIN
             terrainName = "Desert";
-            terrainFolder = "desert";
             break;
         case 1: // AZTEC_VILLAGE
             terrainName = "Aztec";
-            terrainFolder = "aztec";
             break;
         case 2: // TRAINING_GROUND
             terrainName = "Training";
-            terrainFolder = "training";
             break;
         default:
-            terrainName = "Unknown";
-            terrainFolder = "desert"; // Default a desert como respaldo
+            terrainName = "Desert";
             break;
     }
     
-    // Construir la ruta a la carpeta específica del terreno
-    QString resourceBasePath = getResourcesPath();
-    QString tilesPath = resourceBasePath + "tiles/tiles_" + terrainFolder + "/";
-    
-    // Buscar archivos de imagen en la carpeta
-    QDir elementsDir(tilesPath);
-    if (!elementsDir.exists()) {
+    // Verificar que tenemos tiles disponibles en el mapa tilePixmaps
+    if (tilePixmaps.size() == 0) {
         QMessageBox::warning(this, "Precargar Mapa", 
-            QString("No se encontró la carpeta de tiles para el terreno %1: %2").arg(terrainName).arg(tilesPath));
+            "No hay tiles disponibles. Asegúrese de que los assets están correctamente cargados.");
         return;
     }
     
-    // Filtrar por archivos de imagen
-    QStringList filters;
-    filters << "*.bmp" << "*.png" << "*.jpg";
-    elementsDir.setNameFilters(filters);
-    
-    // Obtener la lista de archivos y ordenarlos alfabéticamente
-    // Esto generalmente asegura que el primer tile básico (con nombre como 01.png) sea el primero
-    QStringList elementFiles = elementsDir.entryList(filters, QDir::Files, QDir::Name);
-    
-    if (elementFiles.isEmpty()) {
-        QMessageBox::warning(this, "Precargar Mapa", 
-            QString("No hay tiles disponibles en la carpeta %1").arg(tilesPath));
-        return;
+    // Obtener el primer tile (ID 1) como tile base para precargar
+    // Si no existe el ID 1, usar el primer tile disponible
+    int baseTileId = 1;
+    if (!tilePixmaps.contains(baseTileId)) {
+        baseTileId = tilePixmaps.firstKey();
     }
     
-    // Cargar el primer tile de la carpeta (asumiendo que el primer archivo es el tile base)
-    QString firstTilePath = tilesPath + elementFiles.first();
-    QPixmap basePixmap(firstTilePath);
-    
-    if (basePixmap.isNull()) {
-        QMessageBox::warning(this, "Precargar Mapa", 
-            QString("No se pudo cargar el tile base: %1").arg(firstTilePath));
-        return;
-    }
-    
-    // Para registro y depuración
-    int baseTileId = 0; // Usamos ID 0 para el tile base cargado directamente
-    qDebug() << "Cargando tile base desde:" << firstTilePath;
+    // Obtener el pixmap del tile base
+    QPixmap basePixmap = tilePixmaps[baseTileId];
     
     qDebug() << "Precargando mapa con tile ID:" << baseTileId;
     
@@ -1998,10 +1969,11 @@ void MapEditor::preloadMapWithBaseTile()
             // Alineamos correctamente a la cuadrícula multiplicando por 32
             QPointF tilePos(x * 32, y * 32);
             
-            // Crear tile con un ID válido del tileset actual (usamos baseTileId)
+            // Crear tile con un ID válido del tileset actual
             QString tileName = QString("Tile_%1_%2").arg(x).arg(y);
             
             // Crear el tile con los parámetros correctos para que pueda ser manipulado
+            // Usamos el pixmap y el ID del nuevo sistema de tiles
             TileItem* tileItem = new TileItem(basePixmap, baseTileId, tileName, scene);
             
             // Posicionarlo correctamente en la cuadrícula
