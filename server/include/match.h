@@ -22,16 +22,16 @@ private:
     Map map;
     GamePhase phase;
     int roundsPlayed = 0;
-    double roundTimer = 30.0;
-    const double ROUND_DURATION = 120.0;
+    double roundTimer;
+    // const double ROUND_DURATION = 120.0;
     bool roundOver = false;
     Team roundWinner;
     std::vector<Projectile> projectiles;
     std::vector<DroppedWeapon> droppedWeapons;
     Bomb bomb;
 
-    static constexpr int MAX_ROUNDS = 10;
-    static constexpr double PREPARATION_TIME = 30.0;
+    // static constexpr int MAX_ROUNDS = 10;
+    // static constexpr double PREPARATION_TIME = 30.0;
 
 public:
     explicit Match(const std::string& id_scenario);
@@ -62,7 +62,21 @@ public:
 
     // metodos privados:
 private:
+    // void processActionShop(Player* player, const GameAction &gameAction, const float deltaTime);
+    // void processActionMatch(Player* player, const GameAction &gameAction, const float deltaTime);
     void handleKnifeAttack(Player* attacker, const Vec2D& direction);
+
+
+    // CONSTANTES static para inicializar en server.cpp.
+private:
+    static bool initialized;         // para asegurar que se llame init una unica vez.
+    static double ROUND_DURATION;    // duracion máxima de la etapa de combate.
+    static double PREPARATION_TIME;  // duracion de la etapa de preparacion.
+    static int MAX_ROUNDS;
+
+public:
+    // Para cargar los valores del config.yaml
+    static void init(double round_duration, double preparation_time, int max_rounds);
 };
 
 #endif

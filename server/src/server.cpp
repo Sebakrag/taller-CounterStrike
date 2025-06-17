@@ -11,6 +11,7 @@ Server::Server(const std::string& port): port(port), gameManager() {
     // hardcodeo. En realidad tengo leer del config.YAML
 
     MatchRoom::init(10);
+    Match::init(120.0, 5.0, 8);
 
     WindowConfig window_config(700, 400, 0);
     std::map<std::string, TileMap> scenarios;

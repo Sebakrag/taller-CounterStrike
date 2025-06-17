@@ -8,11 +8,11 @@
 
 // Inicializo las variables estáticas (para poder compilar)
 bool MatchRoom::initialized = false;
-size_t MatchRoom::AMOUNT_PLAYERS = 0;
+size_t MatchRoom::MAX_PLAYERS = 0;
 
-void MatchRoom::init(size_t amountPlayers) {
+void MatchRoom::init(size_t max_players) {
     if (initialized == false) {
-        AMOUNT_PLAYERS = amountPlayers;
+        MAX_PLAYERS = max_players;
         initialized = true;
     }
 }
@@ -52,7 +52,7 @@ void MatchRoom::removePlayer(const std::string& username) {
     }
 }
 
-bool MatchRoom::isAvailable() { return players.size() < AMOUNT_PLAYERS && !started; }
+bool MatchRoom::isAvailable() { return players.size() < MAX_PLAYERS && !started; }
 
 bool MatchRoom::isEmpty() { return players.empty(); }
 

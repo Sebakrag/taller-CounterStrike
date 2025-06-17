@@ -7,11 +7,27 @@
 
 #include "../include/scenario_registry.h"
 
+// Inicializo las variables estáticas (para poder compilar)
+bool Match::initialized = false;
+double Match::ROUND_DURATION = 0;
+double Match::PREPARATION_TIME = 0;
+int Match::MAX_ROUNDS = 0;
+
+void Match::init(double round_duration, double preparation_time, int max_rounds) {
+    if (initialized == false) {
+        ROUND_DURATION = round_duration;
+        PREPARATION_TIME = preparation_time;
+        MAX_ROUNDS = max_rounds;
+        initialized = true;
+    }
+}
+
 Match::Match(const std::string& id_scenario):
         id_scenario(id_scenario),
         map(ScenarioRegistry::getTileMap(id_scenario)),
         phase(GamePhase::Preparation),
-        roundsPlayed(0) {
+        roundsPlayed(0),
+        roundTimer(PREPARATION_TIME) {
     // TODO: Harcodeo un dropped weapon para probar. Eliminarlo.
     auto ak47 = std::make_unique<WeaponAk47>();
     droppedWeapons.emplace_back(DroppedWeapon{std::move(ak47), {300, 300}});
@@ -189,7 +205,12 @@ void Match::updateState(double elapsedTime) {
         return;
 
     roundTimer -= elapsedTime;
-
+    // std::cout << "roundTimer " << roundTimer << std::endl;
+    if (phase == GamePhase::Preparation) {
+        if (roundTimer <= 0)
+            advancePhase();
+        return;
+    }
     if (phase == GamePhase::Combat && roundTimer <= 0 && !bomb.isPlanted()) {
         std::cout << "Se acabo el tiempo sin plantar la bomba. Ganan los antiterroristas\n";
         roundOver = true;
@@ -289,7 +310,7 @@ void Match::processDefuse(const std::string& playerName) {
 }
 
 void Match::checkRoundEnd() {
-    if (roundOver)
+    if (roundOver || phase == GamePhase::Preparation || players.size() == 1)
         return;
 
     bool terroristsLeft = false;

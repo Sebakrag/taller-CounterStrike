@@ -31,7 +31,7 @@ void GameLoop::run() {
             match.updateState(1.0 / ITR_PER_SEC);
             if (match.getGamePhase() == GamePhase::EndOfMatch) {
                 std::cout << "==> Fase de fin de partida alcanzada. Finalizando el Gameloop\n";
-                //stop(); CONSULTAR ESTO, DEBERIA CORTAR?
+                // stop(); CONSULTAR ESTO, DEBERIA CORTAR?
             }
 
             // 2. envío el estado de juego a cada jugador
@@ -58,7 +58,6 @@ void GameLoop::run() {
                 std::this_thread::sleep_for(time_expected - itr_time);  // sleep
             }
             // si tardé mas que el time_expected, ni duermo.
-            it++;
 
             // calculo cuando pasó un segundo.
             if (it % ITR_PER_SEC == 0) {
@@ -66,6 +65,7 @@ void GameLoop::run() {
                 seconds++;
                 it = 0;
             }
+            it++;
         }
     } catch (const std::exception& e) {
         std::cerr << "GameLoop: " << e.what() << std::endl;

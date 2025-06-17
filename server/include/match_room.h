@@ -54,11 +54,11 @@ public:
     // metodos static para inicializar constantes.
 private:
     static bool initialized;
-    static size_t AMOUNT_PLAYERS;
+    static size_t MAX_PLAYERS;  // cantidad máxima de jugadores en una partida.
 
 public:
     // Para cargar los valores del config.yaml
-    static void init(size_t amountPlayers);
+    static void init(size_t max_players);
 };
 
 
