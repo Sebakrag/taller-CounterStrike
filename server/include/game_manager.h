@@ -41,7 +41,7 @@ public:
     bool StartMatch(const std::string& username, const std::string& matchName);
 
     MatchRoomInfo getMatchRoomInfo(const std::string& matchName);
-    MatchInfo getMatchInfo(const std::string& matchName);
+    MatchInfo getMatchInfo(const std::string& matchName, const std::string& username);
 
 
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue(const std::string& matchName);

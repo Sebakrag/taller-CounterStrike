@@ -14,8 +14,10 @@ public:
     static bool shotHitPlayer(float originX, float originY, float dirX, float dirY, Map& map,
                               const Player& target, float maxDistance, float& impactDistance);
     static float calculatePrecisionByDistance(float distance, float maxRange, float basePrecision);
-    static bool knifeHit(float originX, float originY, float dirX, float dirY, const Player& target, float& outDist);
-    static bool playerTouchingItem(float playerPosX, float playerPosY, float itemPosX, float itemPosY);
+    static bool knifeHit(float originX, float originY, float dirX, float dirY, const Player& target,
+                         float& outDist);
+    static bool playerTouchingItem(float playerPosX, float playerPosY, float itemPosX,
+                                   float itemPosY);
 };
 
 #endif

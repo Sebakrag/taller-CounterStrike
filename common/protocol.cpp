@@ -214,6 +214,19 @@ uint8_t Protocol_::encodeWeapon(const Weapon& weapon) {
     }
 }
 
+uint8_t Protocol_::encodeWeaponState(const WeaponState& state) {
+    switch (state) {
+        case WeaponState::DROPPED:
+            return BYTE_WEAPON_STATE_DROPPED;
+        case WeaponState::EQUIPPED:
+            return BYTE_WEAPON_STATE_EQUIPPED;
+        case WeaponState::HIDDEN:
+            return BYTE_WEAPON_STATE_HIDDEN;
+        default:
+            return BYTE_WEAPON_STATE_NONE;  // Valor predeterminado en caso de error
+    }
+}
+
 uint8_t Protocol_::encodeMenuActionType(const MenuActionType& gameActionType) {
     switch (gameActionType) {
         case MenuActionType::Exit:
@@ -414,6 +427,19 @@ Weapon Protocol_::decodeWeapon(uint8_t byte) {
             return Weapon::Awp;
         default:
             throw std::runtime_error("Error. Arma desconocida. No se puede decodificar");
+    }
+}
+
+WeaponState Protocol_::decodeWeaponState(uint8_t byte) {
+    switch (byte) {
+        case BYTE_WEAPON_STATE_DROPPED:
+            return WeaponState::DROPPED;
+        case BYTE_WEAPON_STATE_EQUIPPED:
+            return WeaponState::EQUIPPED;
+        case BYTE_WEAPON_STATE_HIDDEN:
+            return WeaponState::HIDDEN;
+        default:
+            throw std::runtime_error("Error. Estado de arma desconocida. No se puede decodificar");
     }
 }
 

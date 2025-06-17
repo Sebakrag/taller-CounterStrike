@@ -1,6 +1,9 @@
 #ifndef FIRE_WEAPON_H
 #define FIRE_WEAPON_H
 
+#include <string>
+#include <vector>
+
 #include "weapon.h"
 
 class FireWeapon: public Weapon_ {

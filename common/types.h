@@ -1,16 +1,20 @@
 #ifndef TYPES_H_
 #define TYPES_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include "utils/Vec2D.h"
 
-enum class Weapon { None, Glock, Ak47, M3, Awp, Knife };
-enum class TypeWeapon { Primary, Secondary, Knife, Bomb };
-enum class Team { Terrorist, CounterTerrorist };
-enum class GamePhase { Preparation, Combat, EndOfMatch };
-enum class BombState { Dropped, Carried, Planted, Exploded, Defused };
+
+using ServerEntityID = uint32_t;
+
+enum class Weapon : unsigned char { None, Glock, Ak47, M3, Awp, Knife, Bomb };
+enum class TypeWeapon : unsigned char { Primary, Secondary, Knife, Bomb };
+enum class Team : unsigned char { Terrorist, CounterTerrorist };
+enum class GamePhase : unsigned char { Preparation, Combat, EndOfMatch };
+enum class BombState : unsigned char { Dropped, Carried, Planted, Exploded, Defused };
 
 enum class PlayerState : unsigned char { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
 enum class WeaponState : unsigned char { DROPPED, EQUIPPED, HIDDEN };

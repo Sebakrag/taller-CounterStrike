@@ -13,23 +13,16 @@ enum class SpriteType : unsigned char {
     UK_SAS,
     FRENCH_GIGN,
 
-
     // bullets...
     BULLET,
 
-    // Weapons (en mano)
-    AK47,
-    AWP,
-    GLOCK,
+    // Weapons
     KNIFE,
+    GLOCK,
+    AK47,
     M3,
-
-    // drops...
-    DROP_GLOCK,
-    DROP_AK47,
-    DROP_M3,
-    DROP_AWP,
-    DROP_BOMB,
+    AWP,
+    BOMB,
 
     // Maps sprite types:
     DESERT_MAP,

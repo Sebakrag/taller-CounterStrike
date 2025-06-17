@@ -2,12 +2,16 @@
 
 WeaponAwp::WeaponAwp(): FireWeapon(100, 3500, 10, 20) {}
 
-Weapon WeaponAwp::getWeaponType() const {
-    return Weapon::Awp;
+Weapon WeaponAwp::getWeaponType() const { return Weapon::Awp; }
+
+WeaponInfo WeaponAwp::generateWeaponInfo(const WeaponState& state) {
+    return {serverId, Weapon::Awp, state, bullets, 0, 0};
 }
 
-std::vector<Projectile> WeaponAwp::shoot(float posX, float posY, float dirX, float dirY, const std::string &shooter, uint64_t currentTimeMs) {
-    if (!canShoot(currentTimeMs)) return {};
+std::vector<Projectile> WeaponAwp::shoot(float posX, float posY, float dirX, float dirY,
+                                         const std::string& shooter, uint64_t currentTimeMs) {
+    if (!canShoot(currentTimeMs))
+        return {};
 
     lastShotTimeMs = currentTimeMs;
     bullets--;

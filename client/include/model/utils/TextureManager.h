@@ -7,7 +7,7 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "../../../../common/types.h"
+#include "common/types.h"
 
 #include "SpriteType.h"
 
