@@ -9,25 +9,12 @@
 
 class Graphics;
 
-///
-/// cono de visión, de ángulo configurable, donde el jugador puede ver
-/// Se creará una textura de forma dinámica (dibujando un
-/// triangulo de angulo configurable de color blanco sobre un fondo negro)
-///
 class FieldOfView {
 private:
     std::shared_ptr<SDL2pp::Texture> stencil;
     FOVInfo info;
     Vec2D currentPlayerPos;
     float currentPlayerAimAngleRad;
-
-    ///
-    /// @brief Wraps any angle to keep it within the range [-π, π].
-    ///
-    /// @param angle Angle in radians.
-    /// @return Angle equivalent in direction to the given, but within the range [-π, π].
-    ///
-    // float wrapAngle(float angle) const;
 
 public:
     FieldOfView();
