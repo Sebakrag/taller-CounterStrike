@@ -1,6 +1,26 @@
 #include "../../include/weapon/weapon_ak47.h"
 
-WeaponAk47::WeaponAk47(): FireWeapon(35, 2700, 30, 24) {}
+//-------------
+// Inicializo las variables estáticas (para poder compilar)
+bool WeaponAk47::initialized = false;
+int WeaponAk47::DAMAGE = 0;
+float WeaponAk47::PRICE = 0;
+int WeaponAk47::INITIAL_BULLETS = 0;
+int WeaponAk47::RATE_OF_FIRE = 0;
+
+
+void WeaponAk47::init(int damage, float price, int bullets, int rate_of_fire) {
+    if (initialized == false) {
+        DAMAGE = damage;
+        PRICE = price;
+        INITIAL_BULLETS = bullets;
+        RATE_OF_FIRE = rate_of_fire;
+        initialized = true;
+    }
+}
+//------------
+
+WeaponAk47::WeaponAk47(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE) {}
 
 Weapon WeaponAk47::getWeaponType() const { return Weapon::Ak47; }
 

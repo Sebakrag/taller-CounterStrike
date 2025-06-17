@@ -22,7 +22,7 @@ private:
     float posX, posY;
     int health;
     PlayerState state;
-    float speed = 80.0f;
+    float speed;
     float angle = 0;
 
     std::unique_ptr<Weapon_> knife;
@@ -38,7 +38,7 @@ private:
 
 public:
     // TODO: Recibir las 2 skin en el constructor
-    explicit Player(const std::string& name, const Team playerTeam);
+    explicit Player(const std::string& name, const Team playerTeam, const Vec2D& position);
 
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
     void setEquippedWeapon(TypeWeapon type);
@@ -70,6 +70,17 @@ public:
 
     LocalPlayerInfo generateLocalPlayerInfo() const;
     PlayerInfo generatePlayerInfo() const;
+
+    // CONSTANTES static para inicializar en server.cpp.
+private:
+    static bool initialized;     // para asegurar que se llame init una unica vez.
+    static float PLAYER_SPEED;   // Velocidad de movimiento del jugador
+    static float INITIAL_MONEY;  // Monedas iniciales para un jugador
+    static int INITIAL_HEALTH;   // Vida inicial para un jugador
+
+public:
+    // Para cargar los valores del config.yaml
+    static void init(float player_speed, float initial_money, int initial_health);
 };
 
 
