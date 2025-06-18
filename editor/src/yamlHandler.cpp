@@ -13,15 +13,12 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         YAML::Emitter out;
         out.SetIndent(2);  // Configurar indentación
         
-<<<<<<< HEAD
-=======
         // Iniciar el documento YAML como un mapa
         out << YAML::BeginMap;
         
         // Nombre del mapa con comillas
         out << YAML::Key << "name" << YAML::Value << mapName.toStdString();
         
->>>>>>> 0c129b6 (fix yaml)
         // Determinar el tipo de mapa basado en el terrainType
         QString mapType;
         switch (terrainType) {
@@ -39,15 +36,11 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
                 break;
         }
         
-<<<<<<< HEAD
-        // Identificar todos los tiles y armas
-=======
         // Agregar el campo map_type
         out << YAML::Key << "map_type" << YAML::Value << mapType.toStdString();
         
         // Separar los elementos por tipo (solo tiles y armas)
         QList<const Weapon*> weapons;
->>>>>>> 0c129b6 (fix yaml)
         QList<const Tile*> tiles;
         QList<const Weapon*> weapons;
         for (const MapElement* element : elements) {
@@ -58,16 +51,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
             }
         }
         
-<<<<<<< HEAD
-        if (tiles.isEmpty()) {
-            qDebug() << "No hay tiles para guardar en el mapa";
-            return false;
-        }
-        
-        // Encontrar dimensiones reales del mapa utilizadas (min/max)
-        int minX = INT_MAX;
-        int minY = INT_MAX;
-=======
         // Guardar tiles
         out << YAML::Key << "tiles";
         out << YAML::Value << YAML::BeginSeq;
@@ -77,7 +60,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         
         // Primero determinamos qué IDs de tiles están realmente en uso en la matriz
         // Encontramos las dimensiones del mapa
->>>>>>> 0c129b6 (fix yaml)
         int maxX = 0;
         int maxY = 0;
         
@@ -94,16 +76,8 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
             maxY = std::max(maxY, gridY);
         }
         
-<<<<<<< HEAD
-        // Asegurarse de que tenemos dimensiones válidas
-        if (minX > maxX || minY > maxY) {
-            qDebug() << "Error al determinar dimensiones del mapa";
-            return false;
-        }
-=======
         // Crear una matriz para rastrear qué tiles se utilizan realmente
         std::vector<std::vector<int>> tileMatrix(maxY + 1, std::vector<int>(maxX + 1, 4)); // Default a 4 (solid)
->>>>>>> 0c129b6 (fix yaml)
         
         qDebug() << "Área real del mapa: " << minX << "," << minY << " a " << maxX << "," << maxY;
         
@@ -117,27 +91,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         // Llenar la matriz con los IDs de los tiles, ajustando posiciones al origen (minX, minY)
         for (const Tile* tile : tiles) {
             QPointF pos = tile->getPosition();
-<<<<<<< HEAD
-            int gridX = static_cast<int>(pos.x() / 32) - minX;
-            int gridY = static_cast<int>(pos.y() / 32) - minY;
-            
-            // Estas coordenadas deberían estar siempre dentro de los límites
-            if (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height) {
-                tileMatrix[gridY][gridX] = tile->getTileId();
-            }
-        }
-        
-        // Formato YAML simplificado con nombre, map_type y matrix
-        out << YAML::BeginMap;
-        
-        // Incluir el nombre del mapa
-        out << YAML::Key << "name" << YAML::Value << mapName.toStdString();
-        
-        // Incluir map_type
-        out << YAML::Key << "map_type" << YAML::Value << mapType.toStdString();
-        
-        // Guardar la matriz de tiles
-=======
             int gridX = static_cast<int>(pos.x() / 32);
             int gridY = static_cast<int>(pos.y() / 32);
             int tileId = tile->getTileId();
@@ -195,7 +148,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         
         // Generar la matriz de tiles para el formato requerido
         // Ya tenemos los datos en uniqueTileIds y el array tileMatrix desde antes
->>>>>>> 0c129b6 (fix yaml)
         out << YAML::Key << "matrix";
         out << YAML::Value << YAML::BeginSeq;
         for (const auto& row : tileMatrix) {
@@ -203,37 +155,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         }
         out << YAML::EndSeq;
         
-<<<<<<< HEAD
-        // Guardar las armas si existen
-        if (!weapons.isEmpty()) {
-            out << YAML::Key << "weapons";
-            out << YAML::Value << YAML::BeginSeq;
-            
-            for (const Weapon* weapon : weapons) {
-                out << YAML::BeginMap;
-                
-                // Guardar el tipo de arma
-                out << YAML::Key << "type" << YAML::Value << weapon->getWeaponType();
-                
-                // Guardar la posición
-                QPointF pos = weapon->getPosition();
-                out << YAML::Key << "position";
-                out << YAML::Value << YAML::Flow << std::vector<double>{pos.x(), pos.y()};
-                
-                out << YAML::EndMap;
-            }
-            
-            out << YAML::EndSeq;
-            qDebug() << "Guardadas" << weapons.size() << "armas en el YAML";
-        }
-        
-        out << YAML::EndMap;
-        
-        // Escribir el YAML al archivo
-        std::ofstream fout(fileName.toStdString().c_str());
-        if (!fout) {
-            qDebug() << "No se puede abrir el archivo para escritura:" << fileName;
-=======
         // Terminar el documento YAML
         out << YAML::EndMap;
         
@@ -241,7 +162,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         std::ofstream fout(fileName.toStdString());
         if (!fout.is_open()) {
             qDebug() << "No se pudo abrir el archivo para escritura:" << fileName;
->>>>>>> 0c129b6 (fix yaml)
             return false;
         }
         
@@ -249,11 +169,7 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         fout << out.c_str();
         fout.close();
         
-<<<<<<< HEAD
-        qDebug() << "Formato YAML simplificado guardado con éxito con SOLO map_type y matrix";
-=======
         qDebug() << "Archivo guardado con éxito:" << fileName;
->>>>>>> 0c129b6 (fix yaml)
         return true;
     } catch (const YAML::Exception &e) {
         qDebug() << "Error al guardar YAML:" << e.what();

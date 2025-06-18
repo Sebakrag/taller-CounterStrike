@@ -1301,14 +1301,6 @@ bool MapEditor::validateMap()
     
     // Convertir los elementos gráficos a elementos del mapa
     foreach (QGraphicsItem *item, scene->items()) {
-<<<<<<< HEAD
-        // Procesar elementos DragAndDrop (armas)
-        if (DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item)) {
-            MapElement *element = convertToMapElement(dragItem);
-            if (element) {
-                elements.append(element);
-            }
-=======
         // Verificar si el ítem tiene datos válidos (en vez de usar dynamic_cast)
         if (item->data(1).isValid() && item->data(1).toInt() == TILE) {
             QPointF position = item->scenePos();
@@ -1340,7 +1332,6 @@ bool MapEditor::validateMap()
             
             Weapon* weapon = new Weapon(worldPos, weaponType);
             elements.append(weapon);
->>>>>>> 0c129b6 (fix yaml)
         }
         // Procesar QGraphicsPixmapItem (tiles)
         else if (QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item)) {
