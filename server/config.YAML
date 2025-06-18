@@ -24,7 +24,7 @@ weapons:
     damage: 100 # daño por disparo
     price: 3500 # precio del arma
     bullets: 10
-    rate_of_fire: 20 # tiempo de recarga
+    rate_of_fire: 20
 
   glock:
     damage: 45 # daño por bala
@@ -44,7 +44,7 @@ bomb:
   time_to_explode: 15 # tiempo hasta que explota (en segundos)
 
 window:
-  width: 800 # ancho de la ventana
-  height: 600 # alto de la ventana
+  width: 900 # ancho de la ventana
+  height: 660 # alto de la ventana
   fullscreen: 0 # 0 para ventana, 1 para pantalla completa
 
