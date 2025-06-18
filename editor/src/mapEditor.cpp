@@ -76,98 +76,6 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     tilesTabLayout->addWidget(tilesGroup);
     elementsTabWidget->addTab(tilesTab, "Tiles");
     
-    // Pestaña para elementos sólidos
-    QWidget* solidsTab = new QWidget();
-    QVBoxLayout* solidsTabLayout = new QVBoxLayout(solidsTab);
-    
-    // Área de desplazamiento para sólidos
-    solidsGroup = new QGroupBox("Sólidos");
-    QVBoxLayout* solidsLayout = new QVBoxLayout(solidsGroup);
-    
-    solidsScrollArea = new QScrollArea();
-    solidsScrollArea->setWidgetResizable(true);
-    QWidget* solidsContainer = new QWidget();
-    new QGridLayout(solidsContainer);
-    solidsScrollArea->setWidget(solidsContainer);
-    solidsLayout->addWidget(solidsScrollArea);
-    
-    // Grupo de botones para sólidos
-    solidButtons = new QButtonGroup(this);
-    
-    solidsTabLayout->addWidget(solidsGroup);
-    elementsTabWidget->addTab(solidsTab, "Sólidos");
-    
-    // Pestaña para zonas
-    QWidget* zonesTab = new QWidget();
-    QVBoxLayout* zonesTabLayout = new QVBoxLayout(zonesTab);
-    
-    // Área de desplazamiento para zonas
-    zonesGroup = new QGroupBox("Zonas");
-    QVBoxLayout* zonesLayout = new QVBoxLayout(zonesGroup);
-    
-    zonesScrollArea = new QScrollArea();
-    zonesScrollArea->setWidgetResizable(true);
-    QWidget* zonesContainer = new QWidget();
-    new QGridLayout(zonesContainer);
-    zonesScrollArea->setWidget(zonesContainer);
-    zonesLayout->addWidget(zonesScrollArea);
-    
-    // Grupo de botones para zonas
-    zoneButtons = new QButtonGroup(this);
-    
-    zonesTabLayout->addWidget(zonesGroup);
-    elementsTabWidget->addTab(zonesTab, "Zonas");
-    
-    // Pestaña para zonas de bomba
-    QWidget* bombZonesTab = new QWidget();
-    QVBoxLayout* bombZonesTabLayout = new QVBoxLayout(bombZonesTab);
-    
-    // Área de desplazamiento para zonas de bomba
-    bombZonesGroup = new QGroupBox("Zonas de Bomba");
-    QVBoxLayout* bombZonesLayout = new QVBoxLayout(bombZonesGroup);
-    
-    bombZonesScrollArea = new QScrollArea();
-    bombZonesScrollArea->setWidgetResizable(true);
-    bombZonesScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    bombZonesScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    
-    QWidget* bombZonesContainer = new QWidget();
-    bombZonesScrollArea->setWidget(bombZonesContainer);
-    new QGridLayout(bombZonesContainer);
-    bombZonesLayout->addWidget(bombZonesScrollArea);
-    
-    // Grupo de botones para zonas de bomba
-    bombZoneButtons = new QButtonGroup(this);
-    
-    // Añadir la pestaña de zonas de bomba a las pestañas
-    bombZonesTabLayout->addWidget(bombZonesGroup);
-    elementsTabWidget->addTab(bombZonesTab, "Zonas de Bomba");
-    
-    // Pestaña para extra-tiles
-    QWidget* extraTilesTab = new QWidget();
-    QVBoxLayout* extraTilesTabLayout = new QVBoxLayout(extraTilesTab);
-    
-    // Área de desplazamiento para extra-tiles
-    extraTilesGroup = new QGroupBox("Extra Tiles");
-    QVBoxLayout* extraTilesLayout = new QVBoxLayout(extraTilesGroup);
-    
-    extraTilesScrollArea = new QScrollArea();
-    extraTilesScrollArea->setWidgetResizable(true);
-    extraTilesScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    extraTilesScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    
-    QWidget* extraTilesContainer = new QWidget();
-    extraTilesScrollArea->setWidget(extraTilesContainer);
-    new QGridLayout(extraTilesContainer);
-    extraTilesLayout->addWidget(extraTilesScrollArea);
-    
-    // Grupo de botones para extra-tiles
-    extraTileButtons = new QButtonGroup(this);
-    
-    // Añadir la pestaña de extra-tiles a las pestañas
-    extraTilesTabLayout->addWidget(extraTilesGroup);
-    elementsTabWidget->addTab(extraTilesTab, "Extra Tiles");
-    
     // Pestaña para armas
     QWidget* weaponsTab = new QWidget();
     QVBoxLayout* weaponsTabLayout = new QVBoxLayout(weaponsTab);
@@ -831,18 +739,12 @@ void MapEditor::loadAvailableTiles()
         qDebug() << "Se cargaron" << tilePixmaps.size() << "tiles del terreno" << terrainType;
         
         // Verificar todos los punteros antes de cargar otros elementos
-        if (!tilesScrollArea || !tileButtons || !solidsScrollArea || !solidButtons || !zonesScrollArea || !zoneButtons 
-            || !bombZonesScrollArea || !bombZoneButtons || !extraTilesScrollArea || !extraTileButtons
-            || !weaponsScrollArea || !weaponButtons) {
+        if (!tilesScrollArea || !tileButtons || !weaponsScrollArea || !weaponButtons) {
             qWarning() << "Algunos punteros son nullptr! No se cargarán más recursos para evitar fallos.";
             return;
         }
         
-        // También cargar otros tipos de elementos
-        loadAvailableSolids();
-        loadAvailableZones();
-        loadAvailableBombZones();
-        loadAvailableExtraTiles();
+        // Solo cargar armas adicionales
         loadAvailableWeapons();
     } catch (const std::exception& e) {
         qCritical() << "Excepción capturada en loadAvailableTiles:" << e.what();
@@ -851,39 +753,122 @@ void MapEditor::loadAvailableTiles()
     }
 }
 
-void MapEditor::loadAvailableSolids() {
-    QString solidsPath = getResourcesPath() + "solid/";
-    loadElementsFromPath(solidsPath, solidPixmaps, solidButtons, solidsScrollArea, &MapEditor::solidSelected);
-}
-
-void MapEditor::loadAvailableZones() {
-    QString zonesPath = getResourcesPath() + "zones/";
-    loadElementsFromPath(zonesPath, zonePixmaps, zoneButtons, zonesScrollArea, &MapEditor::zoneSelected);
-}
-
-void MapEditor::loadAvailableBombZones() {
-    QString bombZonesPath = getResourcesPath() + "bombzone/";
-    loadElementsFromPath(bombZonesPath, bombZonePixmaps, bombZoneButtons, bombZonesScrollArea, &MapEditor::bombZoneSelected);
-}
-
-void MapEditor::loadAvailableExtraTiles() {
-    QString extraTilesPath = getResourcesPath() + "extra-tiles/";
-    loadElementsFromPath(extraTilesPath, extraTilePixmaps, extraTileButtons, extraTilesScrollArea, &MapEditor::extraTileSelected);
-}
+// Se eliminaron los métodos loadAvailableSolids, loadAvailableZones, loadAvailableBombZones y loadAvailableExtraTiles
+// como parte de la simplificación para trabajar solo con tiles y armas
 
 void MapEditor::loadAvailableWeapons() {
-    QString weaponsPath = getResourcesPath() + "weapons/";
-    loadElementsFromPath(weaponsPath, weaponPixmaps, weaponButtons, weaponsScrollArea, &MapEditor::weaponSelected);
+    // Ruta a los assets de armas en client/assets/weapons/
+    QString weaponsPath = "../client/assets/weapons/";
+    
+    // Comprobar que el scroll area y el grupo de botones existen
+    if (!weaponsScrollArea || !weaponButtons) {
+        qWarning() << "weaponsScrollArea o weaponButtons son nullptr! No se cargarán armas.";
+        return;
+    }
+    
+    // Limpiar los pixmaps y botones anteriores
+    weaponPixmaps.clear();
+    QList<QAbstractButton*> buttons = weaponButtons->buttons();
+    for (QAbstractButton* button : buttons) {
+        weaponButtons->removeButton(button);
+        delete button;
+    }
+    
+    // Desconectar conexiones anteriores para evitar duplicados
+    disconnect(weaponButtons, nullptr, this, nullptr);
+    
+    // Reconectar la señal de selección
+    connect(weaponButtons, &QButtonGroup::idClicked,
+            this, &MapEditor::weaponSelected);
+    
+    // Verificar que existe el directorio
+    QDir dir(weaponsPath);
+    if (!dir.exists()) {
+        qWarning() << "El directorio de armas no existe:" << weaponsPath;
+        return;
+    }
+    
+    // Filtrar por archivos de imagen
+    QStringList filters;
+    filters << "*.png" << "*.jpg" << "*.bmp" << "*.gif";
+    dir.setNameFilters(filters);
+    QStringList files = dir.entryList(filters, QDir::Files, QDir::Name);
+    
+    // Obtener el widget contenedor para los botones
+    QWidget* elementsContainer = weaponsScrollArea->widget();
+    if (!elementsContainer) {
+        elementsContainer = new QWidget();
+        weaponsScrollArea->setWidget(elementsContainer);
+        weaponsScrollArea->setWidgetResizable(true);
+    }
+    
+    // Obtener o crear el layout
+    QGridLayout* elementsGridLayout = qobject_cast<QGridLayout*>(elementsContainer->layout());
+    if (!elementsGridLayout) {
+        if (elementsContainer->layout()) {
+            delete elementsContainer->layout();
+        }
+        elementsGridLayout = new QGridLayout(elementsContainer);
+        elementsGridLayout->setSpacing(2);
+        elementsGridLayout->setContentsMargins(2, 2, 2, 2);
+    }
+    
+    // ID inicial para armas
+    int weaponId = 1;
+    int row = 0;
+    int col = 0;
+    
+    // Cargar cada archivo de imagen como un arma
+    for (const QString& file : files) {
+        QString fullPath = weaponsPath + file;
+        QPixmap weaponPixmap(fullPath);
+        
+        if (weaponPixmap.isNull()) {
+            qWarning() << "No se pudo cargar el arma:" << fullPath;
+            continue;
+        }
+        
+        // Guardar el pixmap con su ID
+        weaponPixmaps[weaponId] = weaponPixmap;
+        
+        // Crear un botón con una miniatura del arma
+        QPushButton* weaponButton = new QPushButton();
+        weaponButton->setFixedSize(60, 60);
+        
+        // Crear una versión escalada para el botón
+        // Escalar manteniendo la proporción
+        QPixmap scaledPixmap = weaponPixmap.scaled(56, 56, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QIcon buttonIcon(scaledPixmap);
+        weaponButton->setIcon(buttonIcon);
+        weaponButton->setIconSize(QSize(56, 56));
+        
+        // Obtener el nombre del archivo sin la extensión como nombre del arma
+        QString weaponName = QFileInfo(file).baseName();
+        weaponButton->setToolTip(weaponName);
+        
+        // Añadir al grupo de botones
+        weaponButtons->addButton(weaponButton, weaponId);
+        
+        // Añadir a la cuadrícula
+        elementsGridLayout->addWidget(weaponButton, row, col % 2);
+        
+        // Actualizar posición para el siguiente elemento
+        col++;
+        if (col % 2 == 0) {
+            row++;
+            col = 0;
+        }
+        
+        weaponId++;
+    }
+    
+    qDebug() << "Se cargaron" << weaponPixmaps.size() << "armas";
 }
 
 // Método para manejar la selección de tiles
 void MapEditor::tileSelected(int id) {
-    // Desactivar otros tipos de elementos
-    currentSolidId = -1;
-    currentZoneId = -1;
+    // Desactivar el arma seleccionada
     currentWeaponId = -1;
-    currentBombZoneId = -1;
-    currentExtraTileId = -1;
     
     // Activar el tile seleccionado
     currentTileId = id;
@@ -891,109 +876,16 @@ void MapEditor::tileSelected(int id) {
     
     // Actualizar visualización de botones seleccionados
     updateSelectedButtonStyle(tileButtons, id);
-    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
     updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
 }
 
-// Método para manejar la selección de sólidos
-void MapEditor::solidSelected(int id) {
-    // Desactivar otros tipos de elementos
-    currentTileId = -1;
-    currentZoneId = -1;
-    currentWeaponId = -1;
-    currentBombZoneId = -1;
-    currentExtraTileId = -1;
-    
-    // Activar el sólido seleccionado
-    currentSolidId = id;
-    qDebug() << "Sólido seleccionado:" << id;
-    
-    // Actualizar visualización de botones seleccionados
-    updateSelectedButtonStyle(solidButtons, id);
-    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
-}
-
-// Método para manejar la selección de zonas
-void MapEditor::zoneSelected(int id) {
-    // Desactivar otros tipos de elementos
-    currentTileId = -1;
-    currentSolidId = -1;
-    currentWeaponId = -1;
-    currentBombZoneId = -1;
-    currentExtraTileId = -1;
-    
-    // Activar la zona seleccionada
-    currentZoneId = id;
-    qDebug() << "Zona seleccionada:" << id;
-    
-    // Actualizar visualización de botones seleccionados
-    updateSelectedButtonStyle(zoneButtons, id);
-    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
-}
-
-// Método para manejar la selección de zonas de bomba
-void MapEditor::bombZoneSelected(int id) {
-    // Desactivar otros tipos de elementos
-    currentTileId = -1;
-    currentSolidId = -1;
-    currentZoneId = -1;
-    currentWeaponId = -1;
-    currentExtraTileId = -1;
-    
-    // Activar la zona de bomba seleccionada
-    currentBombZoneId = id;
-    qDebug() << "Zona de bomba seleccionada:" << id;
-    
-    // Actualizar visualización de botones seleccionados
-    updateSelectedButtonStyle(bombZoneButtons, id);
-    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
-}
-
-// Método para manejar la selección de extra-tiles
-void MapEditor::extraTileSelected(int id) {
-    // Desactivar otros tipos de elementos
-    currentTileId = -1;
-    currentSolidId = -1;
-    currentZoneId = -1;
-    currentWeaponId = -1;
-    currentBombZoneId = -1;
-    
-    // Activar el extra-tile seleccionado
-    currentExtraTileId = id;
-    qDebug() << "Extra-tile seleccionado:" << id;
-    
-    // Actualizar visualización de botones seleccionados
-    updateSelectedButtonStyle(extraTileButtons, id);
-    updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(weaponButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
-}
+// Se eliminaron los métodos solidSelected, zoneSelected, bombZoneSelected y extraTileSelected
+// como parte de la simplificación para trabajar solo con tiles y armas
 
 // Método para manejar la selección de armas
 void MapEditor::weaponSelected(int id) {
-    // Desactivar otros tipos de elementos
+    // Desactivar el tile seleccionado
     currentTileId = -1;
-    currentSolidId = -1;
-    currentZoneId = -1;
-    currentBombZoneId = -1;
-    currentExtraTileId = -1;
     
     // Activar el arma seleccionada
     currentWeaponId = id;
@@ -1002,10 +894,6 @@ void MapEditor::weaponSelected(int id) {
     // Actualizar visualización de botones seleccionados
     updateSelectedButtonStyle(weaponButtons, id);
     updateSelectedButtonStyle(tileButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(solidButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(zoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(bombZoneButtons, -1); // Deseleccionar
-    updateSelectedButtonStyle(extraTileButtons, -1); // Deseleccionar
 }
 
 // Método para colocar un tile en la posición del clic

@@ -62,22 +62,15 @@ private slots:
     // Sistema de tiles
     void tileSelected(int id);
     void placeTile(QPointF scenePos);
-    void placeExtraTile(QPointF scenePos); // Colocar un tile extra
+    // Se eliminó el método placeExtraTile
     void removeTile(QPointF scenePos);
     
-    // Métodos para manipular sólidos, zonas y armas
-    void placeSolid(QPointF scenePos); // Colocar un sólido en la posición del ratón
-    void placeZone(QPointF scenePos); // Colocar una zona en la posición del ratón
-    void placeBombZone(QPointF scenePos); // Colocar una zona de bomba en la posición del ratón
+    // Métodos para manipular armas
     void placeWeapon(QPointF scenePos); // Colocar un arma en la posición del ratón
     void removeElementAt(QPointF scenePos); // Eliminar cualquier elemento en la posición del ratón
     
     // Métodos de selección
-    void zoneSelected(int id);
-    void solidSelected(int id);
     void weaponSelected(int id);
-    void bombZoneSelected(int id); // Seleccionar zona de bomba
-    void extraTileSelected(int id); // Seleccionar tile extra
     
     // Método para actualizar el indicador de selección
     void updateSelectionIndicator(QPointF scenePos);
@@ -114,33 +107,7 @@ private:
     QGroupBox* tilesGroup; // Contenedor para la paleta de tiles
     QButtonGroup* tileButtons; // Grupo de botones para los tiles
     
-    // Sistema de sólidos
-    QMap<int, QPixmap> solidPixmaps; // Almacena todos los sólidos disponibles
-    int currentSolidId = -1; // ID del sólido seleccionado actualmente
-    QScrollArea* solidsScrollArea; // Área de desplazamiento para la paleta de sólidos
-    QGroupBox* solidsGroup; // Contenedor para la paleta de sólidos
-    QButtonGroup* solidButtons; // Grupo de botones para los sólidos
-    
-    // Sistema de zonas
-    QMap<int, QPixmap> zonePixmaps; // Almacena todas las zonas disponibles
-    int currentZoneId = -1; // ID de la zona seleccionada actualmente
-    QScrollArea* zonesScrollArea; // Área de desplazamiento para la paleta de zonas
-    QGroupBox* zonesGroup; // Contenedor para la paleta de zonas
-    QButtonGroup* zoneButtons; // Grupo de botones para las zonas
-    
-    // Sistema de zonas de bomba
-    QMap<int, QPixmap> bombZonePixmaps; // Almacena todas las zonas de bomba disponibles
-    int currentBombZoneId = -1; // ID de la zona de bomba seleccionada actualmente
-    QScrollArea* bombZonesScrollArea; // Área de desplazamiento para la paleta de zonas de bomba
-    QGroupBox* bombZonesGroup; // Contenedor para la paleta de zonas de bomba
-    QButtonGroup* bombZoneButtons; // Grupo de botones para las zonas de bomba
-    
-    // Sistema de extra-tiles
-    QMap<int, QPixmap> extraTilePixmaps; // Almacena todos los tiles extra disponibles
-    int currentExtraTileId = -1; // ID del tile extra seleccionado actualmente
-    QScrollArea* extraTilesScrollArea; // Área de desplazamiento para la paleta de tiles extra
-    QGroupBox* extraTilesGroup; // Contenedor para la paleta de tiles extra
-    QButtonGroup* extraTileButtons; // Grupo de botones para los tiles extra
+    // Se eliminaron las variables para sólidos, zonas, zonas de bomba y extra-tiles
     
     // Sistema de armas
     QMap<int, QPixmap> weaponPixmaps; // Almacena todas las armas disponibles
@@ -186,10 +153,6 @@ private:
                             QButtonGroup* buttonGroup, QScrollArea* scrollArea,
                             void (MapEditor::*selectCallback)(int));
     void loadAvailableTiles(); // Cargar los tiles disponibles según el terreno
-    void loadAvailableSolids(); // Cargar los elementos sólidos
-    void loadAvailableZones(); // Cargar las zonas
-    void loadAvailableBombZones(); // Cargar las zonas de bomba
-    void loadAvailableExtraTiles(); // Cargar los tiles extra
     void loadAvailableWeapons(); // Cargar las armas
     
     // Métodos de selección de elementos

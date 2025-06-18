@@ -50,58 +50,26 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         out << YAML::Key << "height" << YAML::Value << 1024;
         out << YAML::EndMap;
         
-        // Separar los elementos por tipo
-        QList<const TeamSpawn*> teamSpawns;
-        QList<const BombZone*> bombZones;
-        QList<const SolidStructure*> solidStructures;
+        // Separar los elementos por tipo (solo tiles y armas)
         QList<const Weapon*> weapons;
         QList<const Tile*> tiles;
         
         // Clasificar los elementos según su tipo
         for (const MapElement* element : elements) {
             switch (element->getType()) {
-                case TEAM_SPAWN_CT:
-                case TEAM_SPAWN_T:
-                    teamSpawns.append(static_cast<const TeamSpawn*>(element));
-                    break;
-                case BOMB_ZONE:
-                    bombZones.append(static_cast<const BombZone*>(element));
-                    break;
-                case SOLID_STRUCTURE:
-                    solidStructures.append(static_cast<const SolidStructure*>(element));
-                    break;
                 case WEAPON:
                     weapons.append(static_cast<const Weapon*>(element));
                     break;
                 case TILE:
                     tiles.append(static_cast<const Tile*>(element));
                     break;
+                default:
+                    // Ignorar otros tipos de elementos
+                    break;
             }
         }
         
-        // Guardar zonas de inicio de equipos
-        out << YAML::Key << "team_spawns";
-        out << YAML::Value << YAML::BeginSeq;
-        for (const TeamSpawn* spawn : teamSpawns) {
-            serializeTeamSpawn(out, spawn);
-        }
-        out << YAML::EndSeq;
-        
-        // Guardar zonas de bombas
-        out << YAML::Key << "bomb_zones";
-        out << YAML::Value << YAML::BeginSeq;
-        for (const BombZone* zone : bombZones) {
-            serializeBombZone(out, zone);
-        }
-        out << YAML::EndSeq;
-        
-        // Guardar estructuras sólidas
-        out << YAML::Key << "solid_structures";
-        out << YAML::Value << YAML::BeginSeq;
-        for (const SolidStructure* structure : solidStructures) {
-            serializeSolidStructure(out, structure);
-        }
-        out << YAML::EndSeq;
+        // Se eliminaron las secciones de team_spawns, bomb_zones y solid_structures
         
         // Guardar armas
         out << YAML::Key << "weapons";
@@ -223,38 +191,8 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
             terrainType = mapNode["terrain_type"].as<int>();
         }
         
-        // Leer zonas de inicio de equipos
-        if (mapNode["team_spawns"]) {
-            YAML::Node teamSpawnsNode = mapNode["team_spawns"];
-            for (const auto& spawnNode : teamSpawnsNode) {
-                TeamSpawn* spawn = deserializeTeamSpawn(spawnNode);
-                if (spawn) {
-                    elements.append(spawn);
-                }
-            }
-        }
-        
-        // Leer zonas de bombas
-        if (mapNode["bomb_zones"]) {
-            YAML::Node bombZonesNode = mapNode["bomb_zones"];
-            for (const auto& zoneNode : bombZonesNode) {
-                BombZone* zone = deserializeBombZone(zoneNode);
-                if (zone) {
-                    elements.append(zone);
-                }
-            }
-        }
-        
-        // Leer estructuras sólidas
-        if (mapNode["solid_structures"]) {
-            YAML::Node structuresNode = mapNode["solid_structures"];
-            for (const auto& structNode : structuresNode) {
-                SolidStructure* structure = deserializeSolidStructure(structNode);
-                if (structure) {
-                    elements.append(structure);
-                }
-            }
-        }
+        // Se eliminaron las secciones de carga de team_spawns, bomb_zones y solid_structures
+        // Solo cargaremos tiles y armas
         
         // Leer armas
         if (mapNode["weapons"]) {
@@ -338,31 +276,7 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
     }
 }
 
-// Métodos de serialización
-void YamlHandler::serializeTeamSpawn(YAML::Emitter &out, const TeamSpawn *spawn) {
-    out << YAML::BeginMap;
-    out << YAML::Key << "team_id" << YAML::Value << spawn->getTeamId();
-    out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
-        << spawn->getPosition().x() << spawn->getPosition().y() << YAML::EndSeq;
-    out << YAML::EndMap;
-}
-
-void YamlHandler::serializeBombZone(YAML::Emitter &out, const BombZone *zone) {
-    out << YAML::BeginMap;
-    out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
-        << zone->getPosition().x() << zone->getPosition().y() << YAML::EndSeq;
-    out << YAML::Key << "size" << YAML::Value << YAML::Flow << YAML::BeginSeq 
-        << zone->getSize().width() << zone->getSize().height() << YAML::EndSeq;
-    out << YAML::EndMap;
-}
-
-void YamlHandler::serializeSolidStructure(YAML::Emitter &out, const SolidStructure *structure) {
-    out << YAML::BeginMap;
-    out << YAML::Key << "type" << YAML::Value << structure->getStructureType();
-    out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
-        << structure->getPosition().x() << structure->getPosition().y() << YAML::EndSeq;
-    out << YAML::EndMap;
-}
+// Se eliminaron los métodos de serialización para TeamSpawn, BombZone y SolidStructure
 
 void YamlHandler::serializeWeapon(YAML::Emitter &out, const Weapon *weapon) {
     out << YAML::BeginMap;
@@ -380,47 +294,7 @@ void YamlHandler::serializeTile(YAML::Emitter &out, const Tile *tile) {
     out << YAML::EndMap;
 }
 
-// Métodos de deserialización
-TeamSpawn* YamlHandler::deserializeTeamSpawn(const YAML::Node &node) {
-    if (!node["team_id"] || !node["position"]) {
-        return nullptr;
-    }
-    
-    int teamId = node["team_id"].as<int>();
-    auto posNode = node["position"];
-    QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
-    
-    return new TeamSpawn(pos, teamId);
-}
-
-BombZone* YamlHandler::deserializeBombZone(const YAML::Node &node) {
-    if (!node["position"]) {
-        return nullptr;
-    }
-    
-    auto posNode = node["position"];
-    QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
-    
-    QSizeF size(50, 50); // Tamaño por defecto
-    if (node["size"]) {
-        auto sizeNode = node["size"];
-        size = QSizeF(sizeNode[0].as<float>(), sizeNode[1].as<float>());
-    }
-    
-    return new BombZone(pos, size);
-}
-
-SolidStructure* YamlHandler::deserializeSolidStructure(const YAML::Node &node) {
-    if (!node["type"] || !node["position"]) {
-        return nullptr;
-    }
-    
-    int type = node["type"].as<int>();
-    auto posNode = node["position"];
-    QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
-    
-    return new SolidStructure(pos, type);
-}
+// Se eliminaron los métodos de deserialización para TeamSpawn, BombZone y SolidStructure
 
 Weapon* YamlHandler::deserializeWeapon(const YAML::Node &node) {
     if (!node["type"] || !node["position"]) {
