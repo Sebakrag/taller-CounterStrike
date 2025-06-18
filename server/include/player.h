@@ -38,7 +38,7 @@ private:
 
 public:
     // TODO: Recibir las 2 skin en el constructor
-    explicit Player(const std::string& name, const Team playerTeam, const Vec2D& position);
+    explicit Player(const std::string& name, const Team playerTeam, const Vec2D& position = Vec2D());
 
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
     void setEquippedWeapon(TypeWeapon type);
