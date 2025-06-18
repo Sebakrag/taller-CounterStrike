@@ -2,16 +2,19 @@
 
 #include <stdexcept>
 
+//inicializo constantes static para compilar
 std::map<std::string, TileMap> ScenarioRegistry::scenarios;
 WindowConfig ScenarioRegistry::windowConfig;
+FOVConfig ScenarioRegistry::fovConfig;
 bool ScenarioRegistry::initialized = false;
 
-void ScenarioRegistry::init(const WindowConfig& config,
+void ScenarioRegistry::init(const WindowConfig& win_config, const FOVConfig& fov_config,
                             const std::map<std::string, TileMap>& newScenarios) {
     if (!initialized) {
         initialized = true;
 
-        windowConfig = config;
+        windowConfig = win_config;
+        fovConfig = fov_config;
         scenarios = newScenarios;
     }
 }
@@ -39,3 +42,4 @@ bool ScenarioRegistry::existsScenario(const std::string& name) {
     return true;
 }
 const WindowConfig& ScenarioRegistry::getWindowConfig() { return windowConfig; }
+const FOVConfig& ScenarioRegistry::getFovConfig() { return fovConfig; }

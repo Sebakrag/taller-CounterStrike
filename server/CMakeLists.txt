@@ -27,6 +27,7 @@ target_sources(taller_server
         src/weapon/bomb.cpp
 
         src/scenario_registry.cpp
+        src/yaml_config.cpp
 
     PUBLIC
     # .h files
@@ -56,4 +57,5 @@ target_sources(taller_server
         include/weapon/projectile.h
         include/weapon/bomb.h
         include/scenario_registry.h
+        include/yaml_config.h
 )
