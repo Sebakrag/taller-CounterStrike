@@ -109,12 +109,10 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
     QGroupBox *fileGroup = new QGroupBox("Archivo", toolPanel);
     QVBoxLayout *fileLayout = new QVBoxLayout(fileGroup);
     
-    QPushButton *loadMapButton = new QPushButton("Cargar Mapa", fileGroup);
     QPushButton *saveMapButton = new QPushButton("Guardar Mapa", fileGroup);
     QPushButton *preloadMapButton = new QPushButton("Precargar", fileGroup);
     preloadMapButton->setToolTip("Llenar todo el mapa con un tile base del terreno seleccionado");
     
-    fileLayout->addWidget(loadMapButton);
     fileLayout->addWidget(saveMapButton);
     fileLayout->addWidget(preloadMapButton);
     fileGroup->setLayout(fileLayout);
@@ -149,7 +147,6 @@ MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(n
             this, &MapEditor::backgroundSelection);
     
     // Conectar botones de carga y guardado
-    connect(loadMapButton, &QPushButton::clicked, this, &MapEditor::loadMapClicked);
     connect(saveMapButton, &QPushButton::clicked, this, &MapEditor::generarMapaClicked);
     connect(preloadMapButton, &QPushButton::clicked, this, &MapEditor::preloadMapWithBaseTile);
     
@@ -309,7 +306,14 @@ void MapEditor::backgroundSelection(int index)
 
 // Método para aumentar el zoom
 void MapEditor::zoomIn() {
-    view->scale(1.2, 1.2);
+    // Aumentar el zoom en 25%
+    currentZoomFactor += 0.25;
+    // Limitar el zoom máximo
+    if (currentZoomFactor > 3.0) {
+        currentZoomFactor = 3.0;
+    }
+    
+    qDebug() << "Zoom aumentado a: " << currentZoomFactor;
     applyZoom();
 }
 
@@ -962,305 +966,8 @@ void MapEditor::placeTile(QPointF scenePos)
 }
 
 // Método para colocar un extra-tile en la posición del clic
-void MapEditor::placeExtraTile(QPointF scenePos)
-{
-    if (currentExtraTileId < 0) {
-        return; // No hay extra-tile seleccionado
-    }
-    
-    QPoint gridPos = getTileGridPosition(scenePos);
-    qreal x = gridPos.x() * 32.0;
-    qreal y = gridPos.y() * 32.0;
-    
-    // Buscar y eliminar cualquier elemento existente en la misma posición
-    QList<QGraphicsItem*> itemsToRemove;
-    for (QGraphicsItem* item : scene->items()) {
-        // Verificar si es un elemento de mapa (usando data)
-        if ((item->data(1).isValid())) {
-            QPointF itemPos = item->pos();
-            QRectF itemRect = item->boundingRect().adjusted(0, 0, -1, -1); // Ajustar para evitar bordes compartidos
-            
-            // Si el elemento ocupa la posición objetivo
-            if (itemRect.contains(QPointF(x, y).x() - itemPos.x(), QPointF(x, y).y() - itemPos.y())) {
-                itemsToRemove.append(item);
-            }
-        }
-    }
-    
-    // Eliminar los elementos encontrados
-    for (QGraphicsItem* item : itemsToRemove) {
-        scene->removeItem(item);
-        delete item;
-    }
-    
-    // Colocar el nuevo extra-tile
-    QPixmap extraTilePixmap;
-    if (extraTilePixmaps.contains(currentExtraTileId)) {
-        extraTilePixmap = extraTilePixmaps[currentExtraTileId];
-    } else {
-        return; // No se encuentra el pixmap
-    }
-    
-    QGraphicsPixmapItem* extraTileItem = new QGraphicsPixmapItem(extraTilePixmap);
-    extraTileItem->setPos(x, y);
-    scene->addItem(extraTileItem);
-    
-    // Crear un nuevo elemento de mapa de tipo extra-tile
-    QPointF worldPos(gridPos.x(), gridPos.y());
-    MapElement* newElement = new MapElement(worldPos, EXTRA_TILE);
-    
-    // Asociar el elemento gráfico con una identificación interna
-    extraTileItem->setData(0, currentExtraTileId); // Almacenar el ID del extra-tile
-    extraTileItem->setData(1, EXTRA_TILE); // Almacenar el tipo de elemento
-    
-    // Añadir a la lista de elementos
-    mapElements.append(newElement);
-}
-
-// Método para colocar un sólido en la posición del clic
-void MapEditor::placeSolid(QPointF scenePos)
-{
-    if (currentSolidId < 0) {
-        return; // No hay sólido seleccionado
-    }
-    
-    QPoint gridPos = getTileGridPosition(scenePos);
-    qreal x = gridPos.x() * 32.0;
-    qreal y = gridPos.y() * 32.0;
-    
-    // Buscar y eliminar CUALQUIER elemento existente en la misma posición
-    QList<QGraphicsItem*> itemsToRemove;
-    for (QGraphicsItem* item : scene->items()) {
-        // Verificar si es un elemento de mapa (usando data)
-        if ((item->data(1).isValid())) {
-            QPoint itemGridPos = getTileGridPosition(item->pos());
-            if (itemGridPos == gridPos) {
-                itemsToRemove.append(item);
-            }
-        }
-    }
-    
-    // Remover de la escena y de la lista de elementos del mapa
-    for (QGraphicsItem* itemToRemove : itemsToRemove) {
-        // También eliminar el elemento de mapElements
-        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
-        for (int i = 0; i < mapElements.size(); ++i) {
-            MapElement* element = mapElements[i];
-            QPointF elementPos = element->getPosition();
-            if (elementPos.x() == removeGridPos.x() && 
-                elementPos.y() == removeGridPos.y() && 
-                element->getType() == SOLID_STRUCTURE) {
-                mapElements.removeAt(i);
-                delete element;
-                break;
-            }
-        }
-        scene->removeItem(itemToRemove);
-        delete itemToRemove;
-    }
-    
-    // Crear un nuevo elemento sólido
-    QPixmap solidPixmap = solidPixmaps[currentSolidId];
-    DragAndDrop* solidItem = new DragAndDrop(solidPixmap);
-    solidItem->setPos(x, y);
-    scene->addItem(solidItem);
-    
-    // Crear un nuevo elemento de mapa de tipo sólido
-    QPointF worldPos(gridPos.x(), gridPos.y());
-    MapElement* newElement = new MapElement(worldPos, SOLID_STRUCTURE);
-    
-    // Asociar el elemento gráfico con una identificación interna
-    solidItem->setData(0, currentSolidId); // Almacenar el ID del sólido
-    solidItem->setData(1, SOLID_STRUCTURE); // Almacenar el tipo de elemento
-    
-    // Añadir a la lista de elementos
-    mapElements.append(newElement);
-}
-
-// Método para colocar una zona de bomba en la posición del clic
-// Solo debe existir una zona de bomba en todo el mapa
-void MapEditor::placeBombZone(QPointF scenePos)
-{
-    if (currentBombZoneId < 0) {
-        return; // No hay zona de bomba seleccionada
-    }
-    
-    QPoint gridPos = getTileGridPosition(scenePos);
-    qreal x = gridPos.x() * 32.0;
-    qreal y = gridPos.y() * 32.0;
-    
-    // Buscar y eliminar cualquier elemento existente en la misma posición
-    // EXCEPTO las zonas normales (TEAM_SPAWN_CT, TEAM_SPAWN_T)
-    QList<QGraphicsItem*> itemsToRemove;
-    for (QGraphicsItem* item : scene->items()) {
-        // Verificar si es un elemento de mapa (usando data)
-        if ((item->data(1).isValid())) {
-            QPointF itemPos = item->pos();
-            QRectF itemRect = item->boundingRect().adjusted(0, 0, -1, -1); // Ajustar para evitar bordes compartidos
-            
-            // Si el elemento ocupa la posición objetivo
-            if (itemRect.contains(QPointF(x, y).x() - itemPos.x(), QPointF(x, y).y() - itemPos.y())) {
-                // No eliminar zonas normales (TEAM_SPAWN_CT, TEAM_SPAWN_T)
-                int elementType = item->data(1).toInt();
-                if (elementType != TEAM_SPAWN_CT && elementType != TEAM_SPAWN_T) {
-                    itemsToRemove.append(item);
-                }
-            }
-        }
-    }
-    
-    // Eliminar los elementos encontrados
-    for (QGraphicsItem* item : itemsToRemove) {
-        scene->removeItem(item);
-        delete item;
-    }
-    
-    // También eliminar cualquier zona de bomba existente en todo el mapa (solo debe haber una)
-    QList<QGraphicsItem*> bombZoneItems;
-    for (QGraphicsItem* item : scene->items()) {
-        if (item->data(1).isValid() && item->data(1).toInt() == BOMB_ZONE) {
-            if (!itemsToRemove.contains(item)) { // Si no está ya en la lista para eliminar
-                bombZoneItems.append(item);
-            }
-        }
-    }
-    
-    for (QGraphicsItem* item : bombZoneItems) {
-        scene->removeItem(item);
-        delete item;
-    }
-    
-    // Colocar la nueva zona de bomba
-    QPixmap bombZonePixmap;
-    if (bombZonePixmaps.contains(currentBombZoneId)) {
-        bombZonePixmap = bombZonePixmaps[currentBombZoneId];
-    } else {
-        return; // No se encuentra el pixmap
-    }
-    
-    DragAndDrop* bombZoneItem = new DragAndDrop(bombZonePixmap);
-    bombZoneItem->setPos(x, y);
-    scene->addItem(bombZoneItem);
-    
-    // Crear un nuevo elemento de mapa de tipo zona de bomba
-    QPointF worldPos(gridPos.x(), gridPos.y());
-    MapElement* newElement = new MapElement(worldPos, BOMB_ZONE);
-    
-    // Asociar el elemento gráfico con una identificación interna
-    bombZoneItem->setData(0, currentBombZoneId); // Almacenar el ID de la zona de bomba
-    bombZoneItem->setData(1, BOMB_ZONE); // Almacenar el tipo de elemento
-    
-    // Añadir a la lista de elementos
-    mapElements.append(newElement);
-}
-
-void MapEditor::placeZone(QPointF scenePos)
-{
-    if (currentZoneId < 0) {
-        return; // No hay zona seleccionada
-    }
-    
-    QPoint gridPos = getTileGridPosition(scenePos);
-    qreal x = gridPos.x() * 32.0;
-    qreal y = gridPos.y() * 32.0;
-    
-    // CLAVE: Asignamos de manera explícita los tipos de zona
-    // La imagen dust_klin_tile_62.png con la letra 'A' (índice 0) SIEMPRE es Counter-Terrorist
-    // La imagen dust_klin_tile_63.png con la letra 'B' (índice 1) SIEMPRE es Terrorist
-    
-    // FORZAR los tipos correctos sin ambigüedad
-    int zoneType;
-    if (currentZoneId == 0) { // 'A'
-        zoneType = TEAM_SPAWN_CT; // Counter-Terrorist (0)
-        qDebug() << "Colocando zona tipo: Counter-Terrorist (FORZADO) con ID: 0 (letra A)";
-    } else { // 'B'
-        zoneType = TEAM_SPAWN_T; // Terrorist (1)
-        qDebug() << "Colocando zona tipo: Terrorist (FORZADO) con ID: 1 (letra B)";
-    }
-    
-    // PRIMERO: Eliminar cualquier zona DEL MISMO TIPO (zoneType) que ya exista en cualquier parte del mapa
-    // Ya que solo debe haber una zona de cada tipo en todo el mapa
-    QList<QGraphicsItem*> sameZoneTypeItems;
-    
-    for (QGraphicsItem* item : scene->items()) {
-        if (item->data(1).isValid() && 
-            item->data(1).toInt() == zoneType) { // Verificar si es el mismo tipo de zona
-            // Misma zona (tipo) encontrada, agregar para eliminar
-            sameZoneTypeItems.append(item);
-            qDebug() << "Eliminando zona existente del tipo" << zoneType;
-        }
-    }
-    
-    // Eliminar todas las zonas del mismo tipo encontradas
-    for (QGraphicsItem* itemToRemove : sameZoneTypeItems) {
-        // Eliminar también de la lista de elementos internos
-        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
-        for (int i = 0; i < mapElements.size(); ++i) {
-            MapElement* element = mapElements[i];
-            QPointF elementPos = element->getPosition();
-            if (elementPos.x() == removeGridPos.x() && 
-                elementPos.y() == removeGridPos.y() && 
-                element->getType() == zoneType) {
-                mapElements.removeAt(i);
-                delete element;
-                break;
-            }
-        }
-        scene->removeItem(itemToRemove);
-        delete itemToRemove;
-    }
-    
-    // SEGUNDO: Eliminar cualquier elemento que exista en la posición seleccionada
-    // EXCEPTO las zonas de bomba (BOMB_ZONE)
-    QList<QGraphicsItem*> itemsAtPosition;
-    for (QGraphicsItem* item : scene->items()) {
-        // Verificar si es un elemento de mapa (usando data)
-        if ((item->data(1).isValid())) {
-            QPoint itemGridPos = getTileGridPosition(item->pos());
-            if (itemGridPos == gridPos) {
-                // No eliminar zonas de bomba
-                int elementType = item->data(1).toInt();
-                if (elementType != BOMB_ZONE) {
-                    itemsAtPosition.append(item);
-                }
-            }
-        }
-    }
-    
-    // Eliminar elementos en la posición seleccionada
-    for (QGraphicsItem* itemToRemove : itemsAtPosition) {
-        QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
-        for (int i = 0; i < mapElements.size(); ++i) {
-            MapElement* element = mapElements[i];
-            QPointF elementPos = element->getPosition();
-            if (elementPos.x() == removeGridPos.x() && 
-                elementPos.y() == removeGridPos.y()) {
-                mapElements.removeAt(i);
-                delete element;
-                break;
-            }
-        }
-        scene->removeItem(itemToRemove);
-        delete itemToRemove;
-    }
-    
-    // Crear un nuevo elemento zona
-    QPixmap zonePixmap = zonePixmaps[currentZoneId];
-    DragAndDrop* zoneItem = new DragAndDrop(zonePixmap);
-    zoneItem->setPos(x, y);
-    scene->addItem(zoneItem);
-    
-    // Crear un nuevo elemento de mapa de tipo zona
-    QPointF worldPos(gridPos.x(), gridPos.y());
-    MapElement* newElement = new MapElement(worldPos, zoneType);
-    
-    // Asociar el elemento gráfico con una identificación interna
-    zoneItem->setData(0, currentZoneId); // Almacenar el ID de la zona
-    zoneItem->setData(1, zoneType); // Almacenar el tipo de elemento
-    
-    // Añadir a la lista de elementos
-    mapElements.append(newElement);
-}
+// Los métodos placeExtraTile, placeSolid, placeBombZone y placeZone se eliminaron
+// como parte de la refactorización del editor para manejar solo tiles y armas
 
 // Método para colocar un arma en la posición del clic
 void MapEditor::placeWeapon(QPointF scenePos)
@@ -1701,22 +1408,6 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
                         // Colocar un tile si está disponible en el mapa
                         placeTile(scenePos);
                         return true;
-                    } else if (currentSolidId >= 0 && solidPixmaps.contains(currentSolidId)) {
-                        // Colocar un sólido
-                        placeSolid(scenePos);
-                        return true;
-                    } else if (currentZoneId >= 0 && zonePixmaps.contains(currentZoneId)) {
-                        // Colocar una zona
-                        placeZone(scenePos);
-                        return true;
-                    } else if (currentBombZoneId >= 0 && bombZonePixmaps.contains(currentBombZoneId)) {
-                        // Colocar una zona de bomba
-                        placeBombZone(scenePos);
-                        return true;
-                    } else if (currentExtraTileId >= 0 && extraTilePixmaps.contains(currentExtraTileId)) {
-                        // Colocar un extra-tile
-                        placeExtraTile(scenePos);
-                        return true;
                     } else if (currentWeaponId >= 0 && weaponPixmaps.contains(currentWeaponId)) {
                         // Colocar un arma
                         placeWeapon(scenePos);
@@ -1748,8 +1439,8 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
                         // Si no hay tile pero estamos en modo tile, intentar eliminar de todas formas
                         removeTile(scenePos);
                         return true;
-                    } else if (currentSolidId >= 0 || currentZoneId >= 0 || currentWeaponId >= 0) {
-                        // Para otros elementos, intentar eliminar cualquier elemento en esa posición
+                    } else if (currentWeaponId >= 0) {
+                        // Para armas, intentar eliminar cualquier elemento en esa posición
                         removeElementAt(scenePos);
                         return true;
                     }
@@ -1980,17 +1671,10 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     // Usar data(1) para obtener el tipo de elemento, que es donde lo almacenamos al colocar elementos
     int elementType = item->data(1).toInt();
     
-    // Verificar que el tipo de elemento sea válido (TEAM_SPAWN_CT es 0, por lo que debemos aceptarlo)
+    // Verificar que el tipo de elemento sea válido
     if (elementType < 0) {
         qDebug() << "Error: Tipo de elemento inválido o no definido:" << elementType;
         return nullptr;
-    }
-    
-    // Mensaje de depuración para confirmar el tipo correcto
-    if (elementType == TEAM_SPAWN_CT) {
-        qDebug() << "Elemento validado: Counter-Terrorist (tipo 0)";
-    } else if (elementType == TEAM_SPAWN_T) {
-        qDebug() << "Elemento validado: Terrorist (tipo 1)";
     }
     
     // Convertir posición de pixeles a unidades de mundo si es necesario
@@ -2007,53 +1691,20 @@ MapElement* MapEditor::convertToMapElement(DragAndDrop* item)
     
     qDebug() << "Convirtiendo elemento tipo:" << elementType << "en posición:" << worldPos.x() << "," << worldPos.y();
     
+    // Ahora solo manejamos TILE y WEAPON, los demás tipos han sido eliminados
     switch (elementType) {
-        case TEAM_SPAWN_CT:
-        case TEAM_SPAWN_T: {
-            // NOTA IMPORTANTE: Determinamos explícitamente el tipo de equipo correcto
-            // basado en el tipo de elemento almacenado (eliminando la ambigüedad)
-            
-            // El tipo de elemento ya viene establecido correctamente desde placeZone
-            int correctTeamId;
-            
-            if (elementType == TEAM_SPAWN_CT) {
-                correctTeamId = 0;  // Counter-Terrorist
-                qDebug() << "  - Convirtiendo zona CT (letra A) a TeamSpawn con ID 0";
-            } else { // TEAM_SPAWN_T
-                correctTeamId = 1;  // Terrorist
-                qDebug() << "  - Convirtiendo zona T (letra B) a TeamSpawn con ID 1";
-            }
-            
-            // Creamos el TeamSpawn con el ID correcto
-            return new TeamSpawn(worldPos, correctTeamId);
-        }
-        
-        case BOMB_ZONE: {
-            QSizeF size = item->getBombZoneSize();
-            qDebug() << "  - Zona de bomba tamaño:" << size.width() << "x" << size.height();
-            return new BombZone(worldPos, size);
-        }
-        
-        case SOLID_STRUCTURE: {
-            // Usar data(0) para obtener el tipo de estructura, que es donde lo almacenamos al colocar estructuras
-            int structType = item->data(0).toInt();
-            qDebug() << "  - Estructura sólida tipo:" << structType;
-            return new SolidStructure(worldPos, structType);
+        case TILE: {
+            // Para tiles, usar data(0) para obtener el ID del tile
+            int tileId = item->data(0).toInt();
+            qDebug() << "  - Tile ID:" << tileId;
+            return new Tile(worldPos, tileId);
         }
         
         case WEAPON: {
-            // Usar data(0) para obtener el tipo de arma, que es donde lo almacenamos al colocar armas
+            // Usar data(0) para obtener el tipo de arma
             int weaponType = item->data(0).toInt();
             qDebug() << "  - Arma tipo:" << weaponType;
             return new Weapon(worldPos, weaponType);
-        }
-        
-        case EXTRA_TILE: {
-            // Para extra-tiles, usar data(0) para obtener el ID del extra-tile
-            int extraTileId = item->data(0).toInt();
-            qDebug() << "  - Extra-tile (como tile normal) ID:" << extraTileId;
-            // Crear un tile normal con el ID del extra tile
-            return new Tile(worldPos, extraTileId);
         }
         
         default:
@@ -2080,43 +1731,29 @@ DragAndDrop* MapEditor::createDragAndDropItem(const MapElement* element)
     QPixmap pixmap;
     DragAndDrop* item = nullptr;
     
+    // Ahora solo manejamos TILE y WEAPON
     switch (elementType) {
-        case TEAM_SPAWN_CT:
-        case TEAM_SPAWN_T: {
-            const TeamSpawn* spawn = static_cast<const TeamSpawn*>(element);
-            pixmap = QPixmap(getResourcePath(elementType));
-            item = new DragAndDrop(pixmap, 0.8, scene);
-            item->setTipoElemento(elementType);
-            item->setTeamId(spawn->getTeamId());
-            break;
-        }
-        
-        case BOMB_ZONE: {
-            const BombZone* zone = static_cast<const BombZone*>(element);
-            pixmap = QPixmap(getResourcePath(BOMB_ZONE));
-            item = new DragAndDrop(pixmap, 1.0, scene);
-            item->setTipoElemento(BOMB_ZONE);
-            item->setBombZoneSize(zone->getSize());
-            break;
-        }
-        
-        case SOLID_STRUCTURE: {
-            const SolidStructure* structure = static_cast<const SolidStructure*>(element);
-            int structType = structure->getStructureType();
-            pixmap = QPixmap(getResourcePath(SOLID_STRUCTURE, structType));
-            item = new DragAndDrop(pixmap, 1.0, scene);
-            item->setTipoElemento(SOLID_STRUCTURE);
-            item->setStructureType(structType);
+        case TILE: {
+            const Tile* tile = static_cast<const Tile*>(element);
+            int tileId = tile->getTileId();
+            if (tilePixmaps.contains(tileId)) {
+                pixmap = tilePixmaps[tileId];
+                item = new DragAndDrop(pixmap, 1.0, scene);
+                item->setTipoElemento(TILE);
+                item->setData(0, tileId); // Guardar el ID del tile
+            }
             break;
         }
         
         case WEAPON: {
             const Weapon* weapon = static_cast<const Weapon*>(element);
             int weaponType = weapon->getWeaponType();
-            pixmap = QPixmap(getResourcePath(WEAPON, weaponType));
-            item = new DragAndDrop(pixmap, 0.6, scene);
-            item->setTipoElemento(WEAPON);
-            item->setWeaponType(weaponType);
+            if (weaponPixmaps.contains(weaponType)) {
+                pixmap = weaponPixmaps[weaponType];
+                item = new DragAndDrop(pixmap, 0.6, scene);
+                item->setTipoElemento(WEAPON);
+                item->setData(0, weaponType); // Guardar el tipo de arma
+            }
             break;
         }
     }
