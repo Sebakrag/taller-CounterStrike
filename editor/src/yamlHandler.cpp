@@ -1,8 +1,11 @@
 #include "yamlHandler.h"
-#include <QFile>
 #include <QDebug>
+#include <QFile>
+#include <QDir>
+#include <yaml-cpp/yaml.h>
+#include <limits>
+#include <climits>
 #include <fstream>
-#include "yamlHandler.h"
 #include "mapElements.h"
 
 bool YamlHandler::saveMapToYaml(const QString &fileName, 
@@ -42,7 +45,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         // Separar los elementos por tipo (solo tiles y armas)
         QList<const Weapon*> weapons;
         QList<const Tile*> tiles;
-        QList<const Weapon*> weapons;
         for (const MapElement* element : elements) {
             if (element->getType() == TILE) {
                 tiles.append(static_cast<const Tile*>(element));
@@ -64,6 +66,9 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         int maxY = 0;
         
         // Determinar el área real utilizada
+        // Inicializar minX y minY con valores altos para encontrar el mínimo real
+        int minX = INT_MAX;
+        int minY = INT_MAX;
         for (const Tile* tile : tiles) {
             QPointF pos = tile->getPosition();
             int gridX = static_cast<int>(pos.x() / 32);
@@ -85,8 +90,11 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         int width = maxX - minX + 1;
         int height = maxY - minY + 1;
         
-        // Crear una matriz vacía del tamaño exacto necesario
-        std::vector<std::vector<int>> tileMatrix(height, std::vector<int>(width, 0));
+        // Redimensionar la matriz al tamaño exacto necesario
+        tileMatrix.resize(height);
+        for (auto& row : tileMatrix) {
+            row.resize(width, 0);
+        }
         
         // Llenar la matriz con los IDs de los tiles, ajustando posiciones al origen (minX, minY)
         for (const Tile* tile : tiles) {
