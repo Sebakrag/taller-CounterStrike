@@ -947,6 +947,31 @@ void MapEditor::placeTile(QPointF scenePos)
     qreal x = gridX * 32.0;
     qreal y = gridY * 32.0;
     
+    // Para tiles especiales (ID 1, 2 o 3), eliminar cualquier otro tile del mismo tipo en TODO el mapa
+    // Esto asegura que solo haya un tile para CT spawn (ID 1), uno para T spawn (ID 2) y un bombsite (ID 3)
+    if (currentTileId >= 1 && currentTileId <= 3) {
+        // Buscar en todo el mapa tiles del mismo tipo
+        QList<QGraphicsItem*> specialTilesToRemove;
+        for (QGraphicsItem* item : scene->items()) {
+            if (item->data(1).isValid() && item->data(1).toInt() == TILE && 
+                item->data(0).isValid() && item->data(0).toInt() == currentTileId) {
+                specialTilesToRemove.append(item);
+                qDebug() << "Eliminando tile especial existente con ID:" << currentTileId << 
+                    "en posición:" << getTileGridPosition(item->pos());
+            }
+        }
+        
+        // Eliminar los tiles especiales encontrados
+        for (QGraphicsItem* itemToRemove : specialTilesToRemove) {
+            QPoint removeGridPos = getTileGridPosition(itemToRemove->pos());
+            QPair<int, int> gridKey(removeGridPos.x(), removeGridPos.y());
+            placedTiles.remove(gridKey);
+            
+            scene->removeItem(itemToRemove);
+            delete itemToRemove;
+        }
+    }
+    
     // Buscar y eliminar CUALQUIER elemento existente en la misma posición
     QList<QGraphicsItem*> itemsToRemove;
     for (QGraphicsItem* item : scene->items()) {
@@ -1354,10 +1379,37 @@ bool MapEditor::validateMap()
     
     // Convertir los elementos gráficos a elementos del mapa
     foreach (QGraphicsItem *item, scene->items()) {
+        // Procesar elementos DragAndDrop (armas)
         if (DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item)) {
             MapElement *element = convertToMapElement(dragItem);
             if (element) {
                 elements.append(element);
+            }
+        }
+        // Procesar QGraphicsPixmapItem (tiles)
+        else if (QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item)) {
+            // Verificar si es un tile (tiene los metadatos adecuados)
+            if (pixmapItem->data(1).isValid() && pixmapItem->data(1).toInt() == TILE &&
+                pixmapItem->data(0).isValid()) {
+                int tileId = pixmapItem->data(0).toInt();
+                QPointF position = pixmapItem->pos();
+                
+                // Convertir posición de pixeles a unidades de mundo
+                QPoint gridPos = getTileGridPosition(position);
+                QPointF alignedPos(gridPos.x() * 32.0, gridPos.y() * 32.0);
+                
+                float elementWidth = pixmapItem->pixmap().width() / 25.6;
+                float elementHeight = pixmapItem->pixmap().height() / 25.6;
+                float x = pixelToWorldX(alignedPos.x(), elementWidth);
+                float y = pixelToWorldY(alignedPos.y(), elementHeight);
+                
+                QPointF worldPos(x, y);
+                
+                // Crear el elemento de mapa y añadirlo a la lista
+                MapElement* element = new Tile(worldPos, tileId);
+                elements.append(element);
+                
+                qDebug() << "Validando Tile ID:" << tileId << "en posición:" << worldPos.x() << "," << worldPos.y();
             }
         }
     }
@@ -1539,7 +1591,7 @@ void MapEditor::preloadMapWithBaseTile()
     
     // Obtener el primer tile (ID 1) como tile base para precargar
     // Si no existe el ID 1, usar el primer tile disponible
-    int baseTileId = 1;
+    int baseTileId = 4;
     if (!tilePixmaps.contains(baseTileId)) {
         baseTileId = tilePixmaps.firstKey();
     }

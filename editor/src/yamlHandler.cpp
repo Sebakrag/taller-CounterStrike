@@ -12,15 +12,6 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
     try {
         YAML::Emitter out;
         
-        // Inicio del documento YAML
-        out << YAML::BeginMap;
-        
-        // Información básica del mapa
-        out << YAML::Key << "map";
-        out << YAML::Value << YAML::BeginMap;
-        
-        out << YAML::Key << "name" << YAML::Value << mapName.toStdString();
-        
         // Determinar el tipo de mapa basado en el terrainType
         QString mapType;
         switch (terrainType) {
@@ -38,127 +29,98 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
                 break;
         }
         
-        // Agregar el nuevo campo map_type
-        out << YAML::Key << "map_type" << YAML::Value << mapType.toStdString();
-        // Mantener terrain_type por compatibilidad
-        out << YAML::Key << "terrain_type" << YAML::Value << terrainType;
-        
-        // Tamaño del mapa (por defecto)
-        out << YAML::Key << "size";
-        out << YAML::Value << YAML::BeginMap;
-        out << YAML::Key << "width" << YAML::Value << 1024;
-        out << YAML::Key << "height" << YAML::Value << 1024;
-        out << YAML::EndMap;
-        
-        // Separar los elementos por tipo (solo tiles y armas)
-        QList<const Weapon*> weapons;
+        // Identificar todos los tiles
         QList<const Tile*> tiles;
-        
-        // Clasificar los elementos según su tipo
         for (const MapElement* element : elements) {
-            switch (element->getType()) {
-                case WEAPON:
-                    weapons.append(static_cast<const Weapon*>(element));
-                    break;
-                case TILE:
-                    tiles.append(static_cast<const Tile*>(element));
-                    break;
-                default:
-                    // Ignorar otros tipos de elementos
-                    break;
+            if (element->getType() == TILE) {
+                tiles.append(static_cast<const Tile*>(element));
             }
         }
         
-        // Se eliminaron las secciones de team_spawns, bomb_zones y solid_structures
-        
-        // Guardar armas
-        out << YAML::Key << "weapons";
-        out << YAML::Value << YAML::BeginSeq;
-        for (const Weapon* weapon : weapons) {
-            serializeWeapon(out, weapon);
+        if (tiles.isEmpty()) {
+            qDebug() << "No hay tiles para guardar en el mapa";
+            return false;
         }
-        out << YAML::EndSeq;
         
-        // Guardar tiles
-        out << YAML::Key << "tiles";
-        out << YAML::Value << YAML::BeginSeq;
-        for (const Tile* tile : tiles) {
-            serializeTile(out, tile);
-        }
-        out << YAML::EndSeq;
-        
-        // Los extra tiles se manejan como tiles normales, ya están incluidos en la sección de tiles
-        
-        // Generar una matriz de tiles para compatibilidad con la aplicación
-        // Primero encontramos las dimensiones del mapa
+        // Encontrar dimensiones reales del mapa utilizadas (min/max)
+        int minX = INT_MAX;
+        int minY = INT_MAX;
         int maxX = 0;
         int maxY = 0;
+        
+        // Determinar el área real utilizada
         for (const Tile* tile : tiles) {
             QPointF pos = tile->getPosition();
-            // Convertir posición a coordenadas de grilla (asumiendo una grilla de 32x32)
             int gridX = static_cast<int>(pos.x() / 32);
             int gridY = static_cast<int>(pos.y() / 32);
-            if (gridX > maxX) maxX = gridX;
-            if (gridY > maxY) maxY = gridY;
+            
+            // Actualizar min/max
+            minX = std::min(minX, gridX);
+            minY = std::min(minY, gridY);
+            maxX = std::max(maxX, gridX);
+            maxY = std::max(maxY, gridY);
         }
         
-        // Crear una matriz vacía con un valor predeterminado (0 = sin tile)
-        std::vector<std::vector<int>> tileMatrix(maxY + 1, std::vector<int>(maxX + 1, 0));
+        // Asegurarse de que tenemos dimensiones válidas
+        if (minX > maxX || minY > maxY) {
+            qDebug() << "Error al determinar dimensiones del mapa";
+            return false;
+        }
         
-        // Llenar la matriz con los IDs de los tiles
+        qDebug() << "Área real del mapa: " << minX << "," << minY << " a " << maxX << "," << maxY;
+        
+        // Calcular dimensiones de la matriz recortada
+        int width = maxX - minX + 1;
+        int height = maxY - minY + 1;
+        
+        // Crear una matriz vacía del tamaño exacto necesario
+        std::vector<std::vector<int>> tileMatrix(height, std::vector<int>(width, 0));
+        
+        // Llenar la matriz con los IDs de los tiles, ajustando posiciones al origen (minX, minY)
         for (const Tile* tile : tiles) {
             QPointF pos = tile->getPosition();
-            // Convertir posición a coordenadas de grilla (asumiendo una grilla de 32x32)
-            int gridX = static_cast<int>(pos.x() / 32);
-            int gridY = static_cast<int>(pos.y() / 32);
-            tileMatrix[gridY][gridX] = tile->getTileId();
+            int gridX = static_cast<int>(pos.x() / 32) - minX;
+            int gridY = static_cast<int>(pos.y() / 32) - minY;
+            
+            // Estas coordenadas deberían estar siempre dentro de los límites
+            if (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height) {
+                tileMatrix[gridY][gridX] = tile->getTileId();
+            }
         }
         
-        // Guardar la matriz de tiles para compatibilidad con la aplicación
-        out << YAML::Key << "tile_matrix";
+        // Formato YAML simplificado con nombre, map_type y matrix
+        out << YAML::BeginMap;
+        
+        // Incluir el nombre del mapa
+        out << YAML::Key << "name" << YAML::Value << mapName.toStdString();
+        
+        // Incluir map_type
+        out << YAML::Key << "map_type" << YAML::Value << mapType.toStdString();
+        
+        // Guardar la matriz de tiles
+        out << YAML::Key << "matrix";
         out << YAML::Value << YAML::BeginSeq;
         for (const auto& row : tileMatrix) {
             out << YAML::Flow << row;
         }
         out << YAML::EndSeq;
         
-        // Añadir información adicional para compatibilidad con la aplicación
-        out << YAML::Key << "application_info";
-        out << YAML::Value << YAML::BeginMap;
-        
-        // Tipo de mapa (Desert, Aztec, Training)
-        std::string mapTypeStr;
-        switch (terrainType) {
-            case 0: mapTypeStr = "Desert"; break;
-            case 1: mapTypeStr = "Aztec"; break;
-            case 2: mapTypeStr = "Training"; break;
-            default: mapTypeStr = "Desert"; break;
-        }
-        out << YAML::Key << "map_type" << YAML::Value << mapTypeStr;
-        
-        // Dimensiones
-        out << YAML::Key << "width" << YAML::Value << (maxX + 1);
-        out << YAML::Key << "height" << YAML::Value << (maxY + 1);
-        
         out << YAML::EndMap;
         
-        // Cerrar mapa
-        out << YAML::EndMap; // map
-        out << YAML::EndMap; // documento
-        
-        // Escribir a archivo
-        std::ofstream fout(fileName.toStdString());
-        if (!fout.is_open()) {
-            qDebug() << "No se pudo abrir el archivo para escritura:" << fileName;
+        // Escribir el YAML al archivo
+        std::ofstream fout(fileName.toStdString().c_str());
+        if (!fout) {
+            qDebug() << "No se puede abrir el archivo para escritura:" << fileName;
             return false;
         }
         
         fout << out.c_str();
         fout.close();
         
+        qDebug() << "Formato YAML simplificado guardado con éxito con SOLO map_type y matrix";
         return true;
     } catch (const YAML::Exception &e) {
-        qDebug() << "Error al generar YAML:" << e.what();
+        qDebug() << "Error al guardar YAML:" << e.what();
         return false;
     }
 }
