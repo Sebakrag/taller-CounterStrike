@@ -125,6 +125,8 @@ private:
     QWidget* toolPanel;          // Panel de herramientas lateral
     QVBoxLayout* toolPanelLayout;   // Layout para el panel de herramientas
     
+    bool mousePressed = false;
+    
     // Método para obtener la ruta base a los recursos
     static QString getResourcesPath();
     

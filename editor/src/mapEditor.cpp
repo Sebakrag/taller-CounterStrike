@@ -812,6 +812,12 @@ void MapEditor::placeTile(QPointF scenePos)
     int gridX = gridPos.x();
     int gridY = gridPos.y();
     
+    QPair<int, int> gridKey(gridX, gridY);
+    // Evitar colocar el mismo tile si ya está en esa celda con el mismo ID
+    if (placedTiles.contains(gridKey) && placedTiles[gridKey] == currentTileId) {
+        return; // Ya está colocado, no hacer nada
+    }
+
     // Evitar colocar fuera de los límites
     if (gridX < 0 || gridX >= 31 || gridY < 0 || gridY >= 31) {
         return;
@@ -1417,6 +1423,34 @@ bool MapEditor::eventFilter(QObject* watched, QEvent* event)
                 updateSelectionIndicator(scenePos);
             }
             
+            // MOUSE MOVE — pintar si se mantiene presionado el botón
+            if (event->type() == QEvent::MouseMove) {
+                updateSelectionIndicator(scenePos);
+
+                if (mousePressed) {
+                    // Colocar elemento según lo que esté seleccionado actualmente
+                    if (currentTileId >= 0 && tilePixmaps.contains(currentTileId)) {
+                        // Colocar un tile si está disponible en el mapa
+                        placeTile(scenePos);
+                        return true;
+                    } else if (currentWeaponId >= 0 && weaponPixmaps.contains(currentWeaponId)) {
+                        // Colocar un arma
+                        placeWeapon(scenePos);
+                        return true;
+                    }
+                }
+            }
+
+            // MOUSE PRESS — establecer flag
+            if (event->type() == QEvent::MouseButtonPress && mouseEvent->button() == Qt::LeftButton) {
+                mousePressed = true;
+            }
+
+            // MOUSE RELEASE — limpiar flag
+            if (event->type() == QEvent::MouseButtonRelease && mouseEvent->button() == Qt::LeftButton) {
+                mousePressed = false;
+            }
+
             if (event->type() == QEvent::MouseButtonPress) {
                 if (mouseEvent->button() == Qt::LeftButton) {
                     // Verificar que la escena existe antes de proceder
