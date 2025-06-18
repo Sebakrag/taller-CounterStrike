@@ -29,11 +29,14 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
                 break;
         }
         
-        // Identificar todos los tiles
+        // Identificar todos los tiles y armas
         QList<const Tile*> tiles;
+        QList<const Weapon*> weapons;
         for (const MapElement* element : elements) {
             if (element->getType() == TILE) {
                 tiles.append(static_cast<const Tile*>(element));
+            } else if (element->getType() == WEAPON) {
+                weapons.append(static_cast<const Weapon*>(element));
             }
         }
         
@@ -105,6 +108,29 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         }
         out << YAML::EndSeq;
         
+        // Guardar las armas si existen
+        if (!weapons.isEmpty()) {
+            out << YAML::Key << "weapons";
+            out << YAML::Value << YAML::BeginSeq;
+            
+            for (const Weapon* weapon : weapons) {
+                out << YAML::BeginMap;
+                
+                // Guardar el tipo de arma
+                out << YAML::Key << "type" << YAML::Value << weapon->getWeaponType();
+                
+                // Guardar la posición
+                QPointF pos = weapon->getPosition();
+                out << YAML::Key << "position";
+                out << YAML::Value << YAML::Flow << std::vector<double>{pos.x(), pos.y()};
+                
+                out << YAML::EndMap;
+            }
+            
+            out << YAML::EndSeq;
+            qDebug() << "Guardadas" << weapons.size() << "armas en el YAML";
+        }
+        
         out << YAML::EndMap;
         
         // Escribir el YAML al archivo
@@ -134,101 +160,137 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
         qDeleteAll(elements);
         elements.clear();
         
-        // Cargar el archivo YAML
+        // Abrir archivo YAML
         YAML::Node rootNode = YAML::LoadFile(fileName.toStdString());
         
-        if (!rootNode["map"]) {
-            qDebug() << "Formato de archivo inválido: no se encontró el nodo 'map'";
+        // Verificar si es el nuevo formato simplificado o el antiguo
+        bool isNewFormat = rootNode["name"] && rootNode["map_type"] && rootNode["matrix"];
+        bool isOldFormat = rootNode["map"] && rootNode["map"]["name"];
+        
+        if (!isNewFormat && !isOldFormat) {
+            qDebug() << "Error: Formato de archivo YAML no reconocido";
             return false;
         }
         
-        YAML::Node mapNode = rootNode["map"];
+        // Referencia al nodo principal (puede ser la raíz o el nodo 'map')
+        YAML::Node mainNode;
         
-        // Leer información básica del mapa
-        if (mapNode["name"]) {
-            mapName = QString::fromStdString(mapNode["name"].as<std::string>());
+        if (isNewFormat) {
+            mainNode = rootNode;
+            qDebug() << "Cargando mapa con formato YAML simplificado";
+        } else {
+            mainNode = rootNode["map"];
+            qDebug() << "Cargando mapa con formato YAML antiguo";
         }
         
-        if (mapNode["terrain_type"]) {
-            terrainType = mapNode["terrain_type"].as<int>();
+        // Leer nombre del mapa
+        if (mainNode["name"]) {
+            mapName = QString::fromStdString(mainNode["name"].as<std::string>());
+        } else {
+            mapName = "Mapa sin nombre";
         }
         
-        // Se eliminaron las secciones de carga de team_spawns, bomb_zones y solid_structures
-        // Solo cargaremos tiles y armas
+        // Determinar el tipo de terreno
+        if (mainNode["map_type"]) {
+            // Convertir map_type string a terrainType int
+            std::string mapTypeStr = mainNode["map_type"].as<std::string>();
+            if (mapTypeStr == "Desert") {
+                terrainType = 0;
+            } else if (mapTypeStr == "Aztec") {
+                terrainType = 1;
+            } else if (mapTypeStr == "Training") {
+                terrainType = 2;
+            } else {
+                terrainType = 0; // DESERT_TERRAIN por defecto
+            }
+        } else if (mainNode["terrain_type"]) {
+            // Si hay terrain_type directo (formato antiguo)
+            terrainType = mainNode["terrain_type"].as<int>();
+        } else {
+            terrainType = 0; // DESERT_TERRAIN por defecto
+        }
         
-        // Leer armas
-        if (mapNode["weapons"]) {
-            YAML::Node weaponsNode = mapNode["weapons"];
+        // Verificar si es el nuevo formato con matrix o el antiguo con tile_matrix
+        YAML::Node matrixNode;
+        
+        if (mainNode["matrix"] && mainNode["matrix"].IsSequence()) {
+            matrixNode = mainNode["matrix"];
+        } else if (mainNode["tile_matrix"] && mainNode["tile_matrix"].IsSequence()) {
+            matrixNode = mainNode["tile_matrix"];
+        }
+        
+        // Cargar las armas (formato nuevo)
+        if (mainNode["weapons"] && mainNode["weapons"].IsSequence()) {
+            YAML::Node weaponsNode = mainNode["weapons"];
             for (const auto& weaponNode : weaponsNode) {
-                Weapon* weapon = deserializeWeapon(weaponNode);
-                if (weapon) {
-                    elements.append(weapon);
-                }
-            }
-        }
-        
-        // Leer tiles
-        if (mapNode["tiles"]) {
-            YAML::Node tilesNode = mapNode["tiles"];
-            for (const auto& tileNode : tilesNode) {
-                Tile* tile = deserializeTile(tileNode);
-                if (tile) {
-                    elements.append(tile);
-                    qDebug() << "Cargado tile desde archivo:" << tile->getTileId() << "en posición" 
-                            << tile->getPosition().x() << "," << tile->getPosition().y();
-                }
-            }
-        }
-        
-        // Para compatibilidad con archivos antiguos que puedan tener extra_tiles
-        if (mapNode["extra_tiles"]) {
-            YAML::Node extraTilesNode = mapNode["extra_tiles"];
-            for (const auto& extraTileNode : extraTilesNode) {
-                if (extraTileNode["extra_tile_id"] && extraTileNode["position"]) {
-                    int tileId = extraTileNode["extra_tile_id"].as<int>();
-                    auto posNode = extraTileNode["position"];
-                    QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
+                if (weaponNode["type"] && weaponNode["position"]) {
+                    int weaponType = weaponNode["type"].as<int>();
+                    std::vector<double> pos = weaponNode["position"].as<std::vector<double>>();
                     
-                    // Crear un tile normal con el ID del extra tile
-                    Tile* tile = new Tile(pos, tileId);
-                    elements.append(tile);
-                    qDebug() << "Cargado extra tile (como tile normal) desde archivo:" << tileId << "en posición" 
-                            << pos.x() << "," << pos.y();
+                    if (pos.size() >= 2) {
+                        QPointF position(pos[0], pos[1]);
+                        Weapon* weapon = new Weapon(position, weaponType);
+                        elements.append(weapon);
+                        qDebug() << "Cargada arma tipo:" << weaponType << "en posición:" << pos[0] << "," << pos[1];
+                    }
                 }
             }
         }
         
-        // Verificar si existe la matriz de tiles para compatibilidad con la aplicación
-        // Esto es solo para información, ya que los tiles individuales ya se cargaron arriba
-        if (mapNode["tile_matrix"]) {
-            YAML::Node matrixNode = mapNode["tile_matrix"];
-            qDebug() << "Encontrada matriz de tiles para compatibilidad con la aplicación";
-            qDebug() << "Dimensiones de la matriz: " << matrixNode.size() << " filas";
-            if (matrixNode.size() > 0) {
-                qDebug() << "Primera fila tiene " << matrixNode[0].size() << " columnas";
+        // Cargar matriz de tiles
+        if (matrixNode) {
+            int rows = matrixNode.size();
+            
+            if (rows > 0) {
+                for (int y = 0; y < rows; y++) {
+                    if (matrixNode[y].IsSequence()) {
+                        YAML::Node row = matrixNode[y];
+                        int cols = row.size();
+                        
+                        for (int x = 0; x < cols; x++) {
+                            int tileId = row[x].as<int>();
+                            if (tileId > 0) { // Ignorar celdas vacías (0)
+                                QPointF position(x * 32, y * 32); // Usar grilla de 32x32
+                                Tile* tile = new Tile(position, tileId);
+                                elements.append(tile);
+                                
+                                if (tileId <= 3) {
+                                    qDebug() << "Cargado tile especial:" << tileId << "en posición" 
+                                            << x * 32 << "," << y * 32;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                qDebug() << "Cargados" << elements.size() << "elementos desde la matriz";
             }
         }
-        
-        // Verificar si existe la información adicional para la aplicación
-        if (mapNode["application_info"]) {
-            YAML::Node appInfoNode = mapNode["application_info"];
-            qDebug() << "Encontrada información adicional para la aplicación";
-            
-            if (appInfoNode["map_type"]) {
-                std::string mapTypeStr = appInfoNode["map_type"].as<std::string>();
-                qDebug() << "Tipo de mapa: " << QString::fromStdString(mapTypeStr);
-                
-                // Actualizar el terrainType basado en el map_type
-                if (mapTypeStr == "Desert") terrainType = 0;
-                else if (mapTypeStr == "Aztec") terrainType = 1;
-                else if (mapTypeStr == "Training") terrainType = 2;
+        // Si no hay matrix ni tile_matrix, intentar con el formato antiguo
+        else if (isOldFormat) {
+            // Intentar cargar armas
+            if (mainNode["weapons"] && mainNode["weapons"].IsSequence()) {
+                YAML::Node weaponsNode = mainNode["weapons"];
+                for (const auto& weaponNode : weaponsNode) {
+                    Weapon* weapon = deserializeWeapon(weaponNode);
+                    if (weapon) {
+                        elements.append(weapon);
+                    }
+                }
             }
             
-            if (appInfoNode["width"] && appInfoNode["height"]) {
-                int width = appInfoNode["width"].as<int>();
-                int height = appInfoNode["height"].as<int>();
-                qDebug() << "Dimensiones del mapa: " << width << "x" << height;
+            // Intentar cargar tiles
+            if (mainNode["tiles"] && mainNode["tiles"].IsSequence()) {
+                YAML::Node tilesNode = mainNode["tiles"];
+                for (const auto& tileNode : tilesNode) {
+                    Tile* tile = deserializeTile(tileNode);
+                    if (tile) {
+                        elements.append(tile);
+                    }
+                }
             }
+            
+            qDebug() << "Cargados" << elements.size() << "elementos usando formato antiguo";
         }
         
         return true;
