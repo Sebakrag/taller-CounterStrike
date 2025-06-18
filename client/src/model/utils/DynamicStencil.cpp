@@ -1,30 +1,36 @@
-#include "client/include/model/utils/DynamicStencil.h"
+#include "../../../../client/include/model/utils/DynamicStencil.h"
 
 #include <SDL2/SDL_render.h>
 
 using SDL2pp::Surface;
 
 std::shared_ptr<Texture> DynamicStencil::stencil;
-int DynamicStencil::screenWidth;
-int DynamicStencil::screenHeight;
-float DynamicStencil::cirRadius;
-float DynamicStencil::fovAngle;  // in degrees
-float DynamicStencil::fovRadius;
+bool DynamicStencil::isActive = false;
+int DynamicStencil::screenWidth = 0;
+int DynamicStencil::screenHeight = 0;
+float DynamicStencil::cirRadius = 0.0f;
+float DynamicStencil::fovAngle = 0.0f;  // in degrees
+float DynamicStencil::fovRadius = 0.0f;
+float DynamicStencil::transparency = 1.0f;
 
-void DynamicStencil::init(Renderer& ren, const int screenW, const int screenH,
-                          const float circleRadius, const float fovAngleDegrees,
-                          const uint8_t stencilAlpha, const float fovVisibleDistance) {
-    screenWidth = screenW;
-    screenHeight = screenH;
-    const int stencilW = screenW * 2;
-    const int stencilH = screenH * 2;
-    stencil = std::make_shared<Texture>(ren, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-                                        stencilW, stencilH);
-    cirRadius = circleRadius;
-    fovAngle = fovAngleDegrees;
-    fovRadius = (fovVisibleDistance != 0) ? fovVisibleDistance :
-                                            static_cast<float>(std::max(screenWidth, screenHeight));
+void DynamicStencil::init(Renderer& ren, const FOVConfig& config) {
+    isActive = config.isActive;
+    screenWidth = config.screenWidth;
+    screenHeight = config.screenHeight;
+    cirRadius = static_cast<float>(config.circleRadius);
+    fovAngle = config.fovAngle;
+    fovRadius = (config.visibilityDistance != 0.0f)
+                    ? config.visibilityDistance
+                    : static_cast<float>(std::max(screenWidth, screenHeight));
+    transparency = config.transparency;
 
+    const int stencilW = screenWidth * 2;
+    const int stencilH = screenHeight * 2;
+    stencil = std::make_shared<Texture>(ren,
+                                        SDL_PIXELFORMAT_RGBA8888,
+                                        SDL_TEXTUREACCESS_TARGET,
+                                        stencilW,
+                                        stencilH);
     // Set render target to the texture
     ren.SetTarget(*stencil);
     ren.SetDrawColor(0, 0, 0, SDL_ALPHA_OPAQUE);  // Full black
@@ -40,6 +46,7 @@ void DynamicStencil::init(Renderer& ren, const int screenW, const int screenH,
     // Transparent Triangle (field of view)
     drawFOVTriangle(ren, cx, cy);
 
+    uint8_t stencilAlpha = static_cast<uint8_t>(transparency * 255.0f);
     stencil->SetBlendMode(SDL_BLENDMODE_BLEND).SetAlphaMod(stencilAlpha);
 
     // Reset render target to default
@@ -92,4 +99,14 @@ void DynamicStencil::drawFOVTriangle(const Renderer& ren, const float cx, const 
 
 std::shared_ptr<Texture> DynamicStencil::getStencil() { return stencil; }
 
-FOVInfo DynamicStencil::getFOVInfo() { return {screenWidth, screenHeight, fovAngle, fovRadius}; }
+FOVConfig DynamicStencil::getFOVConfig() {
+    return FOVConfig(
+        isActive,
+        screenWidth,
+        screenHeight,
+        static_cast<int>(cirRadius), // circle radius
+        fovAngle,                    // FOV angle
+        fovRadius,                   // visibility distance
+        transparency                 // transparency [0,1]
+    );
+}

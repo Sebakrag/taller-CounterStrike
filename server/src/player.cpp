@@ -6,21 +6,39 @@
 
 #include "../../server/include/id_generator.h"
 
-Player::Player(const std::string& name, const Team team):
+//-------------
+// Inicializo las variables estáticas (para poder compilar)
+bool Player::initialized = false;
+float Player::PLAYER_SPEED = 0;
+float Player::INITIAL_MONEY = 0;
+int Player::INITIAL_HEALTH = 0;
+
+
+void Player::init(float player_speed, float initial_money, int initial_health) {
+    if (initialized == false) {
+        PLAYER_SPEED = player_speed;
+        INITIAL_MONEY = initial_money;
+        INITIAL_HEALTH = initial_health;
+        initialized = true;
+    }
+}
+//---------
+Player::Player(const std::string& name, const Team team, const Vec2D& position):
         serverId(IdGenerator::getNextId()),
         name(name),
         team(team),
-        posX(320),
-        posY(200),
-        health(100),
+        posX(position.getX()),
+        posY(position.getY()),
+        health(INITIAL_HEALTH),
         state(PlayerState::Idle),
+        speed(PLAYER_SPEED),
         knife(WeaponFactory::create(Weapon::Knife)),
         primaryWeapon(WeaponFactory::create(
                 Weapon::Ak47)),  // esto hay que quitarlo cuando se pueda comprar armas.
         secondaryWeapon(WeaponFactory::create(Weapon::Glock)),
         equippedWeapon(TypeWeapon::Knife),
         id_weapon(knife->getServerId()),
-        money(800),
+        money(INITIAL_MONEY),
         kills(0),
         skinT(PlayerSkin::Terrorist3),
         skinCT(PlayerSkin::CounterTerrorist3) {
@@ -146,9 +164,7 @@ void Player::revive() {
     // deberiamos resetear la posicion a la del spawn segun equipo
 }
 
-void Player::setTeam(Team newTeam) {
-    team = newTeam;
-}
+void Player::setTeam(Team newTeam) { team = newTeam; }
 
 
 LocalPlayerInfo Player::generateLocalPlayerInfo() const {

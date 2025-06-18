@@ -79,13 +79,59 @@ Map::Map(const TileMap& tileMap, Graphics& graphics):
 //         }
 //     }
 // }
+void Map::render2(Graphics& graphics, const Camera& camera) const {
+    const Rect view = camera.getViewport();
+    const int mapW = widthInTiles * TILE_SIZE;
+    const int mapH = heightInTiles * TILE_SIZE;
+
+    // Coordenadas de src dentro de la textura
+    int srcX = view.GetX();
+    int srcY = view.GetY();
+    int drawW = view.GetW();
+    int drawH = view.GetH();
+
+    // Coordenadas de dst en la ventana
+    int dstX = 0;
+    int dstY = 0;
+
+    // Si la cámara se sale por la izquierda:
+    if (srcX < 0) {
+        dstX = -srcX;   // empezamos a dibujar más a la derecha
+        drawW -= dstX;  // ancho efectivo
+        srcX = 0;       // ya no pedimos < 0
+    }
+    // Si se sale por arriba:
+    if (srcY < 0) {
+        dstY = -srcY;
+        drawH -= dstY;
+        srcY = 0;
+    }
+    // Si se sale por la derecha:
+    if (srcX + drawW > mapW) {
+        drawW = mapW - srcX;
+    }
+    // Si se sale por abajo:
+    if (srcY + drawH > mapH) {
+        drawH = mapH - srcY;
+    }
+
+    // Si no queda nada que dibujar, salimos.
+    if (drawW <= 0 || drawH <= 0)
+        return;
+
+    // Primero, la ventana ya está limpiada por Graphics::render (renderer.Clear()).
+    // Sólo dibujamos la parte válida de la textura:
+    Rect srcRect(srcX, srcY, drawW, drawH);
+    Rect dstRect(dstX, dstY, drawW, drawH);
+    graphics.draw(*mapTexture, Optional<Rect>(srcRect), Optional<Rect>(dstRect));
+}
 
 void Map::render(Graphics& graphics, const Camera& camera) const {
     const Rect view = camera.getViewport();
     // const Vec2D offset = camera.getOffset();
 
     Rect src(view.GetX(), view.GetY(), view.GetW(), view.GetH());
-    Rect dst(0, 0, view.GetW(), view.GetH());
+    Rect dst(view.GetX(), view.GetY(), widthInTiles * TILE_SIZE, heightInTiles * TILE_SIZE);
 
     graphics.draw(*mapTexture, src, dst);  // <-- esto llama a TU método
 }

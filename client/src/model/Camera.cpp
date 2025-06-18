@@ -15,8 +15,8 @@ void Camera::follow(const Vec2D& targetPosition) {
     float newY = targetPosition.getY() - (static_cast<float>(viewportH) / 2.0f);
 
     // Clamp para que no se salga del mundo.
-    newX = std::clamp(newX, 0.0f, static_cast<float>(mapWidth - viewportW));
-    newY = std::clamp(newY, 0.0f, static_cast<float>(mapHeight - viewportH));
+    // newX = std::clamp(newX, 0.0f, static_cast<float>(mapWidth - viewportW));
+    // newY = std::clamp(newY, 0.0f, static_cast<float>(mapHeight - viewportH));
 
     offset.set(newX, newY);
 }

@@ -1,18 +1,21 @@
-#include "client/include/model/FieldOfView.h"
+#include "../../../client/include/model/FieldOfView.h"
 
 #include <cmath>
 
-#include "client/include/model/Graphics.h"
-#include "client/include/model/utils/DynamicStencil.h"
-#include "common/utils/AngleUtils.h"
+#include "../../../client/include/model/Graphics.h"
+#include "../../../client/include/model/utils/DynamicStencil.h"
+#include "../../../common/utils/AngleUtils.h"
 
 
 FieldOfView::FieldOfView():
         stencil(DynamicStencil::getStencil()),
-        info(DynamicStencil::getFOVInfo()),
+        info(DynamicStencil::getFOVConfig()),
         currentPlayerAimAngleRad(0) {}
 
 void FieldOfView::render(Graphics& graphics, const Vec2D& playerPos, const float rotAngleDeg) {
+    if (!info.isActive) { // no hay fov
+        return;
+    }
     currentPlayerPos = playerPos;
     currentPlayerAimAngleRad = AngleUtils::degreesToRadians(rotAngleDeg);
 
@@ -23,12 +26,15 @@ void FieldOfView::render(Graphics& graphics, const Vec2D& playerPos, const float
 }
 
 bool FieldOfView::isInFOV(const Vec2D& enttWorldPos) const {
+    if (!info.isActive) { // no hay fov
+        return true;
+    }
     // Vector desde el player hacia la entidad
     const Vec2D toEntity = enttWorldPos - currentPlayerPos;
 
     // Chequeo por radio de visibilidad
     const float distSquared = toEntity.calculateNormSquared();
-    const float maxDistSquared = info.visibilityRadius * info.visibilityRadius;
+    const float maxDistSquared = info.visibilityDistance * info.visibilityDistance;
     if (distSquared > maxDistSquared)
         return false;
 

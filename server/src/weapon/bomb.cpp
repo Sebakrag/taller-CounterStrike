@@ -1,5 +1,20 @@
 #include "../../../server/include/weapon/bomb.h"
 
+
+//-------------
+// Inicializo las variables estáticas (para poder compilar)
+bool Bomb::initialized = false;
+double Bomb::TIME_TO_EXPLODE = 0;
+
+
+void Bomb::init(double time_to_explode) {
+    if (initialized == false) {
+        TIME_TO_EXPLODE = time_to_explode;
+        initialized = true;
+    }
+}
+//---------
+
 Bomb::Bomb():
         state(BombState::Carried),
         posX(0.0f),
@@ -7,7 +22,7 @@ Bomb::Bomb():
         plantedPosition(0.0f, 0.0f),
         carrierId(""),
         timer(0.0),
-        TIME_TO_EXPLODE(40.0),
+        timeToExplode(TIME_TO_EXPLODE),
         serverId(IdGenerator::getNextId()) {}
 
 void Bomb::assignTo(const std::string& playerId) {
@@ -65,7 +80,7 @@ bool Bomb::plant(float x, float y, Map& map) {
     posY = y;
     carrierId.clear();
     state = BombState::Planted;
-    timer = TIME_TO_EXPLODE;
+    timer = timeToExplode;
     return true;
 }
 

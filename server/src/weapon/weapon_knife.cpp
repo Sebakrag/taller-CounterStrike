@@ -1,6 +1,20 @@
 #include "../../include/weapon/weapon_knife.h"
 
-WeaponKnife::WeaponKnife(): Weapon_(20) {}
+//-------------
+// Inicializo las variables estáticas (para poder compilar)
+bool WeaponKnife::initialized = false;
+int WeaponKnife::DAMAGE = 0;
+
+
+void WeaponKnife::init(int damage) {
+    if (initialized == false) {
+        DAMAGE = damage;
+        initialized = true;
+    }
+}
+//------------
+
+WeaponKnife::WeaponKnife(): Weapon_(DAMAGE) {}
 
 bool WeaponKnife::canShoot(uint64_t /*currentTimeMs*/) const {
     return true;  // Siempre se puede atacar

@@ -5,6 +5,9 @@
 #include <vector>
 
 #include "include/server.h"
+#include "include/yaml_config.h"
+
+#define PATH_CONFIG_YAML "../server/config.YAML"
 
 int main(const int argc, char* argv[]) {
     if (argc != 2) {
@@ -14,8 +17,9 @@ int main(const int argc, char* argv[]) {
 
     const std::string port = argv[1];
 
+
     try {
-        Server server(port);
+        Server server(port, PATH_CONFIG_YAML);
         server.run();
 
         // testeo rapido

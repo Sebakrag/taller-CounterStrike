@@ -2,7 +2,7 @@
 
 Game::Game(Client& client, const MatchInfo& match_info):
         client(client),
-        graphics(match_info.win_config, match_info.name),
+        graphics(match_info.win_config, match_info.fovConfig, match_info.name),
         world(graphics, match_info.tileMap, match_info.win_config, match_info.numPlayers,
               match_info.localPlayerInfo),
         eventHandler(client, world),

@@ -57,7 +57,7 @@ bool Match::addPlayer(const std::string& username) {
 
     std::cout << "Agregando jugador " << username << " al equipo "
               << (assignedTeam == Team::Terrorist ? " Terrorista" : "Antiterrorista") << std::endl;
-    Player newPlayer(username, assignedTeam);
+    Player newPlayer(username, assignedTeam, Vec2D(500, 200));
     players.push_back(std::move(newPlayer));
     return true;
 }
