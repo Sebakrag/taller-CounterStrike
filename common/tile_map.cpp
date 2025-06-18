@@ -186,5 +186,7 @@ TileMap TileMap::getLevelDemo() {
     for (int i = 0; i < 12; i++) {
         typesTiles[i] = Solid;
     }
+    typesTiles[15] = T_Zone;
+    typesTiles[16] = CT_Zone;
     return TileMap(TypeTileMap::Desert, arena_desierto1, typesTiles);
 }

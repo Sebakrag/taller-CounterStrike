@@ -47,6 +47,7 @@ public:
     void setX(const float x);
     float getY() const;
     void setY(const float y);
+    void setPostion(const Vec2D& pos);
     float getAngle() const;
     void setAngle(float angle);
     std::string getId() const;

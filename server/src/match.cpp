@@ -39,7 +39,7 @@ Match::Match(const std::string& id_scenario):
     // droppedWeapons.emplace_back(DroppedWeapon{std::move(bomb), {300, 300}});
 }
 
-void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
+//void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
 bool Match::addPlayer(const std::string& username) {
     int terroristCount = 0;
@@ -54,10 +54,15 @@ bool Match::addPlayer(const std::string& username) {
 
     Team assignedTeam =
             (terroristCount <= counterTerroristCount) ? Team::Terrorist : Team::CounterTerrorist;
-
     std::cout << "Agregando jugador " << username << " al equipo "
               << (assignedTeam == Team::Terrorist ? " Terrorista" : "Antiterrorista") << std::endl;
     Player newPlayer(username, assignedTeam);
+    if (assignedTeam == Team::Terrorist) {
+        newPlayer.setPostion(map.getPositionTZone());
+    }
+    else{ 
+        newPlayer.setPostion(map.getPositionCTZone());
+    }
     players.push_back(std::move(newPlayer));
     return true;
 }

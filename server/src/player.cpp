@@ -59,6 +59,11 @@ void Player::setX(const float x) { posX = x; }
 float Player::getY() const { return posY; }
 void Player::setY(const float y) { posY = y; }
 
+void Player::setPostion(const Vec2D& pos) {
+    posX = pos.getX();
+    posY = pos.getY();
+}
+
 float Player::getAngle() const { return angle; }
 void Player::setAngle(float _angle) { angle = _angle; }
 
