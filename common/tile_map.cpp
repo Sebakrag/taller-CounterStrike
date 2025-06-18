@@ -8,37 +8,77 @@
 
 #include <netinet/in.h>
 
+#include "utils/Vec2D.h"
+
 #include "protocol.h"
+#include "tile.h"
 
-
+// constructor simple, para el cliente
 TileMap::TileMap(const TypeTileMap& type, const std::vector<std::vector<int>>& matrizIdsTiles):
-        type(type) {
+        type(type), pos_bomb_zone(0, 0), pos_t_zone(0, 0), pos_ct_zone(0, 0) {
     col_count = matrizIdsTiles[0].size();
     row_count = matrizIdsTiles.size();
 
     for (int i = 0; i < row_count; i++) {
         std::vector<Tile> row;
         for (int j = 0; j < col_count; j++) {
-            row.push_back(Tile(matrizIdsTiles[i][j]));
+            row.emplace_back(Tile(matrizIdsTiles[i][j]));
         }
-        matriz.push_back(row);
+        matriz.push_back(std::move(row));
     }
 }
+
+// constructor con tipos de tile y posiciones de armas
+TileMap::TileMap(const TypeTileMap& type, const std::vector<std::vector<int>>& matrizIdsTiles,
+                 const std::map<int, TypeTile>& typesTiles,
+                 const std::map<Vec2D, Weapon>& weaponPositions):
+        type(type), weaponPositions(weaponPositions) {
+    row_count = matrizIdsTiles.size();
+    col_count = matrizIdsTiles[0].size();
+
+    for (int i = 0; i < row_count; ++i) {
+        std::vector<Tile> row;
+        for (int j = 0; j < col_count; ++j) {
+            int id = matrizIdsTiles[i][j];
+            auto it = typesTiles.find(id);
+            if (it == typesTiles.end()) {
+                row.emplace_back(Tile(id));
+            } else {
+                TypeTile typeTyle = it->second;
+                row.emplace_back(id, typeTyle);
+                if (typeTyle == BombZone)
+                    pos_bomb_zone = Vec2D(i * TILE_SIZE, j * TILE_SIZE);
+                else if (typeTyle == T_Zone)
+                    pos_t_zone = Vec2D(i * TILE_SIZE, j * TILE_SIZE);
+                else if (typeTyle == CT_Zone)
+                    pos_ct_zone = Vec2D(i * TILE_SIZE, j * TILE_SIZE);
+            }
+        }
+        matriz.push_back(std::move(row));
+    }
+}
+
 TileMap::TileMap(const TileMap& other):
         type(other.type),
         matriz(other.matriz),
         row_count(other.row_count),
-        col_count(other.col_count) {}
+        col_count(other.col_count),
+        pos_bomb_zone(other.pos_bomb_zone),
+        pos_t_zone(other.pos_t_zone),
+        pos_ct_zone(other.pos_ct_zone),
+        weaponPositions(other.weaponPositions) {}
 
 TileMap& TileMap::operator=(const TileMap& other) {
-    if (this == &other)
-        return *this;
-
-    this->type = other.type;
-    this->row_count = other.row_count;
-    this->col_count = other.col_count;
-    this->matriz = other.matriz;
-
+    if (this != &other) {
+        type = other.type;
+        row_count = other.row_count;
+        col_count = other.col_count;
+        matriz = other.matriz;
+        pos_bomb_zone = other.pos_bomb_zone;
+        pos_t_zone = other.pos_t_zone;
+        pos_ct_zone = other.pos_ct_zone;
+        weaponPositions = other.weaponPositions;
+    }
     return *this;
 }
 
@@ -101,6 +141,10 @@ int TileMap::getColCount() const { return col_count; }
 
 TypeTileMap TileMap::getType() const { return type; }
 
+Vec2D TileMap::getPosBombZone() const { return pos_bomb_zone; }
+Vec2D TileMap::getPosTerroristZone() const { return pos_t_zone; }
+Vec2D TileMap::getPosCounterTerroistZone() const { return pos_ct_zone; }
+
 void TileMap::print() const {
     for (int i = 0; i < row_count; i++) {
         for (int j = 0; j < col_count; j++) {
@@ -138,23 +182,9 @@ const std::vector<std::vector<int>> arena_desierto1 = {
 
 
 TileMap TileMap::getLevelDemo() {
-    return TileMap(TypeTileMap::Desert, arena_desierto1);  // si solo necesitas devolverlo tal cual
-}
-
-TileMap TileMap::getCurrentLevel() {
-    constexpr int w = 1000;
-    constexpr int h = 1000;
-    std::vector<std::vector<int>> tileMap(h, std::vector<int>(w));
-
-    std::random_device rd;                        // fuente de entropía
-    std::mt19937 gen(rd());                       // motor de generación
-    std::uniform_int_distribution<> dist(1, 46);  // distribución de IDs
-
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            tileMap[y][x] = dist(gen);
-        }
+    std::map<int, TypeTile> typesTiles;
+    for (int i = 0; i < 12; i++) {
+        typesTiles[i] = Solid;
     }
-
-    return TileMap(TypeTileMap::Aztec, tileMap);
+    return TileMap(TypeTileMap::Desert, arena_desierto1, typesTiles);
 }
