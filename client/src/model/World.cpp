@@ -16,7 +16,9 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
 
 void World::update(float dt, const GameInfo& gameInfo) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
-    gameInfo.print();
+    // gameInfo.print();
+
+
     const std::vector<EntitySnapshot> snapshots = gameInfo.getSnapshots();
     comp_updater.update(snapshots);
 
@@ -28,10 +30,10 @@ void World::update(float dt, const GameInfo& gameInfo) {
 void World::render(Graphics& graphics) {
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
     const Vec2D playerPos = tCompLocalPlayer->getPosition();
-    std::cout << playerPos << std::endl;
+    // std::cout << playerPos << std::endl;
     camera.follow(playerPos);
 
-    map.render(graphics, camera);
+    map.render2(graphics, camera);
 
     player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngleDegrees());
 

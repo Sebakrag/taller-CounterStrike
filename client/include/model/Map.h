@@ -28,6 +28,7 @@ public:
     explicit Map(const TileMap& tileMap, Graphics& graphics);
 
     void render(Graphics& graphics, const Camera& camera) const;
+    void render2(Graphics& graphics, const Camera& camera) const;
 
     Map(Map&& other) noexcept = default;
     Map& operator=(Map&& other) noexcept = delete;
