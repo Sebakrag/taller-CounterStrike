@@ -33,6 +33,18 @@ void ServerProtocol::sendMatchInfo(const MatchInfo& matchInfo) {
     insertBigEndian16(matchInfo.win_config.height, buffer);
     insertBigEndian32(matchInfo.win_config.flags, buffer);
 
+    // 3) FOVConfig
+    // isActive (1 byte)
+    buffer.push_back(encodeBool(matchInfo.fovConfig.isActive));
+    // screenWidth & screenHeight & circleRadius (2 bytes each)
+    insertBigEndian16(matchInfo.fovConfig.screenWidth, buffer);
+    insertBigEndian16(matchInfo.fovConfig.screenHeight,buffer);
+    insertBigEndian16(matchInfo.fovConfig.circleRadius,buffer);
+    // fovAngle, visibilityDistance, transparency (4 bytes cada uno)
+    insertFloat4Bytes(matchInfo.fovConfig.fovAngle, buffer);
+    insertFloat4Bytes(matchInfo.fovConfig.visibilityDistance, buffer);
+    insertFloat4Bytes(matchInfo.fovConfig.transparency, buffer);
+
     // cargo tilemap
     std::vector<uint8_t> tilemap_bytes = matchInfo.tileMap.toBytes();
 

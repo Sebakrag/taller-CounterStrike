@@ -2,6 +2,7 @@
 #include <string>
 
 #include <yaml-cpp/yaml.h>
+#include "../../common/dtos/MatchInfo.h"
 
 class YamlConfig {
 public:
@@ -37,6 +38,9 @@ public:
     int getWindowWidth() const;
     int getWindowHeight() const;
     bool isFullscreen() const;
+
+    //fov
+    FOVConfig getFovConfig();
 
 private:
     YAML::Node config;

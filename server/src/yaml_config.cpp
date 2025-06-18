@@ -46,3 +46,16 @@ int YamlConfig::getWindowWidth() const { return config["window"]["width"].as<int
 int YamlConfig::getWindowHeight() const { return config["window"]["height"].as<int>(); }
 
 bool YamlConfig::isFullscreen() const { return config["window"]["fullscreen"].as<int>() != 0; }
+
+
+FOVConfig YamlConfig::getFovConfig() {
+    bool active =  config["fov"]["active"].as<int>() != 0;
+    auto w =getWindowWidth();
+    auto h =getWindowHeight();
+    int radius = config["fov"]["circle_radius"].as<int>();
+    float angle = config["fov"]["angle"].as<float>();
+    int visibility_distance = config["fov"]["visibility_distance"].as<int>();
+    float transparency = config["fov"]["transparency"].as<float>();
+
+    return FOVConfig(active, w, h, radius, angle, visibility_distance, transparency);
+}

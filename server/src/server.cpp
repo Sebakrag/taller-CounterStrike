@@ -18,10 +18,11 @@ Server::Server(const std::string& port, const std::string& pathConfigYaml):
     WindowConfig window_config(yamlConfig.getWindowWidth(), yamlConfig.getWindowHeight(),
                                yamlConfig.isFullscreen() ? 1 : 0);
 
+    FOVConfig fov_config(yamlConfig.getFovConfig());
     // maps
     std::map<std::string, TileMap> scenarios;
     scenarios.emplace("demo", TileMap::getLevelDemo());
-    ScenarioRegistry::init(window_config, scenarios);
+    ScenarioRegistry::init(window_config, fov_config, scenarios);
 }
 
 void Server::run() {

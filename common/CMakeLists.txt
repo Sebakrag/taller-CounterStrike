@@ -48,4 +48,5 @@ target_sources(taller_common
         dtos/EntitySnapshot.h
         dtos/MatchInfo.h
         dtos/WindowConfig.h
+        dtos/FovConfig.h
     )

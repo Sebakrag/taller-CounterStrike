@@ -114,11 +114,8 @@ MatchInfo GameManager::getMatchInfo(const std::string& matchName, const std::str
     auto localPlayerInfo = match.generateLocalPlayerInfo(username);
     std::string id_scenary = match.getIdScenario();
     int numPlayers = match.countPlayers();
-
-    // PlayerInfo localPlayerInfo(1, username,Team::CounterTerrorist, PlayerSkin::CounterTerrorist1,
-    // Vec2D(20, 20), 0,TypeWeapon::Secondary,100,200,  30); //
-    //  TODO: Enviar numPlayers a traves de MatchInfo (ahora hardcodeo).
-    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
+    
+    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(), ScenarioRegistry::getFovConfig(),
                      ScenarioRegistry::getTileMap(id_scenary), numPlayers, localPlayerInfo);
 }
 

@@ -4,15 +4,15 @@
 #include <memory>
 
 #include "SDL2pp/Texture.hh"
-#include "client/dtos/FOVInfo.h"
-#include "common/utils/Vec2D.h"
+#include "../../../common/dtos/FovConfig.h"
+#include "../../../common/utils/Vec2D.h"
 
 class Graphics;
 
 class FieldOfView {
 private:
     std::shared_ptr<SDL2pp::Texture> stencil;
-    FOVInfo info;
+    FOVConfig info;
     Vec2D currentPlayerPos;
     float currentPlayerAimAngleRad;
 
