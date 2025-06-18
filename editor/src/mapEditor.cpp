@@ -621,6 +621,16 @@ QMap<int, QPixmap> MapEditor::sliceTilesetImage(const QString& tilesetPath, int 
         }
     }
     
+    // Verificar que existan al menos 3 tiles para los especiales
+    if (tileMap.size() >= 3) {
+        qDebug() << "Tiles especiales identificados:";
+        qDebug() << "Tile ID 1: Spawn Anti-Terroristas (CT)";
+        qDebug() << "Tile ID 2: Spawn Terroristas (T)";
+        qDebug() << "Tile ID 3: Bombsite";
+    } else {
+        qWarning() << "¡ADVERTENCIA! El tileset no tiene suficientes tiles (mínimo 3). Los primeros 3 tiles son requeridos para: CT spawn, T spawn y Bombsite";
+    }
+    
     qDebug() << "Se cortaron" << tileMap.size() << "tiles del tileset" << tilesetPath;
     return tileMap;
 }
@@ -723,8 +733,21 @@ void MapEditor::loadAvailableTiles()
             QIcon buttonIcon(scaledPixmap);
             tileButton->setIcon(buttonIcon);
             tileButton->setIconSize(QSize(36, 36));
-            tileButton->setToolTip(QString("Tile %1").arg(tileId));
-            tileButton->setStyleSheet(""); // Inicializar sin estilo especial
+            
+            // Identificar y resaltar los tiles especiales
+            if (tileId == 1) {
+                tileButton->setToolTip("Anti-Terroristas (CT) - Tile 1");
+                tileButton->setStyleSheet("QPushButton {border: 2px solid blue; background-color: rgba(0, 0, 255, 40);}");
+            } else if (tileId == 2) {
+                tileButton->setToolTip("Terroristas (T) - Tile 2");
+                tileButton->setStyleSheet("QPushButton {border: 2px solid red; background-color: rgba(255, 0, 0, 40);}");
+            } else if (tileId == 3) {
+                tileButton->setToolTip("Bombsite - Tile 3");
+                tileButton->setStyleSheet("QPushButton {border: 2px solid yellow; background-color: rgba(255, 255, 0, 40);}");
+            } else {
+                tileButton->setToolTip(QString("Tile %1").arg(tileId));
+                tileButton->setStyleSheet(""); // Inicializar sin estilo especial
+            }
             
             // Añadir al grupo de botones
             tileButtons->addButton(tileButton, tileId);
