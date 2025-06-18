@@ -418,44 +418,44 @@ QString MapEditor::getResourcesPath() {
     return "../editor/resources/";
 }
 
-// Método para obtener la ruta completa de un recurso según su tipo
-QString MapEditor::getResourcePath(int elementType, int subType) {
-    QString basePath = getResourcesPath();
+// // Método para obtener la ruta completa de un recurso según su tipo
+// QString MapEditor::getResourcePath(int elementType, int subType) {
+//     QString basePath = getResourcesPath();
     
-    switch (elementType) {
-        case TEAM_SPAWN_CT:
-            return basePath + "player/ct.png";
+//     switch (elementType) {
+//         case TEAM_SPAWN_CT:
+//             return basePath + "player/ct.png";
             
-        case TEAM_SPAWN_T:
-            return basePath + "player/t.png";
+//         case TEAM_SPAWN_T:
+//             return basePath + "player/t.png";
             
-        case BOMB_ZONE:
-            return basePath + "objects/bomb_zone.png";
+//         case BOMB_ZONE:
+//             return basePath + "objects/bomb_zone.png";
             
-        case SOLID_STRUCTURE:
-            // Podría tener diferentes tipos de estructuras según subType
-            return basePath + "objects/box.png";
+//         case SOLID_STRUCTURE:
+//             // Podría tener diferentes tipos de estructuras según subType
+//             return basePath + "objects/box.png";
             
-        case WEAPON:
-            // Diferentes tipos de armas según el subType
-            switch (subType) {
-                case 0: // Pistola
-                    return basePath + "weapons/pistol.png";
-                case 1: // Rifle
-                    return basePath + "weapons/rifle.png";
-                case 2: // Sniper
-                    return basePath + "weapons/sniper.png";
-                case 3: // Shotgun
-                    return basePath + "weapons/shotgun.png";
-                default:
-                    return basePath + "weapons/pistol.png";
-            }
+//         case WEAPON:
+//             // Diferentes tipos de armas según el subType
+//             switch (subType) {
+//                 case 0: // Pistola
+//                     return basePath + "weapons/pistol.png";
+//                 case 1: // Rifle
+//                     return basePath + "weapons/rifle.png";
+//                 case 2: // Sniper
+//                     return basePath + "weapons/sniper.png";
+//                 case 3: // Shotgun
+//                     return basePath + "weapons/shotgun.png";
+//                 default:
+//                     return basePath + "weapons/pistol.png";
+//             }
             
-        default:
-            qWarning() << "Tipo de elemento desconocido:" << elementType;
-            return basePath + "unknown.png";
-    }
-}
+//         default:
+//             qWarning() << "Tipo de elemento desconocido:" << elementType;
+//             return basePath + "unknown.png";
+//     }
+// }
 
 // Nuevo método para cortar una imagen de tileset en tiles individuales
 QMap<int, QPixmap> MapEditor::sliceTilesetImage(const QString& tilesetPath, int tileWidth, int tileHeight) {

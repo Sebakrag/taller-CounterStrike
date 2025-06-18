@@ -144,9 +144,34 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
             out << YAML::Value << "[]";
         } else {
             out << YAML::Value << YAML::BeginSeq;
+            
+            // Mapa de traducciones de IDs de armas a nombres de archivo
+            // Estos son los nombres de archivo de las armas en ../client/assets/weapons/
+            QMap<int, QString> weaponIdToName;
+            // ID 1 = primera arma, ID 2 = segunda arma, etc.
+            // Los ID números son asignados en loadAvailableWeapons() según el orden alfabético
+            weaponIdToName[1] = "ak47";
+            weaponIdToName[2] = "awp";
+            weaponIdToName[3] = "carbine";
+            weaponIdToName[4] = "pistol";
+            weaponIdToName[5] = "rifle";
+            weaponIdToName[6] = "shotgun";
+            
             for (const Weapon* weapon : weapons) {
                 out << YAML::BeginMap;
-                out << YAML::Key << "type" << YAML::Value << weapon->getWeaponType();
+                
+                // Obtener el tipo de arma como número (ID)
+                int weaponId = weapon->getWeaponType();
+                
+                // Usar el nombre del archivo en lugar del ID numérico
+                if (weaponIdToName.contains(weaponId)) {
+                    out << YAML::Key << "type" << YAML::Value << weaponIdToName[weaponId].toStdString();
+                } else {
+                    // Si no encontramos el nombre, usamos el ID como respaldo
+                    qWarning() << "No se encontró nombre para el arma con ID:" << weaponId;
+                    out << YAML::Key << "type" << YAML::Value << weaponId;
+                }
+                
                 out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
                     << weapon->getPosition().x() << weapon->getPosition().y() << YAML::EndSeq;
                 out << YAML::EndMap;
