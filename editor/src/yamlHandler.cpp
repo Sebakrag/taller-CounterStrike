@@ -11,7 +11,17 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
                                 const QString &mapName) {
     try {
         YAML::Emitter out;
+        out.SetIndent(2);  // Configurar indentación
         
+<<<<<<< HEAD
+=======
+        // Iniciar el documento YAML como un mapa
+        out << YAML::BeginMap;
+        
+        // Nombre del mapa con comillas
+        out << YAML::Key << "name" << YAML::Value << mapName.toStdString();
+        
+>>>>>>> 0c129b6 (fix yaml)
         // Determinar el tipo de mapa basado en el terrainType
         QString mapType;
         switch (terrainType) {
@@ -29,7 +39,15 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
                 break;
         }
         
+<<<<<<< HEAD
         // Identificar todos los tiles y armas
+=======
+        // Agregar el campo map_type
+        out << YAML::Key << "map_type" << YAML::Value << mapType.toStdString();
+        
+        // Separar los elementos por tipo (solo tiles y armas)
+        QList<const Weapon*> weapons;
+>>>>>>> 0c129b6 (fix yaml)
         QList<const Tile*> tiles;
         QList<const Weapon*> weapons;
         for (const MapElement* element : elements) {
@@ -40,6 +58,7 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
             }
         }
         
+<<<<<<< HEAD
         if (tiles.isEmpty()) {
             qDebug() << "No hay tiles para guardar en el mapa";
             return false;
@@ -48,6 +67,17 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         // Encontrar dimensiones reales del mapa utilizadas (min/max)
         int minX = INT_MAX;
         int minY = INT_MAX;
+=======
+        // Guardar tiles
+        out << YAML::Key << "tiles";
+        out << YAML::Value << YAML::BeginSeq;
+        
+        // Crear un conjunto para evitar duplicados de IDs y rastrear los tiles realmente utilizados
+        QSet<int> uniqueTileIds;
+        
+        // Primero determinamos qué IDs de tiles están realmente en uso en la matriz
+        // Encontramos las dimensiones del mapa
+>>>>>>> 0c129b6 (fix yaml)
         int maxX = 0;
         int maxY = 0;
         
@@ -64,11 +94,16 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
             maxY = std::max(maxY, gridY);
         }
         
+<<<<<<< HEAD
         // Asegurarse de que tenemos dimensiones válidas
         if (minX > maxX || minY > maxY) {
             qDebug() << "Error al determinar dimensiones del mapa";
             return false;
         }
+=======
+        // Crear una matriz para rastrear qué tiles se utilizan realmente
+        std::vector<std::vector<int>> tileMatrix(maxY + 1, std::vector<int>(maxX + 1, 4)); // Default a 4 (solid)
+>>>>>>> 0c129b6 (fix yaml)
         
         qDebug() << "Área real del mapa: " << minX << "," << minY << " a " << maxX << "," << maxY;
         
@@ -82,6 +117,7 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         // Llenar la matriz con los IDs de los tiles, ajustando posiciones al origen (minX, minY)
         for (const Tile* tile : tiles) {
             QPointF pos = tile->getPosition();
+<<<<<<< HEAD
             int gridX = static_cast<int>(pos.x() / 32) - minX;
             int gridY = static_cast<int>(pos.y() / 32) - minY;
             
@@ -101,6 +137,65 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         out << YAML::Key << "map_type" << YAML::Value << mapType.toStdString();
         
         // Guardar la matriz de tiles
+=======
+            int gridX = static_cast<int>(pos.x() / 32);
+            int gridY = static_cast<int>(pos.y() / 32);
+            int tileId = tile->getTileId();
+            tileMatrix[gridY][gridX] = tileId;
+            uniqueTileIds.insert(tileId);
+        }
+        
+        // El ID 4 (solid) siempre se utiliza como valor predeterminado
+        uniqueTileIds.insert(4);
+        
+        // Serializar cada tile único utilizado en la matriz (excluir el ID 0)
+        for (int tileId : uniqueTileIds) {
+            // Excluir explícitamente el ID 0 ya que no debe existir
+            if (tileId == 0) continue;
+            
+            out << YAML::BeginMap;
+            out << YAML::Key << "id" << YAML::Value << tileId;
+            
+            // Solo incluir el campo "type" para tiles especiales
+            if (tileId == 1) {
+                // Tile ID 1: Zona CT (antiterrorista)
+                out << YAML::Key << "type" << YAML::Value << "ct_zone";
+            } else if (tileId == 2) {
+                // Tile ID 2: Zona T (terrorista)
+                out << YAML::Key << "type" << YAML::Value << "t_zone";
+            } else if (tileId == 3) {
+                // Tile ID 3: Zona bomba
+                out << YAML::Key << "type" << YAML::Value << "bomb_zone";
+            } else if (tileId >= 4 && tileId <= 10) {
+                // Tiles 4-10 son sólidos
+                out << YAML::Key << "type" << YAML::Value << "solid";
+            }
+            // Para cualquier otro ID no incluimos el campo "type"
+            
+            out << YAML::EndMap;
+        }
+        out << YAML::EndSeq;
+        
+        // Guardar armas (array vacío si no hay)
+        out << YAML::Key << "weapons";
+        if (weapons.isEmpty()) {
+            // Array vacío para armas (formato exacto solicitado)
+            out << YAML::Value << "[]";
+        } else {
+            out << YAML::Value << YAML::BeginSeq;
+            for (const Weapon* weapon : weapons) {
+                out << YAML::BeginMap;
+                out << YAML::Key << "type" << YAML::Value << weapon->getWeaponType();
+                out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
+                    << weapon->getPosition().x() << weapon->getPosition().y() << YAML::EndSeq;
+                out << YAML::EndMap;
+            }
+            out << YAML::EndSeq;
+        }
+        
+        // Generar la matriz de tiles para el formato requerido
+        // Ya tenemos los datos en uniqueTileIds y el array tileMatrix desde antes
+>>>>>>> 0c129b6 (fix yaml)
         out << YAML::Key << "matrix";
         out << YAML::Value << YAML::BeginSeq;
         for (const auto& row : tileMatrix) {
@@ -108,6 +203,7 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         }
         out << YAML::EndSeq;
         
+<<<<<<< HEAD
         // Guardar las armas si existen
         if (!weapons.isEmpty()) {
             out << YAML::Key << "weapons";
@@ -137,13 +233,27 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
         std::ofstream fout(fileName.toStdString().c_str());
         if (!fout) {
             qDebug() << "No se puede abrir el archivo para escritura:" << fileName;
+=======
+        // Terminar el documento YAML
+        out << YAML::EndMap;
+        
+        // Escribir a archivo
+        std::ofstream fout(fileName.toStdString());
+        if (!fout.is_open()) {
+            qDebug() << "No se pudo abrir el archivo para escritura:" << fileName;
+>>>>>>> 0c129b6 (fix yaml)
             return false;
         }
         
+        // Escribir el contenido sin separadores adicionales "---"
         fout << out.c_str();
         fout.close();
         
+<<<<<<< HEAD
         qDebug() << "Formato YAML simplificado guardado con éxito con SOLO map_type y matrix";
+=======
+        qDebug() << "Archivo guardado con éxito:" << fileName;
+>>>>>>> 0c129b6 (fix yaml)
         return true;
     } catch (const YAML::Exception &e) {
         qDebug() << "Error al guardar YAML:" << e.what();
@@ -300,11 +410,12 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
     }
 }
 
-// Se eliminaron los métodos de serialización para TeamSpawn, BombZone y SolidStructure
 
 void YamlHandler::serializeWeapon(YAML::Emitter &out, const Weapon *weapon) {
     out << YAML::BeginMap;
+    // Formato exacto como en el ejemplo
     out << YAML::Key << "type" << YAML::Value << weapon->getWeaponType();
+    // Posición formateada como array [x, y]
     out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
         << weapon->getPosition().x() << weapon->getPosition().y() << YAML::EndSeq;
     out << YAML::EndMap;
@@ -312,13 +423,39 @@ void YamlHandler::serializeWeapon(YAML::Emitter &out, const Weapon *weapon) {
 
 void YamlHandler::serializeTile(YAML::Emitter &out, const Tile *tile) {
     out << YAML::BeginMap;
-    out << YAML::Key << "tile_id" << YAML::Value << tile->getTileId();
-    out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
-        << tile->getPosition().x() << tile->getPosition().y() << YAML::EndSeq;
+    
+    // ID del tile (en el formato requerido)
+    out << YAML::Key << "id" << YAML::Value << tile->getTileId();
+    
+    // Propiedades del tile según su ID
+    int tileId = tile->getTileId();
+    
+    // Tipo de tile (derivado del ID)
+    QString tileType;
+    
+    if (tileId == 1) {
+        // Tile ID 1: Zona CT (antiterrorista)
+        tileType = "ct_zone";
+    } else if (tileId == 2) {
+        // Tile ID 2: Zona T (terrorista)
+        tileType = "t_zone";
+    } else if (tileId == 3) {
+        // Tile ID 3: Zona bomba
+        tileType = "bomb_zone";
+    } else if (tileId >= 4 && tileId <= 10) {
+        // Tiles 4-10 son sólidos
+        tileType = "solid";
+    } else {
+        // Los demás tiles son transitables (walkable)
+        tileType = "walkable";
+    }
+    
+    // Tipo (en formato de comillas como en el ejemplo)
+    out << YAML::Key << "type" << YAML::Value << "\"" + tileType.toStdString() + "\"";
+    
     out << YAML::EndMap;
 }
 
-// Se eliminaron los métodos de deserialización para TeamSpawn, BombZone y SolidStructure
 
 Weapon* YamlHandler::deserializeWeapon(const YAML::Node &node) {
     if (!node["type"] || !node["position"]) {
@@ -341,7 +478,27 @@ Tile* YamlHandler::deserializeTile(const YAML::Node &node) {
     auto posNode = node["position"];
     QPointF pos(posNode[0].as<float>(), posNode[1].as<float>());
     
-    return new Tile(pos, tileId);
+    // Construir el Tile con su ID y posición
+    Tile* tile = new Tile(pos, tileId);
+    
+    // Comprobar si hay información de tipo en el nodo
+    if (node["type"]) {
+        std::string typeStr = node["type"].as<std::string>();
+        qDebug() << "Tipo de tile cargado:" << QString::fromStdString(typeStr) << "para ID:" << tileId;
+    }
+    
+    // Comprobar si hay información de solidez
+    if (node["solid"]) {
+        bool isSolid = node["solid"].as<bool>();
+        qDebug() << "Propiedad sólido:" << isSolid << "para tile ID:" << tileId;
+    }
+    
+    // Comprobar si hay información de zona de bomba
+    if (node["bomb_zone"]) {
+        bool isBombZone = node["bomb_zone"].as<bool>();
+        qDebug() << "Propiedad zona bomba:" << isBombZone << "para tile ID:" << tileId;
+    }
+    
+    return tile;
 }
 
-// Los métodos para ExtraTile han sido eliminados ya que los extra tiles se manejan como tiles normales

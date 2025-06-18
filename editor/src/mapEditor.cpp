@@ -13,7 +13,6 @@
 
 MapEditor::MapEditor(QWidget *parent) : QMainWindow(parent), currentBackground(nullptr),
     currentTerrainType(0)
-    // Nota: Estas variables ya están inicializadas en la declaración de la clase (mapEditor.h)
 {
     // Configurar una escena de 1000x1000 para el mapa de tiles
     scene = new QGraphicsScene(this);
@@ -390,7 +389,6 @@ QString MapEditor::getResourcesPath() {
     
     // Opciones de rutas relativas desde diferentes puntos de compilación
     QStringList possiblePaths = {
-        "/Users/morenasandroni/Facultad/Taller/2025c1/taller-CounterStrike/editor/resources/",
         "../editor/resources/",
         "resources/",
         "../resources/",
@@ -456,128 +454,6 @@ QString MapEditor::getResourcePath(int elementType, int subType) {
         default:
             qWarning() << "Tipo de elemento desconocido:" << elementType;
             return basePath + "unknown.png";
-    }
-}
-
-// Método genérico para cargar elementos desde una carpeta
-void MapEditor::loadElementsFromPath(const QString& path, QMap<int, QPixmap>& pixmapMap,
-                                   QButtonGroup* buttonGroup, QScrollArea* scrollArea,
-                                   void (MapEditor::*selectCallback)(int))
-{
-    try {
-        // Validación de parámetros para evitar segmentation fault
-        if (!buttonGroup || !scrollArea) {
-            qCritical() << "Error: buttonGroup o scrollArea son nullptr en loadElementsFromPath";
-            return;
-        }
-        
-        // Clear previous elements
-        pixmapMap.clear();
-        QDir elementsDir(path);
-        
-        // Si la carpeta no existe, solo registramos el mensaje pero continuamos sin error fatal
-        if (!elementsDir.exists()) {
-            qWarning() << "No se encontró la carpeta de elementos:" << path << ". Agregue archivos .png o .bmp para verlos aquí.";
-            // Nótese que NO retornamos, permitimos que el método continúe para configurar los widgets incluso sin archivos
-        }
-        
-        // Filtrar por archivos de imagen
-        QStringList filters;
-        filters << "*.bmp" << "*.png" << "*.jpg";
-        elementsDir.setNameFilters(filters);
-        
-        // Obtener la lista de archivos
-        QStringList elementFiles = elementsDir.entryList(filters, QDir::Files);
-        qDebug() << "Elementos encontrados:" << elementFiles.count() << "en" << path;
-        
-        // Validación y creación de widgets si es necesario
-        QWidget* elementsContainer = scrollArea->widget();
-        if (!elementsContainer) {
-            qWarning() << "ScrollArea sin widget contenedor. Creando uno nuevo.";
-            elementsContainer = new QWidget();
-            scrollArea->setWidget(elementsContainer);
-            scrollArea->setWidgetResizable(true);
-        }
-        
-        QGridLayout* elementsGridLayout = qobject_cast<QGridLayout*>(elementsContainer->layout());
-        if (!elementsGridLayout) {
-            qDebug() << "Creando nuevo layout para el contenedor de elementos";
-            if (elementsContainer->layout()) {
-                delete elementsContainer->layout();
-            }
-            elementsGridLayout = new QGridLayout(elementsContainer);
-            elementsGridLayout->setSpacing(2);
-            elementsGridLayout->setContentsMargins(2, 2, 2, 2);
-        }
-        
-        // Eliminar botones existentes
-        QList<QAbstractButton*> buttons = buttonGroup->buttons();
-        for (QAbstractButton* button : buttons) {
-            buttonGroup->removeButton(button);
-            delete button;
-        }
-        
-        // Desconectar conexiones anteriores para evitar conexiones duplicadas
-        disconnect(buttonGroup, nullptr, this, nullptr);
-
-        // Conectar el grupo de botones al callback de selección
-        if (selectCallback) {
-            connect(buttonGroup, &QButtonGroup::idClicked,
-                    this, selectCallback);
-        }
-        
-        // Cargar cada archivo de elemento
-        int elementId = 0;
-        int row = 0;
-        int col = 0;
-        
-        for (const QString& elementFile : elementFiles) {
-            // Solo procesar archivos de imagen
-            if (elementFile.endsWith(".bmp", Qt::CaseInsensitive) || 
-                elementFile.endsWith(".png", Qt::CaseInsensitive)) {
-                
-                QString elementPath = path + elementFile;
-                QPixmap elementPixmap(elementPath);
-                
-                if (!elementPixmap.isNull()) {
-                    // Almacenar el pixmap
-                    pixmapMap[elementId] = elementPixmap;
-                    
-                    // Crear un botón con una miniatura del elemento
-                    QPushButton* elementButton = new QPushButton();
-                    elementButton->setFixedSize(40, 40);
-                    
-                    // Crear una versión escalada para el botón
-                    QPixmap scaledPixmap = elementPixmap.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-                    QIcon buttonIcon(scaledPixmap);
-                    elementButton->setIcon(buttonIcon);
-                    elementButton->setIconSize(QSize(36, 36));
-                    elementButton->setToolTip(elementFile);
-                    elementButton->setStyleSheet(""); // Inicializar sin estilo especial
-                    
-                    // Añadir al grupo de botones
-                    buttonGroup->addButton(elementButton, elementId);
-                    
-                    // Añadir a la cuadrícula
-                    elementsGridLayout->addWidget(elementButton, row, col % 3);
-                    
-                    // Actualizar posición para el siguiente elemento
-                    col++;
-                    if (col % 3 == 0) {
-                        row++;
-                        col = 0;
-                    }
-                    
-                    elementId++;
-                }
-            }
-        }
-        
-        qDebug() << "Se cargaron" << elementId << "elementos";
-    } catch (const std::exception& e) {
-        qCritical() << "Excepción en loadElementsFromPath:" << e.what();
-    } catch (...) {
-        qCritical() << "Excepción desconocida en loadElementsFromPath";
     }
 }
 
@@ -941,7 +817,45 @@ void MapEditor::placeTile(QPointF scenePos)
         return;
     }
     
-    qDebug() << "Colocando tile" << currentTileId << "en posición de cuadrícula:" << gridX << "," << gridY;
+    // Para tiles especiales (1, 2 y 3), verificar si ya existe uno en el mapa
+    if (currentTileId >= 1 && currentTileId <= 3) {
+        // Buscar si ya existe un tile con este ID en el mapa
+        QPair<int, int> existingPos(-1, -1);
+        bool tileExists = false;
+        
+        QMap<QPair<int, int>, int>::const_iterator it;
+        for (it = placedTiles.constBegin(); it != placedTiles.constEnd(); ++it) {
+            if (it.value() == currentTileId) {
+                existingPos = it.key();
+                tileExists = true;
+                break;
+            }
+        }
+        
+        if (tileExists) {
+            // Eliminar el tile especial existente
+            for (QGraphicsItem* item : scene->items()) {
+                if (item->data(1).isValid() && item->data(1).toInt() == TILE && 
+                    item->data(0).toInt() == currentTileId) {
+                    QPoint itemGridPos = getTileGridPosition(item->pos());
+                    if (QPair<int, int>(itemGridPos.x(), itemGridPos.y()) == existingPos) {
+                        scene->removeItem(item);
+                        delete item;
+                        placedTiles.remove(existingPos);
+                        
+                        QString tileType;
+                        if (currentTileId == 1) tileType = "Anti-Terrorista (CT)";
+                        else if (currentTileId == 2) tileType = "Terrorista (T)";
+                        else if (currentTileId == 3) tileType = "Zona Bomba";
+                        
+                        qDebug() << "Se eliminó el tile especial anterior de tipo" << tileType 
+                                 << "en posición (" << existingPos.first << "," << existingPos.second << ")";
+                        break;
+                    }
+                }
+            }
+        }
+    }
     
     // Calcular la posición exacta en la escena
     qreal x = gridX * 32.0;
@@ -1377,14 +1291,56 @@ bool MapEditor::validateMap()
 {
     QList<MapElement*> elements;
     
+    // Debug: Imprimir qué tiles están colocados para diagnóstico
+    qDebug() << "Validando mapa - Tiles colocados:";
+    for (auto it = placedTiles.begin(); it != placedTiles.end(); ++it) {
+        QPair<int, int> pos = it.key();
+        int tileId = it.value();
+        qDebug() << "  Tile ID:" << tileId << "en posición (" << pos.first << "," << pos.second << ")";
+    }
+    
     // Convertir los elementos gráficos a elementos del mapa
     foreach (QGraphicsItem *item, scene->items()) {
+<<<<<<< HEAD
         // Procesar elementos DragAndDrop (armas)
         if (DragAndDrop* dragItem = dynamic_cast<DragAndDrop*>(item)) {
             MapElement *element = convertToMapElement(dragItem);
             if (element) {
                 elements.append(element);
             }
+=======
+        // Verificar si el ítem tiene datos válidos (en vez de usar dynamic_cast)
+        if (item->data(1).isValid() && item->data(1).toInt() == TILE) {
+            QPointF position = item->scenePos();
+            int tileId = item->data(0).toInt();
+            
+            QPoint gridPos = getTileGridPosition(position);
+            QPointF alignedPos(gridPos.x() * 32.0, gridPos.y() * 32.0);
+            
+            float x = MapEditor::pixelToWorldX(alignedPos.x(), 1.0);
+            float y = MapEditor::pixelToWorldY(alignedPos.y(), 1.0);
+            
+            QPointF worldPos(x, y);
+            qDebug() << "  Convirtiendo tile ID:" << tileId << "en posición:" << worldPos.x() << "," << worldPos.y();
+            
+            Tile* tile = new Tile(worldPos, tileId);
+            elements.append(tile);
+        }
+        else if (item->data(1).isValid() && item->data(1).toInt() == WEAPON) {
+            QPointF position = item->scenePos();
+            int weaponType = item->data(0).toInt();
+            
+            QPoint gridPos = getTileGridPosition(position);
+            QPointF alignedPos(gridPos.x() * 32.0, gridPos.y() * 32.0);
+            
+            float x = MapEditor::pixelToWorldX(alignedPos.x(), 1.0);
+            float y = MapEditor::pixelToWorldY(alignedPos.y(), 1.0);
+            
+            QPointF worldPos(x, y);
+            
+            Weapon* weapon = new Weapon(worldPos, weaponType);
+            elements.append(weapon);
+>>>>>>> 0c129b6 (fix yaml)
         }
         // Procesar QGraphicsPixmapItem (tiles)
         else if (QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(item)) {
