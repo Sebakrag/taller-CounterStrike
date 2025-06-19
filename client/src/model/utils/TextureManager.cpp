@@ -29,6 +29,7 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::KNIFE, KNIFE_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::M3, M3_IMG, weaponColorKey);
+    loadTexture(ren, SpriteType::BULLET, BULLET_IMG, weaponColorKey);
 
     // Map textures
     loadTexture(ren, SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);

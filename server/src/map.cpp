@@ -3,9 +3,9 @@
 #include <iostream>
 
 
-Map::Map(const TileMap& tilemap): 
-        tileMap(tilemap), 
-        posZoneTerrorist(tilemap.getPosTerroristZone()), 
+Map::Map(const TileMap& tilemap):
+        tileMap(tilemap),
+        posZoneTerrorist(tilemap.getPosTerroristZone()),
         posZoneCounterTerrorist(tilemap.getPosCounterTerroistZone()) {}
 
 bool Map::isWalkable(int x, int y) {
@@ -27,15 +27,11 @@ bool Map::isBombZone(int x, int y) {
     if (tileX < 0 || tileX >= tileMap.getColCount() || tileY < 0 ||
         tileY >= tileMap.getRowCount()) {
         return false;
-        }
+    }
 
     return tileMap.getTile(tileY, tileX).isBombZone();
 }
 
-Vec2D Map::getPositionTZone() {
-    return posZoneTerrorist;
-}
+Vec2D Map::getPositionTZone() { return posZoneTerrorist; }
 
-Vec2D Map::getPositionCTZone() {
-    return posZoneCounterTerrorist;
-}
+Vec2D Map::getPositionCTZone() { return posZoneCounterTerrorist; }

@@ -38,8 +38,8 @@ void ServerProtocol::sendMatchInfo(const MatchInfo& matchInfo) {
     buffer.push_back(encodeBool(matchInfo.fovConfig.isActive));
     // screenWidth & screenHeight & circleRadius (2 bytes each)
     insertBigEndian16(matchInfo.fovConfig.screenWidth, buffer);
-    insertBigEndian16(matchInfo.fovConfig.screenHeight,buffer);
-    insertBigEndian16(matchInfo.fovConfig.circleRadius,buffer);
+    insertBigEndian16(matchInfo.fovConfig.screenHeight, buffer);
+    insertBigEndian16(matchInfo.fovConfig.circleRadius, buffer);
     // fovAngle, visibilityDistance, transparency (4 bytes cada uno)
     insertFloat4Bytes(matchInfo.fovConfig.fovAngle, buffer);
     insertFloat4Bytes(matchInfo.fovConfig.visibilityDistance, buffer);
@@ -129,7 +129,7 @@ MenuAction ServerProtocol::recvMenuAction() {
     MenuActionType type = decodeMenuActionType(byte);
     std::string name = "";
     int id_scenary = 0;
-    
+
     if (type == Create || type == Join) {
         uint16_t length = recvBigEndian16();
         name.resize(length);

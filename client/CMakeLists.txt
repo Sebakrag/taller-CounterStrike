@@ -81,6 +81,7 @@ target_sources(taller_client
         include/model/EC/ComponentPool.h
         include/model/EC/ComponentUpdater.h
         include/model/EC/RenderSystem.h
+        include/model/EC/components/BulletSpriteComponent.h
         include/model/EC/components/EquippedWeaponComponent.h
         include/model/EC/components/PlayerSpriteComponent.h
         include/model/EC/components/SpriteComponent.h

@@ -25,6 +25,7 @@
 #define GLOCK_IMG (WEAPON_PATH + "/glock_spritesheet.png")
 #define KNIFE_IMG (WEAPON_PATH + "/knife_spritesheet.png")
 #define M3_IMG (WEAPON_PATH + "/m3_spritesheet.png")
+#define BULLET_IMG (WEAPON_PATH + "/bullet.bmp")
 
 // Maps
 #define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/tileset_desierto_(4x11).png")

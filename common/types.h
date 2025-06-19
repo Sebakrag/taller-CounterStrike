@@ -62,15 +62,26 @@ struct MenuAction {
     const int id_scenary = 0;
 
     explicit MenuAction(MenuActionType type, const std::string& name_match = "",
-        int id_scenary = 0):
-        type(type), name_match(name_match), id_scenary(id_scenary) {}
+                        int id_scenary = 0):
+            type(type), name_match(name_match), id_scenary(id_scenary) {}
 };
 
 // lobby
 enum class LobbyAction { QuitMatch, StartMatch, ListPlayers };
 
 // game
-enum GameActionType { Null, BuyWeapon, BuyAmmo, Attack, Walk, ChangeWeapon, PickUp, Rotate, PlantBomb, DefuseBomb };
+enum GameActionType {
+    Null,
+    BuyWeapon,
+    BuyAmmo,
+    Attack,
+    Walk,
+    ChangeWeapon,
+    PickUp,
+    Rotate,
+    PlantBomb,
+    DefuseBomb
+};
 
 struct GameAction {
     GameActionType type = Null;

@@ -16,6 +16,7 @@ private:
 
     void create_player_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
     void create_weapon_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
+    void create_bullet_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
 
     void setPlayersComponentsCapacity(int numPlayers) const;
 
@@ -24,8 +25,6 @@ public:
 
     void create_specific_entity(const Entity& new_entt, const EntitySnapshot& snap) const;
 
-    // agregadas
-    void createEntityPlayer(const Entity& new_entt, const PlayerInfo& playerInfo);
     void createEntityPlayer(const Entity& new_entt, const LocalPlayerInfo& p);
 
     void destroy(const Entity& entt) const;

@@ -4,6 +4,7 @@
 #include "../../../../client/include/model/EC/components/PlayerSpriteComponent.h"
 #include "../../../../client/include/model/EC/components/TransformComponent.h"
 #include "../../../../client/include/model/EC/components/WeaponSpriteComponent.h"
+#include "model/EC/components/BulletSpriteComponent.h"
 
 
 EntityFactory::EntityFactory(ComponentManager& cm, const int numPlayers): comp_mgr(cm) {
@@ -26,15 +27,15 @@ void EntityFactory::create_specific_entity(const Entity& new_entt,
             create_weapon_entt(new_entt, snap);
             break;
         }
-            // case EntityType::BULLET: {
-            //     create_bullet_entt();
-            //     break;
-            // }
-            // case EntityType::BOMB: { // TODO: me parece que me conviene tratar a la bomba como un
-            // arma mas.
-            //     create_bomb_entt();
-            //     break;
-            // }
+        case EntityType::BULLET: {
+            create_bullet_entt(new_entt, snap);
+            break;
+        }
+        // case EntityType::BOMB: { // TODO: me parece que me conviene tratar a la bomba como un
+        // arma mas.
+        //     create_bomb_entt();
+        //     break;
+        // }
         default:
             break;
     }
@@ -74,14 +75,18 @@ void EntityFactory::create_weapon_entt(const Entity& new_entt, const EntitySnaps
         tComp->init(snap.pos_x, snap.pos_y, snap.angle);
 
         const auto spriteComp = comp_mgr.addComponent<WeaponSpriteComponent>(new_entt);
-        std::cout << "[DEBUG] inicializo weaponSprite con el estado: "
-                  << static_cast<int>(weapon->state) << std::endl;
         spriteComp->init(snap.sprite_type, weapon->state);
-        std::cout << "Cree el arma con el serverID: " << snap.server_entt_id << "\n"
-                  << "Tiene el estado: " << static_cast<int>(weapon->state) << std::endl;
     } else {
         throw std::runtime_error("Error trying to create a Weapon entity.");
     }
+}
+
+void EntityFactory::create_bullet_entt(const Entity& new_entt, const EntitySnapshot& snap) const {
+    const auto tComp = comp_mgr.addComponent<TransformComponent>(new_entt);
+    tComp->init(snap.pos_x, snap.pos_y, snap.angle);
+
+    const auto spriteComp = comp_mgr.addComponent<BulletSpriteComponent>(new_entt);
+    spriteComp->init(snap.sprite_type);
 }
 
 void EntityFactory::destroy(const Entity& entt) const { comp_mgr.removeAllComponentsOf(entt); }

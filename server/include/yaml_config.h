@@ -2,6 +2,7 @@
 #include <string>
 
 #include <yaml-cpp/yaml.h>
+
 #include "../../common/dtos/MatchInfo.h"
 
 class YamlConfig {
@@ -39,7 +40,7 @@ public:
     int getWindowHeight() const;
     bool isFullscreen() const;
 
-    //fov
+    // fov
     FOVConfig getFovConfig();
 
 private:

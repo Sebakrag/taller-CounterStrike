@@ -46,7 +46,7 @@ TileMap::TileMap(const TypeTileMap& type, const std::vector<std::vector<int>>& m
             } else {
                 TypeTile typeTyle = it->second;
                 row.emplace_back(id, typeTyle);
-                Vec2D pos_in_world(j * TILE_SIZE + 16, i * TILE_SIZE+16);
+                Vec2D pos_in_world(j * TILE_SIZE + 16, i * TILE_SIZE + 16);
                 if (typeTyle == BombZone)
                     pos_bomb_zone = pos_in_world;
                 else if (typeTyle == T_Zone)

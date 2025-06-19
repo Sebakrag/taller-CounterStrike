@@ -6,8 +6,8 @@
 #include "../game_info/local_player_info.h"
 #include "../tile_map.h"
 
-#include "WindowConfig.h"
 #include "FovConfig.h"
+#include "WindowConfig.h"
 
 struct MatchInfo {
     std::string name;  // nombre de la partida.
@@ -20,9 +20,9 @@ struct MatchInfo {
 
     MatchInfo() = default;
 
-    MatchInfo(const std::string& name, const WindowConfig& win_config, 
-              const FOVConfig& fovConfig, const TileMap& tile_map,
-              const int numPlayers, const LocalPlayerInfo& localPlayerInfo):
+    MatchInfo(const std::string& name, const WindowConfig& win_config, const FOVConfig& fovConfig,
+              const TileMap& tile_map, const int numPlayers,
+              const LocalPlayerInfo& localPlayerInfo):
             name(name),
             win_config(win_config),
             fovConfig(fovConfig),
@@ -33,7 +33,7 @@ struct MatchInfo {
 
     MatchInfo(const MatchInfo& other) = default;
     MatchInfo& operator=(const MatchInfo& other) = default;
-    
+
 
     void print() const {
         std::cout << "MatchInfo {\n";
@@ -41,15 +41,15 @@ struct MatchInfo {
         std::cout << "  WindowConfig: { width: " << win_config.width
                   << ", height: " << win_config.height << ", flags: " << win_config.flags << " }\n";
         std::cout << "  FOVConfig: {\n";
-    std::cout << "    isActive: " << (fovConfig.isActive ? "true" : "false") << "\n";
-    std::cout << "    screenWidth: " << fovConfig.screenWidth
-              << ", screenHeight: " << fovConfig.screenHeight << "\n";
-    std::cout << "    circleRadius: " << fovConfig.circleRadius << "\n";
-    std::cout << "    fovAngle: " << fovConfig.fovAngle << "°\n";
-    std::cout << "    visibilityDistance: " << fovConfig.visibilityDistance << "\n";
-    std::cout << "    transparency: " << fovConfig.transparency << "\n";
-    std::cout << "  }\n";
-    
+        std::cout << "    isActive: " << (fovConfig.isActive ? "true" : "false") << "\n";
+        std::cout << "    screenWidth: " << fovConfig.screenWidth
+                  << ", screenHeight: " << fovConfig.screenHeight << "\n";
+        std::cout << "    circleRadius: " << fovConfig.circleRadius << "\n";
+        std::cout << "    fovAngle: " << fovConfig.fovAngle << "°\n";
+        std::cout << "    visibilityDistance: " << fovConfig.visibilityDistance << "\n";
+        std::cout << "    transparency: " << fovConfig.transparency << "\n";
+        std::cout << "  }\n";
+
         std::cout << "  TileMap: [size: " << tileMap.getColCount() << " x " << tileMap.getRowCount()
                   << "]\n";
         std::cout << "  NumPlayers: " << numPlayers << std::endl;

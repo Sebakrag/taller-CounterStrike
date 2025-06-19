@@ -13,7 +13,7 @@ FieldOfView::FieldOfView():
         currentPlayerAimAngleRad(0) {}
 
 void FieldOfView::render(Graphics& graphics, const Vec2D& playerPos, const float rotAngleDeg) {
-    if (!info.isActive) { // no hay fov
+    if (!info.isActive) {  // no hay fov
         return;
     }
     currentPlayerPos = playerPos;
@@ -26,7 +26,7 @@ void FieldOfView::render(Graphics& graphics, const Vec2D& playerPos, const float
 }
 
 bool FieldOfView::isInFOV(const Vec2D& enttWorldPos) const {
-    if (!info.isActive) { // no hay fov
+    if (!info.isActive) {  // no hay fov
         return true;
     }
     // Vector desde el player hacia la entidad

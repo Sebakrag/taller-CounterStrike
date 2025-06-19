@@ -3,9 +3,7 @@
 
 Tile::Tile(int id_tile): id_tile(id_tile) { type = None; }
 
-Tile::Tile(int id_tile, const TypeTile _type): id_tile(id_tile) {
-    type = _type;
-}
+Tile::Tile(int id_tile, const TypeTile _type): id_tile(id_tile) { type = _type; }
 
 bool Tile::isSolid() const { return type == Solid; }
 bool Tile::isBombZone() const { return type == BombZone; }
