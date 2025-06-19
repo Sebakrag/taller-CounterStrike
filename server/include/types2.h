@@ -8,6 +8,7 @@
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/queue.h"
+#include "../../server/include/weapon/weapon.h"
 
 struct PlayerCommunicationChannels {
     std::shared_ptr<Queue<GameInfo>> senderQueue;

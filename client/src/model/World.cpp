@@ -17,8 +17,10 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
 void World::update(float dt, const GameInfo& gameInfo) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
     // gameInfo.print();
-
-
+    std::cout << "hay " << gameInfo.bullets.size() << " balas en el mapa" << std::endl;
+    for (auto b: gameInfo.bullets) {
+        b.print();
+    }
     const std::vector<EntitySnapshot> snapshots = gameInfo.getSnapshots();
     comp_updater.update(snapshots);
 

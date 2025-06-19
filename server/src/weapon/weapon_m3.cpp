@@ -31,11 +31,11 @@ WeaponInfo WeaponM3::generateWeaponInfo(const WeaponState& state) {
 }
 
 std::vector<Projectile> WeaponM3::shoot(float posX, float posY, float dirX, float dirY,
-                                        const std::string& shooter, uint64_t currentTimeMs) {
-    if (!canShoot(currentTimeMs))
+                                        const std::string& shooter, double currentTime) {
+    if (!canShoot(currentTime))
         return {};
 
-    lastShotTimeMs = currentTimeMs;
+    lastShotTimeS = currentTime;
     bullets--;
 
     std::vector<Projectile> projectiles;

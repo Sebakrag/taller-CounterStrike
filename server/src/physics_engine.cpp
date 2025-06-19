@@ -102,7 +102,7 @@ bool PhysicsEngine::knifeHit(float originX, float originY, float dirX, float dir
 
 bool PhysicsEngine::playerTouchingItem(float playerPosX, float playerPosY, float itemPosX,
                                        float itemPosY) {
-    const float radius = 15.0f;
+    const float radius = RADIUS_PLAYER_TOUCH;
     const float dx = playerPosX - itemPosX;
     const float dy = playerPosY - itemPosY;
 

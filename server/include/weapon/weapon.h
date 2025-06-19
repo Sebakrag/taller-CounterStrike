@@ -19,9 +19,9 @@ public:
     explicit Weapon_(const int damage): damage(damage), serverId(IdGenerator::getNextId()) {}
     virtual ~Weapon_() = default;
 
-    virtual bool canShoot(uint64_t currentTimeMs) const = 0;
+    virtual bool canShoot(double currentTime) const = 0;
 
-    virtual uint64_t getCooldownMs() const = 0;
+    virtual double getCooldownS() const = 0;
 
     virtual int getBullets() const { return 0; }
 
@@ -30,7 +30,7 @@ public:
     virtual int getDamage() const { return damage; }
 
     virtual std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY,
-                                          const std::string& shooter, uint64_t currentTimeMs) = 0;
+                                          const std::string& shooter, double currentTime) = 0;
 
     virtual WeaponInfo generateWeaponInfo(const WeaponState& state) = 0;
 

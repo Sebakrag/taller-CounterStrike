@@ -11,7 +11,7 @@ void Receiver::run() {
     try {
         while (should_keep_running()) {
             GameAction gameAction = protocol.recvGameAction();  // bloqueante
-            std::cout << "Recibí una acción de " << username << std::endl;
+            //            std::cout << "Recibí una acción de " << username << std::endl;
             PlayerAction action(username, gameAction);
             queueActionsPlayers->push(action);  // capaz que try_push es mejor
         }

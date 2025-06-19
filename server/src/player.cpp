@@ -23,6 +23,7 @@ void Player::init(float player_speed, float initial_money, int initial_health) {
     }
 }
 //---------
+
 Player::Player(const std::string& name, const Team team, const Vec2D& position):
         serverId(IdGenerator::getNextId()),
         name(name),
@@ -49,21 +50,31 @@ Player::Player(const std::string& name, const Team team, const Vec2D& position):
 
 void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
     primaryWeapon = std::move(weapon);
+    if (equippedWeapon == TypeWeapon::Primary) {
+        id_weapon = primaryWeapon->getServerId();
+    }
 }
 
 void Player::setEquippedWeapon(TypeWeapon type) {
+
     switch (type) {
-        case TypeWeapon::Knife:
-            id_weapon = knife->getServerId();
-            break;
         case TypeWeapon::Primary:
+            if (primaryWeapon == nullptr) {  // si no tiene una, no cambio
+                return;
+            }
             id_weapon = primaryWeapon->getServerId();
             break;
         case TypeWeapon::Secondary:
             id_weapon = secondaryWeapon->getServerId();
             break;
         case TypeWeapon::Bomb:
-            // id_weapon = knife->getServerId(); // TODO: id para la bomba.
+            // if (bomb == nullptr) { // si no tiene una, no cambio
+            //     return;
+            // }
+            //  id_weapon = knife->getServerId(); // TODO: id para la bomba.
+            break;
+        case TypeWeapon::Knife:
+            id_weapon = knife->getServerId();
             break;
         default:
             break;
@@ -88,11 +99,8 @@ void Player::setAngle(float _angle) { angle = _angle; }
 std::string Player::getId() const { return name; }
 
 Team Player::getTeam() const { return team; }
-
 int Player::getHealth() const { return health; }
-
 float Player::getMoney() const { return money; }
-
 float Player::getSpeed() const { return speed; }
 
 TypeWeapon Player::getEquippedWeapon() const { return equippedWeapon; }
@@ -127,14 +135,14 @@ Weapon_* Player::getPrimaryWeapon() const { return primaryWeapon.get(); }
 
 bool Player::isAlive() const { return state != PlayerState::Dead; }
 
-bool Player::canShoot(uint64_t currentTimeMs) const {
+bool Player::canShoot(double currentTime) const {
     switch (equippedWeapon) {
         case TypeWeapon::Knife:
-            return knife && knife->canShoot(currentTimeMs);
+            return knife && knife->canShoot(currentTime);
         case TypeWeapon::Primary:
-            return primaryWeapon && primaryWeapon->canShoot(currentTimeMs);
+            return primaryWeapon && primaryWeapon->canShoot(currentTime);
         case TypeWeapon::Secondary:
-            return secondaryWeapon && secondaryWeapon->canShoot(currentTimeMs);
+            return secondaryWeapon && secondaryWeapon->canShoot(currentTime);
         default:
             return false;
     }
@@ -151,12 +159,12 @@ void Player::takeDamage(int dmg) {
     }
 }
 
-std::vector<Projectile> Player::shoot(float dirX, float dirY, uint64_t currentTimeMs) {
+std::vector<Projectile> Player::shoot(float dirX, float dirY, double currentTime) {
     Weapon_* weapon = getEquippedWeaponInstance();
-    if (!weapon || !weapon->canShoot(currentTimeMs))
+    if (!weapon)  // || !weapon->canShoot(currentTime)) //se chequea en weapon->shoot()
         return {};
 
-    return weapon->shoot(posX, posY, dirX, dirY, name, currentTimeMs);
+    return weapon->shoot(posX, posY, dirX, dirY, name, currentTime);
 }
 
 std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() { return std::move(primaryWeapon); }
@@ -164,7 +172,7 @@ std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() { return std::move(primaryW
 uint32_t Player::getServerId() const { return serverId; }
 
 void Player::revive() {
-    health = 100;
+    health = INITIAL_HEALTH;
     state = PlayerState::Idle;
     // deberiamos resetear la posicion a la del spawn segun equipo
 }
@@ -181,13 +189,13 @@ LocalPlayerInfo Player::generateLocalPlayerInfo() const {
         ammo = secondaryWeapon->getBullets();
     }
 
-    return LocalPlayerInfo(serverId, team, currentSkin, Vec2D(posX, posY), angle, equippedWeapon,
-                           health, money, ammo, id_weapon);
+    return LocalPlayerInfo(serverId, team, currentSkin, state, Vec2D(posX, posY), angle,
+                           equippedWeapon, health, money, ammo, id_weapon);
 }
 
 PlayerInfo Player::generatePlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
 
-    return PlayerInfo(serverId, name, team, currentSkin, Vec2D(posX, posY), angle, equippedWeapon,
-                      id_weapon);
+    return PlayerInfo(serverId, name, team, currentSkin, state, Vec2D(posX, posY), angle,
+                      equippedWeapon, id_weapon);
 }

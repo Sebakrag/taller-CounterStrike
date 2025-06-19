@@ -15,7 +15,7 @@ public:
     Weapon getWeaponType() const override;
     WeaponInfo generateWeaponInfo(const WeaponState& state) override;
     std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY,
-                                  const std::string& shooter, uint64_t currentTimeMs) override;
+                                  const std::string& shooter, double currentTime) override;
 
 
     // CONSTANTES static para inicializar en server.cpp.

@@ -30,13 +30,15 @@ private:
     std::vector<DroppedWeapon> droppedWeapons;
     Bomb bomb;
 
+    double current_time = 0;  // (en ms) se incrementa en cada update
+
     // static constexpr int MAX_ROUNDS = 10;
     // static constexpr double PREPARATION_TIME = 30.0;
 
 public:
     explicit Match(const std::string& id_scenario);
 
-    //void addPlayer(Player&& player);
+    // void addPlayer(Player&& player);
     bool addPlayer(const std::string& playerName);
     void removePlayer(const std::string& playerName);
     bool movePlayer(const std::string& playerName, const float dx, const float dy, float deltaTime);
@@ -65,6 +67,7 @@ private:
     // void processActionShop(Player* player, const GameAction &gameAction, const float deltaTime);
     // void processActionMatch(Player* player, const GameAction &gameAction, const float deltaTime);
     void handleKnifeAttack(Player* attacker, const Vec2D& direction);
+    void setPosSpawnPlayer(Player& p);
 
 
     // CONSTANTES static para inicializar en server.cpp.
