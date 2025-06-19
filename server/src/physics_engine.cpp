@@ -4,7 +4,7 @@ void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float del
     if (dirX == 0 && dirY == 0)
         return;
 
-    float radius = 15.0f; //Radio del hitbox
+    float radius = 15.0f;  // Radio del hitbox
 
     // Normalizamos la direccion
     const float length = std::sqrt((dirX * dirX) + (dirY * dirY));
@@ -83,7 +83,8 @@ float PhysicsEngine::calculatePrecisionByDistance(float distance, float maxRange
     return basePrecision * factor;
 }
 
-bool PhysicsEngine::knifeHit(float originX, float originY, float dirX, float dirY, const Player& target, float& outDist) {
+bool PhysicsEngine::knifeHit(float originX, float originY, float dirX, float dirY,
+                             const Player& target, float& outDist) {
     float dx = target.getX() - originX;
     float dy = target.getY() - originY;
 
@@ -99,11 +100,11 @@ bool PhysicsEngine::knifeHit(float originX, float originY, float dirX, float dir
     return true;
 }
 
-bool PhysicsEngine::playerTouchingItem(float playerPosX, float playerPosY, float itemPosX, float itemPosY) {
+bool PhysicsEngine::playerTouchingItem(float playerPosX, float playerPosY, float itemPosX,
+                                       float itemPosY) {
     const float radius = 15.0f;
     const float dx = playerPosX - itemPosX;
     const float dy = playerPosY - itemPosY;
 
     return (dx * dx + dy * dy) <= (radius * radius);
 }
-

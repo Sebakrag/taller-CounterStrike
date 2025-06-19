@@ -96,10 +96,10 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         std::cout << username << " entro al lobby" << std::endl;
         status = InLobby;
         myMatch = menuAction.name_match;
-        MatchInfo matchInfo = gameManager.getMatchInfo(myMatch);
-        matchInfo.print();
-
-        protocol.sendMatchInfo(matchInfo);
+        // MatchInfo matchInfo = gameManager.getMatchInfo(myMatch);
+        // matchInfo.print();
+        //
+        // protocol.sendMatchInfo(matchInfo);
         //...protocol.sendTilemap(...);
     }
 }
@@ -113,20 +113,24 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             break;
         case LobbyAction::StartMatch: {
             bool ok = gameManager.StartMatch(username, myMatch);
+            protocol.sendConfirmation(ok);
             if (ok) {
                 status = InGame;
+                MatchInfo matchInfo = gameManager.getMatchInfo(myMatch, username);
+                protocol.sendMatchInfo(matchInfo);
                 receiver = new Receiver(username, protocol, gameManager.getActionsQueue(myMatch));
             }
-            protocol.sendConfirmation(ok);
             break;
         }
         case LobbyAction::ListPlayers:
             auto info = gameManager.getMatchRoomInfo(myMatch);
+            protocol.sendMatchRoomInfo(info);
             if (info.matchStarted) {
                 status = InGame;
+                MatchInfo matchInfo = gameManager.getMatchInfo(myMatch, username);
+                protocol.sendMatchInfo(matchInfo);
                 receiver = new Receiver(username, protocol, gameManager.getActionsQueue(myMatch));
             }
-            protocol.sendMatchRoomInfo(info);
             break;
     }
 }

@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "client/dtos/AimInfo.h"
-#include "common/queue.h"
+#include "../../client/dtos/AimInfo.h"
+#include "../../common/queue.h"
 
 #include "client_protocol.h"
 #include "client_receiver.h"
@@ -39,7 +39,7 @@ public:
     // Acciones en el lobby (antes de empezar la partida)
     void LeaveMatch();  // regresa la menú principal
     void StartMatch();
-    std::vector<PlayerInfoLobby> refreshMatchRoom();
+    // std::vector<PlayerInfoLobby> refreshMatchRoom();
     std::vector<PlayerInfoLobby> refreshPlayersList();
     std::string getUsername() const { return username; }
     bool isCreator() const { return player_creator; }
@@ -49,14 +49,19 @@ public:
     GameInfo getGameInfo();     // sync
     GameInfo tryGetGameInfo();  // Async
 
+    // GameActions (pushea en la sender_queue internamente)
     void move(const Vec2D& direction);
     void shoot(const AimInfo& aimInfo);
     void rotate(float angle);
-    void pickUpItem(const Vec2D& playerPosition);
+    void changeWeapon(const TypeWeapon& typeWeapon);
+    void pickUpItem();
 
     ~Client();
 
     Status getStatus();
+
+private:
+    void startThreads();
 };
 
 #endif  // CLIENT_H_

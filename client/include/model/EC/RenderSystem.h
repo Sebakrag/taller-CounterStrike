@@ -3,20 +3,26 @@
 
 #include "client/include/model/Camera.h"
 #include "client/include/model/EC/ComponentManager.h"
+#include "client/include/model/FieldOfView.h"
 #include "client/include/model/Graphics.h"
 
 class RenderSystem {
 private:
-    void renderDroppedWeapons(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
-    // void renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
-    void renderPlayers(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
+    Entity local_player;
+    void renderDroppedWeapons(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
+                              const FieldOfView& player_FOV);
+    // void renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
+    // const FieldOfView& player_FOV);
+    void renderPlayers(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
+                       const FieldOfView& player_FOV);
     void renderEquippedWeapon(Graphics& graphics, ComponentManager& comp_mgr, Entity weapon_id,
-                              const Rect& player_dest_rect, double rotAngle);
+                              const Rect& player_dest_rect, float rotAngleDeg);
 
 public:
-    RenderSystem() = default;
+    explicit RenderSystem(Entity localPlayer);
 
-    void renderEntities(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera);
+    void renderEntities(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
+                        const FieldOfView& player_FOV);
 };
 
 #endif  // RENDERSYSTEM_H

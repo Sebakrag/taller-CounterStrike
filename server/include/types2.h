@@ -4,9 +4,11 @@
 // capaz que este archivo no hace falta. Si no hay mas
 // structs para definir, se puede definir en otro lado
 #include <memory>
+#include <utility>
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/queue.h"
+#include "weapon/weapon.h"
 
 struct PlayerCommunicationChannels {
     std::shared_ptr<Queue<GameInfo>> senderQueue;
@@ -17,7 +19,14 @@ struct DroppedWeapon {
     std::unique_ptr<Weapon_> weapon;
     Vec2D position;
 
-    DroppedWeapon(std::unique_ptr<Weapon_> w, Vec2D pos) : weapon(std::move(w)), position(pos) {}
+    DroppedWeapon(std::unique_ptr<Weapon_> w, const Vec2D pos):
+            weapon(std::move(w)), position(pos) {}
+    WeaponInfo generateWeaponInfo() const {
+        WeaponInfo weaponInfo(weapon->generateWeaponInfo(WeaponState::DROPPED));
+        weaponInfo.pos_x = position.getX();
+        weaponInfo.pos_y = position.getY();
+        return weaponInfo;
+    }
 };
 
 

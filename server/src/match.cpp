@@ -2,10 +2,42 @@
 
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
-Match::Match(const TileMap& tilemap):
-        map(tilemap), phase(GamePhase::Preparation), roundsPlayed(0) {}
+#include "../include/scenario_registry.h"
+
+// Inicializo las variables estáticas (para poder compilar)
+bool Match::initialized = false;
+double Match::ROUND_DURATION = 0;
+double Match::PREPARATION_TIME = 0;
+int Match::MAX_ROUNDS = 0;
+
+void Match::init(double round_duration, double preparation_time, int max_rounds) {
+    if (initialized == false) {
+        ROUND_DURATION = round_duration;
+        PREPARATION_TIME = preparation_time;
+        MAX_ROUNDS = max_rounds;
+        initialized = true;
+    }
+}
+
+Match::Match(const std::string& id_scenario):
+        id_scenario(id_scenario),
+        map(ScenarioRegistry::getTileMap(id_scenario)),
+        phase(GamePhase::Preparation),
+        roundsPlayed(0),
+        roundTimer(PREPARATION_TIME) {
+    // TODO: Harcodeo un dropped weapon para probar. Eliminarlo.
+    auto ak47 = std::make_unique<WeaponAk47>();
+    droppedWeapons.emplace_back(DroppedWeapon{std::move(ak47), {300, 300}});
+    auto m3 = std::make_unique<WeaponM3>();
+    droppedWeapons.emplace_back(DroppedWeapon{std::move(m3), {400, 350}});
+    auto awp = std::make_unique<WeaponAwp>();
+    droppedWeapons.emplace_back(DroppedWeapon{std::move(awp), {600, 380}});
+    // auto bomb = std::make_unique<Bomb>();
+    // droppedWeapons.emplace_back(DroppedWeapon{std::move(bomb), {300, 300}});
+}
 
 void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
@@ -23,8 +55,9 @@ bool Match::addPlayer(const std::string& username) {
     Team assignedTeam =
             (terroristCount <= counterTerroristCount) ? Team::Terrorist : Team::CounterTerrorist;
 
-    std::cout << "Agregando jugador " << username << " al equipo " << (assignedTeam == Team::Terrorist ? " Terrorista" : "Antiterrorista") << std::endl;
-    Player newPlayer(username, assignedTeam);
+    std::cout << "Agregando jugador " << username << " al equipo "
+              << (assignedTeam == Team::Terrorist ? " Terrorista" : "Antiterrorista") << std::endl;
+    Player newPlayer(username, assignedTeam, Vec2D(500, 200));
     players.push_back(std::move(newPlayer));
     return true;
 }
@@ -64,7 +97,15 @@ bool Match::movePlayer(const std::string& playerName, const float dx, const floa
         return false;
     }
 }
+
 void Match::processAction(const PlayerAction& action, const float deltaTime) {
+    if (phase == GamePhase::Preparation) {
+        // processActionShop(const PlayerAction& action, const float deltaTime)
+    } else if (phase == GamePhase::Combat) {
+        // precessActionMatch(const PlayerAction& action, const float deltaTime)
+    } else {  // end of the match
+        return;
+    }
     Player* player = getPlayer(action.player_username);
     if (!player || !player->isAlive())
         return;
@@ -93,7 +134,8 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 
                 Vec2D dir = gameAction.direction;
                 float norm = std::sqrt(dir.getX() * dir.getX() + dir.getY() * dir.getY());
-                if (norm == 0) break;
+                if (norm == 0)
+                    break;
 
                 float dirX = dir.getX() / norm;
                 float dirY = dir.getY() / norm;
@@ -110,16 +152,16 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 
             case GameActionType::PickUp: {
                 for (auto it = droppedWeapons.begin(); it != droppedWeapons.end(); ++it) {
-                    if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(), it->position.getX(), it->position.getY())) {
-                        //Drop de arma equipada
+                    if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(),
+                                                          it->position.getX(),
+                                                          it->position.getY())) {
+                        // Drop de arma equipada
                         if (player->getPrimaryWeapon()) {
-                            droppedWeapons.emplace_back(
-                                std::move(player->dropPrimaryWeapon()),
-                                Vec2D(player->getX(), player->getY())
-                                );
+                            droppedWeapons.emplace_back(std::move(player->dropPrimaryWeapon()),
+                                                        Vec2D(player->getX(), player->getY()));
                         }
 
-                        //Pickup arma dropeada
+                        // Pickup arma dropeada
                         player->setPrimaryWeapon(std::move(it->weapon));
                         droppedWeapons.erase(it);
                         break;
@@ -127,12 +169,13 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 }
 
                 if (bomb.isDropped() &&
-                    PhysicsEngine::playerTouchingItem(player->getX(), player->getY(), bomb.getX(), bomb.getY())) {
+                    PhysicsEngine::playerTouchingItem(player->getX(), player->getY(), bomb.getX(),
+                                                      bomb.getY())) {
                     if (player->getTeam() == Team::Terrorist) {
                         bomb.pickUp(player->getId());
                         std::cout << "Jugador " << player->getId() << " agarro la bomba. \n";
                     }
-                    }
+                }
                 return;
             }
 
@@ -175,12 +218,18 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 }
 
 void Match::updateState(double elapsedTime) {
-    //std::cout << "UpdateState " << roundTimer << " : Juego en fase " << (phase == GamePhase::Preparation ? "Preparation " : "Combate ") << std::endl;
+    // std::cout << "UpdateState " << roundTimer << " : Juego en fase " << (phase ==
+    // GamePhase::Preparation ? "Preparation " : "Combate ") << std::endl;
     if (roundOver)
         return;
 
     roundTimer -= elapsedTime;
-
+    // std::cout << "roundTimer " << roundTimer << std::endl;
+    if (phase == GamePhase::Preparation) {
+        if (roundTimer <= 0)
+            advancePhase();
+        return;
+    }
     if (phase == GamePhase::Combat && roundTimer <= 0 && !bomb.isPlanted()) {
         std::cout << "Se acabo el tiempo sin plantar la bomba. Ganan los antiterroristas\n";
         roundOver = true;
@@ -196,16 +245,20 @@ void Match::updateState(double elapsedTime) {
 
 
     // Actualizamos los proyectiles
-    for (auto& proj : projectiles) {
-        if (!proj.isActive()) continue;
+    for (auto& proj: projectiles) {
+        if (!proj.isActive())
+            continue;
 
         proj.update(static_cast<float>(elapsedTime));
 
-        for (auto& target : players) {
-            if (target.getId() == proj.getShooter() || !target.isAlive()) continue;
+        for (auto& target: players) {
+            if (target.getId() == proj.getShooter() || !target.isAlive())
+                continue;
 
             float impactDist;
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), proj.getDirX(), proj.getDirY(), map, target, proj.getMaxDistance(), impactDist)) {
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), proj.getDirX(),
+                                             proj.getDirY(), map, target, proj.getMaxDistance(),
+                                             impactDist)) {
                 const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
                 target.takeDamage(weapon->getDamage());
 
@@ -218,7 +271,8 @@ void Match::updateState(double elapsedTime) {
                     //Dropeo de arma
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
                     if (droppedWeapon)
-                        droppedWeapons.emplace_back(std::move(droppedWeapon), Vec2D(target.getX(), target.getY()));
+                        droppedWeapons.emplace_back(std::move(droppedWeapon),
+                                                    Vec2D(target.getX(), target.getY()));
                     if (bomb.isCarriedBy(target.getId())) {
                         bomb.drop(target.getX(), target.getY());
                     }
@@ -231,16 +285,16 @@ void Match::updateState(double elapsedTime) {
             }
         }
 
-        //Detectamos colisión con pared
+        // Detectamos colisión con pared
         if (!map.isWalkable(static_cast<int>(proj.getX()), static_cast<int>(proj.getY()))) {
             proj.deactivate();
         }
     }
 
-    //Eliminamos proyectiles inactivos
+    // Eliminamos proyectiles inactivos
     projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
-                                            [](const Projectile& p) { return !p.isActive(); }),
-                                            projectiles.end());
+                                     [](const Projectile& p) { return !p.isActive(); }),
+                      projectiles.end());
 
     checkRoundEnd();
 
@@ -260,7 +314,8 @@ void Match::processPlant(const std::string& playerName) {
         return;
 
     if (bomb.plant(player->getX(), player->getY(), map)) {
-        std::cout << "Player " << playerName << " planted the bomb at (" << player->getX() << ", " << player->getY() << ")\n";
+        std::cout << "Player " << playerName << " planted the bomb at (" << player->getX() << ", "
+                  << player->getY() << ")\n";
     }
 }
 
@@ -269,8 +324,8 @@ void Match::processDefuse(const std::string& playerName) {
     if (!player || !player->isAlive() || player->getTeam() != Team::CounterTerrorist)
         return;
 
-    if (bomb.isPlanted() &&
-        PhysicsEngine::playerTouchingItem(player->getX(), player->getY(), bomb.getX(), bomb.getY())) {
+    if (bomb.isPlanted() && PhysicsEngine::playerTouchingItem(player->getX(), player->getY(),
+                                                              bomb.getX(), bomb.getY())) {
         if (bomb.defuse()) {
             std::cout << "Player " << playerName << " defused the bomb!\n";
             roundOver = true;
@@ -280,7 +335,7 @@ void Match::processDefuse(const std::string& playerName) {
 }
 
 void Match::checkRoundEnd() {
-    if (roundOver)
+    if (roundOver || phase == GamePhase::Preparation || players.size() == 1)
         return;
 
     bool terroristsLeft = false;
@@ -297,7 +352,8 @@ void Match::checkRoundEnd() {
 
     if (!terroristsLeft) {
         if (bomb.isPlanted()) {
-            std::cout << "Todos los terroristas murieron pero la bomba esta plantada. Se espera desactivacion...\n";
+            std::cout << "Todos los terroristas murieron pero la bomba esta plantada. Se espera "
+                         "desactivacion...\n";
             return;
         }
         roundOver = true;
@@ -310,61 +366,88 @@ void Match::checkRoundEnd() {
     }
 }
 
-GameInfo Match::generateGameInfo() const {
+bool Match::containsPlayer(const std::string& username) const {
+    for (const Player& p: players) {
+        if (p.getId() == username) {
+            return true;
+        }
+    }
+    return false;
+}
+
+LocalPlayerInfo Match::generateLocalPlayerInfo(const std::string& username) const {
+    for (const Player& p: players) {
+        if (p.getId() == username) {
+            return p.generateLocalPlayerInfo();
+        }
+    }
+    throw std::runtime_error("El Player no existe en la partida");
+}
+// MatchInfo Match::generateMatchInfo() const {
+//     MatchInfo mattchInfo(name)
+// }
+int Match::countPlayers() const { return players.size(); }
+const std::string& Match::getIdScenario() const { return id_scenario; }
+
+
+GameInfo Match::generateGameInfo(const std::string& username) const {
+
+    LocalPlayerInfo localPlayerInfo;
     std::vector<PlayerInfo> playersInfo;
-    unsigned int id = 0;  // temporal. debe ser un atributo de cada objeto
-                          // std::cout << "hay " << players.size() << " players" << std::endl;
-    for (const auto& p: players) {
-        id++;
-
-        PlayerInfo info(id, p.getId(), p.getTeam(), PlayerSkin::CounterTerrorist1,
-                        Vec2D(p.getX(), p.getY()), p.getAngle(), p.getEquippedWeapon(),
-                        p.getHealth(), static_cast<int>(p.getMoney()),
-                        p.getPrimaryWeapon() ? p.getPrimaryWeapon()->getBullets() : 0);
-        playersInfo.push_back(info);
+    std::vector<WeaponInfo> weaponsInfo;  // armas dropeadas. se puede cambiar el nombre capaz
+    // std::cout << "hay " << players.size() << " players" << std::endl;
+    for (const Player& p: players) {
+        if (p.getId() == username) {
+            localPlayerInfo = p.generateLocalPlayerInfo();
+        } else {
+            playersInfo.emplace_back(p.generatePlayerInfo());
+        }
+        WeaponInfo weaponInfo(
+                p.getEquippedWeaponInstance()->generateWeaponInfo(WeaponState::EQUIPPED));
+        weaponsInfo.emplace_back(weaponInfo);
     }
 
-    std::vector<ProjectileInfo> projectileInfo;
-    for (const auto& p : projectiles) {
-        projectileInfo.emplace_back(
-            p.getX(),
-            p.getY(),
-            p.getDirX(),
-            p.getDirY(),
-            p.getShooter(),
-            p.getWeaponUsed(),
-            p.isActive()
-        );
+    std::vector<BulletInfo> bulletsInfo;
+    for (auto& p: projectiles) {
+        bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
+                                 Vec2D(p.getDirX(), p.getDirY()));
     }
 
-    float timeToSend = roundTimer;
-    if (phase == GamePhase::Combat && bomb.isPlanted()) {
-        timeToSend = static_cast<float>(bomb.getTimer());
+    for (auto& droppedWeapon: droppedWeapons) {
+        weaponsInfo.emplace_back(droppedWeapon.generateWeaponInfo());
     }
+
+    float timeLeft = roundTimer;
+    if (bomb.isPlanted()) {
+        timeLeft = bomb.getTimer();
+    }
+
     BombInfo bombInfo(bomb.getServerId(), bomb.getState(), Vec2D(bomb.getX(), bomb.getY()));
     ShopInfo shopInfo;
     if (phase == GamePhase::Preparation) {
         shopInfo = Shop::getInfo();
     }
 
-    GameInfo gameInfo(this->phase, timeToSend, bombInfo, shopInfo, playersInfo, projectileInfo);
-    return gameInfo;
+    return GameInfo(this->phase, bombInfo, shopInfo, timeLeft,
+                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo);
 }
 
-void Match::showPlayers() const {
-    std::cout << "Players in match:\n";
-    for (const auto& p: players) {
-        std::cout << " - Player " << p.getId() << " en (" << p.getX() << "," << p.getY() << ") "
-                  << (p.isAlive() ? "[VIVO]" : "[MUERTO]") << "\n";
-    }
-}
+// void Match::showPlayers() const {
+//     std::cout << "Players in match:\n";
+//     for (const auto& p: players) {
+//         std::cout << " - Player " << p.getId() << " en (" << p.getX() << "," << p.getY() << ") "
+//                   << (p.isAlive() ? "[VIVO]" : "[MUERTO]") << "\n";
+//     }
+// }
 
-void Match::handleKnifeAttack(Player *attacker, const Vec2D &direction) {
-    for (auto& target : players) {
-        if (target.getId() == attacker->getId() || !target.isAlive()) continue;
+void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
+    for (auto& target: players) {
+        if (target.getId() == attacker->getId() || !target.isAlive())
+            continue;
 
         float impactDistance;
-        if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(), direction.getY(), target, impactDistance)) {
+        if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
+                                    direction.getY(), target, impactDistance)) {
             target.takeDamage(20);
         }
     }
@@ -374,7 +457,7 @@ void Match::advancePhase() {
     if (phase == GamePhase::Preparation) {
         std::cout << "==> INICIA RONDA " << roundsPlayed + 1 << "\n";
 
-        //Limpieza entre rondas
+        // Limpieza entre rondas
         bomb.reset();
         projectiles.clear();
         droppedWeapons.clear();
@@ -384,7 +467,7 @@ void Match::advancePhase() {
             p.setEquippedWeapon(TypeWeapon::Knife);
         }
 
-        //Asignar la bomba a un terrorista vivo
+        // Asignar la bomba a un terrorista vivo
         std::vector<Player*> terrorists;
         for (auto& p: players) {
             if (p.getTeam() == Team::Terrorist)
@@ -408,23 +491,24 @@ void Match::advancePhase() {
 
         std::cout << "==> TERMINO LA RONDA " << roundsPlayed << "\n";
 
-        //Cambio de lados a la mitad
+        // Cambio de lados a la mitad
         if (roundsPlayed == MAX_ROUNDS / 2) {
             std::cout << "==> Cambio de lados!\n";
             for (auto& p: players) {
-                Team newTeam = (p.getTeam() == Team::Terrorist) ? Team::CounterTerrorist : Team::Terrorist;
+                Team newTeam =
+                        (p.getTeam() == Team::Terrorist) ? Team::CounterTerrorist : Team::Terrorist;
                 p.setTeam(newTeam);
             }
         }
 
-        //Fin de la partida
+        // Fin de la partida
         if (roundsPlayed >= MAX_ROUNDS) {
             std::cout << "==> PARTIDA TERMINADA\n";
             phase = GamePhase::EndOfMatch;
             return;
         }
 
-        //Pasar a la fase de preparacion
+        // Pasar a la fase de preparacion
         roundTimer = PREPARATION_TIME;
         phase = GamePhase::Preparation;
 
@@ -439,8 +523,4 @@ void Match::advancePhase() {
     }
 }
 
-GamePhase Match::getGamePhase() const {
-    return phase;
-}
-
-
+GamePhase Match::getGamePhase() const { return phase; }

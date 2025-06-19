@@ -4,28 +4,72 @@
 #include <iostream>
 #include <string>
 
-#include "server/include/id_generator.h"
+#include "../../server/include/id_generator.h"
 
-Player::Player(const std::string& name, const Team team):
+//-------------
+// Inicializo las variables estáticas (para poder compilar)
+bool Player::initialized = false;
+float Player::PLAYER_SPEED = 0;
+float Player::INITIAL_MONEY = 0;
+int Player::INITIAL_HEALTH = 0;
+
+
+void Player::init(float player_speed, float initial_money, int initial_health) {
+    if (initialized == false) {
+        PLAYER_SPEED = player_speed;
+        INITIAL_MONEY = initial_money;
+        INITIAL_HEALTH = initial_health;
+        initialized = true;
+    }
+}
+//---------
+Player::Player(const std::string& name, const Team team, const Vec2D& position):
+        serverId(IdGenerator::getNextId()),
         name(name),
         team(team),
-        posX(320),
-        posY(200),
-        health(100),
+        posX(position.getX()),
+        posY(position.getY()),
+        health(INITIAL_HEALTH),
         state(PlayerState::Idle),
+        speed(PLAYER_SPEED),
         knife(WeaponFactory::create(Weapon::Knife)),
+        primaryWeapon(WeaponFactory::create(
+                Weapon::Ak47)),  // esto hay que quitarlo cuando se pueda comprar armas.
         secondaryWeapon(WeaponFactory::create(Weapon::Glock)),
         equippedWeapon(TypeWeapon::Knife),
-        money(800),
+        id_weapon(knife->getServerId()),
+        money(INITIAL_MONEY),
         kills(0),
-        serverId(IdGenerator::getNextId()){}
+        skinT(PlayerSkin::Terrorist3),
+        skinCT(PlayerSkin::CounterTerrorist3) {
+    std::cout << "Server ID del Player: " << serverId << std::endl;
+    std::cout << "Server ID de la weapon: " << id_weapon << std::endl;
+}
 
 
 void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
     primaryWeapon = std::move(weapon);
 }
 
-void Player::setEquippedWeapon(TypeWeapon type) { equippedWeapon = type; }
+void Player::setEquippedWeapon(TypeWeapon type) {
+    switch (type) {
+        case TypeWeapon::Knife:
+            id_weapon = knife->getServerId();
+            break;
+        case TypeWeapon::Primary:
+            id_weapon = primaryWeapon->getServerId();
+            break;
+        case TypeWeapon::Secondary:
+            id_weapon = secondaryWeapon->getServerId();
+            break;
+        case TypeWeapon::Bomb:
+            // id_weapon = knife->getServerId(); // TODO: id para la bomba.
+            break;
+        default:
+            break;
+    }
+    equippedWeapon = type;
+}
 
 float Player::getX() const { return posX; }
 void Player::setX(const float x) { posX = x; }
@@ -61,7 +105,7 @@ Weapon Player::getSpecificEquippedWeapon() const {
     }
 }
 
-Weapon_* Player::getEquippedWeaponInstance() {
+Weapon_* Player::getEquippedWeaponInstance() const {
     switch (equippedWeapon) {
         case TypeWeapon::Knife:
             return knife.get();
@@ -74,9 +118,7 @@ Weapon_* Player::getEquippedWeaponInstance() {
     }
 }
 
-Weapon_ *Player::getPrimaryWeapon() const {
-    return primaryWeapon.get();
-}
+Weapon_* Player::getPrimaryWeapon() const { return primaryWeapon.get(); }
 
 bool Player::isAlive() const { return state != PlayerState::Dead; }
 
@@ -94,7 +136,8 @@ bool Player::canShoot(uint64_t currentTimeMs) const {
 }
 
 void Player::takeDamage(int dmg) {
-    if (!isAlive()) return;
+    if (!isAlive())
+        return;
 
     health -= dmg;
     if (health <= 0) {
@@ -105,18 +148,15 @@ void Player::takeDamage(int dmg) {
 
 std::vector<Projectile> Player::shoot(float dirX, float dirY, uint64_t currentTimeMs) {
     Weapon_* weapon = getEquippedWeaponInstance();
-    if (!weapon || !weapon->canShoot(currentTimeMs)) return {};
+    if (!weapon || !weapon->canShoot(currentTimeMs))
+        return {};
 
     return weapon->shoot(posX, posY, dirX, dirY, name, currentTimeMs);
 }
 
-std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() {
-    return std::move(primaryWeapon);
-}
+std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() { return std::move(primaryWeapon); }
 
-uint32_t Player::getServerId() const {
-    return serverId;
-}
+uint32_t Player::getServerId() const { return serverId; }
 
 void Player::revive() {
     health = 100;
@@ -124,8 +164,20 @@ void Player::revive() {
     // deberiamos resetear la posicion a la del spawn segun equipo
 }
 
-void Player::setTeam(Team newTeam) {
-    team = newTeam;
+void Player::setTeam(Team newTeam) { team = newTeam; }
+
+
+LocalPlayerInfo Player::generateLocalPlayerInfo() const {
+    PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
+    int ammo = 0;
+    if (equippedWeapon == TypeWeapon::Primary) {
+        ammo = primaryWeapon->getBullets();
+    } else if (equippedWeapon == TypeWeapon::Secondary) {
+        ammo = secondaryWeapon->getBullets();
+    }
+
+    return LocalPlayerInfo(serverId, team, currentSkin, Vec2D(posX, posY), angle, equippedWeapon,
+                           health, money, ammo, id_weapon);
 }
 
 bool Player::canAfford(int amount) const {
@@ -144,10 +196,9 @@ void Player::addMoney(int amount) {
     money += amount;
 }
 
+PlayerInfo Player::generatePlayerInfo() const {
+    PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
 
-
-
-
-
-
-
+    return PlayerInfo(serverId, name, team, currentSkin, Vec2D(posX, posY), angle, equippedWeapon,
+                      id_weapon);
+}

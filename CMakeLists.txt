@@ -104,6 +104,19 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
     FetchContent_MakeAvailable(SDL2 SDL2_image SDL2_mixer SDL2_ttf libSDL2pp)
 endif()
 
+# Agregar yaml-cpp para el editor y servidor
+if(TALLER_EDITOR OR TALLER_SERVER)
+    include(FetchContent)
+    FetchContent_Declare(
+        yaml-cpp
+        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+        GIT_TAG yaml-cpp-0.7.0
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(yaml-cpp)
+endif()
+
 # Program section
 # ---------------
 if(TALLER_CLIENT)
@@ -161,7 +174,11 @@ if(TALLER_SERVER)
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    target_link_libraries(taller_server 
+        PRIVATE
+        taller_common
+        yaml-cpp
+    )
 endif()
 
 if(TALLER_EDITOR)
@@ -181,7 +198,14 @@ if(TALLER_EDITOR)
     target_include_directories(taller_editor PRIVATE ${libSDL2pp_SOURCE_DIR})
 
     # Link the taller_common lib target
-    target_link_libraries(taller_editor taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_editor 
+        taller_common 
+        SDL2pp::SDL2pp
+        yaml-cpp
+        Qt6::Widgets
+        Qt6::Core
+        Qt6::Gui
+    )
 endif()
 
 

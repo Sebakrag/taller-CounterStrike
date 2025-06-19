@@ -1,17 +1,18 @@
 #include "../include/match_room.h"
 
 #include <memory>
+#include <stdexcept>
 #include <utility>
 
 #include "../include/scenario_registry.h"
 
 // Inicializo las variables estáticas (para poder compilar)
 bool MatchRoom::initialized = false;
-size_t MatchRoom::AMOUNT_PLAYERS = 0;
+size_t MatchRoom::MAX_PLAYERS = 0;
 
-void MatchRoom::init(size_t amountPlayers) {
+void MatchRoom::init(size_t max_players) {
     if (initialized == false) {
-        AMOUNT_PLAYERS = amountPlayers;
+        MAX_PLAYERS = max_players;
         initialized = true;
     }
 }
@@ -21,7 +22,7 @@ MatchRoom::MatchRoom(const std::string& name_match, const std::string& username_
                      std::shared_ptr<Queue<GameInfo>> playerQueue, const std::string& id_scenario):
         name_match(name_match),
         player_host(username_host),
-        match(ScenarioRegistry::getTileMap(id_scenario)),
+        match(id_scenario),
         id_scenario(id_scenario) {
     addPlayer(username_host, playerQueue);
 }
@@ -51,7 +52,7 @@ void MatchRoom::removePlayer(const std::string& username) {
     }
 }
 
-bool MatchRoom::isAvailable() { return players.size() < AMOUNT_PLAYERS && !started; }
+bool MatchRoom::isAvailable() { return players.size() < MAX_PLAYERS && !started; }
 
 bool MatchRoom::isEmpty() { return players.empty(); }
 
@@ -64,21 +65,17 @@ bool MatchRoom::isPlayerHost(const std::string& username) const { return usernam
 MatchRoomInfo MatchRoom::getMatchRoomInfo() {
     std::vector<PlayerInfoLobby> infos;
     for (const auto& [username, queuePtr]: players) {
-        infos.push_back(PlayerInfoLobby(username, Team::Terrorist));  // team hardcodeado
+        auto p = match.getPlayer(username);
+        if (p == nullptr) {
+            throw std::runtime_error("ERROR en MatchRoom::getMatchRoomInfo()");
+        }
+        infos.push_back(PlayerInfoLobby(username, p->getTeam()));
     }
 
     return MatchRoomInfo(infos, started);
 }
-// TileMap MatchRoom::getTileMap() {
-//     return match.getIdScenary()
-// }
-const std::string& MatchRoom::getIdScenary() { return id_scenario; }
-std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
-    std::list<std::shared_ptr<Queue<GameInfo>>> playerQueues;
 
-    for (const auto& pair: players) {
-        playerQueues.push_back(pair.second);
-    }
+std::shared_ptr<GameLoop> MatchRoom::createGameLoop() {
     started = true;
-    return std::make_shared<GameLoop>(std::move(match), playerQueues);
+    return std::make_shared<GameLoop>(match, players);
 }

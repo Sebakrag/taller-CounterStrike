@@ -69,7 +69,6 @@ public:
 
     std::vector<std::string> recvListMatchs();
 
-
     // recibe la lista de jugadores en la sala
     // y si la partida comenzó
     MatchRoomInfo recvUpdateMatchRoom();

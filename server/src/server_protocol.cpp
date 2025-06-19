@@ -33,12 +33,32 @@ void ServerProtocol::sendMatchInfo(const MatchInfo& matchInfo) {
     insertBigEndian16(matchInfo.win_config.height, buffer);
     insertBigEndian32(matchInfo.win_config.flags, buffer);
 
-    // cargo tilemap
+    // 3) FOVConfig
+    // isActive (1 byte)
+    buffer.push_back(encodeBool(matchInfo.fovConfig.isActive));
+    // screenWidth & screenHeight & circleRadius (2 bytes each)
+    insertBigEndian16(matchInfo.fovConfig.screenWidth, buffer);
+    insertBigEndian16(matchInfo.fovConfig.screenHeight,buffer);
+    insertBigEndian16(matchInfo.fovConfig.circleRadius,buffer);
+    // fovAngle, visibilityDistance, transparency (4 bytes cada uno)
+    insertFloat4Bytes(matchInfo.fovConfig.fovAngle, buffer);
+    insertFloat4Bytes(matchInfo.fovConfig.visibilityDistance, buffer);
+    insertFloat4Bytes(matchInfo.fovConfig.transparency, buffer);
 
+    // cargo tilemap
     std::vector<uint8_t> tilemap_bytes = matchInfo.tileMap.toBytes();
 
     insertBigEndian32(tilemap_bytes.size(), buffer);
     for (uint8_t& b: tilemap_bytes) {
+        buffer.push_back(b);
+    }
+    // numero de jugadores
+    insertBigEndian16(matchInfo.numPlayers, buffer);
+
+    // playerInfo
+    std::vector<uint8_t> playerInfobytes = matchInfo.localPlayerInfo.toBytes();
+    insertBigEndian16(playerInfobytes.size(), buffer);
+    for (uint8_t& b: playerInfobytes) {
         buffer.push_back(b);
     }
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
@@ -109,6 +129,7 @@ MenuAction ServerProtocol::recvMenuAction() {
     MenuActionType type = decodeMenuActionType(byte);
     std::string name = "";
     int id_scenary = 0;
+    
     if (type == Create || type == Join) {
         uint16_t length = recvBigEndian16();
         name.resize(length);

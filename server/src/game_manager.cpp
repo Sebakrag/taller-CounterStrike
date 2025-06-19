@@ -9,8 +9,7 @@
 
 /*GameManager::GameManager(const std::list<std::string>& escenarios) {
     // YOUR CODE
-}
-*/
+}*/
 bool GameManager::createMatch(const std::string& matchName, const std::string& username,
                               std::shared_ptr<Queue<GameInfo>> playerQueue,
                               const std::string& id_scenary) {
@@ -29,6 +28,7 @@ bool GameManager::createMatch(const std::string& matchName, const std::string& u
     lobbies.try_emplace(matchName, matchName, username, playerQueue, id_scenary);
 
     std::cout << username << " creó la partida " << matchName << std::endl;
+    std::cout << std::endl;
 
     return true;
 }
@@ -102,15 +102,21 @@ MatchRoomInfo GameManager::getMatchRoomInfo(const std::string& matchName) {
     return it->second.getMatchRoomInfo();
 }
 
-MatchInfo GameManager::getMatchInfo(const std::string& matchName) {
-    auto it = lobbies.find(matchName);
-    if (it == lobbies.end()) {  // no existe la partida
+MatchInfo GameManager::getMatchInfo(const std::string& matchName, const std::string& username) {
+    auto it2 = gameLoops.find(matchName);
+    if (it2 == gameLoops.end()) {  // no existe la partida
         throw std::runtime_error("No existe la partida.");
     }
-    std::string id_scenary = it->second.getIdScenary();
-    // TODO: Enviar numPlayers a traves de MatchInfo (ahora hardcodeo).
-    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
-                     ScenarioRegistry::getTileMap(id_scenary), 10);
+    const Match& match = it2->second->getMatch();
+    if (match.containsPlayer(username) == false) {
+        throw std::runtime_error("El usuario no está unido a esa partida.");
+    }
+    auto localPlayerInfo = match.generateLocalPlayerInfo(username);
+    std::string id_scenary = match.getIdScenario();
+    int numPlayers = match.countPlayers();
+    
+    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(), ScenarioRegistry::getFovConfig(),
+                     ScenarioRegistry::getTileMap(id_scenary), numPlayers, localPlayerInfo);
 }
 
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {

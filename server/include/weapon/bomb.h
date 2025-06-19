@@ -2,10 +2,11 @@
 #define BOMB_H
 
 #include <cstdint>
+#include <string>
 
-#include "server/include/map.h"
-#include "common/types.h"
-#include "server/include/id_generator.h"
+#include "../../../common/types.h"
+#include "../../../server/include/id_generator.h"
+#include "../../../server/include/map.h"
 
 class Bomb {
 private:
@@ -14,7 +15,7 @@ private:
     Vec2D plantedPosition;
     std::string carrierId;
     double timer;
-    const double TIME_TO_EXPLODE;
+    const double timeToExplode;
     uint32_t serverId;
 
 public:
@@ -49,6 +50,14 @@ public:
     uint32_t getServerId() const;
     double getTimer() const;
 
+    // CONSTANTES static para inicializar en server.cpp.
+private:
+    static bool initialized;  // para asegurar que se llame init una unica vez.
+    static double TIME_TO_EXPLODE;
+
+public:
+    // Para cargar los valores del config.yaml
+    static void init(double time_to_explode);
 };
 
 #endif

@@ -1,17 +1,17 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <vector>
-
+#include "../../../client/dtos/AimInfo.h"
+#include "../../../common/dtos/WindowConfig.h"
+#include "../../../common/game_info/game_info.h"
+#include "../../../common/tile_map.h"
 #include "EC/ComponentManager.h"
 #include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
 #include "EC/RenderSystem.h"
-#include "client/dtos/AimInfo.h"
-#include "common/dtos/EntitySnapshot.h"
-#include "common/dtos/WindowConfig.h"
 
 #include "Camera.h"
+#include "FieldOfView.h"
 #include "HUD.h"
 #include "Map.h"
 
@@ -25,6 +25,7 @@ private:
 
     Map map;
     Camera camera;
+    FieldOfView player_FOV;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
     HUD player_HUD;
@@ -37,10 +38,10 @@ public:
     /// @param numPlayers number of players that will play the game match.
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// ///
-    World(const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
-          const EntitySnapshot& firstLocalPlayerSnap);
+    World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
+          const LocalPlayerInfo& firstLocalPlayerSnap);
 
-    void update(float dt, const std::vector<EntitySnapshot>& snapshots);
+    void update(float dt, const GameInfo& gameInfo);
     void render(Graphics& graphics);
     AimInfo getPlayerAimInfo(int mouseX, int mouseY);
     Vec2D getPlayerPosition();

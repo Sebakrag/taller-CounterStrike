@@ -4,6 +4,7 @@
 #include "client/include/model/EC/components/SpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
+#include "model/EC/components/PlayerSpriteComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
@@ -56,6 +57,11 @@ void ComponentUpdater::updateComponents() {
         if (const auto weaponSpr = comp_mgr.getComponent<WeaponSpriteComponent>(e)) {
             if (const auto weapon = std::get_if<WeaponSnapshot>(&snap.data)) {
                 weaponSpr->setState(weapon->state);
+            }
+        }
+        if (const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e)) {
+            if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
+                playerSpr->setTypeWeaponEquipped(player->weapon_type);
             }
         }
 

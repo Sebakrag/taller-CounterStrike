@@ -45,7 +45,7 @@ public:
     bool isPlayerHost(const std::string& username) const;
 
     MatchRoomInfo getMatchRoomInfo();
-    const std::string& getIdScenary();
+
     // No se puede copiar.
     MatchRoom(const MatchRoom&) = delete;
     MatchRoom& operator=(const MatchRoom&) = delete;
@@ -54,11 +54,11 @@ public:
     // metodos static para inicializar constantes.
 private:
     static bool initialized;
-    static size_t AMOUNT_PLAYERS;
+    static size_t MAX_PLAYERS;  // cantidad máxima de jugadores en una partida.
 
 public:
     // Para cargar los valores del config.yaml
-    static void init(size_t amountPlayers);
+    static void init(size_t max_players);
 };
 
 

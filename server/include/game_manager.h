@@ -23,7 +23,8 @@ class GameManager {
     bool server_closed = false;
 
 public:
-    //    GameManager(lista de escenarios, configuraciones, etc) // redefinir el constructor despues
+
+    // GameManager(lista de escenarios, configuraciones, etc) // redefinir el constructor despues
 
     // devuelve true si pudo crear la partida correctamente
     bool createMatch(const std::string& matchName, const std::string& username,
@@ -41,13 +42,13 @@ public:
     bool StartMatch(const std::string& username, const std::string& matchName);
 
     MatchRoomInfo getMatchRoomInfo(const std::string& matchName);
-    MatchInfo getMatchInfo(const std::string& matchName);
+    MatchInfo getMatchInfo(const std::string& matchName, const std::string& username);
 
 
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue(const std::string& matchName);
 
     void killAllMatchs();
-
+        
 private:
     // void reapDeadGameloops();
 

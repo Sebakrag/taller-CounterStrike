@@ -1,9 +1,11 @@
-#include "client/include/model/utils/EventHandler.h"
+#include "../../../../client/include/model/utils/EventHandler.h"
 
 #include <SDL2/SDL.h>
+#include <SDL_scancode.h>
 
-#include "client/dtos/AimInfo.h"
-#include "common/utils/Vec2D.h"
+#include "../../../../client/dtos/AimInfo.h"
+#include "../../../../common/types.h"
+#include "../../../../common/utils/Vec2D.h"
 
 EventHandler::EventHandler(Client& client, World& world): client(client), world(world) {}
 
@@ -12,6 +14,7 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             gameIsRunning = false;
+            client.ExitGame();
             return;
         }
     }
@@ -22,6 +25,10 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
 
 void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
     const Uint8* state = SDL_GetKeyboardState(NULL);
+
+    // salir
+    if (state[SDL_SCANCODE_ESCAPE])
+        gameIsRunning = false;
 
     Vec2D direction(0, 0);
 
@@ -40,10 +47,16 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
     if ((direction.getX() != 0) || (direction.getY() != 0)) {
         client.move(direction);
     }
-
-
-    if (state[SDL_SCANCODE_ESCAPE])
-        gameIsRunning = false;
+    // cambiar de arma
+    if (state[SDL_SCANCODE_1]) {
+        client.changeWeapon(TypeWeapon::Primary);
+    } else if (state[SDL_SCANCODE_2]) {
+        client.changeWeapon(TypeWeapon::Secondary);
+    } else if (state[SDL_SCANCODE_3]) {
+        client.changeWeapon(TypeWeapon::Knife);
+    } else if (state[SDL_SCANCODE_4]) {
+        client.changeWeapon(TypeWeapon::Bomb);
+    }
 }
 
 void EventHandler::handleMouseEvents(const bool gameIsRunning) {
@@ -66,7 +79,7 @@ void EventHandler::handleMouseEvents(const bool gameIsRunning) {
     if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         client.shoot(aimInfo);
     } else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        client.pickUpItem(world.getPlayerPosition());
+        client.pickUpItem();
     } else {
         client.rotate(aimInfo.angle);
     }

@@ -38,8 +38,9 @@ void ClientProtocol::sendMenuAction(const MenuAction& action) {
     if (action.type == Create || action.type == Join) {
         insertBigEndian16(length, buffer);
         insertStringBytes(action.name_match, buffer);
-        if (action.type == Create)
+        if (action.type == Create) {
             buffer.push_back(action.id_scenary);
+        }
     }
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
@@ -101,20 +102,41 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     name.resize(length);
     socket.recvall(name.data(), sizeof(uint8_t) * length);
     std::cout << "nombre de la partida: " << name << std::endl;
-    // recivo el window_config
+    // recibo el window_config
     int window_width = recvBigEndian16();
     int window_heigth = recvBigEndian16();
     int window_flags = recvBigEndian32();
 
-    // recivo el tilemap
+    // 4) recibo FOVConfig
+    socket.recvall(&byte, sizeof(uint8_t));
+    bool isActive = decodeBool(byte);
+    int screenW = recvBigEndian16();
+    int screenH = recvBigEndian16();
+    int circleR = recvBigEndian16();
+    float fovAngle = recvFloat();
+    float visibilityDistance = recvFloat();
+    float transparency = recvFloat();
+    
+    // recibo el tilemap
     int size_buffer_tilemap = recvBigEndian32();
     std::cout << "-> size del buffer del tilemap: " << size_buffer_tilemap << std::endl;
     std::vector<uint8_t> bytes_tilemap(size_buffer_tilemap);
     socket.recvall(bytes_tilemap.data(), sizeof(uint8_t) * size_buffer_tilemap);
 
     TileMap tilemap(bytes_tilemap);
-    // TODO: Recibir numPlayers y agregarlo al constructor de MatchInfo (ahora lo hardcodeo).
-    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), tilemap, 10);
+    // numero de jugadores
+    int numPlayers = recvBigEndian16();
+
+    // playerInfo
+    int size_buffer = recvBigEndian16();
+    std::vector<uint8_t> playerInfobytes(size_buffer);
+    socket.recvall(playerInfobytes.data(), sizeof(uint8_t) * size_buffer);
+    LocalPlayerInfo localPlayerInfo(playerInfobytes);
+
+    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), 
+    FOVConfig(isActive, screenW, screenH, circleR, fovAngle, visibilityDistance, transparency), 
+            tilemap,
+                     numPlayers, localPlayerInfo);
 }
 
 

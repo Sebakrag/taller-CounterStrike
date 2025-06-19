@@ -2,14 +2,38 @@
 
 #include <cmath>
 
-WeaponM3::WeaponM3(): FireWeapon(70, 3000, 20, 60) {}
+//-------------
+// Inicializo las variables estáticas (para poder compilar)
+bool WeaponM3::initialized = false;
+int WeaponM3::DAMAGE = 0;
+float WeaponM3::PRICE = 0;
+int WeaponM3::INITIAL_BULLETS = 0;
+int WeaponM3::RATE_OF_FIRE = 0;
 
-Weapon WeaponM3::getWeaponType() const {
-    return Weapon::M3;
+
+void WeaponM3::init(int damage, float price, int bullets, int rate_of_fire) {
+    if (initialized == false) {
+        DAMAGE = damage;
+        PRICE = price;
+        INITIAL_BULLETS = bullets;
+        RATE_OF_FIRE = rate_of_fire;
+        initialized = true;
+    }
+}
+//------------
+
+WeaponM3::WeaponM3(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE) {}
+
+Weapon WeaponM3::getWeaponType() const { return Weapon::M3; }
+
+WeaponInfo WeaponM3::generateWeaponInfo(const WeaponState& state) {
+    return {serverId, Weapon::M3, state, bullets, 0, 0};
 }
 
-std::vector<Projectile> WeaponM3::shoot(float posX, float posY, float dirX, float dirY, const std::string &shooter, uint64_t currentTimeMs) {
-    if (!canShoot(currentTimeMs)) return {};
+std::vector<Projectile> WeaponM3::shoot(float posX, float posY, float dirX, float dirY,
+                                        const std::string& shooter, uint64_t currentTimeMs) {
+    if (!canShoot(currentTimeMs))
+        return {};
 
     lastShotTimeMs = currentTimeMs;
     bullets--;

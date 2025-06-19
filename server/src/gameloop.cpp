@@ -6,8 +6,9 @@
 #include <thread>
 #include <utility>
 
-GameLoop::GameLoop(Match&& match, std::list<std::shared_ptr<Queue<GameInfo>>> queuesPlayers):
-        match(std::move(match)),
+GameLoop::GameLoop(Match& match,
+                   const std::map<std::string, std::shared_ptr<Queue<GameInfo>>>& queuesPlayers):
+        match(match),
         queueActionsPlayers(std::make_shared<Queue<PlayerAction>>()),
         queuesPlayers(queuesPlayers) {}
 
@@ -30,19 +31,21 @@ void GameLoop::run() {
             match.updateState(1.0 / ITR_PER_SEC);
             if (match.getGamePhase() == GamePhase::EndOfMatch) {
                 std::cout << "==> Fase de fin de partida alcanzada. Finalizando el Gameloop\n";
-                //stop(); CONSULTAR ESTO, DEBERIA CORTAR?
+                // stop(); CONSULTAR ESTO, DEBERIA CORTAR?
             }
 
             // 2. envío el estado de juego a cada jugador
             for (auto it = queuesPlayers.begin(); it != queuesPlayers.end();) {
+                std::string user_name = it->first;
+                auto queue = it->second;
                 try {
-                    (*it)->try_push(match.generateGameInfo());
+                    queue->try_push(match.generateGameInfo(user_name));
                     ++it;
                 } catch (ClosedQueue& e) {  // si un jugador se fue de la partida (cerró el juego)
                     it = queuesPlayers.erase(it);  // borro queue y continúo
                     std::cout << "borro queue" << std::endl;
-                    if (queuesPlayers.size() ==
-                        0) {  // si se fueron todos los jugadores, termina el gameloop
+                    if (queuesPlayers.size() == 0) {
+                        // si se fueron todos los jugadores, termina el gameloop
                         stop();
                     }
                 }
@@ -55,7 +58,6 @@ void GameLoop::run() {
                 std::this_thread::sleep_for(time_expected - itr_time);  // sleep
             }
             // si tardé mas que el time_expected, ni duermo.
-            it++;
 
             // calculo cuando pasó un segundo.
             if (it % ITR_PER_SEC == 0) {
@@ -63,6 +65,7 @@ void GameLoop::run() {
                 seconds++;
                 it = 0;
             }
+            it++;
         }
     } catch (const std::exception& e) {
         std::cerr << "GameLoop: " << e.what() << std::endl;
@@ -77,4 +80,13 @@ void GameLoop::kill() {
     }
     stop();
 }
+
+// bool GameLoop::containsPlayer(const std::string& username) const {
+//     return match.containsPlayer(username);
+// }
+
+// PlayerInfo GameLoop::getPlayerInfo(const std::string& username) const {
+//     return match.generatePlayerInfo(username);
+// }
+const Match& GameLoop::getMatch() const { return match; }
 std::shared_ptr<Queue<PlayerAction>> GameLoop::getActionsQueue() { return queueActionsPlayers; }
