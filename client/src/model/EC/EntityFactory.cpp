@@ -4,6 +4,7 @@
 #include "../../../../client/include/model/EC/components/PlayerSpriteComponent.h"
 #include "../../../../client/include/model/EC/components/TransformComponent.h"
 #include "../../../../client/include/model/EC/components/WeaponSpriteComponent.h"
+#include "client/include/model/EC/components/SoundComponent.h"
 
 
 EntityFactory::EntityFactory(ComponentManager& cm, const int numPlayers): comp_mgr(cm) {
@@ -50,6 +51,8 @@ void EntityFactory::createEntityPlayer(const Entity& new_entt, const LocalPlayer
     const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
     equippedWeapon->setID(
             INVALID_ENTITY);  // TODO: Si lo dejamos asi, todo jugador empieza desarmado.
+
+    comp_mgr.addComponent<SoundComponent>(new_entt);
 }
 
 void EntityFactory::create_player_entt(const Entity& new_entt, const EntitySnapshot& snap) const {
@@ -63,6 +66,8 @@ void EntityFactory::create_player_entt(const Entity& new_entt, const EntitySnaps
         const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
         equippedWeapon->setID(
                 INVALID_ENTITY);  // TODO: Si lo dejamos asi, todo jugador empieza desarmado.
+
+        comp_mgr.addComponent<SoundComponent>(new_entt);
     } else {
         throw std::runtime_error("Error trying to create a Player entity.");
     }
@@ -79,6 +84,8 @@ void EntityFactory::create_weapon_entt(const Entity& new_entt, const EntitySnaps
         spriteComp->init(snap.sprite_type, weapon->state);
         std::cout << "Cree el arma con el serverID: " << snap.server_entt_id << "\n"
                   << "Tiene el estado: " << static_cast<int>(weapon->state) << std::endl;
+
+        comp_mgr.addComponent<SoundComponent>(new_entt);
     } else {
         throw std::runtime_error("Error trying to create a Weapon entity.");
     }

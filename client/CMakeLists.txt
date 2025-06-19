@@ -27,17 +27,20 @@ target_sources(taller_client
         src/model/Graphics.cpp
         src/model/HUD.cpp
         src/model/World.cpp
+        src/model/EC/AudioSystem.cpp
         src/model/EC/ComponentUpdater.cpp
         src/model/EC/EntityFactory.cpp
         src/model/EC/EntityManager.cpp
         src/model/EC/RenderSystem.cpp
         src/model/EC/components/PlayerSpriteComponent.cpp
+        src/model/EC/components/SoundComponent.cpp
         src/model/EC/components/TransformComponent.cpp
         src/model/EC/components/SpriteComponent.cpp
         src/model/EC/components/WeaponSpriteComponent.cpp
         src/model/utils/DynamicStencil.cpp
         src/model/utils/EventHandler.cpp
         src/model/utils/NumberRenderer.cpp
+        src/model/utils/SoundLibrary.cpp
         src/model/utils/SpriteMetadaProvider.cpp
         src/model/utils/SymbolsRenderer.cpp
         src/model/utils/TextureManager.cpp
@@ -74,6 +77,7 @@ target_sources(taller_client
         include/model/HUD.h
         include/model/Map.h
         include/model/World.h
+        include/model/EC/AudioSystem.h
         include/model/EC/Entity.h
         include/model/EC/EntityFactory.h
         include/model/EC/EntityManager.h
@@ -83,12 +87,15 @@ target_sources(taller_client
         include/model/EC/RenderSystem.h
         include/model/EC/components/EquippedWeaponComponent.h
         include/model/EC/components/PlayerSpriteComponent.h
+        include/model/EC/components/SoundComponent.h
         include/model/EC/components/SpriteComponent.h
         include/model/EC/components/TransformComponent.h
         include/model/EC/components/WeaponSpriteComponent.h
         include/model/utils/DynamicStencil.h
         include/model/utils/EventHandler.h
         include/model/utils/NumberRenderer.h
+        include/model/utils/SoundEvent.h
+        include/model/utils/SoundLibrary.h
         include/model/utils/SpriteMetadataProvider.h
         include/model/utils/SymbolsRenderer.h
         include/model/utils/TextureManager.h

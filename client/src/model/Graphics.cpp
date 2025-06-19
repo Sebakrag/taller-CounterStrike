@@ -11,11 +11,13 @@
 #define GAME_NAME "Counter Strike"
 
 Graphics::Graphics(const WindowConfig& config, const std::string& match_name):
-        sdl(SDL_INIT_VIDEO),
+        sdl(SDL_INIT_VIDEO || SDL_INIT_AUDIO),
         sdl_image(IMG_INIT_PNG | IMG_INIT_JPG),
+        sdl_mixer(MIX_INIT_OGG),
         sdl_ttf(),
         window(create_window(config, match_name)),
-        renderer(create_renderer(window)) {
+        renderer(create_renderer(window)),
+        mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) {
     TextureManager::init(renderer);
     DynamicStencil::init(renderer, config.width, config.height, FOV_CIRCLE_RADIUS, FOV_ANGLE,
                          STENCIL_ALPHA, VISIBILITY_DISTANCE);
@@ -66,3 +68,5 @@ void Graphics::clearWithTransparentBlack() {
     renderer.SetDrawColor(0, 0, 0, 0);
     renderer.Clear();
 }
+
+Mixer& Graphics::getMixer() { return mixer; }
