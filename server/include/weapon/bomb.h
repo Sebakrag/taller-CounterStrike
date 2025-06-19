@@ -46,6 +46,8 @@ public:
     Vec2D getPlantedPosition() const;
     std::string getCarrierId() const;
     BombState getState() const;
+    uint32_t getServerId() const;
+    double getTimer() const;
 
 };
 

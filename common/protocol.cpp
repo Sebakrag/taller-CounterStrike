@@ -374,6 +374,19 @@ uint8_t Protocol_::encodeTypeTileMap(const TypeTileMap& type) {
         return BYTE_MAP_TRAINING;
 }
 
+uint8_t Protocol_::encodeBombState(const BombState &state) {
+    switch (state) {
+        case BombState::Carried: return 0;
+        case BombState::Dropped: return 1;
+        case BombState::Planted: return 2;
+        case BombState::Exploded: return 3;
+        case BombState::Defused: return 4;
+        default:
+            throw std::runtime_error("Estado de bomba invalido para codificar");
+    }
+}
+
+
 
 // Decodificadores.
 //----------------------------------------------------------------------------------
@@ -581,6 +594,19 @@ TypeTileMap Protocol_::decodeTypeTileMap(uint8_t byte) {
             throw std::runtime_error("Error. Tipo de map desconcido. No se puede decodificar");
     }
 }
+
+BombState Protocol_::decodeBombState(uint8_t byte) {
+    switch (byte) {
+        case 0: return BombState::Carried;
+        case 1: return BombState::Dropped;
+        case 2: return BombState::Planted;
+        case 3: return BombState::Exploded;
+        case 4: return BombState::Defused;
+        default:
+            throw std::runtime_error("Byte invalido para estado de bomba.");
+    }
+}
+
 
 
 void Protocol_::shutDown(int how) { socket.shutdown(how); }

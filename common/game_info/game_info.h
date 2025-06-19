@@ -12,6 +12,8 @@
 #include "item_info.h"
 #include "player_info.h"
 #include "projectile_info.h"
+#include "bomb_info.h"
+#include "shop_info.h"
 
 // Acá están todos los datos que va a recibir la interfaz grafica
 // en cada frame. Son los que enviará el gameloop del server en cada iteración.
@@ -23,9 +25,8 @@ private:
 
 public:
     GamePhase gamePhase;
-    bool bombPlanted;
-    int bombX;
-    int bombY;
+    BombInfo bombInfo;
+    ShopInfo shopInfo;
     float timeLeft;  // En fase de preparación, indica los segundos que restan para comenzar el
                      // juego. En el juego, indica cuanto falta para que explote la bomba, luego de
                      // ser colocada.
@@ -37,9 +38,10 @@ public:
 
     GameInfo() {}
 
-    explicit GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles);
+    explicit GameInfo(GamePhase gamePhase, float timeLeft, const BombInfo& bombInfo, const ShopInfo& shopInfo,
+                      const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles);
 
-    explicit GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
+    explicit GameInfo(GamePhase gamePhase, const BombInfo& bombInfo, const ShopInfo& shopInfo, float timeLeft,
                       const std::vector<PlayerInfo>& players,
                       const std::vector<BulletInfo>& bullets, const std::vector<ItemInfo>& items);
 

@@ -14,6 +14,9 @@ target_sources(taller_common
         game_info/game_info.cpp
         game_info/bullet_info.cpp
         game_info/item_info.cpp
+        game_info/projectile_info.cpp
+        game_info/bomb_info.cpp
+        game_info/shop_info.cpp
 
         utils/Vec2D.cpp
         dtos/EntitySnapshot.cpp
@@ -37,6 +40,8 @@ target_sources(taller_common
         game_info/bullet_info.h
         game_info/item_info.h
         game_info/projectile_info.h
+        game_info/bomb_info.h
+        game_info/shop_info.h
 
         utils/Vec2D.h
         utils/EntityType.h

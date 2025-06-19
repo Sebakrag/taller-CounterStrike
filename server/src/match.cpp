@@ -324,9 +324,9 @@ GameInfo Match::generateGameInfo() const {
         playersInfo.push_back(info);
     }
 
-    std::vector<ProjectileInfo> projectileInfos;
+    std::vector<ProjectileInfo> projectileInfo;
     for (const auto& p : projectiles) {
-        projectileInfos.emplace_back(
+        projectileInfo.emplace_back(
             p.getX(),
             p.getY(),
             p.getDirX(),
@@ -337,7 +337,17 @@ GameInfo Match::generateGameInfo() const {
         );
     }
 
-    GameInfo gameInfo(this->phase, roundTimer, playersInfo, projectileInfos);
+    float timeToSend = roundTimer;
+    if (phase == GamePhase::Combat && bomb.isPlanted()) {
+        timeToSend = static_cast<float>(bomb.getTimer());
+    }
+    BombInfo bombInfo(bomb.getServerId(), bomb.getState(), Vec2D(bomb.getX(), bomb.getY()));
+    ShopInfo shopInfo;
+    if (phase == GamePhase::Preparation) {
+        shopInfo = Shop::getInfo();
+    }
+
+    GameInfo gameInfo(this->phase, timeToSend, bombInfo, shopInfo, playersInfo, projectileInfo);
     return gameInfo;
 }
 

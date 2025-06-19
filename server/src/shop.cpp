@@ -57,3 +57,7 @@ bool Shop::buyAmmo(Player& player, Weapon selectedWeapon, int amount) {
     fireWeapon->addBullets(amount);
     return true;
 }
+
+ShopInfo Shop::getInfo() {
+    return ShopInfo(weaponPrices, ammoPrices);
+}

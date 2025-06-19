@@ -116,6 +116,14 @@ BombState Bomb::getState() const {
     return state;
 }
 
+uint32_t Bomb::getServerId() const {
+    return serverId;
+}
+
+double Bomb::getTimer() const {
+    return timer;
+}
+
 
 
 

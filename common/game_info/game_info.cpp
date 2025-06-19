@@ -13,22 +13,21 @@
 //         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30)
 //         {}
 
-GameInfo::GameInfo(GamePhase gamePhase, float timeLeft, const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles):
+GameInfo::GameInfo(GamePhase gamePhase, float timeLeft, const BombInfo& bombInfo, const ShopInfo& shopInfo,
+                   const std::vector<PlayerInfo>& players, const std::vector<ProjectileInfo>& projectiles):
         gamePhase(gamePhase),
-        bombPlanted(false),
-        bombX(0),
-        bombY(0),
+        bombInfo(bombInfo),
+        shopInfo(shopInfo),
         timeLeft(timeLeft),
         players(players),
         projectiles(projectiles) {}
 
-GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
+GameInfo::GameInfo(GamePhase gamePhase, const BombInfo& bombInfo, const ShopInfo& shopInfo, float timeLeft,
                    const std::vector<PlayerInfo>& players, const std::vector<BulletInfo>& bullets,
                    const std::vector<ItemInfo>& items):
         gamePhase(gamePhase),
-        bombPlanted(bombPlanted),
-        bombX(bombX),
-        bombY(bombY),
+        bombInfo(bombInfo),
+        shopInfo(shopInfo),
         timeLeft(timeLeft),
         players(players),
         bullets(bullets),
@@ -37,25 +36,25 @@ GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, 
 GameInfo::GameInfo(const GameInfo& other):
         entities(other.entities),
         gamePhase(other.gamePhase),
-        bombPlanted(other.bombPlanted),
-        bombX(other.bombX),
-        bombY(other.bombY),
+        bombInfo(other.bombInfo),
+        shopInfo(other.shopInfo),
         timeLeft(other.timeLeft),
         players(other.players),
         bullets(other.bullets),
-        items(other.items) {}
+        items(other.items),
+        projectiles(other.projectiles) {}
 
 GameInfo& GameInfo::operator=(const GameInfo& other) {
     if (this != &other) {
         entities = other.entities;
         gamePhase = other.gamePhase;
-        bombPlanted = other.bombPlanted;
-        bombX = other.bombX;
-        bombY = other.bombY;
+        bombInfo = other.bombInfo;
+        shopInfo = other.shopInfo;
         timeLeft = other.timeLeft;
         players = other.players;
         bullets = other.bullets;
         items = other.items;
+        projectiles = other.projectiles;
     }
     return *this;
 }
@@ -131,13 +130,32 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         index += SIZE_ITEM_INFO;
     }
 
+    // Projectiles info
+    uint16_t numProjectiles = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+    index += 2;
+
+    for (uint16_t i = 0; i < numProjectiles; ++i) {
+        size_t projStart = index;
+
+        size_t lenOffset = projStart + 16;
+        uint16_t nameLen = Protocol_::getValueBigEndian16(bytes[lenOffset], bytes[lenOffset + 1]);
+        size_t totalSize = 18 + nameLen;
+
+        std::vector<uint8_t> projBytes(bytes.begin() + index, bytes.begin() + index + totalSize);
+        projectiles.emplace_back(projBytes);
+        index += totalSize;
+    }
+
     // Bomb info
-    bombPlanted = Protocol_::decodeBool(bytes[index]);
-    index += 1;
-    bombX = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
-    bombY = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
+    std::vector<uint8_t> bombBytes(bytes.begin() + index, bytes.begin() + index + 21);
+    bombInfo = BombInfo(bombBytes);
+    index += 21;
+
+    // Shop info
+    size_t remaining = bytes.size() - index - 4;
+    std::vector<uint8_t> shopBytes(bytes.begin() + index, bytes.begin() + index + remaining);
+    shopInfo = ShopInfo(shopBytes);
+    index += remaining;
 
     // Time left
     timeLeft =
@@ -173,10 +191,21 @@ std::vector<uint8_t> GameInfo::toBytes() const {
         auto item_bytes = item.toBytes();
         buffer.insert(buffer.end(), item_bytes.begin(), item_bytes.end());
     }
+
+    // Projectiles
+    Protocol_::insertBigEndian16(projectiles.size(), buffer);
+    for (const auto& proj: projectiles) {
+        auto bytes = proj.toBytes();
+        buffer.insert(buffer.end(), bytes.begin(), bytes.end());
+    }
+
     // bomb
-    buffer.push_back(Protocol_::encodeBool(bombPlanted));
-    Protocol_::insertBigEndian16(bombX, buffer);
-    Protocol_::insertBigEndian16(bombY, buffer);
+    auto bombBytes = bombInfo.toBytes();
+    buffer.insert(buffer.end(), bombBytes.begin(), bombBytes.end());
+
+    // shop
+    auto shopBytes = shopInfo.toBytes();
+    buffer.insert(buffer.end(), shopBytes.begin(), shopBytes.end());
 
     // time
     Protocol_::insertFloat4Bytes(timeLeft, buffer);
@@ -204,8 +233,7 @@ void GameInfo::print() const {
     }
 
     std::cout << "\nBomb:" << std::endl;
-    std::cout << "Planted: " << (bombPlanted ? "Yes" : "No") << std::endl;
-    std::cout << "Position: (" << bombX << "," << bombY << ")" << std::endl;
+    bombInfo.print();
 
     std::cout << "\nTime Left: " << timeLeft << std::endl;
 }

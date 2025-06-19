@@ -7,7 +7,7 @@
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
 
-#define RENDER_SCALAR 2
+#define RENDER_SCALAR 1
 
 void RenderSystem::renderEntities(Graphics& graphics, ComponentManager& comp_mgr,
                                   const Camera& camera) {

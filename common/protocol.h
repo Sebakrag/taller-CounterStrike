@@ -72,6 +72,7 @@ public:
     static uint8_t encodeTypeItem(const TypeItem&);
     static uint8_t encodeEntityType(const EntityType& entityType);
     static uint8_t encodeTypeTileMap(const TypeTileMap&);
+    static uint8_t encodeBombState(const BombState& state);
 
     // Decodificadores. Devuelven el valor del enum correspondiente al byte.
     static bool decodeBool(uint8_t byte);
@@ -87,6 +88,7 @@ public:
     static TypeItem decodeTypeItem(uint8_t byte);
     static EntityType decodeEntityType(uint8_t byte);
     static TypeTileMap decodeTypeTileMap(uint8_t byte);
+    static BombState decodeBombState(uint8_t byte);
 
     void shutDown(int how);
 };
