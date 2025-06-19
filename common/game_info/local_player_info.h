@@ -8,7 +8,7 @@
 #include "../../client/include/model/utils/SpriteType.h"
 #include "../types.h"
 
-#define SIZE_LOCAL_PLAYER_INFO 29
+#define SIZE_LOCAL_PLAYER_INFO 30
 
 struct LocalPlayerInfo {
     ServerEntityID server_entt_id;
@@ -25,7 +25,7 @@ struct LocalPlayerInfo {
 
     LocalPlayerInfo() {}
 
-    LocalPlayerInfo(ServerEntityID server_entt_id, Team team, PlayerSkin skin,
+    LocalPlayerInfo(ServerEntityID server_entt_id, Team team, PlayerSkin skin, PlayerState state,
                     const Vec2D& position, float angle_direction, TypeWeapon weapon_type,
                     int health, int money, int ammo, ServerEntityID equipped_weapon_id);
 

@@ -3,7 +3,8 @@
 #include <stdexcept>
 
 WeaponInfo::WeaponInfo(const ServerEntityID server_entt_id, const Weapon weapon,
-                       const WeaponState state, const int ammo, const int pos_x, const int pos_y):
+                       const WeaponState state, const int ammo, const float pos_x,
+                       const float pos_y):
         server_entt_id(server_entt_id),
         weapon(weapon),
         state(state),
@@ -28,9 +29,9 @@ WeaponInfo::WeaponInfo(const std::vector<uint8_t>& bytes) {
     // ammo (2 bytes)
     ammo = Protocol_::getValueBigEndian16(bytes[6], bytes[7]);
 
-    // pos (2 bytes cada uno)
-    pos_x = Protocol_::getValueBigEndian16(bytes[8], bytes[9]);
-    pos_y = Protocol_::getValueBigEndian16(bytes[10], bytes[11]);
+    // pos (4 bytes cada uno)
+    pos_x = Protocol_::getFloat(bytes[8], bytes[9], bytes[10], bytes[11]);
+    pos_y = Protocol_::getFloat(bytes[12], bytes[13], bytes[14], bytes[15]);
 }
 
 std::vector<uint8_t> WeaponInfo::toBytes() const {
@@ -45,8 +46,8 @@ std::vector<uint8_t> WeaponInfo::toBytes() const {
     // ammo (2bytes)
     Protocol_::insertBigEndian16(ammo, buffer);
     // pos (2 bytes cada uno)
-    Protocol_::insertBigEndian16(pos_x, buffer);
-    Protocol_::insertBigEndian16(pos_y, buffer);
+    Protocol_::insertFloat4Bytes(pos_x, buffer);
+    Protocol_::insertFloat4Bytes(pos_y, buffer);
 
     return buffer;
 }

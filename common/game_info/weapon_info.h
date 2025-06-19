@@ -7,19 +7,19 @@
 #include "../protocol.h"
 #include "../types.h"
 
-#define SIZE_ITEM_INFO 12
+#define SIZE_ITEM_INFO 16
 
 struct WeaponInfo {
     ServerEntityID server_entt_id;
     Weapon weapon;
     WeaponState state;
     int ammo = 0;  // si es un arma, tendrá sus balas
-    int pos_x;
-    int pos_y;
+    float pos_x;
+    float pos_y;
 
     WeaponInfo() = default;
-    WeaponInfo(ServerEntityID server_entt_id, Weapon weapon, WeaponState state, int ammo, int pos_x,
-               int pos_y);
+    WeaponInfo(ServerEntityID server_entt_id, Weapon weapon, WeaponState state, int ammo,
+               float pos_x, float pos_y);
 
     WeaponInfo(const WeaponInfo& other) = default;
     WeaponInfo& operator=(const WeaponInfo& other) = default;

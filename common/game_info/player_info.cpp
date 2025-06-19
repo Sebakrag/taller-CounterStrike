@@ -15,14 +15,14 @@ PlayerInfo::PlayerInfo():
         angle_direction(0) {}
 
 PlayerInfo::PlayerInfo(const ServerEntityID server_entt_id, const std::string& name,
-                       const Team team, const PlayerSkin skin, const Vec2D& position,
-                       const float angle_direction, const TypeWeapon weapon_type,
-                       const ServerEntityID equipped_weapon_id):
+                       const Team team, const PlayerSkin skin, PlayerState state,
+                       const Vec2D& position, const float angle_direction,
+                       const TypeWeapon weapon_type, const ServerEntityID equipped_weapon_id):
         server_entt_id(server_entt_id),
         username(name),
         team(team),
         skin(skin),
-        state(PlayerState::Idle),
+        state(state),
         position(position.getX(), position.getY()),
         angle_direction(angle_direction),
         weapon_type(weapon_type),
