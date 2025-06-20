@@ -208,8 +208,7 @@ void Match::updateState(double elapsedTime) {
     projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
                                      [](const Projectile& p) { return !p.isActive(); }),
                       projectiles.end());
-    // std::cout << "UpdateState " << roundTimer << " : Juego en fase " << (phase ==
-    // GamePhase::Preparation ? "Preparation " : "Combate ") << std::endl;
+
     if (roundOver)
         return;
     current_time += elapsedTime;
@@ -246,8 +245,11 @@ void Match::updateState(double elapsedTime) {
                 continue;
 
             float impactDist;
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), target, impactDist)) {
-                const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
+            //const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
+            const std::unique_ptr<Weapon_> rawWeapon = WeaponFactory::create(proj.getWeaponUsed());
+            auto* weapon = dynamic_cast<FireWeapon*>(rawWeapon.get());
+            if (!weapon) continue;
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), target, *weapon, impactDist)) {
 
                 if (!isFriendlyFire(proj.getShooter(), target.getTeam())) {
                     target.takeDamage(weapon->getDamage());

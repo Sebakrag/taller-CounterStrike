@@ -4,6 +4,7 @@
 #include <cmath>
 #include <memory>
 #include <vector>
+#include <random>
 
 #include "map.h"
 #include "player.h"
@@ -13,7 +14,7 @@
 class PhysicsEngine {
 public:
     static void movePlayer(Player& player, float dirX, float dirY, float deltaTime, Map& map);
-    static bool shotHitPlayer(float projX, float projY, const Player& target, float& impactDistance);
+    static bool shotHitPlayer(float projX, float projY, const Player& target, const FireWeapon& weapon, float& impactDistance);
     static float calculatePrecisionByDistance(float distance, float maxRange, float basePrecision);
     static bool knifeHit(float originX, float originY, float dirX, float dirY, const Player& target,
                          float& outDist);

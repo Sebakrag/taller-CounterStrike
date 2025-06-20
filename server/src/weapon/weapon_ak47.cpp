@@ -2,6 +2,8 @@
 
 #include <complex>
 
+#include "yaml-cpp/emittermanip.h"
+
 //-------------
 // Inicializo las variables estáticas (para poder compilar)
 bool WeaponAk47::initialized = false;
@@ -9,20 +11,24 @@ int WeaponAk47::DAMAGE = 0;
 float WeaponAk47::PRICE = 0;
 int WeaponAk47::INITIAL_BULLETS = 0;
 int WeaponAk47::RATE_OF_FIRE = 0;
+float WeaponAk47::PRECISION = 0;
+float WeaponAk47::MAX_RANGE = 0;
 
 
-void WeaponAk47::init(int damage, float price, int bullets, int rate_of_fire) {
+void WeaponAk47::init(int damage, float price, int bullets, int rate_of_fire, float precision, float max_range) {
     if (initialized == false) {
         DAMAGE = damage;
         PRICE = price;
         INITIAL_BULLETS = bullets;
         RATE_OF_FIRE = rate_of_fire;
+        PRECISION = precision;
+        MAX_RANGE = max_range;
         initialized = true;
     }
 }
 //------------
 
-WeaponAk47::WeaponAk47(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE) {}
+WeaponAk47::WeaponAk47(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE) {}
 
 Weapon WeaponAk47::getWeaponType() const { return Weapon::Ak47; }
 
