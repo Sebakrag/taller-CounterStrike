@@ -1,6 +1,7 @@
 #ifndef SOUNDLIBRARY_H
 #define SOUNDLIBRARY_H
 
+#include <string>
 #include <unordered_map>
 
 #include <SDL2pp/Chunk.hh>
@@ -16,6 +17,7 @@ private:
     void loadSound(SoundEvent ev, const std::string& filepath);
     void loadPLayerSounds();
     void loadBombSounds();
+    void loadRadioSounds();
 
 public:
     SoundLibrary();
@@ -24,4 +26,4 @@ public:
     Chunk* get(SoundEvent ev);
 };
 
-#endif //SOUNDLIBRARY_H
+#endif  // SOUNDLIBRARY_H

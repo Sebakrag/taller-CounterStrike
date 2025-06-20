@@ -35,4 +35,4 @@ public:
     // }
 };
 
-#endif //SOUNDCOMPONENT_H
+#endif  // SOUNDCOMPONENT_H

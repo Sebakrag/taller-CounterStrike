@@ -6,7 +6,7 @@
 
 SoundLibrary::SoundLibrary() {
     loadPLayerSounds();
-    loadBombSounds();
+    // loadBombSounds();
     loadRadioSounds();
 }
 
@@ -27,7 +27,8 @@ Chunk* SoundLibrary::get(const SoundEvent ev) {
 }
 
 void SoundLibrary::loadSound(const SoundEvent ev, const std::string& filepath) {
-    if (sounds.contains(ev)) return;
+    if (sounds.contains(ev))
+        return;
 
     sounds.emplace(ev, Chunk(filepath));
 }
@@ -38,7 +39,6 @@ void SoundLibrary::loadPLayerSounds() {
     loadSound(SoundEvent::ChangeWeapon, CHANGE_WEAPON_SOUND);
     loadSound(SoundEvent::Shoot, SHOOT_SOUND);
     loadSound(SoundEvent::Die, DIE_SOUND);
-
 }
 
 void SoundLibrary::loadBombSounds() {

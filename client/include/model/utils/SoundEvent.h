@@ -16,4 +16,4 @@ enum class SoundEvent {
     BombExploded,
 };
 
-#endif //SOUNDEVENT_H
+#endif  // SOUNDEVENT_H

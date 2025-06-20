@@ -96,15 +96,13 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
         Vec2D dpos(curr_pos - prev_info.position);
         if (dpos.calculateNormSquared() > MIN_MOVEMENT_EPSILON * MIN_MOVEMENT_EPSILON)
             soundComp.addEvent(SoundEvent::Walk);
-
+        std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
+                  << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
         if (prev_info.state != curr_state) {
             switch (curr_state) {
                 case PlayerState::Attacking:
                     soundComp.addEvent(SoundEvent::Shoot);
                     break;
-                // case PlayerState::Walking:
-                //     soundComp.addEvent(SoundEvent::Walk);
-                //     break;
                 case PlayerState::PickingUp:
                     soundComp.addEvent(SoundEvent::ChangeWeapon);
                     break;
@@ -121,7 +119,8 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
     }
 
     // Guardar snapshot actual para próxima comparación
-    previous_player_info[e] = {curr_state, curr_weapon, curr_pos};
+    // previous_player_info[e] = {curr_state, curr_weapon, curr_pos};
+    previous_player_info.insert_or_assign(e, PreviousPlayerInfo{curr_state, curr_weapon, curr_pos});
 }
 
 

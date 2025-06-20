@@ -1,14 +1,15 @@
 #ifndef AUDIOSYSTEM_H
 #define AUDIOSYSTEM_H
 
+#include "SDL2pp/Mixer.hh"
 #include "common/utils/Vec2D.h"
 #include "model/utils/SoundLibrary.h"
-#include "SDL2pp/Mixer.hh"
 
 #include "ComponentManager.h"
 
-constexpr float MAX_SOUND_DISTANCE = 600.0f;  // TODO: Quizas que lo podemos agregar al archivo de config del server.
-constexpr int MAX_SOUNDS_PER_FRAME = 10;     // Limite global de reproducción de sonidos por frame
+constexpr float MAX_SOUND_DISTANCE =
+        600.0f;  // TODO: Quizas que lo podemos agregar al archivo de config del server.
+constexpr int MAX_SOUNDS_PER_FRAME = 10;  // Limite global de reproducción de sonidos por frame
 
 using SDL2pp::Mixer;
 
@@ -27,4 +28,4 @@ public:
     void update();
 };
 
-#endif //AUDIOSYSTEM_H
+#endif  // AUDIOSYSTEM_H
