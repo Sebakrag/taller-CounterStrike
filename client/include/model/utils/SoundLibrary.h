@@ -24,6 +24,7 @@ public:
 
     // Chunk& get(SoundEvent ev);
     Chunk* get(SoundEvent ev);
+    bool isLoopSound(SoundEvent ev) const;
 };
 
 #endif  // SOUNDLIBRARY_H

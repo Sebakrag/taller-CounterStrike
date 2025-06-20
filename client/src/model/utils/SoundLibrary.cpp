@@ -26,6 +26,16 @@ Chunk* SoundLibrary::get(const SoundEvent ev) {
     return &it->second;
 }
 
+bool SoundLibrary::isLoopSound(const SoundEvent ev) const {
+    switch (ev) {
+        case SoundEvent::Walk:
+            return true;
+        default:
+            return false;
+    }
+}
+
+
 void SoundLibrary::loadSound(const SoundEvent ev, const std::string& filepath) {
     if (sounds.contains(ev))
         return;

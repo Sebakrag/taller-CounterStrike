@@ -12,34 +12,34 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
         render_sys(local_player),
-        audio_sys(comp_mgr, graphics.getMixer(), local_player) {}
+        audio_sys(comp_mgr, graphics.getMixer()) {}
 
 
 void World::update(float dt, const GameInfo& gameInfo) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
     // gameInfo.print();
-    std::cout << "hay " << gameInfo.bullets.size() << " balas en el mapa" << std::endl;
-    for (auto b: gameInfo.bullets) {
-        b.print();
-    }
+    // std::cout << "hay " << gameInfo.bullets.size() << " balas en el mapa" << std::endl;
+    // for (auto b: gameInfo.bullets) {
+    //     b.print();
+    // }
     currentWeapon = gameInfo.localPlayer.weapon;
-    const std::vector<EntitySnapshot> snapshots = gameInfo.getSnapshots();
-    comp_updater.update(snapshots);
+    local_player_pos = gameInfo.localPlayer.position;
+
+    comp_updater.update(gameInfo.getSnapshots());
 
     player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
 
-    audio_sys.update();  // Play the sound effects.
+    audio_sys.update(local_player_pos);  // Play the sound effects.
 }
 
 void World::render(Graphics& graphics) {
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-    const Vec2D playerPos = tCompLocalPlayer->getPosition();
     // std::cout << playerPos << std::endl;
-    camera.follow(playerPos);
+    camera.follow(local_player_pos);
 
     map.render2(graphics, camera);
 
-    player_FOV.render(graphics, playerPos, tCompLocalPlayer->getRotationAngleDegrees());
+    player_FOV.render(graphics, local_player_pos, tCompLocalPlayer->getRotationAngleDegrees());
 
     render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
@@ -52,14 +52,9 @@ AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
     // relativas al mundo (o al mapa) en vez de las relativas a la pantalla.
     mouseWorldPos += camera.getOffset();
 
-    Vec2D aimDir = mouseWorldPos - getPlayerPosition();
+    Vec2D aimDir = mouseWorldPos - local_player_pos;
     aimDir.normalize();
     const float angle = aimDir.calculateAngleDegrees();
 
     return {aimDir, angle, currentWeapon};
-}
-
-Vec2D World::getPlayerPosition() {
-    const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-    return tCompLocalPlayer->getPosition();
 }

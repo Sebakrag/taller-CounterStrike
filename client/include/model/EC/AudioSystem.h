@@ -1,6 +1,8 @@
 #ifndef AUDIOSYSTEM_H
 #define AUDIOSYSTEM_H
 
+#include <unordered_map>
+
 #include "SDL2pp/Mixer.hh"
 #include "common/utils/Vec2D.h"
 #include "model/utils/SoundLibrary.h"
@@ -18,14 +20,15 @@ private:
     SoundLibrary sound_lib;
     ComponentManager& comp_mgr;
     Mixer& mixer;  // TODO: Quizas es buena idea encapsular el mixer en un modulo/clase Audio.
-    Entity local_player;
+
+    std::unordered_map<Entity, std::unordered_map<SoundEvent, int>> activeLoops;
 
     float calculateVolume(const Vec2D& soundPos, const Vec2D& listenerPos) const;
 
 public:
-    AudioSystem(ComponentManager& cm, Mixer& m, Entity lp);
+    AudioSystem(ComponentManager& cm, Mixer& m);
 
-    void update();
+    void update(const Vec2D& listenerPos);
 };
 
 #endif  // AUDIOSYSTEM_H

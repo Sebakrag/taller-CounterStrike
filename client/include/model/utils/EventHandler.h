@@ -1,6 +1,7 @@
 #ifndef EVENTHANDLER_H
 #define EVENTHANDLER_H
 
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_stdinc.h>
 
 #include "../../../../client/include/client.h"

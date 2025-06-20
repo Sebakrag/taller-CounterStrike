@@ -88,33 +88,25 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
     if (const auto it = previous_player_info.find(e); it != previous_player_info.end()) {
         const auto& prev_info = it->second;
 
-        if (prev_info.weapon_id != curr_weapon)
-            soundComp.addEvent(SoundEvent::ChangeWeapon);
-
-        // TODO: para sonido de hit podemos guardar y comparar la vida.
-        // TODO: para saber si esta caminando podria guardar y comparar la posicion (pensarlo).
         Vec2D dpos(curr_pos - prev_info.position);
         if (dpos.calculateNormSquared() > MIN_MOVEMENT_EPSILON * MIN_MOVEMENT_EPSILON)
             soundComp.addEvent(SoundEvent::Walk);
+
+        if (prev_info.weapon_id != curr_weapon)
+            soundComp.addEvent(SoundEvent::ChangeWeapon);
+
+        // TODO: para sonido de hit y die podemos guardar y comparar la vida.
+
         std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
                   << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
-        if (prev_info.state != curr_state) {
-            switch (curr_state) {
-                case PlayerState::Attacking:
-                    soundComp.addEvent(SoundEvent::Shoot);
-                    break;
-                case PlayerState::PickingUp:
-                    soundComp.addEvent(SoundEvent::ChangeWeapon);
-                    break;
-                case PlayerState::Dead:
-                    soundComp.addEvent(SoundEvent::Die);
-                    break;
-                case PlayerState::DefusingBomb:
-                    soundComp.addEvent(SoundEvent::DefuseBomb);  // Este es un sonido loop
-                    break;
-                default:
-                    break;
-            }
+
+        if (curr_state == PlayerState::Attacking) {
+            // Quizas que deberia enviar un evento de sonido al componente de su arma.
+            // (en el caso de que querramos distinguir sonidos de arma.)
+            soundComp.addEvent(SoundEvent::Shoot);
+        } else if (curr_state == PlayerState::PickingUp) {
+            soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: podria cambiarle el sonido a
+                                                           // drop(no aca, en los paths.).
         }
     }
 
@@ -123,6 +115,24 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
     previous_player_info.insert_or_assign(e, PreviousPlayerInfo{curr_state, curr_weapon, curr_pos});
 }
 
+
+// if (prev_info.state != curr_state) {
+//     switch (curr_state) {
+//         case PlayerState::Attacking:
+//             soundComp.addEvent(SoundEvent::Shoot);
+//             break;
+//         case PlayerState::PickingUp:
+//             soundComp.addEvent(SoundEvent::ChangeWeapon);
+//             break;
+//         case PlayerState::Dead:
+//             soundComp.addEvent(SoundEvent::Die);
+//             break;
+//         case PlayerState::DefusingBomb:
+//             soundComp.addEvent(SoundEvent::DefuseBomb); // Este es un sonido loop
+//             break;
+//         default:
+//             break;
+//     }
 
 // if (prev_state != curr_state) {
 //     if (curr_state == PlayerState::Attacking) {
