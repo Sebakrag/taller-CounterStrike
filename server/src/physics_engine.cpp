@@ -31,40 +31,18 @@ void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float del
     }
 }
 
-bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, float dirY, Map& map,
-                                  const Player& target, float maxDistance, float& impactDistance) {
-    // Normalizar la dirección
-    const float len = std::sqrt(dirX * dirX + dirY * dirY);
-    if (len == 0.0f)
-        return false;
-    dirX /= len;
-    dirY /= len;
 
-    float stepSize = 0.1f;
-    float x = originX;
-    float y = originY;
-    float distance = 0.0f;
+bool PhysicsEngine::shotHitPlayer(float projX, float projY,
+                                  const Player& target, float& impactDistance) {
+    float dx = target.getX() - projX;
+    float dy = target.getY() - projY;
 
+    float distance = std::sqrt(dx * dx + dy * dy);
     float targetRadius = 15.0f;
 
-    while (distance < maxDistance) {
-        // verificamos colision con el mapa
-        if (!map.isWalkable(static_cast<int>(x), static_cast<int>(y))) {
-            return false;
-        }
-
-        const float dx = target.getX() - x;
-        const float dy = target.getY() - y;
-        float distToTarget = std::sqrt(dx * dx + dy * dy);
-
-        if (distToTarget < targetRadius) {  // radio del hitbox
-            impactDistance = distance;
-            return true;
-        }
-
-        x += dirX * stepSize;
-        y += dirY * stepSize;
-        distance += stepSize;
+    if (distance < targetRadius) {
+        impactDistance = distance;
+        return true;
     }
 
     return false;

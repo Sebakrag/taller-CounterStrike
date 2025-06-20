@@ -68,6 +68,7 @@ private:
     // void processActionMatch(Player* player, const GameAction &gameAction, const float deltaTime);
     void handleKnifeAttack(Player* attacker, const Vec2D& direction);
     void setPosSpawnPlayer(Player& p);
+    bool isFriendlyFire(const std::string& shooterId, Team targetTeam) const;
 
 
     // CONSTANTES static para inicializar en server.cpp.

@@ -3,8 +3,8 @@
 #include <stdexcept>
 
 BulletInfo::BulletInfo(const ServerEntityID id, const Weapon weapon, const float pos_x,
-                       const float pos_y, const Vec2D& direction):
-        id(id), weapon(weapon), pos_x(pos_x), pos_y(pos_y), direction(direction) {}
+                       const float pos_y, const Vec2D& direction, bool active):
+        id(id), weapon(weapon), pos_x(pos_x), pos_y(pos_y), direction(direction), active(active) {}
 
 BulletInfo::BulletInfo(const std::vector<uint8_t>& bytes) {
     // Chequear el size y lanzar excepcion
@@ -25,6 +25,9 @@ BulletInfo::BulletInfo(const std::vector<uint8_t>& bytes) {
     // Direction (3 bytes cada componente)
     direction.setX(Protocol_::getFloatNormalized(bytes[13], bytes[14], bytes[15]));
     direction.setY(Protocol_::getFloatNormalized(bytes[16], bytes[17], bytes[18]));
+
+    // Active (1 byte)
+    active = Protocol_::decodeBool(bytes[19]);
 }
 
 std::vector<uint8_t> BulletInfo::toBytes() const {
@@ -44,6 +47,9 @@ std::vector<uint8_t> BulletInfo::toBytes() const {
     Protocol_::insertFloatNormalized3Bytes(direction.getX(), buffer);
     Protocol_::insertFloatNormalized3Bytes(direction.getY(), buffer);
 
+    // Active (1 byte)
+    buffer.push_back(Protocol_::encodeBool(active));
+
     return buffer;
 }
 
@@ -52,7 +58,7 @@ void BulletInfo::print() const {
               << "id=" << id << ", weapon=" << static_cast<int>(weapon) << ", pos=(" << pos_x
               << ", " << pos_y << ")"
               << ", dir=(" << direction.getX() << ", " << direction.getY() << ")"
-              << " }\n";
+              << ", active=" << (active ? "true" : "false") << " }\n";
 }
 
 SpriteType BulletInfo::getSpriteType() { return SpriteType::BULLET; }

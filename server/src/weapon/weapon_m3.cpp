@@ -39,7 +39,7 @@ std::vector<Projectile> WeaponM3::shoot(float posX, float posY, float dirX, floa
     bullets--;
 
     std::vector<Projectile> projectiles;
-    const int numPellets = 3;
+    const int numPellets = 5;
     const float spreadAngle = 0.15f;
 
     for (int i = 0; i < numPellets; ++i) {

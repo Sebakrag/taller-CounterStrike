@@ -1,5 +1,7 @@
 #include "../../include/weapon/weapon_ak47.h"
 
+#include <complex>
+
 //-------------
 // Inicializo las variables estáticas (para poder compilar)
 bool WeaponAk47::initialized = false;
@@ -40,8 +42,26 @@ std::vector<Projectile> WeaponAk47::shoot(float posX, float posY, float dirX, fl
     bullets -= bulletsToShoot;
 
     std::vector<Projectile> projectiles;
+
+    // Normalizamos el vector perpendicular
+    float length = std::sqrt(dirX * dirX + dirY * dirY);
+    float normDirX = dirX;
+    float normDirY = dirY;
+    if (length != 0) {
+        normDirX /= length;
+        normDirY /= length;
+    }
+
+    // Offset entre proyectiles de la rafaga
+    float offset = 12.0f;
+
     for (int i = 0; i < bulletsToShoot; ++i) {
-        Projectile p(posX, posY, dirX, dirY, 450.0f, 900.0f, shooter, Weapon::Ak47);
+        float offsetFactor = i * offset;
+        float spawnX = posX - normDirX * offsetFactor;
+        float spawnY = posY - normDirY * offsetFactor;
+
+        //Projectile p(posX, posY, dirX, dirY, 450.0f, 900.0f, shooter, Weapon::Ak47);
+        Projectile p(spawnX, spawnY, dirX, dirY, 450.0f, 900.0f, shooter, Weapon::Ak47);
         projectiles.push_back(p);
     }
 

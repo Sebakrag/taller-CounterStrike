@@ -95,7 +95,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         BulletInfo b(bulletBytes);
         bullets.emplace_back(b);
         EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, b.pos_x, b.pos_y,
-                              b.direction.calculateAngleDegrees(), true);
+                              b.direction.calculateAngleDegrees(), b.active);
         entities.emplace_back(entity);
 
         index += SIZE_BULLET_INFO;
