@@ -21,6 +21,7 @@ void World::update(float dt, const GameInfo& gameInfo) {
     for (auto b: gameInfo.bullets) {
         b.print();
     }
+    currentWeapon = gameInfo.localPlayer.weapon;
     const std::vector<EntitySnapshot> snapshots = gameInfo.getSnapshots();
     comp_updater.update(snapshots);
 
@@ -54,7 +55,7 @@ AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
     aimDir.normalize();
     const float angle = aimDir.calculateAngleDegrees();
 
-    return {aimDir, angle};
+    return {aimDir, angle, currentWeapon};
 }
 
 Vec2D World::getPlayerPosition() {

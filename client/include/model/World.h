@@ -28,6 +28,7 @@ private:
     FieldOfView player_FOV;
 
     Entity local_player;  // This is the actual player that interacts with his own program.
+    Weapon currentWeapon = Weapon::Knife;  // para consultar en EventHandler
     HUD player_HUD;
     RenderSystem render_sys;
 

@@ -5,7 +5,7 @@
 LocalPlayerInfo::LocalPlayerInfo(const ServerEntityID server_entt_id, const Team team,
                                  const PlayerSkin skin, PlayerState state, const Vec2D& position,
                                  const float angle_direction, const TypeWeapon weapon_type,
-                                 const int health, const int money, const int ammo,
+                                 Weapon weapon, const int health, const int money, const int ammo,
                                  const ServerEntityID equipped_weapon_id):
         server_entt_id(server_entt_id),
         team(team),
@@ -14,6 +14,7 @@ LocalPlayerInfo::LocalPlayerInfo(const ServerEntityID server_entt_id, const Team
         position(position.getX(), position.getY()),
         angle_direction(angle_direction),
         weapon_type(weapon_type),
+        weapon(weapon),
         health(health),
         money(money),
         ammo_weapon(ammo),
@@ -62,8 +63,9 @@ std::vector<uint8_t> LocalPlayerInfo::toBytes() const {
     // angulo de direccion (4 bytes)
     Protocol_::insertFloat4Bytes(angle_direction, buffer);
 
-    // 7 bytes
+    // 8 bytes
     buffer.push_back(Protocol_::encodeTypeWeapon(weapon_type));
+    buffer.push_back(Protocol_::encodeWeapon(weapon));
     Protocol_::insertBigEndian16(health, buffer);
     Protocol_::insertBigEndian16(money, buffer);
     Protocol_::insertBigEndian16(ammo_weapon, buffer);
@@ -101,6 +103,7 @@ LocalPlayerInfo::LocalPlayerInfo(const std::vector<uint8_t>& bytes) {
 
     // Leer arma, salud, dinero y munición
     weapon_type = Protocol_::decodeTypeWeapon(bytes[index++]);
+    weapon = Protocol_::decodeWeapon(bytes[index++]);
     health = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
     money = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);

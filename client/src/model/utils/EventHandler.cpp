@@ -20,7 +20,7 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
             if (e.key.repeat == 0)
                 handleKeyDown(e.key.keysym.scancode, gameIsRunning);
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-            // handleMouseButtonDown(e.button);
+            handleMouseButtonDown(e.button);
         }
     }
 
@@ -100,20 +100,13 @@ void EventHandler::handleMouseEvents(const bool gameIsRunning) {
     const Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
 
     const AimInfo aimInfo = world.getPlayerAimInfo(mouseX, mouseY);
-
-    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        client.shoot(aimInfo);
-    } else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        client.pickUpItem();
-    } else if (aimInfo.angle != lastAimAngle) {  // Solo rotar si el ángulo realmente cambió
+    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {  // si mantiene el click izquierdo
+        if (aimInfo.currentWeapon == Weapon::Ak47) {
+            client.shoot(aimInfo);
+        }
+    }
+    if (aimInfo.angle != lastAimAngle) {  // Solo rotar si el ángulo realmente cambió
         client.rotate(aimInfo.angle);
         lastAimAngle = aimInfo.angle;
     }
-    //
-    // const AimInfo aimInfo = world.getPlayerAimInfo(mouseX, mouseY);
-    // // Solo rotar si el ángulo realmente cambió
-    // if (aimInfo.angle != lastAimAngle) {
-    //     client.rotate(aimInfo.angle);
-    //     lastAimAngle = aimInfo.angle;
-    // }
 }

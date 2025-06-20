@@ -190,7 +190,8 @@ LocalPlayerInfo Player::generateLocalPlayerInfo() const {
     }
 
     return LocalPlayerInfo(serverId, team, currentSkin, state, Vec2D(posX, posY), angle,
-                           equippedWeapon, health, money, ammo, id_weapon);
+                           equippedWeapon, getSpecificEquippedWeapon(), health, money, ammo,
+                           id_weapon);
 }
 
 PlayerInfo Player::generatePlayerInfo() const {
