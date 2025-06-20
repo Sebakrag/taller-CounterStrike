@@ -48,7 +48,7 @@ private:
 
 class BombZone: public MapElement {
 public:
-    BombZone(const QPointF& pos, const QSizeF& size = QSizeF(50, 50));
+    explicit BombZone(const QPointF& pos, const QSizeF& size = QSizeF(50, 50));
 
     QSizeF getSize() const;
     void setSize(const QSizeF& size);

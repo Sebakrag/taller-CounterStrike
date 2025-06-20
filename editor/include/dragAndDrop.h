@@ -15,7 +15,7 @@
 
 class DragAndDrop: public QGraphicsPixmapItem {
 public:
-    DragAndDrop(const QPixmap& pixmap, qreal scale = 1.0, QGraphicsScene* scene = nullptr);
+    explicit DragAndDrop(const QPixmap& pixmap, qreal scale = 1.0, QGraphicsScene* scene = nullptr);
     int getTipoElemento() const;
     void setTipoElemento(int tipo);
 

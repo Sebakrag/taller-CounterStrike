@@ -1231,9 +1231,8 @@ void MapEditor::loadMapFromFile(const QString& fileName) {
     foreach (QGraphicsItem* item, scene->items()) {
         if (dynamic_cast<DragAndDrop*>(item)) {
             itemsToRemove.append(item);
-        }
-        // También eliminar tiles (son QGraphicsPixmapItem con zValue -0.5)
-        else if (QGraphicsItem* pixmapItem = dynamic_cast<QGraphicsItem*>(item)) {
+        } else if (QGraphicsItem* pixmapItem = dynamic_cast<QGraphicsItem*>(item)) {
+            // También eliminar tiles (son QGraphicsPixmapItem con zValue -0.5)
             if (pixmapItem->zValue() == -0.5 && dynamic_cast<TileItem*>(pixmapItem)) {
                 itemsToRemove.append(item);
             }

@@ -38,7 +38,7 @@ class DragAndDrop;
 class MapEditor: public QMainWindow {
 
 public:
-    MapEditor(QWidget* parent = nullptr);
+    explicit MapEditor(QWidget* parent = nullptr);
     ~MapEditor();  // Corregir la declaración duplicada del destructor
 
     // Event filter para capturar eventos de ratón

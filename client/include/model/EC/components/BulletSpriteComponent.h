@@ -3,6 +3,6 @@
 
 #include "SpriteComponent.h"
 
-class BulletSpriteComponent : public SpriteComponent {};
+class BulletSpriteComponent: public SpriteComponent {};
 
-#endif //BULLETSPRITECOMPONENT_H
+#endif  // BULLETSPRITECOMPONENT_H
