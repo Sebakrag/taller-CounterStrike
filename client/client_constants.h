@@ -51,8 +51,10 @@
 
 
 // Sounds
-#define STEP_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")
+// #define STEP_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")
+#define STEP_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_two_steps.wav")
 #define PICKUP_SOUND (PLAYER_SOUNDS_PATH + "/pickup.wav")
+#define DROP_WEAPON_SOUND (PLAYER_SOUNDS_PATH + "/drop.wav")
 #define CHANGE_WEAPON_SOUND \
     (PLAYER_SOUNDS_PATH + "/pickup.wav")  // Changing and picking up a weapon produce the same sound
 #define SHOOT_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")

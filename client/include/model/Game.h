@@ -10,6 +10,12 @@
 
 class Game {
 private:
+    // static constexpr int FPS = 60;
+    // static constexpr float TARGET_FRAME_DURATION = 1.0f / FPS; // ~16.67ms
+    // static constexpr int MAX_UPDATES_PER_FRAME = 1;
+    // static constexpr float MAX_ACCUMULATED_TIME = TARGET_FRAME_DURATION * MAX_UPDATES_PER_FRAME;
+    // // permite como mucho 5 updates atrasados (~83ms)
+
     Client& client;  // This is the connection with the server.
     Graphics graphics;
     // Audio audio // Modulo encargado de ecapsular el audio del juego (Mixer, Music, etc.)

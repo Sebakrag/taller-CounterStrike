@@ -46,6 +46,7 @@ void SoundLibrary::loadSound(const SoundEvent ev, const std::string& filepath) {
 void SoundLibrary::loadPLayerSounds() {
     loadSound(SoundEvent::Walk, STEP_SOUND);
     loadSound(SoundEvent::PickUpWeapon, CHANGE_WEAPON_SOUND);
+    loadSound(SoundEvent::DropWeapon, DROP_WEAPON_SOUND);
     loadSound(SoundEvent::ChangeWeapon, CHANGE_WEAPON_SOUND);
     loadSound(SoundEvent::Shoot, SHOOT_SOUND);
     loadSound(SoundEvent::Die, DIE_SOUND);

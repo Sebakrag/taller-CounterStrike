@@ -105,8 +105,8 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
             // (en el caso de que querramos distinguir sonidos de arma.)
             soundComp.addEvent(SoundEvent::Shoot);
         } else if (curr_state == PlayerState::PickingUp) {
-            soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: podria cambiarle el sonido a
-                                                           // drop(no aca, en los paths.).
+            soundComp.addEvent(SoundEvent::DropWeapon);
+            soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
         }
     }
 

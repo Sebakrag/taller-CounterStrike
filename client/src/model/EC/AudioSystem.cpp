@@ -9,31 +9,6 @@
 
 AudioSystem::AudioSystem(ComponentManager& cm, Mixer& m): comp_mgr(cm), mixer(m) {}
 
-// void AudioSystem::update(const Vec2D& listenerPos) {
-//     comp_mgr.forEach<SoundComponent>([&](SoundComponent& soundComp, const Entity e) {
-//         if (!soundComp.hasEvents())
-//             return;
-//
-//         const auto* transform = comp_mgr.getComponent<TransformComponent>(e);
-//         if (!transform)
-//             return;  // TODO: En caso de que haya una entidad que pueda producir sonido pero
-//                      /// que no tenga posicion, quizas podemos prefijar un sonido a la mitad del
-//                      /// maximo del volumen. Por ejemplo: para la radio (que la escuchan todos).
-//
-//         const Vec2D soundPos = transform->getPosition();
-//         if (const int volume = static_cast<int>(calculateVolume(soundPos, listenerPos))) {
-//             for (const SoundEvent event: soundComp.getEvents()) {
-//                 if (const auto chunk = sound_lib.get(event)) {
-//                     const int channel = mixer.PlayChannel(-1, *chunk);  // loops=0 by default.
-//                     mixer.SetVolume(channel, volume);
-//                 }
-//             }
-//         }
-//
-//         soundComp.clearEvents();  // Limpiar para el próximo frame
-//     });
-// }
-
 void AudioSystem::update(const Vec2D& listenerPos) {
     int soundsPlayed = 0;
     std::unordered_set<Entity> entitiesWithSound;
@@ -42,13 +17,8 @@ void AudioSystem::update(const Vec2D& listenerPos) {
         entitiesWithSound.insert(e);
 
         const auto* transform = comp_mgr.getComponent<TransformComponent>(e);
-        if (!transform)
-            return;
-        // TODO: En caso de que haya una entidad que pueda producir sonido pero
-        /// que no tenga posicion, quizas podemos prefijar un sonido a la mitad del
-        /// maximo del volumen. Por ejemplo: para la radio (que la escuchan todos).
+        const Vec2D soundPos = transform ? transform->getPosition() : listenerPos;
 
-        const Vec2D soundPos = transform->getPosition();
         const int volume = static_cast<int>(calculateVolume(soundPos, listenerPos));
         if (volume == 0)
             return;
