@@ -37,9 +37,11 @@ enum class TypeTileMap { Desert, Aztec, Training };
 struct PlayerInfoLobby {
     std::string username;
     Team team;
+    bool is_player_host;  // puede variar si el creador original abandona la partida
 
     PlayerInfoLobby() {}
-    PlayerInfoLobby(const std::string& username, const Team team): username(username), team(team) {}
+    PlayerInfoLobby(const std::string& username, const Team team, bool is_player_host):
+            username(username), team(team), is_player_host(is_player_host) {}
 };
 
 struct MatchRoomInfo {

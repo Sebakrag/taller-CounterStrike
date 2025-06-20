@@ -45,7 +45,12 @@ bool MatchRoom::addPlayer(const std::string& username,
 void MatchRoom::removePlayer(const std::string& username) {
     players.erase(username);
     match.removePlayer(username);
+    if (players.empty()) {
+        std::cout << "partida vacía." << std::endl;
+        return;
+    }
     if (username == player_host) {
+        player_host = players.begin()->first;
         // decidir.
         // Si elijo poner a otro como host debería mandarle un mensaje por el protocolo.
         // si elijo borrar la partida, debería mandarle un mensaje a todos de que se canceló.
@@ -69,7 +74,8 @@ MatchRoomInfo MatchRoom::getMatchRoomInfo() {
         if (p == nullptr) {
             throw std::runtime_error("ERROR en MatchRoom::getMatchRoomInfo()");
         }
-        infos.push_back(PlayerInfoLobby(username, p->getTeam()));
+        bool is_host = (p->getId() == player_host);
+        infos.push_back(PlayerInfoLobby(username, p->getTeam(), is_host));
     }
 
     return MatchRoomInfo(infos, started);

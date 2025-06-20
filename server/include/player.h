@@ -33,8 +33,8 @@ private:
 
     float money;
     int kills;
-    const PlayerSkin skinT;   // para cuando es terrorista
-    const PlayerSkin skinCT;  // para cuando es anti terrorista
+    PlayerSkin skinT;   // para cuando es terrorista
+    PlayerSkin skinCT;  // para cuando es anti terrorista
 
 public:
     // TODO: Recibir las 2 skin en el constructor

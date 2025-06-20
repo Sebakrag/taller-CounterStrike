@@ -63,11 +63,14 @@ bool Match::addPlayer(const std::string& username) {
 }
 
 void Match::removePlayer(const std::string& username) {
-    for (auto& p: players) {
-        if (p.getId() == username) {
-            // players.erase(std::find(players.begin(), players.end(), p));
+    for (auto it = players.begin(); it != players.end(); ++it) {
+        if (it->getId() == username) {
+            std::cout << "Jugador " << username << " eliminado del partido." << std::endl;
+            players.erase(it);
+            return;
         }
     }
+    std::cout << "Jugador " << username << " no encontrado en match." << std::endl;
 }
 
 Player* Match::getPlayer(const std::string& playerName) {
