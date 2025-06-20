@@ -61,8 +61,9 @@ void GameLoop::run() {
 
             // calculo cuando pasó un segundo.
             if (it % ITR_PER_SEC == 0) {
-                std::cout << std::to_string(seconds) << std::endl;
                 seconds++;
+                if (seconds % 10 == 0)
+                    std::cout << std::to_string(seconds) << std::endl;
                 it = 0;
             }
             it++;

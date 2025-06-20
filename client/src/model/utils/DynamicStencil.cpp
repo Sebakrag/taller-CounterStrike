@@ -19,18 +19,15 @@ void DynamicStencil::init(Renderer& ren, const FOVConfig& config) {
     screenHeight = config.screenHeight;
     cirRadius = static_cast<float>(config.circleRadius);
     fovAngle = config.fovAngle;
-    fovRadius = (config.visibilityDistance != 0.0f)
-                    ? config.visibilityDistance
-                    : static_cast<float>(std::max(screenWidth, screenHeight));
+    fovRadius = (config.visibilityDistance != 0.0f) ?
+                        config.visibilityDistance :
+                        static_cast<float>(std::max(screenWidth, screenHeight));
     transparency = config.transparency;
 
     const int stencilW = screenWidth * 2;
     const int stencilH = screenHeight * 2;
-    stencil = std::make_shared<Texture>(ren,
-                                        SDL_PIXELFORMAT_RGBA8888,
-                                        SDL_TEXTUREACCESS_TARGET,
-                                        stencilW,
-                                        stencilH);
+    stencil = std::make_shared<Texture>(ren, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+                                        stencilW, stencilH);
     // Set render target to the texture
     ren.SetTarget(*stencil);
     ren.SetDrawColor(0, 0, 0, SDL_ALPHA_OPAQUE);  // Full black
@@ -100,13 +97,9 @@ void DynamicStencil::drawFOVTriangle(const Renderer& ren, const float cx, const 
 std::shared_ptr<Texture> DynamicStencil::getStencil() { return stencil; }
 
 FOVConfig DynamicStencil::getFOVConfig() {
-    return FOVConfig(
-        isActive,
-        screenWidth,
-        screenHeight,
-        static_cast<int>(cirRadius), // circle radius
-        fovAngle,                    // FOV angle
-        fovRadius,                   // visibility distance
-        transparency                 // transparency [0,1]
-    );
+    return FOVConfig(isActive, screenWidth, screenHeight,
+                     static_cast<int>(cirRadius),  // circle radius
+                     fovAngle,                     // FOV angle
+                     fovRadius,                    // visibility distance
+                     transparency);                // transparency [0,1]
 }

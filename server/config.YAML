@@ -49,7 +49,7 @@ window:
   fullscreen: 0 # 0 para ventana, 1 para pantalla completa
 
 fov:
-  active: 1 # 0 para desactivar fov, 1 para activar fov
+  active: 0 # 0 para desactivar fov, 1 para activar fov
   circle_radius: 32 #radio del del circulo de vision alrededor del player (en px)
   angle: 55 # amplitud del cono de visión (en grados de 0 a 360)
   visibility_distance: 0 # distancia de vision en px (si vale 0 se adapta a las dimensiones de la ventana)

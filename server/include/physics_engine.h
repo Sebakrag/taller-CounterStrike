@@ -8,6 +8,8 @@
 #include "map.h"
 #include "player.h"
 
+#define RADIUS_PLAYER_TOUCH 20.0f  // distancia de contacto para agarrar un drop
+
 class PhysicsEngine {
 public:
     static void movePlayer(Player& player, float dirX, float dirY, float deltaTime, Map& map);

@@ -39,7 +39,7 @@ Match::Match(const std::string& id_scenario):
     // droppedWeapons.emplace_back(DroppedWeapon{std::move(bomb), {300, 300}});
 }
 
-void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
+// void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
 
 bool Match::addPlayer(const std::string& username) {
     int terroristCount = 0;
@@ -54,10 +54,10 @@ bool Match::addPlayer(const std::string& username) {
 
     Team assignedTeam =
             (terroristCount <= counterTerroristCount) ? Team::Terrorist : Team::CounterTerrorist;
-
     std::cout << "Agregando jugador " << username << " al equipo "
               << (assignedTeam == Team::Terrorist ? " Terrorista" : "Antiterrorista") << std::endl;
-    Player newPlayer(username, assignedTeam, Vec2D(500, 200));
+    Player newPlayer(username, assignedTeam);
+    setPosSpawnPlayer(newPlayer);
     players.push_back(std::move(newPlayer));
     return true;
 }
@@ -69,10 +69,6 @@ void Match::removePlayer(const std::string& username) {
         }
     }
 }
-
-
-// std::vector<std::string> Match::getPlayers() { return players; }
-
 
 Player* Match::getPlayer(const std::string& playerName) {
     for (auto& p: players) {
@@ -120,41 +116,51 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 break;
             }
             case GameActionType::ChangeWeapon: {
+                std::cout << "recibí cambiar arma." << std::endl;
                 player->setEquippedWeapon(gameAction.typeWeapon);
                 break;
             }
             case GameActionType::Attack: {
+                std::cout << "recibí Atacar" << std::endl;
                 if (player->getEquippedWeapon() == TypeWeapon::Bomb) {
                     processPlant(action.player_username);
                     break;
                 }
 
-                if (!player->canShoot(0))
-                    break;
+                // if (!player->canShoot(current_time)) { ya se chequea en player->shoot()
+                // internamente
+                //     std::cout << "el player no puede disparar" << std::endl;
+                //     break;
+                // }
 
                 Vec2D dir = gameAction.direction;
                 float norm = std::sqrt(dir.getX() * dir.getX() + dir.getY() * dir.getY());
-                if (norm == 0)
+                if (norm == 0) {
                     break;
+                }
 
                 float dirX = dir.getX() / norm;
                 float dirY = dir.getY() / norm;
 
                 if (player->getEquippedWeapon() == TypeWeapon::Knife) {
+                    std::cout << "Ataque con cuchillo" << std::endl;
                     handleKnifeAttack(player, gameAction.direction);
                     break;
                 }
-
-                std::vector<Projectile> newProjectiles = player->shoot(dirX, dirY, 0);
+                std::cout << "Gatillo apretado" << std::endl;
+                std::vector<Projectile> newProjectiles = player->shoot(dirX, dirY, current_time);
+                std::cout << "se crearon " << newProjectiles.size() << " proyectiles" << std::endl;
                 projectiles.insert(projectiles.end(), newProjectiles.begin(), newProjectiles.end());
                 break;
             }
 
             case GameActionType::PickUp: {
+                std::cout << "recibí pick up" << std::endl;
                 for (auto it = droppedWeapons.begin(); it != droppedWeapons.end(); ++it) {
                     if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(),
                                                           it->position.getX(),
                                                           it->position.getY())) {
+                        std::cout << "toqué un arma dropeada!" << std::endl;
                         // Drop de arma equipada
                         if (player->getPrimaryWeapon()) {
                             droppedWeapons.emplace_back(std::move(player->dropPrimaryWeapon()),
@@ -178,8 +184,8 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 }
                 return;
             }
-
             case GameActionType::Rotate: {
+                std::cout << "recibí rotar" << std::endl;
                 player->setAngle(action.gameAction.angle);
                 break;
             }
@@ -203,7 +209,7 @@ void Match::updateState(double elapsedTime) {
     // GamePhase::Preparation ? "Preparation " : "Combate ") << std::endl;
     if (roundOver)
         return;
-
+    current_time += elapsedTime;
     roundTimer -= elapsedTime;
     // std::cout << "roundTimer " << roundTimer << std::endl;
     if (phase == GamePhase::Preparation) {
@@ -252,8 +258,6 @@ void Match::updateState(double elapsedTime) {
                         bomb.drop(target.getX(), target.getY());
                     }
                 }
-
-
                 proj.deactivate();
 
                 break;
@@ -368,7 +372,9 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
 
     LocalPlayerInfo localPlayerInfo;
     std::vector<PlayerInfo> playersInfo;
-    std::vector<WeaponInfo> weaponsInfo;  // armas dropeadas. se puede cambiar el nombre capaz
+    std::vector<WeaponInfo> weaponsInfo;
+    std::vector<BulletInfo> bulletsInfo;
+
     // std::cout << "hay " << players.size() << " players" << std::endl;
     for (const Player& p: players) {
         if (p.getId() == username) {
@@ -376,17 +382,23 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         } else {
             playersInfo.emplace_back(p.generatePlayerInfo());
         }
-        WeaponInfo weaponInfo(
-                p.getEquippedWeaponInstance()->generateWeaponInfo(WeaponState::EQUIPPED));
-        weaponsInfo.emplace_back(weaponInfo);
-    }
+        // cargo info del arma equipada.
+        WeaponInfo w(p.getEquippedWeaponInstance()->generateWeaponInfo(WeaponState::EQUIPPED));
+        weaponsInfo.emplace_back(w);
 
-    std::vector<BulletInfo> bulletsInfo;
+        if (p.getEquippedWeapon() != TypeWeapon::Primary) {
+            // cargo info del primary weapon como hidden.
+            Weapon_* p_weapon = p.getPrimaryWeapon();
+            if (p_weapon != nullptr)
+                weaponsInfo.emplace_back(p_weapon->generateWeaponInfo(WeaponState::HIDDEN));
+        }
+    }
+    // cargo bullets
     for (auto& p: projectiles) {
         bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
                                  Vec2D(p.getDirX(), p.getDirY()));
     }
-
+    // cargo drops
     for (auto& droppedWeapon: droppedWeapons) {
         weaponsInfo.emplace_back(droppedWeapon.generateWeaponInfo());
     }
@@ -428,10 +440,11 @@ void Match::advancePhase() {
         // Limpieza entre rondas
         bomb.reset();
         projectiles.clear();
-        droppedWeapons.clear();
+        // droppedWeapons.clear(); // esto puede ser mejor mantenerlas
 
         for (auto& p: players) {
             p.revive();
+            setPosSpawnPlayer(p);
             p.setEquippedWeapon(TypeWeapon::Knife);
         }
 
@@ -483,3 +496,12 @@ void Match::advancePhase() {
 }
 
 GamePhase Match::getGamePhase() const { return phase; }
+
+void Match::setPosSpawnPlayer(Player& p) {
+    Team team = p.getTeam();
+    if (team == Team::Terrorist) {
+        p.setPostion(map.getPositionTZone());
+    } else {
+        p.setPostion(map.getPositionCTZone());
+    }
+}

@@ -49,9 +49,9 @@ bool YamlConfig::isFullscreen() const { return config["window"]["fullscreen"].as
 
 
 FOVConfig YamlConfig::getFovConfig() {
-    bool active =  config["fov"]["active"].as<int>() != 0;
-    auto w =getWindowWidth();
-    auto h =getWindowHeight();
+    bool active = config["fov"]["active"].as<int>() != 0;
+    auto w = getWindowWidth();
+    auto h = getWindowHeight();
     int radius = config["fov"]["circle_radius"].as<int>();
     float angle = config["fov"]["angle"].as<float>();
     int visibility_distance = config["fov"]["visibility_distance"].as<int>();

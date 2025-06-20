@@ -23,7 +23,6 @@ class GameManager {
     bool server_closed = false;
 
 public:
-
     // GameManager(lista de escenarios, configuraciones, etc) // redefinir el constructor despues
 
     // devuelve true si pudo crear la partida correctamente
@@ -48,7 +47,7 @@ public:
     std::shared_ptr<Queue<PlayerAction>> getActionsQueue(const std::string& matchName);
 
     void killAllMatchs();
-        
+
 private:
     // void reapDeadGameloops();
 

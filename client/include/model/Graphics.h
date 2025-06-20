@@ -6,8 +6,8 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/dtos/FovConfig.h"
+#include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/utils/Vec2D.h"
 
 
@@ -37,7 +37,8 @@ private:
     Renderer create_renderer(Window& window);
 
 public:
-    Graphics(const WindowConfig& config, const FOVConfig& fov_config, const std::string& match_name);
+    Graphics(const WindowConfig& config, const FOVConfig& fov_config,
+             const std::string& match_name);
 
     void render(World& world);
     void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,

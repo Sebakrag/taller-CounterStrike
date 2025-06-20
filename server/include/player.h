@@ -38,7 +38,8 @@ private:
 
 public:
     // TODO: Recibir las 2 skin en el constructor
-    explicit Player(const std::string& name, const Team playerTeam, const Vec2D& position);
+    explicit Player(const std::string& name, const Team playerTeam,
+                    const Vec2D& position = Vec2D());
 
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
     void setEquippedWeapon(TypeWeapon type);
@@ -47,6 +48,7 @@ public:
     void setX(const float x);
     float getY() const;
     void setY(const float y);
+    void setPostion(const Vec2D& pos);
     float getAngle() const;
     void setAngle(float angle);
     std::string getId() const;
@@ -58,9 +60,9 @@ public:
     Weapon getSpecificEquippedWeapon() const;
     Weapon_* getPrimaryWeapon() const;
     bool isAlive() const;
-    bool canShoot(uint64_t currentTimeMs) const;
+    bool canShoot(double currentTime) const;
     void takeDamage(int dmg);
-    std::vector<Projectile> shoot(float dirX, float dirY, uint64_t currentTimeMs);
+    std::vector<Projectile> shoot(float dirX, float dirY, double currentTime);
     Weapon_* getEquippedWeaponInstance() const;
     std::unique_ptr<Weapon_> dropPrimaryWeapon();
     void revive();

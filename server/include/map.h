@@ -8,12 +8,16 @@
 class Map {
 private:
     TileMap tileMap;
-    const int TILE_SIZE = 32;
+    Vec2D posZoneTerrorist;
+    Vec2D posZoneCounterTerrorist;
 
 public:
     explicit Map(const TileMap& tilemap);
     bool isWalkable(int x, int y);
     bool isBombZone(int x, int y);
+
+    Vec2D getPositionTZone();
+    Vec2D getPositionCTZone();
 };
 
 #endif

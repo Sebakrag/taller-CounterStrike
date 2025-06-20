@@ -16,6 +16,11 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
             gameIsRunning = false;
             client.ExitGame();
             return;
+        } else if (e.type == SDL_KEYDOWN) {
+            if (e.key.repeat == 0)
+                handleKeyDown(e.key.keysym.scancode, gameIsRunning);
+        } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+            handleMouseButtonDown(e.button);
         }
     }
 
@@ -23,12 +28,17 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
     handleMouseEvents(gameIsRunning);
 }
 
-void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
+void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     // salir
     if (state[SDL_SCANCODE_ESCAPE])
         gameIsRunning = false;
+
+    Uint32 now = SDL_GetTicks();
+    if (now - lastKeyboardPress < DELAY_KEYBOARD_PRESS)
+        return;
+    lastKeyboardPress = now;
 
     Vec2D direction(0, 0);
 
@@ -47,15 +57,32 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) const {
     if ((direction.getX() != 0) || (direction.getY() != 0)) {
         client.move(direction);
     }
+}
+
+void EventHandler::handleKeyDown(SDL_Scancode sc, bool& gameIsRunning) const {
+    if (sc == SDL_SCANCODE_ESCAPE)
+        gameIsRunning = false;
+    Vec2D direction(0, 0);
+
     // cambiar de arma
-    if (state[SDL_SCANCODE_1]) {
+    if (sc == SDL_SCANCODE_1) {
         client.changeWeapon(TypeWeapon::Primary);
-    } else if (state[SDL_SCANCODE_2]) {
+    } else if (sc == SDL_SCANCODE_2) {
         client.changeWeapon(TypeWeapon::Secondary);
-    } else if (state[SDL_SCANCODE_3]) {
+    } else if (sc == SDL_SCANCODE_3) {
         client.changeWeapon(TypeWeapon::Knife);
-    } else if (state[SDL_SCANCODE_4]) {
+    } else if (sc == SDL_SCANCODE_4) {
         client.changeWeapon(TypeWeapon::Bomb);
+    }
+}
+
+
+void EventHandler::handleMouseButtonDown(const SDL_MouseButtonEvent& b) {
+    AimInfo aimInfo = world.getPlayerAimInfo(b.x, b.y);
+    if (b.button == SDL_BUTTON_LEFT) {
+        client.shoot(aimInfo);
+    } else if (b.button == SDL_BUTTON_RIGHT) {
+        client.pickUpItem();
     }
 }
 
@@ -63,11 +90,9 @@ void EventHandler::handleMouseEvents(const bool gameIsRunning) {
     if (!gameIsRunning) {
         return;
     }
-    const Uint32 throttleDelayMs = 200;  // Ajustá este valor (en milisegundos)
-
 
     Uint32 now = SDL_GetTicks();
-    if (now - lastMouseProcessTime < throttleDelayMs)
+    if (now - lastMouseProcessTime < DELAY_MOUSE_MOTION)
         return;
     lastMouseProcessTime = now;
 
@@ -75,12 +100,13 @@ void EventHandler::handleMouseEvents(const bool gameIsRunning) {
     const Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
 
     const AimInfo aimInfo = world.getPlayerAimInfo(mouseX, mouseY);
-
-    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        client.shoot(aimInfo);
-    } else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        client.pickUpItem();
-    } else {
+    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {  // si mantiene el click izquierdo
+        if (aimInfo.currentWeapon == Weapon::Ak47) {
+            client.shoot(aimInfo);
+        }
+    }
+    if (aimInfo.angle != lastAimAngle) {  // Solo rotar si el ángulo realmente cambió
         client.rotate(aimInfo.angle);
+        lastAimAngle = aimInfo.angle;
     }
 }

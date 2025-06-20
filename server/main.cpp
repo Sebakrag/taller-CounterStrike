@@ -7,7 +7,7 @@
 #include "include/server.h"
 #include "include/yaml_config.h"
 
-#define PATH_CONFIG_YAML "../server/config.YAML"
+#define PATH_CONFIG_YAML "server/config.YAML"
 
 int main(const int argc, char* argv[]) {
     if (argc != 2) {

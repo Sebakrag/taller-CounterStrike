@@ -3,9 +3,9 @@
 
 #include <memory>
 
-#include "SDL2pp/Texture.hh"
 #include "../../../common/dtos/FovConfig.h"
 #include "../../../common/utils/Vec2D.h"
+#include "SDL2pp/Texture.hh"
 
 class Graphics;
 

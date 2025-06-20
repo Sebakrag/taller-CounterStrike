@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-//inicializo constantes static para compilar
+// inicializo constantes static para compilar
 std::map<std::string, TileMap> ScenarioRegistry::scenarios;
 WindowConfig ScenarioRegistry::windowConfig;
 FOVConfig ScenarioRegistry::fovConfig;

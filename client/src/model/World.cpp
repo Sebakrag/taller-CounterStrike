@@ -17,8 +17,11 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
 void World::update(float dt, const GameInfo& gameInfo) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
     // gameInfo.print();
-
-
+    std::cout << "hay " << gameInfo.bullets.size() << " balas en el mapa" << std::endl;
+    for (auto b: gameInfo.bullets) {
+        b.print();
+    }
+    currentWeapon = gameInfo.localPlayer.weapon;
     const std::vector<EntitySnapshot> snapshots = gameInfo.getSnapshots();
     comp_updater.update(snapshots);
 
@@ -52,7 +55,7 @@ AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {
     aimDir.normalize();
     const float angle = aimDir.calculateAngleDegrees();
 
-    return {aimDir, angle};
+    return {aimDir, angle, currentWeapon};
 }
 
 Vec2D World::getPlayerPosition() {

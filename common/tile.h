@@ -4,24 +4,24 @@
 #include <cstdint>
 #include <vector>
 
-// Convención.
-// los ids del 1 al 12 corresponden a tiles SÓLIDOS. Los posteriores son traspasables.
-#define ID_MAX_SOLID 12
+enum TypeTile { None, Solid, BombZone, T_Zone, CT_Zone };
+
 
 // 32x32 px
 class Tile {
 private:
     int id_tile;
-    bool is_solid;  // dato que le sirve al server
-    bool is_bomb_zone;
+    TypeTile type = None;
 
 public:
     explicit Tile(int id_tile);
-    explicit Tile(int id_tile, bool is_solid);
-    explicit Tile(int id_tile, bool is_solid, bool is_bomb_zone);
+    // explicit Tile(int id_tile, bool is_solid);
+    explicit Tile(int id_tile, const TypeTile type);
 
     bool isSolid() const;
     bool isBombZone() const;
+    bool isTerroristZone() const;
+    bool isCounterTerroristZone() const;
 
     int getIdTile() const;
 };

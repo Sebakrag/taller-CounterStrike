@@ -11,8 +11,8 @@ private:
     Entity local_player;
     void renderDroppedWeapons(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
                               const FieldOfView& player_FOV);
-    // void renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
-    // const FieldOfView& player_FOV);
+    void renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
+                       const FieldOfView& player_FOV);
     void renderPlayers(Graphics& graphics, ComponentManager& comp_mgr, const Camera& camera,
                        const FieldOfView& player_FOV);
     void renderEquippedWeapon(Graphics& graphics, ComponentManager& comp_mgr, Entity weapon_id,

@@ -5,15 +5,16 @@
 #include <string>
 #include <vector>
 
-#include "../../common/dtos/WindowConfig.h"
 #include "../../common/dtos/FovConfig.h"
+#include "../../common/dtos/WindowConfig.h"
 #include "../../common/tile_map.h"
 
 class ScenarioRegistry {
 private:
     static std::map<std::string, TileMap> scenarios;
     static WindowConfig windowConfig;
-    static FOVConfig fovConfig; //esto podría estar cargado en otra clase pero no se me ocurrió otro lugar
+    static FOVConfig
+            fovConfig;  // esto podría estar cargado en otra clase pero no se me ocurrió otro lugar
     static bool initialized;
 
 public:

@@ -10,7 +10,8 @@
 
 #define GAME_NAME "Counter Strike"
 
-Graphics::Graphics(const WindowConfig& config, const FOVConfig& fov_config, const std::string& match_name):
+Graphics::Graphics(const WindowConfig& config, const FOVConfig& fov_config,
+                   const std::string& match_name):
         sdl(SDL_INIT_VIDEO),
         sdl_image(IMG_INIT_PNG | IMG_INIT_JPG),
         sdl_ttf(),
@@ -18,8 +19,9 @@ Graphics::Graphics(const WindowConfig& config, const FOVConfig& fov_config, cons
         renderer(create_renderer(window)) {
     TextureManager::init(renderer);
 
-    //DynamicStencil::init(renderer, config.width, config.height, fov_config.circleRadius, fov_config.fovAngle,
-    //                     STENCIL_ALPHA, VISIBILITY_DISTANCE);
+    // DynamicStencil::init(renderer, config.width, config.height, fov_config.circleRadius,
+    // fov_config.fovAngle,
+    //                      STENCIL_ALPHA, VISIBILITY_DISTANCE);
     DynamicStencil::init(renderer, fov_config);
 }
 

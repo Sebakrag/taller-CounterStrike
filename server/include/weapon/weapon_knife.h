@@ -11,12 +11,12 @@ public:
     WeaponKnife();
     ~WeaponKnife() override = default;
 
-    bool canShoot(uint64_t currentTimeMs) const override;
-    uint64_t getCooldownMs() const override;
+    bool canShoot(double currentTime) const override;
+    double getCooldownS() const override;
     Weapon getWeaponType() const override;
     WeaponInfo generateWeaponInfo(const WeaponState& state) override;
     std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY,
-                                  const std::string& shooter, uint64_t currentTimeMs) override;
+                                  const std::string& shooter, double currentTime) override;
 
 
     // CONSTANTES static para inicializar en server.cpp.

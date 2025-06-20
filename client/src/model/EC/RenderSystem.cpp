@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "client/client_constants.h"
+#include "client/include/model/EC/components/BulletSpriteComponent.h"
 #include "client/include/model/EC/components/EquippedWeaponComponent.h"
 #include "client/include/model/EC/components/PlayerSpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
@@ -15,7 +16,7 @@ RenderSystem::RenderSystem(const Entity localPlayer): local_player(localPlayer) 
 void RenderSystem::renderEntities(Graphics& graphics, ComponentManager& comp_mgr,
                                   const Camera& camera, const FieldOfView& player_FOV) {
     renderDroppedWeapons(graphics, comp_mgr, camera, player_FOV);
-    // renderBullets(graphics, comp_mgr, camera, player_FOV);
+    renderBullets(graphics, comp_mgr, camera, player_FOV);
     renderPlayers(graphics, comp_mgr, camera, player_FOV);
 }
 
@@ -49,34 +50,33 @@ void RenderSystem::renderDroppedWeapons(Graphics& graphics, ComponentManager& co
     });
 }
 
-// void RenderSystem::renderBullets(Graphics& graphics, ComponentManager& comp_mgr, const Camera&
-// camera, const FieldOfView& player_FOV) {
-//     comp_mgr.forEach<BulletSpriteComponent>([&](BulletSpriteComponent& bulletSpr, const Entity e)
-//     {
-//         const auto transform = comp_mgr.getComponent<TransformComponent>(e);
-//         if (!transform) return;
-//
-//         const Vec2D& enttMapPos = transform->getPosition();  // Posición absoluta en el mapa.
-//
-//         const int width = bulletSpr.getWidth();
-//         const int height = bulletSpr.getHeight();
-//
-//         if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
-//             return;
-//
-//         // Calculamos la posición de la entidad relativa a la cámara
-//         const Vec2D screenPos = camera.projectToScreen(enttMapPos, width, height);
-//
-//         Rect destRect(static_cast<int>(screenPos.getX()), static_cast<int>(screenPos.getY()),
-//         width,
-//                       height);
-//
-//         const double rotAngleDeg = transform->getRotationAngleDegrees();
-//
-//         graphics.draw(*bulletSpr.getTexture(), Optional<Rect>(bulletSpr.getSpriteRect()),
-//                       Optional<Rect>(destRect), rotAngleDeg);
-//     });
-// }
+void RenderSystem::renderBullets(Graphics& graphics, ComponentManager& comp_mgr,
+                                 const Camera& camera, const FieldOfView& player_FOV) {
+    comp_mgr.forEach<BulletSpriteComponent>([&](BulletSpriteComponent& bulletSpr, const Entity e) {
+        const auto transform = comp_mgr.getComponent<TransformComponent>(e);
+        if (!transform)
+            return;
+
+        const Vec2D& enttMapPos = transform->getPosition();  // Posición absoluta en el mapa.
+
+        const int width = bulletSpr.getWidth();
+        const int height = bulletSpr.getHeight();
+
+        if (!camera.isVisible(enttMapPos, width, height) || !player_FOV.isInFOV(enttMapPos))
+            return;
+
+        // Calculamos la posición de la entidad relativa a la cámara
+        const Vec2D screenPos = camera.projectToScreen(enttMapPos, width, height);
+
+        Rect destRect(static_cast<int>(screenPos.getX()), static_cast<int>(screenPos.getY()), width,
+                      height);
+
+        const double rotAngleDeg = transform->getRotationAngleDegrees();
+
+        graphics.draw(*bulletSpr.getTexture(), Optional<Rect>(bulletSpr.getSpriteRect()),
+                      Optional<Rect>(destRect), rotAngleDeg);
+    });
+}
 
 void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
                                  const Camera& camera, const FieldOfView& player_FOV) {

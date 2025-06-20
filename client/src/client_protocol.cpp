@@ -116,7 +116,7 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     float fovAngle = recvFloat();
     float visibilityDistance = recvFloat();
     float transparency = recvFloat();
-    
+
     // recibo el tilemap
     int size_buffer_tilemap = recvBigEndian32();
     std::cout << "-> size del buffer del tilemap: " << size_buffer_tilemap << std::endl;
@@ -133,10 +133,10 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     socket.recvall(playerInfobytes.data(), sizeof(uint8_t) * size_buffer);
     LocalPlayerInfo localPlayerInfo(playerInfobytes);
 
-    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags), 
-    FOVConfig(isActive, screenW, screenH, circleR, fovAngle, visibilityDistance, transparency), 
-            tilemap,
-                     numPlayers, localPlayerInfo);
+    return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags),
+                     FOVConfig(isActive, screenW, screenH, circleR, fovAngle, visibilityDistance,
+                               transparency),
+                     tilemap, numPlayers, localPlayerInfo);
 }
 
 

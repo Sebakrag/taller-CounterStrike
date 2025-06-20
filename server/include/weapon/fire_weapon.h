@@ -11,14 +11,14 @@ protected:
     float price;
     int bullets;
     int rateOfFire;
-    uint64_t lastShotTimeMs;
+    double lastShotTimeS;
 
 public:
     FireWeapon(int damage, float price, int bullets, int rateOfFire);
     ~FireWeapon() override = default;
 
-    bool canShoot(uint64_t currentTimeMs) const override;
-    uint64_t getCooldownMs() const override;
+    bool canShoot(double currentTime) const override;
+    double getCooldownS() const override;
 
     void addBullets(int amount);
     int getBullets() const override;

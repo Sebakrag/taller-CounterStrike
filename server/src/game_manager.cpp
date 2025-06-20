@@ -114,9 +114,10 @@ MatchInfo GameManager::getMatchInfo(const std::string& matchName, const std::str
     auto localPlayerInfo = match.generateLocalPlayerInfo(username);
     std::string id_scenary = match.getIdScenario();
     int numPlayers = match.countPlayers();
-    
-    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(), ScenarioRegistry::getFovConfig(),
-                     ScenarioRegistry::getTileMap(id_scenary), numPlayers, localPlayerInfo);
+
+    return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
+                     ScenarioRegistry::getFovConfig(), ScenarioRegistry::getTileMap(id_scenary),
+                     numPlayers, localPlayerInfo);
 }
 
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {

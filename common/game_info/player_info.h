@@ -21,8 +21,8 @@ struct PlayerInfo {
 
     PlayerInfo();
     PlayerInfo(ServerEntityID server_entt_id, const std::string& name, Team team, PlayerSkin skin,
-               const Vec2D& position, float angle_direction, TypeWeapon weapon_type,
-               ServerEntityID equipped_weapon_id);
+               PlayerState state, const Vec2D& position, float angle_direction,
+               TypeWeapon weapon_type, ServerEntityID equipped_weapon_id);
 
     SpriteType generateSpriteType() const;
 
