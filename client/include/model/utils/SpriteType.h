@@ -24,6 +24,8 @@ enum class SpriteType : unsigned char {
     AWP,
     BOMB,
 
+    BOMB_PLANTED,
+
     // Maps sprite types:
     DESERT_MAP,
     AZTEC_MAP,

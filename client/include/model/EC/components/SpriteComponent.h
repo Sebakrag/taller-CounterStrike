@@ -5,13 +5,13 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "client/include/model/utils/SpriteType.h"
+#include "../../../../../client/include/model/utils/SpriteType.h"
 
 using SDL2pp::Rect;
 using SDL2pp::Texture;
 
 class SpriteComponent {
-private:
+protected:
     std::shared_ptr<Texture> texture;
     Rect spriteRect;
     int frameWidth = 0;

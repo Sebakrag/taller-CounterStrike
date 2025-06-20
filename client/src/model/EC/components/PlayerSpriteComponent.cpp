@@ -1,4 +1,4 @@
-#include "client/include/model/EC/components/PlayerSpriteComponent.h"
+#include "../../../../../client/include/model/EC/components/PlayerSpriteComponent.h"
 
 
 void PlayerSpriteComponent::init(const SpriteType type, const TypeWeapon weapon_type) {
