@@ -5,6 +5,7 @@
 #include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/game_info/game_info.h"
 #include "../../../common/tile_map.h"
+#include "EC/AudioSystem.h"
 #include "EC/ComponentManager.h"
 #include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
@@ -31,6 +32,7 @@ private:
     Weapon currentWeapon = Weapon::Knife;  // para consultar en EventHandler
     HUD player_HUD;
     RenderSystem render_sys;
+    AudioSystem audio_sys;
 
 public:
     /// ///

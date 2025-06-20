@@ -11,7 +11,8 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
         map(tileMap, graphics),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
-        render_sys(local_player) {}
+        render_sys(local_player),
+        audio_sys(comp_mgr, graphics.getMixer(), local_player) {}
 
 
 void World::update(float dt, const GameInfo& gameInfo) {
@@ -27,7 +28,7 @@ void World::update(float dt, const GameInfo& gameInfo) {
 
     player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
 
-    // audio_sys.update(); // Play the sound effects.
+    audio_sys.update();  // Play the sound effects.
 }
 
 void World::render(Graphics& graphics) {
