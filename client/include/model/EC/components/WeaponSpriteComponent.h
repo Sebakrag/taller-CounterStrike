@@ -1,7 +1,7 @@
 #ifndef WEAPONSPRITECOMPONENT_H
 #define WEAPONSPRITECOMPONENT_H
 
-#include "common/types.h"
+#include "../../../../../common/types.h"
 
 #include "SpriteComponent.h"
 

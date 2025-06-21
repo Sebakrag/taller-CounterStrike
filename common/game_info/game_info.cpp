@@ -11,14 +11,15 @@
 #include "player_info.h"
 
 // GameInfo::GameInfo():
-//         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30)
+//         gamePhase(GamePhase::Preparation), bombState(false), bombX(0), bombY(0), timeLeft(30)
 //         {}
 
-GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
-                   const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
+GameInfo::GameInfo(GamePhase gamePhase, BombState bombState, float bombX, float bombY,
+                   float timeLeft, const LocalPlayerInfo& localPlayer,
+                   const std::vector<PlayerInfo>& otherPlayers,
                    const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items):
         gamePhase(gamePhase),
-        bombPlanted(bombPlanted),
+        bombState(bombState),
         bombX(bombX),
         bombY(bombY),
         timeLeft(timeLeft),
@@ -34,8 +35,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     size_t index = 1;
 
     // Bomb info
-    bombPlanted = Protocol_::decodeBool(bytes[index]);
-    index += 1;
+    bombState = Protocol_::decodeBombState(bytes[index++]);
     bombX = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
     bombY = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
@@ -125,7 +125,7 @@ std::vector<uint8_t> GameInfo::toBytes() const {
     buffer.push_back(Protocol_::encodeGamePhase(gamePhase));
 
     // bomb
-    buffer.push_back(Protocol_::encodeBool(bombPlanted));
+    buffer.push_back(Protocol_::encodeBombState(bombState));
     Protocol_::insertBigEndian16(bombX, buffer);
     Protocol_::insertBigEndian16(bombY, buffer);
 
@@ -185,7 +185,7 @@ void GameInfo::print() const {
     }
 
     std::cout << "\nBomb:" << std::endl;
-    std::cout << "Planted: " << (bombPlanted ? "Yes" : "No") << std::endl;
+    std::cout << "Bomb State: " << static_cast<int>(bombState) << std::endl;
     std::cout << "Position: (" << bombX << "," << bombY << ")" << std::endl;
 
     std::cout << "\nTime Left: " << timeLeft << std::endl;

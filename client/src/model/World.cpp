@@ -1,7 +1,5 @@
 #include "../../../client/include/model/World.h"
 
-#include <vector>
-
 #include "../../../client/include/model/EC/components/TransformComponent.h"
 
 World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig,
@@ -18,10 +16,6 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
 void World::update(float dt, const GameInfo& gameInfo) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
     // gameInfo.print();
-    // std::cout << "hay " << gameInfo.bullets.size() << " balas en el mapa" << std::endl;
-    // for (auto b: gameInfo.bullets) {
-    //     b.print();
-    // }
     currentWeapon = gameInfo.localPlayer.weapon;
     local_player_pos = gameInfo.localPlayer.position;
 
@@ -43,7 +37,7 @@ void World::render(Graphics& graphics) {
 
     render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
-    // player_HUD.render(graphics);
+    player_HUD.render(graphics);
 }
 
 AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {

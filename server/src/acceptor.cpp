@@ -15,6 +15,7 @@ void Acceptor::run() {
     try {
         while (should_keep_running()) {
             Socket peer = skt_server.accept();
+            reapDeadClients();
 
             std::cout << "New client connected. " << std::endl;
             ServerProtocol protocol(std::move(peer));

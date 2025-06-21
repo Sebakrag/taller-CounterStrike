@@ -22,14 +22,15 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::UK_SAS, UK_SAS_IMG, playerColorKey);
     loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
 
-    // Weapons textures
-    const Color weaponColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
-    loadTexture(ren, SpriteType::AK47, AK47_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::AWP, AWP_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::KNIFE, KNIFE_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::M3, M3_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::BULLET, BULLET_IMG, weaponColorKey);
+    // Uso version con blending
+    loadTexture(ren, SpriteType::BOMB, BOMB_IMG_2);
+    loadTexture(ren, SpriteType::BOMB_PLANTED, BOMB_PLANTED_IMG_2);
+    loadTexture(ren, SpriteType::AK47, AK47_IMG_2);
+    loadTexture(ren, SpriteType::AWP, AWP_IMG_2);
+    loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG_2);
+    loadTexture(ren, SpriteType::KNIFE, KNIFE_IMG_2);
+    loadTexture(ren, SpriteType::M3, M3_IMG_2);
+    loadTexture(ren, SpriteType::BULLET, BULLET_IMG_2);
 
     // Map textures
     loadTexture(ren, SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);

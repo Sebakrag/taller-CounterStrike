@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <vector>
 
@@ -63,11 +64,14 @@ bool Match::addPlayer(const std::string& username) {
 }
 
 void Match::removePlayer(const std::string& username) {
-    for (auto& p: players) {
-        if (p.getId() == username) {
-            // players.erase(std::find(players.begin(), players.end(), p));
+    for (auto it = players.begin(); it != players.end(); ++it) {
+        if (it->getId() == username) {
+            std::cout << "Jugador " << username << " eliminado del partido." << std::endl;
+            players.erase(it);
+            return;
         }
     }
+    std::cout << "Jugador " << username << " no encontrado en match." << std::endl;
 }
 
 Player* Match::getPlayer(const std::string& playerName) {
@@ -191,10 +195,10 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 player->setAngle(action.gameAction.angle);
                 break;
             }
-            case GameActionType::PlantBomb: {
-                processPlant(action.player_username);
-                break;
-            }
+            // case GameActionType::PlantBomb: {
+            //     processPlant(action.player_username);
+            //     break;
+            // }
             case GameActionType::DefuseBomb: {
                 processDefuse(action.player_username);
                 break;
@@ -299,11 +303,12 @@ void Match::processPlant(const std::string& playerName) {
     Player* player = getPlayer(playerName);
     if (!player || !player->isAlive() || player->getTeam() != Team::Terrorist)
         return;
-
+    std::cout << playerName << " intenta colocar la bomba" << std::endl;
     if (!bomb.isCarriedBy(playerName))
         return;
 
     if (bomb.plant(player->getX(), player->getY(), map)) {
+        player->setBomb(nullptr);
         std::cout << "Player " << playerName << " planted the bomb at (" << player->getX() << ", "
                   << player->getY() << ")\n";
     }
@@ -393,16 +398,36 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         } else {
             playersInfo.emplace_back(p.generatePlayerInfo());
         }
-        // cargo info del arma equipada.
-        WeaponInfo w(p.getEquippedWeaponInstance()->generateWeaponInfo(WeaponState::EQUIPPED));
-        weaponsInfo.emplace_back(w);
+        if (bomb.isCarried()) {
+            if (bomb.getCarrierId() == p.getId()) {
+                // cargo información de la bomba
+                if (p.getEquippedWeapon() == TypeWeapon::Bomb) {
+                    weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::EQUIPPED));
+                } else {
+                    weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::HIDDEN));
+                }
+            }
+        }
+        // cargo info del arma equipada. (si tiene la bomba ya se cargó)
+        if (p.getEquippedWeapon() != TypeWeapon::Bomb) {
+            auto weapon_ptr = p.getEquippedWeaponInstance();
+            if (weapon_ptr == nullptr) {
+                continue;
+            }
+            WeaponInfo w(weapon_ptr->generateWeaponInfo(WeaponState::EQUIPPED));
+            weaponsInfo.emplace_back(w);
+        }
 
         if (p.getEquippedWeapon() != TypeWeapon::Primary) {
-            // cargo info del primary weapon como hidden.
+            // cargo info del primary weapon como hidden si no la está usando.
             Weapon_* p_weapon = p.getPrimaryWeapon();
             if (p_weapon != nullptr)
                 weaponsInfo.emplace_back(p_weapon->generateWeaponInfo(WeaponState::HIDDEN));
         }
+    }
+    // si la bomba está dropeda cargo esta información.
+    if (bomb.isDropped()) {
+        weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::DROPPED));
     }
     // cargo bullets
     for (auto& p: projectiles) {
@@ -419,7 +444,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         timeLeft = bomb.getTimer();
     }
 
-    return GameInfo(this->phase, bomb.isPlanted(), bomb.getX(), bomb.getY(), timeLeft,
+    return GameInfo(this->phase, bomb.getState(), bomb.getX(), bomb.getY(), timeLeft,
                     localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo);
 }
 
@@ -473,6 +498,7 @@ void Match::advancePhase() {
             std::uniform_int_distribution<> dis(0, terrorists.size() - 1);
             Player* bombCarrier = terrorists[dis(gen)];
             bomb.assignTo(bombCarrier->getId());
+            bombCarrier->setBomb(&bomb);
             std::cout << "La bomba fue asignada a: " << bombCarrier->getId() << "\n";
         }
 

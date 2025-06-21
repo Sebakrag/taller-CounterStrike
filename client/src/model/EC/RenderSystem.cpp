@@ -141,7 +141,7 @@ void RenderSystem::renderEquippedWeapon(Graphics& graphics, ComponentManager& co
         const float weaponY = centerY + ry - (static_cast<float>(height) * RENDER_SCALAR) / 2.0f;
 
         Rect weaponDestRect(static_cast<int>(weaponX), static_cast<int>(weaponY),
-                            height * RENDER_SCALAR, height * RENDER_SCALAR);
+                            width * RENDER_SCALAR, height * RENDER_SCALAR);
 
         graphics.draw(*weaponSpr->getTexture(), Optional<Rect>(weaponSpr->getSpriteRect()),
                       Optional<Rect>(weaponDestRect), rotAngleDeg);

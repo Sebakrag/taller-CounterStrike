@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 
+#include "../../../common/game_info/game_info.h"
 #include "../../../common/types.h"
 #include "../../../server/include/id_generator.h"
 #include "../../../server/include/map.h"
@@ -42,12 +43,15 @@ public:
     void update(double elapsedTime);
 
     // Accesos
+    uint32_t getServerId();
     float getX() const;
     float getY() const;
     Vec2D getPlantedPosition() const;
     std::string getCarrierId() const;
     BombState getState() const;
     double getTimer() const;
+
+    WeaponInfo generateWeaponInfo(const WeaponState& state) const;
 
     // CONSTANTES static para inicializar en server.cpp.
 private:
