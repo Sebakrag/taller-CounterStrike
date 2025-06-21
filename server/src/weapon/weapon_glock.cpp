@@ -8,21 +8,23 @@ int WeaponGlock::INITIAL_BULLETS = 0;
 int WeaponGlock::RATE_OF_FIRE = 0;
 float WeaponGlock::PRECISION = 0;
 float WeaponGlock::MAX_RANGE = 0;
+int WeaponGlock::MAX_DAMAGE = 0;
 
 
-void WeaponGlock::init(int damage, int bullets, int rate_of_fire, float precision, float max_range) {
+void WeaponGlock::init(int damage, int bullets, int rate_of_fire, float precision, float max_range, int max_damage) {
     if (initialized == false) {
         DAMAGE = damage;
         INITIAL_BULLETS = bullets;
         RATE_OF_FIRE = rate_of_fire;
         PRECISION = precision;
         MAX_RANGE = max_range;
+        MAX_DAMAGE = max_damage;
         initialized = true;
     }
 }
 //------------
 
-WeaponGlock::WeaponGlock(): FireWeapon(DAMAGE, 0, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE) {}
+WeaponGlock::WeaponGlock(): FireWeapon(DAMAGE, 0, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE, MAX_DAMAGE) {}
 
 Weapon WeaponGlock::getWeaponType() const { return Weapon::Glock; }
 

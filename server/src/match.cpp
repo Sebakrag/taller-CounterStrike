@@ -274,11 +274,13 @@ void Match::updateState(double elapsedTime) {
             //const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
             const std::unique_ptr<Weapon_> rawWeapon = WeaponFactory::create(proj.getWeaponUsed());
             auto* weapon = dynamic_cast<FireWeapon*>(rawWeapon.get());
+            Player* shooter = getPlayer(proj.getShooter());
             if (!weapon) continue;
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), target, *weapon, impactDist)) {
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon, impactDist)) {
 
                 if (!isFriendlyFire(proj.getShooter(), target.getTeam())) {
-                    target.takeDamage(weapon->getDamage());
+                    int damage = weapon->calculateDamage(impactDist);
+                    target.takeDamage(damage);
                 }
 
                 if (!target.isAlive()) {
@@ -456,7 +458,9 @@ void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
         if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
                                     direction.getY(), target, impactDistance) &&
                                     !isFriendlyFire(attacker->getId(), target.getTeam())) {
-            target.takeDamage(20);
+            Weapon_* knife = attacker->getEquippedWeaponInstance();
+            int damage = knife->calculateDamage(0);
+            target.takeDamage(damage);
         }
     }
 }

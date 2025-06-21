@@ -30,6 +30,7 @@ public:
         int rateOfFire;
         float precision;
         float maxRange;
+        int maxDamage;
     };
 
     WeaponData getWeaponData(const std::string& weaponName) const;
