@@ -131,15 +131,15 @@ PlayerInfo::PlayerInfo(const std::vector<uint8_t>& bytes) {
 
 void PlayerInfo::print() const {
     std::cout << "===== Player Info =====" << std::endl;
-    std::cout << "  Server Entity ID: " << server_entt_id << std::endl;
-    std::cout << "  Username: " << username << std::endl;
-    std::cout << "  Team: " << static_cast<int>(team) << std::endl;
-    std::cout << "  Skin: " << static_cast<int>(skin) << std::endl;
+    // std::cout << "  Server Entity ID: " << server_entt_id << std::endl;
+    // std::cout << "  Username: " << username << std::endl;
+    // std::cout << "  Team: " << static_cast<int>(team) << std::endl;
+    // std::cout << "  Skin: " << static_cast<int>(skin) << std::endl;
     std::cout << "  State: " << static_cast<int>(state) << std::endl;
-    std::cout << "  Position: (" << position.getX() << ", " << position.getY() << ")" << std::endl;
-    std::cout << "  Angle Direction: " << angle_direction << " radians" << std::endl;
-    std::cout << "Weapon Selected: " << static_cast<int>(weapon_type) << std::endl;
-    std::cout << "Weapon id: " << static_cast<int>(equipped_weapon_id) << std::endl;
+    // std::cout << "  Position: (" << position.getX() << ", " << position.getY() << ")" <<
+    // std::endl; std::cout << "  Angle Direction: " << angle_direction << " radians" << std::endl;
+    // std::cout << "Weapon Selected: " << static_cast<int>(weapon_type) << std::endl;
+    // std::cout << "Weapon id: " << static_cast<int>(equipped_weapon_id) << std::endl;
     // std::cout << "Health: " << health << std::endl;
     // std::cout << "Money: $" << money << std::endl;
     // std::cout << "Ammo: " << ammo_weapon << std::endl;

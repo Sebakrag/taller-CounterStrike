@@ -9,6 +9,7 @@
 #include "../../../client/include/model/utils/TextureManager.h"
 
 #define GAME_NAME "Counter Strike"
+#define MAX_CHANNELS_ALLOCATED 64
 
 Graphics::Graphics(const WindowConfig& config, const FOVConfig& fov_config,
                    const std::string& match_name):
@@ -19,6 +20,7 @@ Graphics::Graphics(const WindowConfig& config, const FOVConfig& fov_config,
         window(create_window(config, match_name)),
         renderer(create_renderer(window)),
         mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) {
+    mixer.AllocateChannels(MAX_CHANNELS_ALLOCATED);
     TextureManager::init(renderer);
     DynamicStencil::init(renderer, fov_config);
 }

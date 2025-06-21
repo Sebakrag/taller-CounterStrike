@@ -82,6 +82,7 @@ void ComponentUpdater::updateComponents() {
 void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent& soundComp,
                                                   const PlayerSnapshot& playerSnap,
                                                   const Vec2D& curr_pos) {
+    static bool already_dead = false;
     const Entity curr_weapon = entt_mgr.get(playerSnap.equipped_weapon_id);
     const PlayerState curr_state = playerSnap.state;
     const int curr_health = playerSnap.hp;
@@ -96,10 +97,14 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
         if (prev_info.weapon_id != curr_weapon)
             soundComp.addEvent(SoundEvent::ChangeWeapon);
 
-        if (curr_health == 0)
-            soundComp.addEvent(SoundEvent::Die);
-        else if (prev_info.health != curr_health)
+        std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
+                  << std::endl;
+        // if (curr_health <= 0) {
+        //     soundComp.addEvent(SoundEvent::Die);
+        // }
+        if (curr_health < prev_info.health) {
             soundComp.addEvent(SoundEvent::TakeDamage);
+        }
 
         std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
                   << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
@@ -111,6 +116,9 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
         } else if (curr_state == PlayerState::PickingUp) {
             soundComp.addEvent(SoundEvent::DropWeapon);
             soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
+        } else if (!already_dead && (curr_state == PlayerState::Dead)) {
+            soundComp.addEvent(SoundEvent::Die);
+            already_dead = true;
         }
     }
 

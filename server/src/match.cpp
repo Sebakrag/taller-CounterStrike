@@ -210,7 +210,7 @@ void Match::updateState(double elapsedTime) {
                                      [](const Projectile& p) { return !p.isActive(); }),
                       projectiles.end());
 
-    for (auto& player : players) {
+    for (auto& player: players) {
         if (player.isAlive())
             player.setState(PlayerState::Idle);
     }
