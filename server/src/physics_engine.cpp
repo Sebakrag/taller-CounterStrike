@@ -80,7 +80,7 @@ bool PhysicsEngine::knifeHit(float originX, float originY, float dirX, float dir
     float dy = target.getY() - originY;
 
     float distance = std::sqrt(dx * dx + dy * dy);
-    if (distance > 50.0f)
+    if (distance > 15.0f)
         return false;
 
     float dot = dx * dirX + dy * dirY;
