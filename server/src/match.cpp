@@ -271,13 +271,18 @@ void Match::updateState(double elapsedTime) {
                 continue;
 
             float impactDist;
+            bool hitByPrecision = true;
             //const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
             const std::unique_ptr<Weapon_> rawWeapon = WeaponFactory::create(proj.getWeaponUsed());
             auto* weapon = dynamic_cast<FireWeapon*>(rawWeapon.get());
-            Player* shooter = getPlayer(proj.getShooter());
             if (!weapon) continue;
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon, impactDist)) {
+            Player* shooter = getPlayer(proj.getShooter());
 
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon, impactDist, hitByPrecision)) {
+                if (!hitByPrecision) {
+                    proj.deactivate();
+                    break;
+                }
                 if (!isFriendlyFire(proj.getShooter(), target.getTeam())) {
                     int damage = weapon->calculateDamage(impactDist);
                     target.takeDamage(damage);

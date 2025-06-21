@@ -34,7 +34,7 @@ void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float del
 
 bool PhysicsEngine::shotHitPlayer(float projX, float projY,
                                   const Player& shooter,
-                                  const Player& target, const FireWeapon& weapon, float& impactDistance) {
+                                  const Player& target, const FireWeapon& weapon, float& impactDistance, bool& hitByPrecision) {
     static std::default_random_engine rng(std::random_device{}());
     static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
@@ -56,11 +56,12 @@ bool PhysicsEngine::shotHitPlayer(float projX, float projY,
 
         if (roll <= precision) {
             std::cout << "Disparo ACERTADO  - distancia: " << impactDistance <<  " - precision: " << precision << ", roll: " << roll << std::endl;
-            return true;
+            hitByPrecision = true;
         } else {
             std::cout << "Disparo FALLADO - distancia: " << impactDistance <<  " - precision: " << precision << ", roll: " << roll << std::endl;
-            return false;
+            hitByPrecision = false;
         }
+        return true;
     }
 
     return false;
