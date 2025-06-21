@@ -31,40 +31,31 @@ void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float del
     }
 }
 
-bool PhysicsEngine::shotHitPlayer(float originX, float originY, float dirX, float dirY, Map& map,
-                                  const Player& target, float maxDistance, float& impactDistance) {
-    // Normalizar la dirección
-    const float len = std::sqrt(dirX * dirX + dirY * dirY);
-    if (len == 0.0f)
-        return false;
-    dirX /= len;
-    dirY /= len;
 
-    float stepSize = 0.1f;
-    float x = originX;
-    float y = originY;
-    float distance = 0.0f;
+bool PhysicsEngine::shotHitPlayer(float projX, float projY,
+                                  const Player& target, const FireWeapon& weapon, float& impactDistance) {
+    static std::default_random_engine rng(std::random_device{}());
+    static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
+    float dx = target.getX() - projX;
+    float dy = target.getY() - projY;
+
+    float distance = std::sqrt(dx * dx + dy * dy);
     float targetRadius = 15.0f;
 
-    while (distance < maxDistance) {
-        // verificamos colision con el mapa
-        if (!map.isWalkable(static_cast<int>(x), static_cast<int>(y))) {
+    if (distance < targetRadius) {
+        impactDistance = distance;
+
+        float precision = calculatePrecisionByDistance(distance, weapon.getMaxRange(), weapon.getBasePrecision());
+        float roll = dist(rng);
+
+        if (roll <= precision) {
+            std::cout << "Disparo ACERTADO - precision: " << precision << ", roll: " << roll << std::endl;
+            return true;
+        } else {
+            std::cout << "Disparo FALLADO - precision: " << precision << ", roll: " << roll << std::endl;
             return false;
         }
-
-        const float dx = target.getX() - x;
-        const float dy = target.getY() - y;
-        float distToTarget = std::sqrt(dx * dx + dy * dy);
-
-        if (distToTarget < targetRadius) {  // radio del hitbox
-            impactDistance = distance;
-            return true;
-        }
-
-        x += dirX * stepSize;
-        y += dirY * stepSize;
-        distance += stepSize;
     }
 
     return false;

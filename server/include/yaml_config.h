@@ -28,6 +28,8 @@ public:
         int price = 0;
         int bullets;
         int rateOfFire;
+        float precision;
+        float maxRange;
     };
 
     WeaponData getWeaponData(const std::string& weaponName) const;

@@ -34,6 +34,8 @@ YamlConfig::WeaponData YamlConfig::getWeaponData(const std::string& weaponName) 
     data.bullets = node["bullets"] ? node["bullets"].as<int>() : 0;
     data.price = node["price"] ? node["price"].as<int>() : 0;
     data.rateOfFire = node["rate_of_fire"] ? node["rate_of_fire"].as<int>() : 0;
+    data.precision = node["precision"] ? node["precision"].as<float>() : 0;
+    data.maxRange = node["max_range"] ? node["max_range"].as<float>() : 0;
     return data;
 }
 

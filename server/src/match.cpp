@@ -85,8 +85,6 @@ bool Match::movePlayer(const std::string& playerName, const float dx, const floa
         return false;
 
     try {
-        std::cout << "En match::movePlayer llega con los parametros: (" << dx << ", " << dy
-                  << "), y deltatime: " << deltaTime << std::endl;
         PhysicsEngine::movePlayer(*p, dx, dy, deltaTime, map);
         return true;
     } catch (...) {
@@ -185,7 +183,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 return;
             }
             case GameActionType::Rotate: {
-                std::cout << "recibí rotar" << std::endl;
+                //std::cout << "recibí rotar" << std::endl;
                 player->setAngle(action.gameAction.angle);
                 break;
             }
@@ -205,8 +203,12 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 }
 
 void Match::updateState(double elapsedTime) {
-    // std::cout << "UpdateState " << roundTimer << " : Juego en fase " << (phase ==
-    // GamePhase::Preparation ? "Preparation " : "Combate ") << std::endl;
+
+    // Eliminamos proyectiles inactivos
+    projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
+                                     [](const Projectile& p) { return !p.isActive(); }),
+                      projectiles.end());
+
     if (roundOver)
         return;
     current_time += elapsedTime;
@@ -243,11 +245,15 @@ void Match::updateState(double elapsedTime) {
                 continue;
 
             float impactDist;
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), proj.getDirX(),
-                                             proj.getDirY(), map, target, proj.getMaxDistance(),
-                                             impactDist)) {
-                const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
-                target.takeDamage(weapon->getDamage());
+            //const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
+            const std::unique_ptr<Weapon_> rawWeapon = WeaponFactory::create(proj.getWeaponUsed());
+            auto* weapon = dynamic_cast<FireWeapon*>(rawWeapon.get());
+            if (!weapon) continue;
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), target, *weapon, impactDist)) {
+
+                if (!isFriendlyFire(proj.getShooter(), target.getTeam())) {
+                    target.takeDamage(weapon->getDamage());
+                }
 
                 if (!target.isAlive()) {
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
@@ -269,11 +275,6 @@ void Match::updateState(double elapsedTime) {
             proj.deactivate();
         }
     }
-
-    // Eliminamos proyectiles inactivos
-    projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
-                                     [](const Projectile& p) { return !p.isActive(); }),
-                      projectiles.end());
 
     checkRoundEnd();
 
@@ -396,7 +397,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
     // cargo bullets
     for (auto& p: projectiles) {
         bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
-                                 Vec2D(p.getDirX(), p.getDirY()));
+                                 Vec2D(p.getDirX(), p.getDirY()), p.isActive());
     }
     // cargo drops
     for (auto& droppedWeapon: droppedWeapons) {
@@ -427,7 +428,8 @@ void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
 
         float impactDistance;
         if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
-                                    direction.getY(), target, impactDistance)) {
+                                    direction.getY(), target, impactDistance) &&
+                                    !isFriendlyFire(attacker->getId(), target.getTeam())) {
             target.takeDamage(20);
         }
     }
@@ -492,6 +494,7 @@ void Match::advancePhase() {
         // Pasar a la fase de preparacion
         roundTimer = PREPARATION_TIME;
         phase = GamePhase::Preparation;
+        roundOver = false;
     }
 }
 
@@ -505,3 +508,19 @@ void Match::setPosSpawnPlayer(Player& p) {
         p.setPostion(map.getPositionCTZone());
     }
 }
+
+bool Match::isFriendlyFire(const std::string &shooterId, Team targetTeam) const {
+    auto it = std::find_if(players.begin(), players.end(),
+                            [&shooterId](const Player& p) {
+                               return p.getId() == shooterId;
+                            });
+
+    if (it == players.end()) {
+        std::cout << "Shooter ID no encontrado: " << shooterId << "\n";
+        return true;
+    }
+
+    const Player& shooter = *it;
+    return shooter.getTeam() == targetTeam;
+}
+

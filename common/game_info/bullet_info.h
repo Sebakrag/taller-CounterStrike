@@ -7,7 +7,7 @@
 #include "..//types.h"
 #include "../protocol.h"
 
-#define SIZE_BULLET_INFO 19
+#define SIZE_BULLET_INFO 20
 
 struct BulletInfo {
     ServerEntityID id;  // server_entt_id
@@ -16,9 +16,10 @@ struct BulletInfo {
     float pos_x;
     float pos_y;
     Vec2D direction;
+    bool active;
 
     BulletInfo() = default;
-    BulletInfo(ServerEntityID id, Weapon weapon, float pos_x, float pos_y, const Vec2D& direction);
+    BulletInfo(ServerEntityID id, Weapon weapon, float pos_x, float pos_y, const Vec2D& direction, bool active = true);
 
     BulletInfo(const BulletInfo& other) = default;
     BulletInfo& operator=(const BulletInfo& other) = default;

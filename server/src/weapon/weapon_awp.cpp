@@ -7,20 +7,24 @@ int WeaponAwp::DAMAGE = 0;
 float WeaponAwp::PRICE = 0;
 int WeaponAwp::INITIAL_BULLETS = 0;
 int WeaponAwp::RATE_OF_FIRE = 0;
+float WeaponAwp::PRECISION = 0;
+float WeaponAwp::MAX_RANGE = 0;
 
 
-void WeaponAwp::init(int damage, float price, int bullets, int rate_of_fire) {
+void WeaponAwp::init(int damage, float price, int bullets, int rate_of_fire, float precision, float max_range) {
     if (initialized == false) {
         DAMAGE = damage;
         PRICE = price;
         INITIAL_BULLETS = bullets;
         RATE_OF_FIRE = rate_of_fire;
+        PRECISION = precision;
+        MAX_RANGE = max_range;
         initialized = true;
     }
 }
 //------------
 
-WeaponAwp::WeaponAwp(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE) {}
+WeaponAwp::WeaponAwp(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE) {}
 
 Weapon WeaponAwp::getWeaponType() const { return Weapon::Awp; }
 

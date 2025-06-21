@@ -18,18 +18,24 @@ weapons:
     damage: 35 # daño por bala
     price: 2700 # precio del arma
     bullets: 30
-    rate_of_fire: 24 
+    rate_of_fire: 24
+    precision: 0.8
+    max_range: 700
 
   awp:
     damage: 100 # daño por disparo
     price: 3500 # precio del arma
     bullets: 10
     rate_of_fire: 20
+    precision: 1
+    max_range: 1000
 
   glock:
     damage: 45 # daño por bala
     bullets: 40
-    rate_of_fire: 700 
+    rate_of_fire: 700
+    precision: 0.8
+    max_range: 600
 
   knife:
     damage: 20 # daño del cuchillo
@@ -39,6 +45,8 @@ weapons:
     price: 3000 # precio del arma
     bullets: 20
     rate_of_fire: 60
+    precision: 0.5
+    max_range: 400
 
 bomb:
   time_to_explode: 15 # tiempo hasta que explota (en segundos)
