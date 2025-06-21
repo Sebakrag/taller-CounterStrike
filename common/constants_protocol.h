@@ -11,12 +11,14 @@
 #define BYTE_WEAPON_AK_47 0X02
 #define BYTE_WEAPON_M3 0x03
 #define BYTE_WEAPON_AWP 0x04
+#define BYTE_WEAPON_KNIFE 0x05
+#define BYTE_WEAPON_BOMB 0x06
 
 // WeaponState
-#define BYTE_WEAPON_STATE_DROPPED 0x01
-#define BYTE_WEAPON_STATE_EQUIPPED 0x02
-#define BYTE_WEAPON_STATE_HIDDEN 0x03
-#define BYTE_WEAPON_STATE_NONE 0x04
+#define BYTE_WEAPON_STATE_DROPPED 0xE1
+#define BYTE_WEAPON_STATE_EQUIPPED 0xE2
+#define BYTE_WEAPON_STATE_HIDDEN 0xE3
+#define BYTE_WEAPON_STATE_NONE 0xE4
 
 // TypeWeapon { Primary, Secondary, Knife, Bomb };
 #define BYTE_TYPE_PRIMARY 0X11
@@ -51,19 +53,17 @@
 #define BYTE_SKIN_COUNTERTERRORIST_3 0x07
 #define BYTE_SKIN_COUNTERTERRORIST_4 0x08
 
-
-// TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
-#define BYTE_ITEM_COIN 0x31
-#define BYTE_ITEM_GLOCK 0x32
-#define BYTE_ITEM_AK47 0x33
-#define BYTE_ITEM_M3 0x34
-#define BYTE_ITEM_AWP 0x35
-#define BYTE_ITEM_BOMB 0x36
-
 // TypeTileMap{ Desert, Aztec, Training };
 #define BYTE_MAP_DESERT 0xE1
 #define BYTE_MAP_AZTEC 0xE2
 #define BYTE_MAP_TRAINING 0xE3
+
+// BombState { Dropped, Carried, Planted, Exploded, Defused };
+#define BYTE_BOMB_DROPPED 0x31
+#define BYTE_BOMB_CARRIED 0x32
+#define BYTE_BOMB_PLANTED 0x33
+#define BYTE_BOMB_EXPLODED 0x34
+#define BYTE_BOMB_DEFUSED 0x35
 
 // Acciones del cliente:
 //--------------------------

@@ -103,6 +103,8 @@ void Bomb::update(double elapsedTime) {
     }
 }
 
+uint32_t Bomb::getServerId() { return serverId; }
+
 float Bomb::getX() const { return posX; }
 
 float Bomb::getY() const { return posY; }
@@ -113,3 +115,7 @@ std::string Bomb::getCarrierId() const { return carrierId; }
 
 BombState Bomb::getState() const { return state; }
 double Bomb::getTimer() const { return timer; }
+
+WeaponInfo Bomb::generateWeaponInfo(const WeaponState& state) const {
+    return {serverId, Weapon::Bomb, state, 0, 0, 0};
+}

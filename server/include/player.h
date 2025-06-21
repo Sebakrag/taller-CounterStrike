@@ -9,6 +9,7 @@
 #include "../../common/game_info/local_player_info.h"
 #include "../../common/game_info/player_info.h"
 #include "../../common/types.h"
+#include "weapon/bomb.h"
 #include "weapon/weapon.h"
 #include "weapon/weapon_factory.h"
 
@@ -28,6 +29,7 @@ private:
     std::unique_ptr<Weapon_> knife;
     std::unique_ptr<Weapon_> primaryWeapon;
     std::unique_ptr<Weapon_> secondaryWeapon;
+    Bomb* bomb = nullptr;
     TypeWeapon equippedWeapon;
     uint32_t id_weapon;  // necesito esto
 
@@ -42,6 +44,7 @@ public:
                     const Vec2D& position = Vec2D());
 
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
+    void setBomb(Bomb* bomb);
     void setEquippedWeapon(TypeWeapon type);
 
     float getX() const;

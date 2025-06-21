@@ -30,8 +30,6 @@ enum class PlayerSkin {
     CounterTerrorist4
 };
 
-enum class TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
-
 enum class TypeTileMap { Desert, Aztec, Training };
 
 struct PlayerInfoLobby {

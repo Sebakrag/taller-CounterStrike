@@ -54,6 +54,12 @@ void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
         id_weapon = primaryWeapon->getServerId();
     }
 }
+void Player::setBomb(Bomb* _bomb) {
+    bomb = _bomb;
+    if (_bomb == nullptr) {
+        setEquippedWeapon(TypeWeapon::Secondary);
+    }
+}
 
 void Player::setEquippedWeapon(TypeWeapon type) {
 
@@ -68,10 +74,10 @@ void Player::setEquippedWeapon(TypeWeapon type) {
             id_weapon = secondaryWeapon->getServerId();
             break;
         case TypeWeapon::Bomb:
-            // if (bomb == nullptr) { // si no tiene una, no cambio
-            //     return;
-            // }
-            //  id_weapon = knife->getServerId(); // TODO: id para la bomba.
+            if (bomb == nullptr) {  // si no tiene una, no cambio
+                return;
+            }
+            id_weapon = bomb->getServerId();
             break;
         case TypeWeapon::Knife:
             id_weapon = knife->getServerId();
