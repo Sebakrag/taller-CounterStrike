@@ -2,9 +2,15 @@
 
 #include <iostream>
 
-FireWeapon::FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision, float maxRange):
-        Weapon_(damage), price(price), bullets(bullets), rateOfFire(rateOfFire),
-        lastShotTimeS(0), basePrecision(basePrecision), maxRange(maxRange) {}
+FireWeapon::FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision,
+                       float maxRange):
+        Weapon_(damage),
+        price(price),
+        bullets(bullets),
+        rateOfFire(rateOfFire),
+        lastShotTimeS(0),
+        basePrecision(basePrecision),
+        maxRange(maxRange) {}
 
 
 bool FireWeapon::canShoot(double currentTime) const {
@@ -27,4 +33,3 @@ int FireWeapon::getBullets() const { return bullets; }
 float FireWeapon::getBasePrecision() const { return basePrecision; }
 
 float FireWeapon::getMaxRange() const { return maxRange; }
-

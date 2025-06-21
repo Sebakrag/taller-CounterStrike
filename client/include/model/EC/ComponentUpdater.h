@@ -1,9 +1,11 @@
 #ifndef COMPONENTUPDATER_H
 #define COMPONENTUPDATER_H
 
+#include <unordered_map>
 #include <vector>
 
 #include "common/dtos/EntitySnapshot.h"
+#include "components/SoundComponent.h"
 
 #include "ComponentManager.h"
 #include "EntityManager.h"
@@ -18,11 +20,27 @@ private:
 
         OldEntityEntry(const Entity e, const EntitySnapshot& snap): e(e), snap(snap) {}
     };
+
+    static constexpr float MIN_MOVEMENT_EPSILON = 2.0f;
+
+    struct PreviousPlayerInfo {
+        PlayerState state;
+        Entity weapon_id;
+        Vec2D position;
+        int health;
+
+        PreviousPlayerInfo(const PlayerState s, const Entity weapon, const Vec2D& pos,
+                           const int hp):
+                state(s), weapon_id(weapon), position(pos), health(hp) {}
+    };
+
     EntityManager& entt_mgr;
     ComponentManager& comp_mgr;
     // TODO: usar std::vector<std::pair<Entity, const EntitySnapshot*>>
     std::vector<OldEntityEntry>
             old_entities;  // entities that weren't created in the current frame.
+
+    std::unordered_map<Entity, PreviousPlayerInfo> previous_player_info;
 
     ///
     /// @brief Synchronize all the entities that exists in the server (that comes in the snapshot).
@@ -38,6 +56,8 @@ private:
     /// unknown behavior could take place.
     ///
     void updateComponents();
+    void updatePlayerSoundComponent(Entity e, SoundComponent& soundComp,
+                                    const PlayerSnapshot& playerSnap, const Vec2D& curr_pos);
 
 public:
     ComponentUpdater(EntityManager& em, ComponentManager& cm);

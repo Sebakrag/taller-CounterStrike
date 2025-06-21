@@ -4,12 +4,18 @@
 #include <string>
 
 
-// Paths
-#define PLAYER_PATH std::string("client/assets/player")
-#define TILE_SETS_PATH std::string("client/assets/tiles")
-#define WEAPON_PATH std::string("client/assets/weapons")
-#define HUD_PATH std::string("client/assets/hud")
+// Paths (graphics)
+#define PLAYER_PATH std::string("client/assets/gfx/player")
+#define TILE_SETS_PATH std::string("client/assets/gfx/tiles")
+#define WEAPON_PATH std::string("client/assets/gfx/weapons")
+#define HUD_PATH std::string("client/assets/gfx/hud")
 
+// Paths (sounds)
+#define PLAYER_SOUNDS_PATH std::string("client/assets/sfx/player")
+#define RADIO_SOUNDS_PATH std::string("client/assets/sfx/radio")
+#define WEAPON_SOUNDS_PATH std::string("client/assets/sfx/weapon")
+
+// Player skins
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix_spritesheet.png")
 #define L377_KREW_IMG (PLAYER_PATH + "/t_L377_krew_spritesheet.png")
 #define ARTIC_AVENGER_IMG (PLAYER_PATH + "/t_artic_avenger_spritesheet.png")
@@ -19,7 +25,7 @@
 #define UK_SAS_IMG (PLAYER_PATH + "/ct_uk_sas_spritesheet.png")
 #define FRENCH_GIGN_IMG (PLAYER_PATH + "/ct_french_gign_spritesheet.png")
 
-// Weapons
+// Weapons skin
 #define AK47_IMG (WEAPON_PATH + "/ak47_spritesheet.png")
 #define AWP_IMG (WEAPON_PATH + "/awp_spritesheet.png")
 #define GLOCK_IMG (WEAPON_PATH + "/glock_spritesheet.png")
@@ -32,7 +38,7 @@
 #define AZTEC_TILE_SET_IMG (TILE_SETS_PATH + "/aztec_tiles.png")
 #define TRAINING_TILE_SET_IMG (TILE_SETS_PATH + "/training_tiles.png")
 
-// HUD:
+// HUD
 #define HUD_NUMS (HUD_PATH + "/hud_nums.bmp")
 #define HUD_SYMB (HUD_PATH + "/hud_symbols.bmp")
 
@@ -42,6 +48,26 @@
 // Sprites
 #define SPRITE_SIZE 32   // in pixels
 #define RENDER_SCALAR 1  // va a dibujar los sprites al doble de su tamaño original
+
+
+// Sounds
+// #define STEP_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")
+#define STEP_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_two_steps.wav")
+#define PICKUP_SOUND (PLAYER_SOUNDS_PATH + "/pickup.wav")
+#define DROP_WEAPON_SOUND (PLAYER_SOUNDS_PATH + "/drop.wav")
+#define CHANGE_WEAPON_SOUND \
+    (PLAYER_SOUNDS_PATH + "/pickup.wav")  // Changing and picking up a weapon produce the same sound
+#define SHOOT_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")
+#define TAKE_DAMAGE_SOUND (PLAYER_SOUNDS_PATH + "/hit.wav")
+#define DIE_SOUND (PLAYER_SOUNDS_PATH + "/die.wav")
+
+#define BOMB_BEEP_SOUND (WEAPON_SOUNDS_PATH + "/bomb_beep.wav")
+#define BOMB_EXPLOSION_SOUND (WEAPON_SOUNDS_PATH + "/bomb_explosion.wav")
+
+#define BOMB_PLANTED_SOUND \
+    (RADIO_SOUNDS_PATH + "/bombpl.ogg")  // Mas que un sound es un mensaje que dice la radio
+#define BOMB_DEFUSED_SOUND (RADIO_SOUNDS_PATH + "/bombdef.ogg")
+#define GO_SOUND (RADIO_SOUNDS_PATH + "/go.ogg")
 
 
 #endif  // CLIENTCONSTANTS_H
