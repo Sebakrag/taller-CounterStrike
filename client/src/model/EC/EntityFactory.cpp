@@ -47,7 +47,7 @@ void EntityFactory::createEntityPlayer(const Entity& new_entt, const LocalPlayer
     tComp->init(p.position.getX(), p.position.getY(), p.angle_direction);
 
     const auto spriteComp = comp_mgr.addComponent<PlayerSpriteComponent>(new_entt);
-    spriteComp->init(p.generateSpriteType(), p.weapon_type);
+    spriteComp->init(p.generateSpriteType(), p.state, p.weapon_type);
 
     const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
     equippedWeapon->setID(
@@ -62,7 +62,7 @@ void EntityFactory::create_player_entt(const Entity& new_entt, const EntitySnaps
         tComp->init(snap.pos_x, snap.pos_y, snap.angle);
 
         const auto spriteComp = comp_mgr.addComponent<PlayerSpriteComponent>(new_entt);
-        spriteComp->init(snap.sprite_type, player->weapon_type);
+        spriteComp->init(snap.sprite_type, player->state, player->weapon_type);
 
         const auto equippedWeapon = comp_mgr.addComponent<EquippedWeaponComponent>(new_entt);
         equippedWeapon->setID(

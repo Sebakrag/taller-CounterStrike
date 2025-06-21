@@ -63,7 +63,8 @@ void ComponentUpdater::updateComponents() {
         }
         if (const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e)) {
             if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
-                playerSpr->setTypeWeaponEquipped(player->weapon_type);
+                // playerSpr->setTypeWeaponEquipped(player->weapon_type);
+                playerSpr->update(player->state, player->weapon_type);
             }
         }
         if (const auto soundComp = comp_mgr.getComponent<SoundComponent>(e)) {
@@ -115,7 +116,8 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
                 soundComp.addEvent(SoundEvent::Shoot);
             } else if (curr_state == PlayerState::PickingUp) {
                 soundComp.addEvent(SoundEvent::DropWeapon);
-                soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
+                soundComp.addEvent(
+                        SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
             }
         }
     }

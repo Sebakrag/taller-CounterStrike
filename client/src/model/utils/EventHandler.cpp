@@ -24,7 +24,7 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
     handleKeyboardEvents(gameIsRunning);
     handleMouseEvents(gameIsRunning);
 }
-
+// TODO: Unificar funciones de keyboard (No esta saliendo bien cuando presiono ESC)
 void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
