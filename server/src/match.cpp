@@ -142,6 +142,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 
                 if (player->getEquippedWeapon() == TypeWeapon::Knife) {
                     std::cout << "Ataque con cuchillo" << std::endl;
+                    player->setState(PlayerState::Attacking);
                     handleKnifeAttack(player, gameAction.direction);
                     break;
                 }
