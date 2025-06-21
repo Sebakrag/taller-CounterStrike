@@ -1,8 +1,5 @@
 #include "../../../../client/include/model/utils/EventHandler.h"
 
-#include <SDL2/SDL.h>
-#include <SDL_scancode.h>
-
 #include "../../../../client/dtos/AimInfo.h"
 #include "../../../../common/types.h"
 #include "../../../../common/utils/Vec2D.h"
@@ -27,7 +24,7 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
     handleKeyboardEvents(gameIsRunning);
     handleMouseEvents(gameIsRunning);
 }
-
+// TODO: Unificar funciones de keyboard (No esta saliendo bien cuando presiono ESC)
 void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
@@ -62,7 +59,6 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
 void EventHandler::handleKeyDown(SDL_Scancode sc, bool& gameIsRunning) const {
     if (sc == SDL_SCANCODE_ESCAPE)
         gameIsRunning = false;
-    Vec2D direction(0, 0);
 
     // cambiar de arma
     if (sc == SDL_SCANCODE_1) {

@@ -16,7 +16,8 @@ protected:
     float maxRange;
 
 public:
-    FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision, float maxRange);
+    FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision,
+               float maxRange);
     ~FireWeapon() override = default;
 
     bool canShoot(double currentTime) const override;

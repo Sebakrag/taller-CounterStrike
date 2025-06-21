@@ -16,7 +16,15 @@ enum class Team : unsigned char { Terrorist, CounterTerrorist };
 enum class GamePhase : unsigned char { Preparation, Combat, EndOfMatch };
 enum class BombState : unsigned char { Dropped, Carried, Planted, Exploded, Defused };
 
-enum class PlayerState : unsigned char { Idle, Walking, Attacking, TakingDamage, PickingUp, Dead };
+enum class PlayerState : unsigned char {
+    Idle,
+    Walking,
+    Attacking,
+    TakingDamage,
+    PickingUp,
+    Dead,
+    DefusingBomb
+};
 enum class WeaponState : unsigned char { DROPPED, EQUIPPED, HIDDEN };
 
 enum class PlayerSkin {
