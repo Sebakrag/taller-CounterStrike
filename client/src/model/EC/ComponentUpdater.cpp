@@ -82,7 +82,6 @@ void ComponentUpdater::updateComponents() {
 void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent& soundComp,
                                                   const PlayerSnapshot& playerSnap,
                                                   const Vec2D& curr_pos) {
-    static bool already_dead = false;
     const Entity curr_weapon = entt_mgr.get(playerSnap.equipped_weapon_id);
     const PlayerState curr_state = playerSnap.state;
     const int curr_health = playerSnap.hp;
@@ -90,35 +89,34 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
     if (const auto it = previous_player_info.find(e); it != previous_player_info.end()) {
         const auto& prev_info = it->second;
 
-        Vec2D dpos(curr_pos - prev_info.position);
-        if (dpos.calculateNormSquared() > MIN_MOVEMENT_EPSILON * MIN_MOVEMENT_EPSILON)
-            soundComp.addEvent(SoundEvent::Walk);
-
-        if (prev_info.weapon_id != curr_weapon)
-            soundComp.addEvent(SoundEvent::ChangeWeapon);
-
-        std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
-                  << std::endl;
-        // if (curr_health <= 0) {
-        //     soundComp.addEvent(SoundEvent::Die);
-        // }
-        if (curr_health < prev_info.health) {
-            soundComp.addEvent(SoundEvent::TakeDamage);
-        }
-
-        std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
-                  << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
-
-        if (curr_state == PlayerState::Attacking) {
-            // Quizas que deberia enviar un evento de sonido al componente de su arma.
-            // (en el caso de que querramos distinguir sonidos de arma.)
-            soundComp.addEvent(SoundEvent::Shoot);
-        } else if (curr_state == PlayerState::PickingUp) {
-            soundComp.addEvent(SoundEvent::DropWeapon);
-            soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
-        } else if (!already_dead && (curr_state == PlayerState::Dead)) {
+        if ((prev_info.state != PlayerState::Dead) && (curr_state == PlayerState::Dead)) {
             soundComp.addEvent(SoundEvent::Die);
-            already_dead = true;
+        } else if (prev_info.state != PlayerState::Dead) {
+            Vec2D dpos(curr_pos - prev_info.position);
+            if (dpos.calculateNormSquared() > MIN_MOVEMENT_EPSILON * MIN_MOVEMENT_EPSILON)
+                soundComp.addEvent(SoundEvent::Walk);
+
+            if (prev_info.weapon_id != curr_weapon)
+                soundComp.addEvent(SoundEvent::ChangeWeapon);
+
+            std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
+                      << std::endl;
+
+            if (curr_health < prev_info.health) {
+                soundComp.addEvent(SoundEvent::TakeDamage);
+            }
+
+            std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
+                      << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
+
+            if (curr_state == PlayerState::Attacking) {
+                // Quizas que deberia enviar un evento de sonido al componente de su arma.
+                // (en el caso de que querramos distinguir sonidos de arma.)
+                soundComp.addEvent(SoundEvent::Shoot);
+            } else if (curr_state == PlayerState::PickingUp) {
+                soundComp.addEvent(SoundEvent::DropWeapon);
+                soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
+            }
         }
     }
 
