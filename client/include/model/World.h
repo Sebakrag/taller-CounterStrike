@@ -5,6 +5,7 @@
 #include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/game_info/game_info.h"
 #include "../../../common/tile_map.h"
+#include "EC/AudioSystem.h"
 #include "EC/ComponentManager.h"
 #include "EC/ComponentUpdater.h"
 #include "EC/EntityManager.h"
@@ -27,10 +28,14 @@ private:
     Camera camera;
     FieldOfView player_FOV;
 
+    // TODO: podemos crear un struct para la info del localplayer.
     Entity local_player;  // This is the actual player that interacts with his own program.
     Weapon currentWeapon = Weapon::Knife;  // para consultar en EventHandler
+    Vec2D local_player_pos;
+
     HUD player_HUD;
     RenderSystem render_sys;
+    AudioSystem audio_sys;
 
 public:
     /// ///
@@ -45,7 +50,7 @@ public:
     void update(float dt, const GameInfo& gameInfo);
     void render(Graphics& graphics);
     AimInfo getPlayerAimInfo(int mouseX, int mouseY);
-    Vec2D getPlayerPosition();
+    Vec2D getPlayerPosition() const;
 };
 
 #endif  // WORLD_H

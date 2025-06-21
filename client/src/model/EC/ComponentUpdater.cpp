@@ -1,10 +1,12 @@
 #include "client/include/model/EC/ComponentUpdater.h"
 
 #include "client/include/model/EC/components/EquippedWeaponComponent.h"
+#include "client/include/model/EC/components/PlayerSpriteComponent.h"
+#include "client/include/model/EC/components/SoundComponent.h"
 #include "client/include/model/EC/components/SpriteComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
-#include "model/EC/components/PlayerSpriteComponent.h"
+#include "client/include/model/utils/SoundEvent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
@@ -64,6 +66,11 @@ void ComponentUpdater::updateComponents() {
                 playerSpr->setTypeWeaponEquipped(player->weapon_type);
             }
         }
+        if (const auto soundComp = comp_mgr.getComponent<SoundComponent>(e)) {
+            if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
+                updatePlayerSoundComponent(e, *soundComp, *player, {snap.pos_x, snap.pos_y});
+            }
+        }
 
         // Deberia crear un AnimationComponent para actualizar el sprite de forma correcta.
         // if (const auto spr = comp_mgr.getComponent<SpriteComponent>(e)) {
@@ -71,3 +78,68 @@ void ComponentUpdater::updateComponents() {
         // }
     }
 }
+
+void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent& soundComp,
+                                                  const PlayerSnapshot& playerSnap,
+                                                  const Vec2D& curr_pos) {
+    const Entity curr_weapon = entt_mgr.get(playerSnap.equipped_weapon_id);
+    const PlayerState curr_state = playerSnap.state;
+
+    if (const auto it = previous_player_info.find(e); it != previous_player_info.end()) {
+        const auto& prev_info = it->second;
+
+        Vec2D dpos(curr_pos - prev_info.position);
+        if (dpos.calculateNormSquared() > MIN_MOVEMENT_EPSILON * MIN_MOVEMENT_EPSILON)
+            soundComp.addEvent(SoundEvent::Walk);
+
+        if (prev_info.weapon_id != curr_weapon)
+            soundComp.addEvent(SoundEvent::ChangeWeapon);
+
+        // TODO: para sonido de hit y die podemos guardar y comparar la vida.
+
+        std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
+                  << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
+
+        if (curr_state == PlayerState::Attacking) {
+            // Quizas que deberia enviar un evento de sonido al componente de su arma.
+            // (en el caso de que querramos distinguir sonidos de arma.)
+            soundComp.addEvent(SoundEvent::Shoot);
+        } else if (curr_state == PlayerState::PickingUp) {
+            soundComp.addEvent(SoundEvent::DropWeapon);
+            soundComp.addEvent(SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
+        }
+    }
+
+    // Guardar snapshot actual para próxima comparación
+    // previous_player_info[e] = {curr_state, curr_weapon, curr_pos};
+    previous_player_info.insert_or_assign(e, PreviousPlayerInfo{curr_state, curr_weapon, curr_pos});
+}
+
+
+// if (prev_info.state != curr_state) {
+//     switch (curr_state) {
+//         case PlayerState::Attacking:
+//             soundComp.addEvent(SoundEvent::Shoot);
+//             break;
+//         case PlayerState::PickingUp:
+//             soundComp.addEvent(SoundEvent::ChangeWeapon);
+//             break;
+//         case PlayerState::Dead:
+//             soundComp.addEvent(SoundEvent::Die);
+//             break;
+//         case PlayerState::DefusingBomb:
+//             soundComp.addEvent(SoundEvent::DefuseBomb); // Este es un sonido loop
+//             break;
+//         default:
+//             break;
+//     }
+
+// if (prev_state != curr_state) {
+//     if (curr_state == PlayerState::Attacking) {
+//         soundComp.addEvent(SoundEvent::Shoot);
+//     } else if (curr_state == PlayerState::Walking) {
+//         soundComp.addEvent(SoundEvent::Walk);
+//     } else if (curr_state == PlayerState::PickingUp) {
+//         soundComp.addEvent(SoundEvent::PickUpWeapon);
+//     }
+// }
