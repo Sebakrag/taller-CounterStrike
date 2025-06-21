@@ -68,6 +68,8 @@ public:
     void revive();
     void setTeam(Team newTeam);
     void setState(PlayerState newState);
+    bool spendMoney(int amount);
+    void addMoney(int amount);
 
     uint32_t getServerId() const;
 

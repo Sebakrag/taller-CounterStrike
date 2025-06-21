@@ -201,6 +201,25 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 std::cout << "Accion no implementada\n";
                 break;
         }
+    } else if (phase == GamePhase::Preparation) {
+        switch (gameAction.type) {
+            case GameActionType::BuyWeapon: {
+                if (!Shop::buyPrimaryWeapon(*player, gameAction.weapon, droppedWeapons)) {
+                    std::cout << "Compra de arma fallida. Revise su saldo\n";
+                }
+                break;
+            }
+            case GameActionType::BuyAmmo: {
+                if (!Shop::buyAmmo(*player, gameAction.weapon, gameAction.count_ammo)) {
+                    std::cout << "Compra de munición fallida. Revise su saldo\n";
+                }
+                break;
+            }
+            default:
+                std::cout << "Accion invalida en fase de preparacion\n";
+                break;
+
+        }
     }
 }
 
@@ -417,7 +436,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
     }
 
     return GameInfo(this->phase, bomb.isPlanted(), bomb.getX(), bomb.getY(), timeLeft,
-                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo);
+                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo, Shop::getInfo());
 }
 
 // void Match::showPlayers() const {
@@ -502,6 +521,14 @@ void Match::advancePhase() {
         roundTimer = PREPARATION_TIME;
         phase = GamePhase::Preparation;
         roundOver = false;
+
+        for (auto& p: players) {
+            float moneyBonus = BASE_MONEY_BONUS;
+            if (p.getTeam() == roundWinner) {
+                moneyBonus += WIN_BONUS;
+            }
+            p.addMoney(moneyBonus);
+        }
     }
 }
 

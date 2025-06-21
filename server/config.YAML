@@ -18,7 +18,7 @@ weapons:
     damage: 35 # daño por bala
     price: 2700 # precio del arma
     bullets: 30
-    rate_of_fire: 24
+    rate_of_fire: 56
     precision: 0.8
     max_range: 700
 
