@@ -67,6 +67,7 @@ public:
     std::unique_ptr<Weapon_> dropPrimaryWeapon();
     void revive();
     void setTeam(Team newTeam);
+    void setState(PlayerState newState);
 
     uint32_t getServerId() const;
 

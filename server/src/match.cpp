@@ -167,6 +167,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 
                         // Pickup arma dropeada
                         player->setPrimaryWeapon(std::move(it->weapon));
+                        player->setState(PlayerState::PickingUp);
                         droppedWeapons.erase(it);
                         break;
                     }
@@ -208,6 +209,11 @@ void Match::updateState(double elapsedTime) {
     projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
                                      [](const Projectile& p) { return !p.isActive(); }),
                       projectiles.end());
+
+    for (auto& player : players) {
+        if (player.isAlive())
+            player.setState(PlayerState::Idle);
+    }
 
     if (roundOver)
         return;
