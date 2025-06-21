@@ -53,16 +53,19 @@ void Server::initConstants(const YamlConfig& yamlConfig) const {
 
     // weapons.
     auto ak47 = yamlConfig.getWeaponData("ak47");
-    WeaponAk47::init(ak47.damage, ak47.price, ak47.bullets, ak47.rateOfFire, ak47.precision, ak47.maxRange);
+    WeaponAk47::init(ak47.damage, ak47.price, ak47.bullets, ak47.rateOfFire, ak47.precision,
+                     ak47.maxRange);
 
     auto awp = yamlConfig.getWeaponData("awp");
-    WeaponAwp::init(awp.damage, awp.price, awp.bullets, awp.rateOfFire, awp.precision, awp.maxRange);
+    WeaponAwp::init(awp.damage, awp.price, awp.bullets, awp.rateOfFire, awp.precision,
+                    awp.maxRange);
 
     auto m3 = yamlConfig.getWeaponData("m3");
     WeaponM3::init(m3.damage, m3.price, m3.bullets, m3.rateOfFire, m3.precision, m3.maxRange);
 
     auto glock = yamlConfig.getWeaponData("glock");
-    WeaponGlock::init(glock.damage, glock.bullets, glock.rateOfFire, glock.precision, glock.maxRange);
+    WeaponGlock::init(glock.damage, glock.bullets, glock.rateOfFire, glock.precision,
+                      glock.maxRange);
 
     auto knife = yamlConfig.getWeaponData("knife");
     WeaponKnife::init(knife.damage);

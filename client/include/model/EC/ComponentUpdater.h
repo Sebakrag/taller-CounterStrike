@@ -27,9 +27,11 @@ private:
         PlayerState state;
         Entity weapon_id;
         Vec2D position;
+        int health;
 
-        PreviousPlayerInfo(const PlayerState s, const Entity weapon, const Vec2D& pos):
-                state(s), weapon_id(weapon), position(pos) {}
+        PreviousPlayerInfo(const PlayerState s, const Entity weapon, const Vec2D& pos,
+                           const int hp):
+                state(s), weapon_id(weapon), position(pos), health(hp) {}
     };
 
     EntityManager& entt_mgr;

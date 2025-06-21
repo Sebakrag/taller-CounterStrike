@@ -49,6 +49,7 @@ void SoundLibrary::loadPLayerSounds() {
     loadSound(SoundEvent::DropWeapon, DROP_WEAPON_SOUND);
     loadSound(SoundEvent::ChangeWeapon, CHANGE_WEAPON_SOUND);
     loadSound(SoundEvent::Shoot, SHOOT_SOUND);
+    loadSound(SoundEvent::TakeDamage, TAKE_DAMAGE_SOUND);
     loadSound(SoundEvent::Die, DIE_SOUND);
 }
 

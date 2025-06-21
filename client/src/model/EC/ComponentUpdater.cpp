@@ -84,6 +84,7 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
                                                   const Vec2D& curr_pos) {
     const Entity curr_weapon = entt_mgr.get(playerSnap.equipped_weapon_id);
     const PlayerState curr_state = playerSnap.state;
+    const int curr_health = playerSnap.hp;
 
     if (const auto it = previous_player_info.find(e); it != previous_player_info.end()) {
         const auto& prev_info = it->second;
@@ -95,7 +96,10 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
         if (prev_info.weapon_id != curr_weapon)
             soundComp.addEvent(SoundEvent::ChangeWeapon);
 
-        // TODO: para sonido de hit y die podemos guardar y comparar la vida.
+        if (curr_health == 0)
+            soundComp.addEvent(SoundEvent::Die);
+        else if (prev_info.health != curr_health)
+            soundComp.addEvent(SoundEvent::TakeDamage);
 
         std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
                   << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
@@ -112,34 +116,6 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
 
     // Guardar snapshot actual para próxima comparación
     // previous_player_info[e] = {curr_state, curr_weapon, curr_pos};
-    previous_player_info.insert_or_assign(e, PreviousPlayerInfo{curr_state, curr_weapon, curr_pos});
+    previous_player_info.insert_or_assign(
+            e, PreviousPlayerInfo{curr_state, curr_weapon, curr_pos, curr_health});
 }
-
-
-// if (prev_info.state != curr_state) {
-//     switch (curr_state) {
-//         case PlayerState::Attacking:
-//             soundComp.addEvent(SoundEvent::Shoot);
-//             break;
-//         case PlayerState::PickingUp:
-//             soundComp.addEvent(SoundEvent::ChangeWeapon);
-//             break;
-//         case PlayerState::Dead:
-//             soundComp.addEvent(SoundEvent::Die);
-//             break;
-//         case PlayerState::DefusingBomb:
-//             soundComp.addEvent(SoundEvent::DefuseBomb); // Este es un sonido loop
-//             break;
-//         default:
-//             break;
-//     }
-
-// if (prev_state != curr_state) {
-//     if (curr_state == PlayerState::Attacking) {
-//         soundComp.addEvent(SoundEvent::Shoot);
-//     } else if (curr_state == PlayerState::Walking) {
-//         soundComp.addEvent(SoundEvent::Walk);
-//     } else if (curr_state == PlayerState::PickingUp) {
-//         soundComp.addEvent(SoundEvent::PickUpWeapon);
-//     }
-// }

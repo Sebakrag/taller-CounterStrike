@@ -10,6 +10,8 @@ enum class SoundEvent {
     Die,
     PickUpWeapon,
     DropWeapon,
+    TakeDamage,
+    // Radio sounds
     PlantBomb,
     DefuseBomb,
     // Bomb sounds

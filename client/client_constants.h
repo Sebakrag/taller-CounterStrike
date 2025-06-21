@@ -58,6 +58,7 @@
 #define CHANGE_WEAPON_SOUND \
     (PLAYER_SOUNDS_PATH + "/pickup.wav")  // Changing and picking up a weapon produce the same sound
 #define SHOOT_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")
+#define TAKE_DAMAGE_SOUND (PLAYER_SOUNDS_PATH + "/hit.wav")
 #define DIE_SOUND (PLAYER_SOUNDS_PATH + "/die.wav")
 
 #define BOMB_BEEP_SOUND (WEAPON_SOUNDS_PATH + "/bomb_beep.wav")
