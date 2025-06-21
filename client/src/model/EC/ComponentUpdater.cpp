@@ -116,8 +116,6 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
                 soundComp.addEvent(SoundEvent::Shoot);
             } else if (curr_state == PlayerState::PickingUp) {
                 soundComp.addEvent(SoundEvent::DropWeapon);
-                soundComp.addEvent(
-                        SoundEvent::PickUpWeapon);  // TODO: Este quizas lo podemos sacar.
             }
         }
     }

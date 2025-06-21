@@ -51,19 +51,28 @@
 
 
 // Sounds
+// Player (sounds)
 // #define STEP_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")
 #define STEP_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_two_steps.wav")
 #define PICKUP_SOUND (PLAYER_SOUNDS_PATH + "/pickup.wav")
 #define DROP_WEAPON_SOUND (PLAYER_SOUNDS_PATH + "/drop.wav")
 #define CHANGE_WEAPON_SOUND \
     (PLAYER_SOUNDS_PATH + "/pickup.wav")  // Changing and picking up a weapon produce the same sound
-#define SHOOT_SOUND (PLAYER_SOUNDS_PATH + "/dirt_walk_step.wav")
+#define SHOOT_SOUND (WEAPON_SOUNDS_PATH + "/glock18.wav")  // TODO: Esto estaria de mas
 #define TAKE_DAMAGE_SOUND (PLAYER_SOUNDS_PATH + "/hit.wav")
 #define DIE_SOUND (PLAYER_SOUNDS_PATH + "/die.wav")
 
+// Weapon (sounds)
+// #define KNIFE_HIT_SOUND (WEAPON_SOUNDS_PATH + "/knife_hit.wav")
+#define KNIFE_SLASH_SOUND (WEAPON_SOUNDS_PATH + "/knife_slash.wav")
+#define GLOCK_SOUND (WEAPON_SOUNDS_PATH + "/glock18.wav")
+#define AK47_SOUND (WEAPON_SOUNDS_PATH + "/ak47.wav")
+#define AWP_SOUND (WEAPON_SOUNDS_PATH + "/awp.wav")
+#define M3_SOUND (WEAPON_SOUNDS_PATH + "/m3.wav")
 #define BOMB_BEEP_SOUND (WEAPON_SOUNDS_PATH + "/bomb_beep.wav")
 #define BOMB_EXPLOSION_SOUND (WEAPON_SOUNDS_PATH + "/bomb_explosion.wav")
 
+// Radio (sounds)
 #define BOMB_PLANTED_SOUND \
     (RADIO_SOUNDS_PATH + "/bombpl.ogg")  // Mas que un sound es un mensaje que dice la radio
 #define BOMB_DEFUSED_SOUND (RADIO_SOUNDS_PATH + "/bombdef.ogg")
