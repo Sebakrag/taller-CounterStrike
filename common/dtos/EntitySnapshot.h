@@ -11,9 +11,10 @@
 
 struct PlayerSnapshot;
 struct WeaponSnapshot;
+struct BombSnapshot;
 
 using ServerEntityID = uint32_t;
-using SpecificData = std::variant<std::monostate, PlayerSnapshot, WeaponSnapshot>;
+using SpecificData = std::variant<std::monostate, PlayerSnapshot, WeaponSnapshot, BombSnapshot>;
 
 struct PlayerSnapshot {
     int hp;  // health
@@ -27,6 +28,10 @@ struct PlayerSnapshot {
 struct WeaponSnapshot {
     WeaponState state;
     // AmmoInfo ammoInfo;
+};
+
+struct BombSnapshot {
+    BombState state;
 };
 
 struct EntitySnapshot {
@@ -65,6 +70,12 @@ struct EntitySnapshot {
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive);
+
+    ///
+    /// @brief Constructor para un BOMB.
+    ///
+    EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
+                   float pos_y, float angle, bool alive, BombState state);
 
     EntitySnapshot(const EntitySnapshot& other) = default;
     EntitySnapshot& operator=(const EntitySnapshot& other) = default;

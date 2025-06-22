@@ -32,6 +32,7 @@
 #define KNIFE_IMG (WEAPON_PATH + "/knife_spritesheet.png")
 #define M3_IMG (WEAPON_PATH + "/m3_spritesheet.png")
 #define BULLET_IMG (WEAPON_PATH + "/bullet.bmp")
+#define BOMB_IMG (WEAPON_PATH + "/bomb_spritesheet.png")
 
 // weapons Version2. Estos sprites usa blending para suavizar los bordes con el fondo.
 #define AK47_IMG_2 (WEAPON_PATH + "/ak47_spritesheet (42x64).png")

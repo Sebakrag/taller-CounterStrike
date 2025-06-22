@@ -58,12 +58,13 @@
 #define BYTE_MAP_AZTEC 0xE2
 #define BYTE_MAP_TRAINING 0xE3
 
-// BombState { Dropped, Carried, Planted, Exploded, Defused };
+// BombState { Dropped, Equipped, Hidden, Planted, Exploded, Defused };
 #define BYTE_BOMB_DROPPED 0x31
-#define BYTE_BOMB_CARRIED 0x32
-#define BYTE_BOMB_PLANTED 0x33
-#define BYTE_BOMB_EXPLODED 0x34
-#define BYTE_BOMB_DEFUSED 0x35
+#define BYTE_BOMB_EQUIPPED 0x32
+#define BYTE_BOMB_HIDDEN 0x33
+#define BYTE_BOMB_PLANTED 0x34
+#define BYTE_BOMB_EXPLODED 0x35
+#define BYTE_BOMB_DEFUSED 0x36
 
 // Acciones del cliente:
 //--------------------------

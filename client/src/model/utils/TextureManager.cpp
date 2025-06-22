@@ -23,7 +23,7 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
 
     // Uso version con blending
-    loadTexture(ren, SpriteType::BOMB, BOMB_IMG_2);
+    loadTexture(ren, SpriteType::BOMB, BOMB_IMG);
     loadTexture(ren, SpriteType::BOMB_PLANTED, BOMB_PLANTED_IMG_2);
     loadTexture(ren, SpriteType::AK47, AK47_IMG_2);
     loadTexture(ren, SpriteType::AWP, AWP_IMG_2);

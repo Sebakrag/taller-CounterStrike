@@ -65,22 +65,28 @@ void Player::setEquippedWeapon(TypeWeapon type) {
 
     switch (type) {
         case TypeWeapon::Primary:
-            if (primaryWeapon == nullptr) {  // si no tiene una, no cambio
+            if (primaryWeapon == nullptr) {
                 return;
             }
             id_weapon = primaryWeapon->getServerId();
+            if (bomb != nullptr)
+                bomb->hide();
             break;
         case TypeWeapon::Secondary:
             id_weapon = secondaryWeapon->getServerId();
+            if (bomb != nullptr)
+                bomb->hide();
             break;
         case TypeWeapon::Bomb:
-            if (bomb == nullptr) {  // si no tiene una, no cambio
+            if (bomb == nullptr)  // si no tiene una, no cambio
                 return;
-            }
+            bomb->equip();
             id_weapon = bomb->getServerId();
             break;
         case TypeWeapon::Knife:
             id_weapon = knife->getServerId();
+            if (bomb != nullptr)
+                bomb->hide();
             break;
         default:
             break;

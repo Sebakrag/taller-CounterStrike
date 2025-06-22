@@ -14,14 +14,11 @@
 //         gamePhase(GamePhase::Preparation), bombState(false), bombX(0), bombY(0), timeLeft(30)
 //         {}
 
-GameInfo::GameInfo(GamePhase gamePhase, BombState bombState, float bombX, float bombY,
-                   float timeLeft, const LocalPlayerInfo& localPlayer,
-                   const std::vector<PlayerInfo>& otherPlayers,
+GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float timeLeft,
+                   const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
                    const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items):
         gamePhase(gamePhase),
-        bombState(bombState),
-        bombX(bombX),
-        bombY(bombY),
+        bomb(bomb),
         timeLeft(timeLeft),
         localPlayer(localPlayer),
         otherPlayers(otherPlayers),
@@ -34,17 +31,20 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     gamePhase = Protocol_::decodeGamePhase(bytes[0]);
     size_t index = 1;
 
-    // Bomb info
-    bombState = Protocol_::decodeBombState(bytes[index++]);
-    bombX = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
-    bombY = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
+    // Bomb
+    std::vector<uint8_t> bombBytes(bytes.begin() + index, bytes.begin() + index + SIZE_BOMB_INFO);
+    bomb = BombInfo(bombBytes);
+    index += SIZE_BOMB_INFO;
+
+    EntitySnapshot bombEntt(bomb.server_entt_id, EntityType::BOMB, bomb.getSpriteType(), bomb.pos_x,
+                            bomb.pos_y, 0, true, bomb.state);
+    entities.emplace_back(bombEntt);
 
     // Time left
     timeLeft =
             Protocol_::getFloat(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
     index += 4;
+
     // local Player.
     std::vector<uint8_t> localPlayerBytes(bytes.begin() + index,
                                           bytes.begin() + index + SIZE_LOCAL_PLAYER_INFO);
@@ -125,9 +125,9 @@ std::vector<uint8_t> GameInfo::toBytes() const {
     buffer.push_back(Protocol_::encodeGamePhase(gamePhase));
 
     // bomb
-    buffer.push_back(Protocol_::encodeBombState(bombState));
-    Protocol_::insertBigEndian16(bombX, buffer);
-    Protocol_::insertBigEndian16(bombY, buffer);
+    for (uint8_t& b: bomb.toBytes()) {
+        buffer.push_back(b);
+    }
 
     // time
     Protocol_::insertFloat4Bytes(timeLeft, buffer);
@@ -185,8 +185,8 @@ void GameInfo::print() const {
     }
 
     std::cout << "\nBomb:" << std::endl;
-    std::cout << "Bomb State: " << static_cast<int>(bombState) << std::endl;
-    std::cout << "Position: (" << bombX << "," << bombY << ")" << std::endl;
+    std::cout << "Bomb State: " << static_cast<int>(bomb.state) << std::endl;
+    std::cout << "Position: (" << bomb.pos_x << "," << bomb.pos_y << ")" << std::endl;
 
     std::cout << "\nTime Left: " << timeLeft << std::endl;
 }

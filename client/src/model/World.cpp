@@ -9,6 +9,7 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
         map(tileMap, graphics),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
+        // bomb(entt_mgr.create_bomb(firstBombSnap)),
         render_sys(local_player),
         audio_sys(comp_mgr, graphics.getMixer()) {}
 

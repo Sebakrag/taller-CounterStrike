@@ -16,7 +16,7 @@ void Bomb::init(double time_to_explode) {
 //---------
 
 Bomb::Bomb():
-        state(BombState::Carried),
+        state(BombState::Hidden),
         posX(0.0f),
         posY(0.0f),
         plantedPosition(0.0f, 0.0f),
@@ -26,12 +26,12 @@ Bomb::Bomb():
         serverId(IdGenerator::getNextId()) {}
 
 void Bomb::assignTo(const std::string& playerId) {
-    state = BombState::Carried;
+    state = BombState::Hidden;
     carrierId = playerId;
 }
 
 void Bomb::reset() {
-    state = BombState::Carried;
+    state = BombState::Hidden;
     carrierId.clear();
     posX = posY = 0.0f;
     plantedPosition = Vec2D(0.0f, 0.0f);
@@ -39,7 +39,7 @@ void Bomb::reset() {
 }
 
 bool Bomb::isCarriedBy(const std::string& playerId) const {
-    return state == BombState::Carried && carrierId == playerId;
+    return (state == BombState::Hidden || state == BombState::Equipped) && carrierId == playerId;
 }
 
 bool Bomb::hasExploded() const { return state == BombState::Exploded; }
@@ -50,10 +50,12 @@ bool Bomb::isPlanted() const { return state == BombState::Planted; }
 
 bool Bomb::isDropped() const { return state == BombState::Dropped; }
 
-bool Bomb::isCarried() const { return state == BombState::Carried; }
+bool Bomb::isCarried() const {
+    return (state == BombState::Hidden || state == BombState::Equipped);
+}
 
 void Bomb::drop(float x, float y) {
-    if (state != BombState::Carried)
+    if (state != BombState::Hidden && state != BombState::Equipped)
         return;
     posX = x;
     posY = y;
@@ -65,11 +67,11 @@ void Bomb::pickUp(const std::string& playerId) {
     if (state != BombState::Dropped)
         return;
     carrierId = playerId;
-    state = BombState::Carried;
+    state = BombState::Hidden;
 }
 
 bool Bomb::plant(float x, float y, Map& map) {
-    if (state != BombState::Carried)
+    if (state != BombState::Hidden && state != BombState::Equipped)
         return false;
 
     if (!map.isBombZone(static_cast<int>(x), static_cast<int>(y)))
@@ -93,6 +95,10 @@ bool Bomb::defuse() {
     return true;
 }
 
+void Bomb::equip() { state = BombState::Equipped; }
+
+void Bomb::hide() { state = BombState::Hidden; }
+
 void Bomb::update(double elapsedTime) {
     if (state == BombState::Planted) {
         timer -= elapsedTime;
@@ -103,7 +109,7 @@ void Bomb::update(double elapsedTime) {
     }
 }
 
-uint32_t Bomb::getServerId() { return serverId; }
+uint32_t Bomb::getServerId() const { return serverId; }
 
 float Bomb::getX() const { return posX; }
 
@@ -116,6 +122,4 @@ std::string Bomb::getCarrierId() const { return carrierId; }
 BombState Bomb::getState() const { return state; }
 double Bomb::getTimer() const { return timer; }
 
-WeaponInfo Bomb::generateWeaponInfo(const WeaponState& state) const {
-    return {serverId, Weapon::Bomb, state, 0, 0, 0};
-}
+BombInfo Bomb::generateBombInfo() const { return {serverId, state, posX, posY}; }

@@ -362,8 +362,10 @@ uint8_t Protocol_::encodeBombState(const BombState& state) {
     switch (state) {
         case BombState::Dropped:
             return BYTE_BOMB_DROPPED;
-        case BombState::Carried:
-            return BYTE_BOMB_CARRIED;
+        case BombState::Equipped:
+            return BYTE_BOMB_EQUIPPED;
+        case BombState::Hidden:
+            return BYTE_BOMB_HIDDEN;
         case BombState::Planted:
             return BYTE_BOMB_PLANTED;
         case BombState::Exploded:
@@ -569,8 +571,10 @@ BombState Protocol_::decodeBombState(uint8_t byte) {
     switch (byte) {
         case BYTE_BOMB_DROPPED:
             return BombState::Dropped;
-        case BYTE_BOMB_CARRIED:
-            return BombState::Carried;
+        case BYTE_BOMB_EQUIPPED:
+            return BombState::Equipped;
+        case BYTE_BOMB_HIDDEN:
+            return BombState::Hidden;
         case BYTE_BOMB_PLANTED:
             return BombState::Planted;
         case BYTE_BOMB_EXPLODED:
@@ -581,6 +585,5 @@ BombState Protocol_::decodeBombState(uint8_t byte) {
             throw std::runtime_error("Error. Estado de bomba desconcido. No se puede decodificar");
     }
 }
-
 
 void Protocol_::shutDown(int how) { socket.shutdown(how); }

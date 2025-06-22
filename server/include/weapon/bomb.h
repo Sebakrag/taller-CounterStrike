@@ -38,12 +38,14 @@ public:
     void pickUp(const std::string& playerId);
     bool plant(float x, float y, Map& map);
     bool defuse();
+    void equip();
+    void hide();
 
     // Update loop
     void update(double elapsedTime);
 
     // Accesos
-    uint32_t getServerId();
+    uint32_t getServerId() const;
     float getX() const;
     float getY() const;
     Vec2D getPlantedPosition() const;
@@ -51,7 +53,7 @@ public:
     BombState getState() const;
     double getTimer() const;
 
-    WeaponInfo generateWeaponInfo(const WeaponState& state) const;
+    BombInfo generateBombInfo() const;
 
     // CONSTANTES static para inicializar en server.cpp.
 private:

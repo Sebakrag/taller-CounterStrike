@@ -71,3 +71,20 @@ EntitySnapshot::EntitySnapshot(const ServerEntityID id, const EntityType entt_ty
                 "Fallo en el constructor de EntitySnapshot(). Se requiere EntityType::BULLET");
     }
 }
+
+EntitySnapshot::EntitySnapshot(const ServerEntityID id, const EntityType entt_type,
+                               const SpriteType sprite, const float pos_x, const float pos_y,
+                               const float angle, const bool alive, const BombState state):
+        server_entt_id(id),
+        type(entt_type),
+        sprite_type(sprite),
+        pos_x(pos_x),
+        pos_y(pos_y),
+        angle(angle),
+        is_alive(alive),
+        data(BombSnapshot{state}) {
+    if (entt_type != EntityType::BOMB) {
+        throw std::runtime_error(
+                "Fallo en el constructor de EntitySnapshot(). Se requiere EntityType::BOMB");
+    }
+}

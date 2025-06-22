@@ -7,6 +7,7 @@
 #include "../dtos/EntitySnapshot.h"
 #include "../types.h"
 
+#include "bomb_info.h"
 #include "bullet_info.h"
 #include "local_player_info.h"
 #include "player_info.h"
@@ -22,9 +23,7 @@ private:
 public:
     GamePhase gamePhase;
     // bool bombPlanted;
-    BombState bombState;
-    float bombX;
-    float bombY;
+    BombInfo bomb;
     float timeLeft;  // En fase de preparación, indica los segundos que restan para comenzar el
                      // juego. En el juego, indica cuanto falta para que explote la bomba, luego de
                      // ser colocada.
@@ -36,7 +35,7 @@ public:
 
     GameInfo() {}
 
-    GameInfo(GamePhase gamePhase, BombState bombState, float bombX, float bombY, float timeLeft,
+    GameInfo(GamePhase gamePhase, const BombInfo& bomb, float timeLeft,
              const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
              const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items);
 

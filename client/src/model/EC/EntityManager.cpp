@@ -33,6 +33,12 @@ Entity EntityManager::create_local_player(const LocalPlayerInfo& localPlayerInfo
     return new_entt;
 }
 
+// Entity EntityManager::create_bomb() {
+//     const Entity new_entt = tryGetNextID();
+//     server_entt_id_to_entity[bombSnap.server_entt_id] = new_entt;
+//     entt_factory.createBombEntity(new_entt, bombSnap);
+//     return new_entt;
+// }
 
 void EntityManager::destroy_entity_immediately(const ServerEntityID& serv_entt_id) {
     auto it = server_entt_id_to_entity.find(serv_entt_id);

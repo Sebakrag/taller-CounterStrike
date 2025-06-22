@@ -7,6 +7,7 @@
 #include "client/include/model/EC/components/TransformComponent.h"
 #include "client/include/model/EC/components/WeaponSpriteComponent.h"
 #include "client/include/model/utils/SoundEvent.h"
+#include "model/EC/components/BombSpriteComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
@@ -61,10 +62,16 @@ void ComponentUpdater::updateComponents() {
                 weaponSpr->setState(weapon->state);
             }
         }
+        if (const auto bombSpr = comp_mgr.getComponent<BombSpriteComponent>(e)) {
+            if (const auto bomb = std::get_if<BombSnapshot>(&snap.data)) {
+                bombSpr->setState(bomb->state);
+            }
+        }
         if (const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e)) {
             if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
-                // playerSpr->setTypeWeaponEquipped(player->weapon_type);
-                playerSpr->update(player->state, player->weapon_type);
+                playerSpr->update(player->state,
+                                  player->weapon_type);  // TODO: Actualizar el SpriteType (en
+                                                         // cambio de ronda)
             }
         }
         if (const auto soundComp = comp_mgr.getComponent<SoundComponent>(e)) {

@@ -309,6 +309,7 @@ void Match::processPlant(const std::string& playerName) {
 
     if (bomb.plant(player->getX(), player->getY(), map)) {
         player->setBomb(nullptr);
+        player->setEquippedWeapon(TypeWeapon::Primary);
         std::cout << "Player " << playerName << " planted the bomb at (" << player->getX() << ", "
                   << player->getY() << ")\n";
     }
@@ -398,16 +399,18 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         } else {
             playersInfo.emplace_back(p.generatePlayerInfo());
         }
-        if (bomb.isCarried()) {
-            if (bomb.getCarrierId() == p.getId()) {
-                // cargo información de la bomba
-                if (p.getEquippedWeapon() == TypeWeapon::Bomb) {
-                    weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::EQUIPPED));
-                } else {
-                    weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::HIDDEN));
-                }
-            }
-        }
+        // TODO: Creo que es innecesario
+        // if (bomb.isCarried()) {
+        //     if (bomb.getCarrierId() == p.getId()) {
+        //         // cargo información de la bomba
+        //         if (p.getEquippedWeapon() == TypeWeapon::Bomb) {
+        //             weaponsInfo.emplace_back(bomb.generateWeaponInfo(BombState::Equipped));
+        //         } else {
+        //             weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::HIDDEN));
+        //         }
+        //     }
+        // }
+
         // cargo info del arma equipada. (si tiene la bomba ya se cargó)
         if (p.getEquippedWeapon() != TypeWeapon::Bomb) {
             auto weapon_ptr = p.getEquippedWeaponInstance();
@@ -426,9 +429,9 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         }
     }
     // si la bomba está dropeda cargo esta información.
-    if (bomb.isDropped()) {
-        weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::DROPPED));
-    }
+    // if (bomb.isDropped()) {
+    //     weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::DROPPED));
+    // }
     // cargo bullets
     for (auto& p: projectiles) {
         bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
@@ -444,8 +447,8 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         timeLeft = bomb.getTimer();
     }
 
-    return GameInfo(this->phase, bomb.getState(), bomb.getX(), bomb.getY(), timeLeft,
-                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo);
+    return GameInfo(this->phase, bomb.generateBombInfo(), timeLeft, localPlayerInfo, playersInfo,
+                    bulletsInfo, weaponsInfo);
 }
 
 // void Match::showPlayers() const {
