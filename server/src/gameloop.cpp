@@ -29,10 +29,10 @@ void GameLoop::run() {
             }
 
             match.updateState(1.0 / ITR_PER_SEC);
-            if (match.getGamePhase() == GamePhase::EndOfMatch) {
+            /*if (match.getGamePhase() == GamePhase::EndOfMatch) {
                 std::cout << "==> Fase de fin de partida alcanzada. Finalizando el Gameloop\n";
                 // stop(); CONSULTAR ESTO, DEBERIA CORTAR?
-            }
+            }*/
 
             // 2. envío el estado de juego a cada jugador
             for (auto it = queuesPlayers.begin(); it != queuesPlayers.end();) {

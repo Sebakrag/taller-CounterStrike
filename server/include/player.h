@@ -11,6 +11,7 @@
 #include "../../common/types.h"
 #include "weapon/weapon.h"
 #include "weapon/weapon_factory.h"
+#include "types2.h"
 
 #include "id_generator.h"
 
@@ -32,11 +33,11 @@ private:
     uint32_t id_weapon;  // necesito esto
 
     float money;
-    int kills;
     const PlayerSkin skinT;   // para cuando es terrorista
     const PlayerSkin skinCT;  // para cuando es anti terrorista
 
 public:
+    Statistics stats;
     // TODO: Recibir las 2 skin en el constructor
     explicit Player(const std::string& name, const Team playerTeam,
                     const Vec2D& position = Vec2D());

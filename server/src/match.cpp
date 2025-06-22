@@ -290,6 +290,9 @@ void Match::updateState(double elapsedTime) {
                 }
 
                 if (!target.isAlive()) {
+                    shooter->stats.registerKill();
+                    shooter->addMoney(KILL_BONUS);
+
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
                     if (droppedWeapon)
                         droppedWeapons.emplace_back(std::move(droppedWeapon),
@@ -529,6 +532,7 @@ void Match::advancePhase() {
         // Fin de la partida
         if (roundsPlayed >= MAX_ROUNDS) {
             std::cout << "==> PARTIDA TERMINADA\n";
+            rankPlayers();
             phase = GamePhase::EndOfMatch;
             return;
         }
@@ -570,4 +574,43 @@ bool Match::isFriendlyFire(const std::string& shooterId, Team targetTeam) const 
 
     const Player& shooter = *it;
     return shooter.getTeam() == targetTeam;
+}
+
+void Match::rankPlayers() {
+    std::vector<Player*> terrorists;
+    std::vector<Player*> counterterrorists;
+
+    for (auto& p: players) {
+        if (p.getTeam() == Team::Terrorist)
+            terrorists.push_back(&p);
+        else
+            counterterrorists.push_back(&p);
+    }
+
+    // Ordenamos por kill - death ratio
+    auto compareByScore = [](Player* a, Player* b) {
+        int scoreA = a->stats.kills - a->stats.deaths;
+        int scoreB = b->stats.kills - b->stats.deaths;
+        return scoreA > scoreB;
+    };
+
+    std::sort(terrorists.begin(), terrorists.end(), compareByScore);
+    std::sort(counterterrorists.begin(), counterterrorists.end(), compareByScore);
+
+    std::cout << "GANADOR: " << (roundWinner == Team::Terrorist ? "TERRORISTAS" : "ANTITERRORISTAS") << std::endl;
+
+    std::cout << "==> LEADERBOARD FINAL:\n";
+    std::cout << "--- Terrorists ---\n";
+    for (const auto* p : terrorists) {
+        std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
+                  << ", Deaths: " << p->stats.deaths
+                  << ", Money: " << p->stats.moneyEarned << "\n";
+    }
+
+    std::cout << "--- Counter-Terrorists ---\n";
+    for (const auto* p : counterterrorists) {
+        std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
+                  << ", Deaths: " << p->stats.deaths
+                  << ", Money: " << p->stats.moneyEarned << "\n";
+    }
 }
