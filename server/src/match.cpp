@@ -162,17 +162,19 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             case GameActionType::PickUp: {
                 std::cout << "recibí pick up" << std::endl;
                 for (auto it = droppedWeapons.begin(); it != droppedWeapons.end(); ++it) {
+                    if (!it->weapon ) continue;
                     if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(),
                                                           it->position.getX(),
                                                           it->position.getY())) {
-                        std::cout << "toqué un arma dropeada!" << std::endl;
+
                         // Drop de arma equipada
                         if (player->getPrimaryWeapon()) {
-                            droppedWeapons.emplace_back(std::move(player->dropPrimaryWeapon()),
+                            std::unique_ptr<Weapon_> droppedWeapon = player->dropPrimaryWeapon();
+                            if (droppedWeapon == nullptr) continue;
+                            droppedWeapons.emplace_back(std::move(droppedWeapon),
                                                         Vec2D(player->getX(), player->getY()));
                         }
 
-                        // Pickup arma dropeada
                         player->setPrimaryWeapon(std::move(it->weapon));
                         player->setState(PlayerState::PickingUp);
                         droppedWeapons.erase(it);
@@ -185,7 +187,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                                                       bomb.getY())) {
                     if (player->getTeam() == Team::Terrorist) {
                         bomb.pickUp(player->getId());
-                        std::cout << "Jugador " << player->getId() << " agarro la bomba. \n";
+                        player->setBomb(&bomb);
                     }
                 }
                 return;
@@ -271,7 +273,7 @@ void Match::updateState(double elapsedTime) {
 
                 if (!target.isAlive()) {
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
-                    if (droppedWeapon)
+                    if (droppedWeapon != nullptr)
                         droppedWeapons.emplace_back(std::move(droppedWeapon),
                                                     Vec2D(target.getX(), target.getY()));
                     if (bomb.isCarriedBy(target.getId())) {
@@ -478,6 +480,9 @@ void Match::advancePhase() {
         std::cout << "==> INICIA RONDA " << roundsPlayed + 1 << "\n";
 
         // Limpieza entre rondas
+        for (auto& p : players) {
+            p.setBomb(nullptr);
+        }
         bomb.reset();
         projectiles.clear();
         // droppedWeapons.clear(); // esto puede ser mejor mantenerlas

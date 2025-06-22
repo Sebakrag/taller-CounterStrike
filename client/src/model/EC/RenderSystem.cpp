@@ -118,6 +118,9 @@ void RenderSystem::renderPlayers(Graphics& graphics, ComponentManager& comp_mgr,
                                  const Camera& camera, const FieldOfView& player_FOV) {
     comp_mgr.forEach<PlayerSpriteComponent>([&](const PlayerSpriteComponent& playerSpr,
                                                 const Entity e) {
+        if (playerSpr.getState() == PlayerState::Dead)
+            return;
+
         const auto transform = comp_mgr.getComponent<TransformComponent>(e);
         if (!transform)
             return;

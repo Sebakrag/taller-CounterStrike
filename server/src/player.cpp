@@ -50,7 +50,7 @@ Player::Player(const std::string& name, const Team team, const Vec2D& position):
 
 void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
     primaryWeapon = std::move(weapon);
-    if (equippedWeapon == TypeWeapon::Primary) {
+    if (primaryWeapon && equippedWeapon == TypeWeapon::Primary) {
         id_weapon = primaryWeapon->getServerId();
     }
 }
@@ -180,14 +180,19 @@ std::vector<Projectile> Player::shoot(float dirX, float dirY, double currentTime
     return weapon->shoot(posX, posY, dirX, dirY, name, currentTime);
 }
 
-std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() { return std::move(primaryWeapon); }
+std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() {
+    if (!primaryWeapon) return nullptr;
+    if (!isAlive() && equippedWeapon == TypeWeapon::Primary) {
+        setEquippedWeapon(TypeWeapon::Knife);
+    }
+    return std::move(primaryWeapon);
+}
 
 uint32_t Player::getServerId() const { return serverId; }
 
 void Player::revive() {
     health = INITIAL_HEALTH;
     state = PlayerState::Idle;
-    // deberiamos resetear la posicion a la del spawn segun equipo
 }
 
 void Player::setTeam(Team newTeam) { team = newTeam; }

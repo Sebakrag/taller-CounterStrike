@@ -4,10 +4,12 @@
 void PlayerSpriteComponent::init(const SpriteType type, const PlayerState state,
                                  const TypeWeapon weapon_type) {
     SpriteComponent::init(type);
+    this->state = state;
     update(state, weapon_type);
 }
 
 void PlayerSpriteComponent::update(const PlayerState state, const TypeWeapon weapon_type) {
+    this->state = state;
     int row = 0;
     if (state != PlayerState::Dead) {
         switch (weapon_type) {
@@ -27,6 +29,10 @@ void PlayerSpriteComponent::update(const PlayerState state, const TypeWeapon wea
     }
 
     setFrame(row, 0);
+}
+
+PlayerState PlayerSpriteComponent::getState() const {
+    return state;
 }
 
 
