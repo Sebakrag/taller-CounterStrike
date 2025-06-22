@@ -519,6 +519,12 @@ void Match::advancePhase() {
             }
         }
 
+        // Desactivamos todos los proyectiles para que se dejen de renderizar
+        for (auto& proj : projectiles) {
+            if (proj.isActive())
+                proj.deactivate();
+        }
+
         // Fin de la partida
         if (roundsPlayed >= MAX_ROUNDS) {
             std::cout << "==> PARTIDA TERMINADA\n";
