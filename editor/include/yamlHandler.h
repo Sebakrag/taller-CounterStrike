@@ -17,7 +17,7 @@ public:
     static bool loadMapFromYaml(const QString &fileName, 
                                QList<MapElement*> &elements, 
                                int &terrainType,
-                               QString &mapName);
+                               QString &mapName); //TODO: DELETE
     
 private:
     // Métodos auxiliares para serialización

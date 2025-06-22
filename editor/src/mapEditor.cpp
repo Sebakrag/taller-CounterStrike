@@ -1290,7 +1290,7 @@ void MapEditor::loadMapFromFile(const QString &fileName)
     } else {
         QMessageBox::critical(this, "Error", "No se pudo cargar el mapa");
     }
-}
+} //TODO: DELETE
 
 // Método para validar que el mapa cumpla con los requisitos
 bool MapEditor::validateMap()

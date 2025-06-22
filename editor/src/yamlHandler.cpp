@@ -357,7 +357,7 @@ bool YamlHandler::loadMapFromYaml(const QString &fileName,
         qDebug() << "Error al cargar YAML:" << e.what();
         return false;
     }
-}
+} //TODO: DELETE
 
 
 void YamlHandler::serializeWeapon(YAML::Emitter &out, const Weapon *weapon) {
