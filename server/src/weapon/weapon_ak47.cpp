@@ -13,10 +13,10 @@ int WeaponAk47::INITIAL_BULLETS = 0;
 int WeaponAk47::RATE_OF_FIRE = 0;
 float WeaponAk47::PRECISION = 0;
 float WeaponAk47::MAX_RANGE = 0;
+int WeaponAk47::MAX_DAMAGE = 0;
 
 
-void WeaponAk47::init(int damage, float price, int bullets, int rate_of_fire, float precision,
-                      float max_range) {
+void WeaponAk47::init(int damage, float price, int bullets, int rate_of_fire, float precision, float max_range, int max_damage) {
     if (initialized == false) {
         DAMAGE = damage;
         PRICE = price;
@@ -24,13 +24,14 @@ void WeaponAk47::init(int damage, float price, int bullets, int rate_of_fire, fl
         RATE_OF_FIRE = rate_of_fire;
         PRECISION = precision;
         MAX_RANGE = max_range;
+        MAX_DAMAGE = max_damage;
         initialized = true;
     }
 }
 //------------
 
-WeaponAk47::WeaponAk47():
-        FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE) {}
+WeaponAk47::WeaponAk47(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE, MAX_DAMAGE) {}
+
 
 Weapon WeaponAk47::getWeaponType() const { return Weapon::Ak47; }
 

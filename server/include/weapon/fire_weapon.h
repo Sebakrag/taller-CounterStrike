@@ -14,10 +14,11 @@ protected:
     double lastShotTimeS;
     float basePrecision;
     float maxRange;
+    float maxDamage;
 
 public:
-    FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision,
-               float maxRange);
+    FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision, float maxRange, float maxDamage);
+
     ~FireWeapon() override = default;
 
     bool canShoot(double currentTime) const override;
@@ -28,6 +29,9 @@ public:
 
     float getBasePrecision() const;
     float getMaxRange() const;
+
+    float getMaxDamage() const override;
+    int calculateDamage(float distance) const override;
 };
 
 #endif

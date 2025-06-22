@@ -181,6 +181,18 @@ void Player::setTeam(Team newTeam) { team = newTeam; }
 
 void Player::setState(PlayerState newState) { state = newState; }
 
+bool Player::spendMoney(int amount) {
+    if (money >= amount) {
+        money -= amount;
+        return true;
+    }
+    return false;
+}
+
+void Player::addMoney(int amount) {
+    money += amount;
+}
+
 LocalPlayerInfo Player::generateLocalPlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
     int ammo = 0;

@@ -53,22 +53,19 @@ void Server::initConstants(const YamlConfig& yamlConfig) const {
 
     // weapons.
     auto ak47 = yamlConfig.getWeaponData("ak47");
-    WeaponAk47::init(ak47.damage, ak47.price, ak47.bullets, ak47.rateOfFire, ak47.precision,
-                     ak47.maxRange);
+    WeaponAk47::init(ak47.damage, ak47.price, ak47.bullets, ak47.rateOfFire, ak47.precision, ak47.maxRange, ak47.maxDamage);
 
     auto awp = yamlConfig.getWeaponData("awp");
-    WeaponAwp::init(awp.damage, awp.price, awp.bullets, awp.rateOfFire, awp.precision,
-                    awp.maxRange);
+    WeaponAwp::init(awp.damage, awp.price, awp.bullets, awp.rateOfFire, awp.precision, awp.maxRange, awp.maxDamage);
 
     auto m3 = yamlConfig.getWeaponData("m3");
-    WeaponM3::init(m3.damage, m3.price, m3.bullets, m3.rateOfFire, m3.precision, m3.maxRange);
+    WeaponM3::init(m3.damage, m3.price, m3.bullets, m3.rateOfFire, m3.precision, m3.maxRange, m3.maxDamage);
 
     auto glock = yamlConfig.getWeaponData("glock");
-    WeaponGlock::init(glock.damage, glock.bullets, glock.rateOfFire, glock.precision,
-                      glock.maxRange);
+    WeaponGlock::init(glock.damage, glock.bullets, glock.rateOfFire, glock.precision, glock.maxRange, glock.maxDamage);
 
     auto knife = yamlConfig.getWeaponData("knife");
-    WeaponKnife::init(knife.damage);
+    WeaponKnife::init(knife.damage, knife.maxDamage);
     // WeaponAk47::init(35, 2700, 30, 24);
     // WeaponAwp::init(100, 3500, 10, 20);
     // WeaponGlock::init(45, 40, 700);

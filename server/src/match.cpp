@@ -203,6 +203,25 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 std::cout << "Accion no implementada\n";
                 break;
         }
+    } else if (phase == GamePhase::Preparation) {
+        switch (gameAction.type) {
+            case GameActionType::BuyWeapon: {
+                if (!Shop::buyPrimaryWeapon(*player, gameAction.weapon, droppedWeapons)) {
+                    std::cout << "Compra de arma fallida. Revise su saldo\n";
+                }
+                break;
+            }
+            case GameActionType::BuyAmmo: {
+                if (!Shop::buyAmmo(*player, gameAction.weapon, gameAction.count_ammo)) {
+                    std::cout << "Compra de munición fallida. Revise su saldo\n";
+                }
+                break;
+            }
+            default:
+                std::cout << "Accion invalida en fase de preparacion\n";
+                break;
+
+        }
     }
 }
 
@@ -253,16 +272,21 @@ void Match::updateState(double elapsedTime) {
                 continue;
 
             float impactDist;
-            // const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
+            bool hitByPrecision = true;
+            //const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
             const std::unique_ptr<Weapon_> rawWeapon = WeaponFactory::create(proj.getWeaponUsed());
             auto* weapon = dynamic_cast<FireWeapon*>(rawWeapon.get());
-            if (!weapon)
-                continue;
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), target, *weapon,
-                                             impactDist)) {
+            if (!weapon) continue;
+            Player* shooter = getPlayer(proj.getShooter());
 
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon, impactDist, hitByPrecision)) {
+                if (!hitByPrecision) {
+                    proj.deactivate();
+                    break;
+                }
                 if (!isFriendlyFire(proj.getShooter(), target.getTeam())) {
-                    target.takeDamage(weapon->getDamage());
+                    int damage = weapon->calculateDamage(impactDist);
+                    target.takeDamage(damage);
                 }
 
                 if (!target.isAlive()) {
@@ -420,7 +444,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
     }
 
     return GameInfo(this->phase, bomb.isPlanted(), bomb.getX(), bomb.getY(), timeLeft,
-                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo);
+                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo, Shop::getInfo());
 }
 
 // void Match::showPlayers() const {
@@ -439,8 +463,10 @@ void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
         float impactDistance;
         if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
                                     direction.getY(), target, impactDistance) &&
-            !isFriendlyFire(attacker->getId(), target.getTeam())) {
-            target.takeDamage(20);
+                                    !isFriendlyFire(attacker->getId(), target.getTeam())) {
+            Weapon_* knife = attacker->getEquippedWeaponInstance();
+            int damage = knife->calculateDamage(0);
+            target.takeDamage(damage);
         }
     }
 }
@@ -494,6 +520,12 @@ void Match::advancePhase() {
             }
         }
 
+        // Desactivamos todos los proyectiles para que se dejen de renderizar
+        for (auto& proj : projectiles) {
+            if (proj.isActive())
+                proj.deactivate();
+        }
+
         // Fin de la partida
         if (roundsPlayed >= MAX_ROUNDS) {
             std::cout << "==> PARTIDA TERMINADA\n";
@@ -505,6 +537,14 @@ void Match::advancePhase() {
         roundTimer = PREPARATION_TIME;
         phase = GamePhase::Preparation;
         roundOver = false;
+
+        for (auto& p: players) {
+            float moneyBonus = BASE_MONEY_BONUS;
+            if (p.getTeam() == roundWinner) {
+                moneyBonus += WIN_BONUS;
+            }
+            p.addMoney(moneyBonus);
+        }
     }
 }
 

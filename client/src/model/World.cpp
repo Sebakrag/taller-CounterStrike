@@ -43,7 +43,7 @@ void World::render(Graphics& graphics) {
 
     render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
-    // player_HUD.render(graphics);
+    player_HUD.render(graphics);
 }
 
 AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {

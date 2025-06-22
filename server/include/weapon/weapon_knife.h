@@ -17,16 +17,19 @@ public:
     WeaponInfo generateWeaponInfo(const WeaponState& state) override;
     std::vector<Projectile> shoot(float posX, float posY, float dirX, float dirY,
                                   const std::string& shooter, double currentTime) override;
+    float getMaxDamage() const override;
+    int calculateDamage(float distance) const override;
 
 
     // CONSTANTES static para inicializar en server.cpp.
 private:
     static bool initialized;  // para asegurar que se llame init una unica vez.
     static int DAMAGE;
+    static int MAX_DAMAGE;
 
 public:
     // Para cargar los valores del config.yaml
-    static void init(int damage);
+    static void init(int damage, int max_damage);
 };
 
 #endif

@@ -1,20 +1,23 @@
 #include "../../include/weapon/weapon_knife.h"
+#include <random>
 
 //-------------
 // Inicializo las variables estáticas (para poder compilar)
 bool WeaponKnife::initialized = false;
 int WeaponKnife::DAMAGE = 0;
+int WeaponKnife::MAX_DAMAGE = 0;
 
 
-void WeaponKnife::init(int damage) {
+void WeaponKnife::init(int damage, int max_damage) {
     if (initialized == false) {
         DAMAGE = damage;
+        MAX_DAMAGE = max_damage;
         initialized = true;
     }
 }
 //------------
 
-WeaponKnife::WeaponKnife(): Weapon_(DAMAGE) {}
+WeaponKnife::WeaponKnife(): Weapon_(DAMAGE, MAX_DAMAGE) {}
 
 bool WeaponKnife::canShoot(double /*currentTime*/) const {
     return true;  // Siempre se puede atacar
@@ -34,4 +37,15 @@ std::vector<Projectile> WeaponKnife::shoot(float /*posX*/, float /*posY*/, float
                                            float /*dirY*/, const std::string& /*shooter*/,
                                            double /*currentTime*/) {
     return {};
+}
+
+float WeaponKnife::getMaxDamage() const {
+    return maxDamage;
+}
+
+int WeaponKnife::calculateDamage(float /*distance*/) const {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dist(damage, maxDamage);
+    return dist(gen);
 }
