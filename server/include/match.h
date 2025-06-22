@@ -73,6 +73,7 @@ private:
     void handleKnifeAttack(Player* attacker, const Vec2D& direction);
     void setPosSpawnPlayer(Player& p);
     bool isFriendlyFire(const std::string& shooterId, Team targetTeam) const;
+    void rankPlayers();
 
 
     // CONSTANTES static para inicializar en server.cpp.

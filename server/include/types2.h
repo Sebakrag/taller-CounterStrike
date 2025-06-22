@@ -29,5 +29,15 @@ struct DroppedWeapon {
     }
 };
 
+struct Statistics {
+    int kills = 0;
+    int deaths = 0;
+    int moneyEarned = 0;
+
+    void registerKill() { kills++; }
+    void registerDeath() { deaths++; }
+    void addMoney(int amount) { moneyEarned += amount; }
+};
+
 
 #endif  // TYPES_SERVER_H_

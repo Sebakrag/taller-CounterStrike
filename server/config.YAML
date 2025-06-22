@@ -11,7 +11,7 @@ match:
 player:
   speed: 80 # velocidad del jugador
   money: 800 # monedas iniciales
-  health: 10000 # salud máxima
+  health: 100 # salud máxima
 
 weapons:
   ak47:
