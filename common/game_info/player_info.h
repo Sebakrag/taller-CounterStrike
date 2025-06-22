@@ -17,12 +17,13 @@ struct PlayerInfo {
     Vec2D position;
     float angle_direction;  // a dónde está mirando el player
     TypeWeapon weapon_type;
+    Weapon weapon;
     ServerEntityID equipped_weapon_id;
 
     PlayerInfo();
     PlayerInfo(ServerEntityID server_entt_id, const std::string& name, Team team, PlayerSkin skin,
                PlayerState state, const Vec2D& position, float angle_direction,
-               TypeWeapon weapon_type, ServerEntityID equipped_weapon_id);
+               TypeWeapon weapon_type, Weapon weapon, ServerEntityID equipped_weapon_id);
 
     SpriteType generateSpriteType() const;
 

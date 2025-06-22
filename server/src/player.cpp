@@ -175,7 +175,8 @@ std::vector<Projectile> Player::shoot(float dirX, float dirY, double currentTime
     Weapon_* weapon = getEquippedWeaponInstance();
     if (!weapon)  // || !weapon->canShoot(currentTime)) //se chequea en weapon->shoot()
         return {};
-    state = PlayerState::Attacking;
+    if (weapon->canShoot(currentTime))
+        state = PlayerState::Attacking;
     return weapon->shoot(posX, posY, dirX, dirY, name, currentTime);
 }
 
@@ -211,5 +212,5 @@ PlayerInfo Player::generatePlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
 
     return PlayerInfo(serverId, name, team, currentSkin, state, Vec2D(posX, posY), angle,
-                      equippedWeapon, id_weapon);
+                      equippedWeapon, getSpecificEquippedWeapon(), id_weapon);
 }

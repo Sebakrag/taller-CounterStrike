@@ -21,6 +21,7 @@ struct PlayerSnapshot {
     int money;
     PlayerState state;
     ServerEntityID equipped_weapon_id;
+    Weapon equipped_weapon;
     Team team;
     TypeWeapon weapon_type;
 };
@@ -50,14 +51,16 @@ struct EntitySnapshot {
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive, int hp, int money, PlayerState state,
-                   ServerEntityID equipped_weapon_id, Team team, TypeWeapon weapon_type);
+                   ServerEntityID equipped_weapon_id, Weapon equppedWeapon, Team team,
+                   TypeWeapon weapon_type);
 
     ///
     /// @brief Constructor para el PLAYER.
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive, PlayerState state,
-                   ServerEntityID equipped_weapon_id, Team team, TypeWeapon weapon_type);
+                   ServerEntityID equipped_weapon_id, Weapon equippedWeapon, Team team,
+                   TypeWeapon weapon_type);
 
     ///
     /// @brief Constructor para un WEAPON.

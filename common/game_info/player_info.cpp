@@ -17,7 +17,8 @@ PlayerInfo::PlayerInfo():
 PlayerInfo::PlayerInfo(const ServerEntityID server_entt_id, const std::string& name,
                        const Team team, const PlayerSkin skin, PlayerState state,
                        const Vec2D& position, const float angle_direction,
-                       const TypeWeapon weapon_type, const ServerEntityID equipped_weapon_id):
+                       const TypeWeapon weapon_type, Weapon weapon,
+                       const ServerEntityID equipped_weapon_id):
         server_entt_id(server_entt_id),
         username(name),
         team(team),
@@ -26,6 +27,7 @@ PlayerInfo::PlayerInfo(const ServerEntityID server_entt_id, const std::string& n
         position(position.getX(), position.getY()),
         angle_direction(angle_direction),
         weapon_type(weapon_type),
+        weapon(weapon),
         equipped_weapon_id(equipped_weapon_id) {}
 
 SpriteType PlayerInfo::generateSpriteType() const {
@@ -77,6 +79,7 @@ std::vector<uint8_t> PlayerInfo::toBytes() const {
     Protocol_::insertFloat4Bytes(angle_direction, buffer);
 
     buffer.push_back(Protocol_::encodeTypeWeapon(weapon_type));
+    buffer.push_back(Protocol_::encodeWeapon(weapon));
 
     // id de la weapon
     Protocol_::insertBigEndian32(equipped_weapon_id, buffer);
@@ -119,6 +122,7 @@ PlayerInfo::PlayerInfo(const std::vector<uint8_t>& bytes) {
 
     // Leer arma, salud, dinero y munición
     weapon_type = Protocol_::decodeTypeWeapon(bytes[index++]);
+    weapon = Protocol_::decodeWeapon(bytes[index++]);
 
     equipped_weapon_id = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2],
                                                    bytes[index + 3]);

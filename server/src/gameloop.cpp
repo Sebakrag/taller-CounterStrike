@@ -50,6 +50,7 @@ void GameLoop::run() {
                     }
                 }
             }
+            match.resetStatesOfPlayers();
 
             // 3. calculo cuanto tiempo dormir.
             auto time_end = std::chrono::steady_clock::now();

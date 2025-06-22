@@ -107,7 +107,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
     Player* player = getPlayer(action.player_username);
     if (!player || !player->isAlive())
         return;
-    player->setState(PlayerState::Idle);
+    // player->setState(PlayerState::Idle);
 
     GameAction gameAction = action.gameAction;
     if (phase == GamePhase::Combat) {
@@ -468,7 +468,7 @@ void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
         if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
                                     direction.getY(), target, impactDistance) &&
             !isFriendlyFire(attacker->getId(), target.getTeam())) {
-            target.takeDamage(20);
+            target.takeDamage(attacker->getEquippedWeaponInstance()->getDamage());
         }
     }
 }
@@ -559,4 +559,11 @@ bool Match::isFriendlyFire(const std::string& shooterId, Team targetTeam) const 
 
     const Player& shooter = *it;
     return shooter.getTeam() == targetTeam;
+}
+
+void Match::resetStatesOfPlayers() {
+    for (auto& player: players) {
+        if (player.isAlive())
+            player.setState(PlayerState::Idle);
+    }
 }

@@ -48,7 +48,14 @@ void SoundLibrary::loadPLayerSounds() {
     loadSound(SoundEvent::PickUpWeapon, CHANGE_WEAPON_SOUND);
     loadSound(SoundEvent::DropWeapon, DROP_WEAPON_SOUND);
     loadSound(SoundEvent::ChangeWeapon, CHANGE_WEAPON_SOUND);
-    loadSound(SoundEvent::Shoot, SHOOT_SOUND);
+    // loadSound(SoundEvent::Shoot, SHOOT_SOUND);
+    loadSound(SoundEvent::ShootGlock, GLOCK_SOUND);
+    loadSound(SoundEvent::ShootAWP, AWP_SOUND);
+    loadSound(SoundEvent::ShootAK47, AK47_SOUND);
+    loadSound(SoundEvent::ShootM3, M3_SOUND);
+    loadSound(SoundEvent::KnifeSlash, KNIFE_SLASH_SOUND);
+    // loadSound(SoundEvent::KnifeSlash, SHOOT_SOUND);
+
     loadSound(SoundEvent::TakeDamage, TAKE_DAMAGE_SOUND);
     loadSound(SoundEvent::Die, DIE_SOUND);
 }

@@ -57,7 +57,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     EntitySnapshot entity(localPlayer.server_entt_id, EntityType::PLAYER,
                           localPlayer.generateSpriteType(), x, y, localPlayer.angle_direction, true,
                           localPlayer.health, localPlayer.money, localPlayer.state,
-                          localPlayer.equipped_weapon_id, localPlayer.team,
+                          localPlayer.equipped_weapon_id, localPlayer.weapon, localPlayer.team,
                           localPlayer.weapon_type);
     entities.emplace_back(entity);
 
@@ -78,8 +78,8 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         const float y = p.position.getY();
 
         EntitySnapshot entity(p.server_entt_id, EntityType::PLAYER, p.generateSpriteType(), x, y,
-                              p.angle_direction, true, p.state, p.equipped_weapon_id, p.team,
-                              p.weapon_type);
+                              p.angle_direction, true, p.state, p.equipped_weapon_id, p.weapon,
+                              p.team, p.weapon_type);
         entities.emplace_back(entity);
 
         index += size;

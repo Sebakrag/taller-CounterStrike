@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "client/include/model/utils/SoundEvent.h"
+#include "../../../../../client/include/model/utils/SoundEvent.h"
 
 class SoundComponent {
 private:
