@@ -12,7 +12,7 @@ std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::texture
 
 void TextureManager::init(Renderer& ren) {
     // Players textures
-    const Color playerColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
+    const Color playerColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
     loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
     loadTexture(ren, SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);

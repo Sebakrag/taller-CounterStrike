@@ -7,8 +7,9 @@
 
 class PlayerSpriteComponent: public SpriteComponent {
 public:
-    void init(SpriteType type, TypeWeapon weapon_type);
-    void setTypeWeaponEquipped(TypeWeapon weapon_type);
+    void init(SpriteType type, PlayerState state, TypeWeapon weapon_type);
+    void update(PlayerState state, TypeWeapon weapon_type);
+    // void setTypeWeaponEquipped(TypeWeapon weapon_type);
 };
 
 #endif  // PLAYERSPRITECOMPONENT_H

@@ -60,4 +60,3 @@ int FireWeapon::calculateDamage(float distance) const {
     //       << std::endl;
     return static_cast<int>(finalDamage);
 }
-

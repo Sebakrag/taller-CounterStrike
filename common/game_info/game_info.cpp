@@ -51,7 +51,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                           bytes.begin() + index + SIZE_LOCAL_PLAYER_INFO);
     localPlayer = LocalPlayerInfo(localPlayerBytes);
     index += SIZE_LOCAL_PLAYER_INFO;
-
+    localPlayer.print();
     // cargo snapshot
     const auto x = localPlayer.position.getX();
     const auto y = localPlayer.position.getY();
@@ -73,7 +73,8 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> playerBytes(bytes.begin() + index, bytes.begin() + index + size);
 
         PlayerInfo p(playerBytes);
-        otherPlayers.emplace_back(p);
+        p.print();
+        // otherPlayers.emplace_back(p);
         const float x = p.position.getX();
         const float y = p.position.getY();
 
@@ -94,7 +95,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                          bytes.begin() + index + SIZE_BULLET_INFO);
 
         BulletInfo b(bulletBytes);
-        bullets.emplace_back(b);
+        // bullets.emplace_back(b);
         EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, b.pos_x, b.pos_y,
                               b.direction.calculateAngleDegrees(), b.active);
         entities.emplace_back(entity);
@@ -111,8 +112,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                          bytes.begin() + index + SIZE_ITEM_INFO);
 
         WeaponInfo weapon(weaponBytes);
-        weapons.emplace_back(weapon);
-        /// TODO: Recibir si esta viva o no.
+        // weapons.emplace_back(weapon)
         EntitySnapshot entity(weapon.server_entt_id, EntityType::WEAPON, weapon.getSpriteType(),
                               weapon.pos_x, weapon.pos_y, 0, true, weapon.state);
         entities.emplace_back(entity);

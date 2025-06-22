@@ -3,8 +3,8 @@
 
 #include <cmath>
 #include <memory>
-#include <vector>
 #include <random>
+#include <vector>
 
 #include "map.h"
 #include "player.h"

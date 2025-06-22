@@ -19,7 +19,8 @@ struct BulletInfo {
     bool active;
 
     BulletInfo() = default;
-    BulletInfo(ServerEntityID id, Weapon weapon, float pos_x, float pos_y, const Vec2D& direction, bool active = true);
+    BulletInfo(ServerEntityID id, Weapon weapon, float pos_x, float pos_y, const Vec2D& direction,
+               bool active = true);
 
     BulletInfo(const BulletInfo& other) = default;
     BulletInfo& operator=(const BulletInfo& other) = default;

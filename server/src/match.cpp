@@ -103,6 +103,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
     Player* player = getPlayer(action.player_username);
     if (!player || !player->isAlive())
         return;
+    player->setState(PlayerState::Idle);
 
     GameAction gameAction = action.gameAction;
     if (phase == GamePhase::Combat) {
@@ -146,6 +147,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                     handleKnifeAttack(player, gameAction.direction);
                     break;
                 }
+
                 std::cout << "Gatillo apretado" << std::endl;
                 std::vector<Projectile> newProjectiles = player->shoot(dirX, dirY, current_time);
                 std::cout << "se crearon " << newProjectiles.size() << " proyectiles" << std::endl;
@@ -185,7 +187,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 return;
             }
             case GameActionType::Rotate: {
-                //std::cout << "recibí rotar" << std::endl;
+                // std::cout << "recibí rotar" << std::endl;
                 player->setAngle(action.gameAction.angle);
                 break;
             }
@@ -224,16 +226,15 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 }
 
 void Match::updateState(double elapsedTime) {
-
     // Eliminamos proyectiles inactivos
     projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
                                      [](const Projectile& p) { return !p.isActive(); }),
                       projectiles.end());
 
-    for (auto& player : players) {
-        if (player.isAlive())
-            player.setState(PlayerState::Idle);
-    }
+    // for (auto& player: players) {
+    //     if (player.isAlive())
+    //         player.setState(PlayerState::Idle);
+    // }
 
     if (roundOver)
         return;
@@ -558,11 +559,9 @@ void Match::setPosSpawnPlayer(Player& p) {
     }
 }
 
-bool Match::isFriendlyFire(const std::string &shooterId, Team targetTeam) const {
+bool Match::isFriendlyFire(const std::string& shooterId, Team targetTeam) const {
     auto it = std::find_if(players.begin(), players.end(),
-                            [&shooterId](const Player& p) {
-                               return p.getId() == shooterId;
-                            });
+                           [&shooterId](const Player& p) { return p.getId() == shooterId; });
 
     if (it == players.end()) {
         std::cout << "Shooter ID no encontrado: " << shooterId << "\n";
@@ -572,4 +571,3 @@ bool Match::isFriendlyFire(const std::string &shooterId, Team targetTeam) const 
     const Player& shooter = *it;
     return shooter.getTeam() == targetTeam;
 }
-
