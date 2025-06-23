@@ -20,6 +20,8 @@ class Graphics;
 
 class World {
 private:
+    Graphics& graphics;
+    GamePhase gamePhase;
     ComponentManager comp_mgr;
     EntityManager entt_mgr;
     ComponentUpdater comp_updater;
@@ -48,10 +50,9 @@ public:
     World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
           const LocalPlayerInfo& firstLocalPlayerSnap);
 
-    void update(float dt, const GameInfo& gameInfo);
-    void render(Graphics& graphics);
+    void update(const GameInfo& gameInfo, float dt);
+    void render();
     AimInfo getPlayerAimInfo(int mouseX, int mouseY);
-    Vec2D getPlayerPosition() const;
 };
 
 #endif  // WORLD_H

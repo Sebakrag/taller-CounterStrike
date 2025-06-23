@@ -6,6 +6,7 @@
 
 #include "../../../../client/include/client.h"
 #include "../../../../client/include/model/World.h"
+#include "client/include/model/Shop.h"
 
 class EventHandler {
 private:
@@ -14,6 +15,7 @@ private:
 
     Client& client;
     World& world;
+    Shop& shop;
     Uint32 lastKeyboardPress = 0;     // variable para contar tiempo
     Uint32 lastMouseProcessTime = 0;  // variable para contar tiempo
     float lastAimAngle = 0;           // para no enviar mensajes al pe
@@ -27,9 +29,9 @@ private:
     void handleMouseButtonDown(const SDL_MouseButtonEvent& b);
 
 public:
-    EventHandler(Client& client, World& world);
+    EventHandler(Client& client, World& world, Shop& shop);
 
-    void handleEvents(bool& gameIsRunning);
+    void handleEvents(bool& gameIsRunning, GamePhase gamePhase);
 };
 
 #endif  // EVENTHANDLER_H

@@ -144,6 +144,8 @@ Weapon_* Player::getEquippedWeaponInstance() const {
 
 Weapon_* Player::getPrimaryWeapon() const { return primaryWeapon.get(); }
 
+Weapon_* Player::getSecondaryWeapon() const { return secondaryWeapon.get(); }
+
 bool Player::isAlive() const { return state != PlayerState::Dead; }
 
 bool Player::canShoot(double currentTime) const {
@@ -181,7 +183,8 @@ std::vector<Projectile> Player::shoot(float dirX, float dirY, double currentTime
 }
 
 std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() {
-    if (!primaryWeapon) return nullptr;
+    if (!primaryWeapon)
+        return nullptr;
     if (!isAlive() && equippedWeapon == TypeWeapon::Primary) {
         setEquippedWeapon(TypeWeapon::Knife);
     }

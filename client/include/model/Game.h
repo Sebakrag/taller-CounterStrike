@@ -6,6 +6,7 @@
 #include "utils/EventHandler.h"
 
 #include "Graphics.h"
+#include "Shop.h"
 #include "World.h"
 
 class Game {
@@ -20,8 +21,9 @@ private:
     Graphics graphics;
     // Audio audio // Modulo encargado de ecapsular el audio del juego (Mixer, Music, etc.)
     World world;
+    Shop shop;
     EventHandler eventHandler;
-    GameInfo gameInfo;  // TODO: Quizas solo necesitamos guardar el GamePhase.
+    GameInfo gameInfo;  // TODO: quizas solo nos alcanza con GamePhase.
 
     bool is_running;
     void update(float dt);

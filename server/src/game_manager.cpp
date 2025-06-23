@@ -117,7 +117,7 @@ MatchInfo GameManager::getMatchInfo(const std::string& matchName, const std::str
 
     return MatchInfo(matchName, ScenarioRegistry::getWindowConfig(),
                      ScenarioRegistry::getFovConfig(), ScenarioRegistry::getTileMap(id_scenary),
-                     numPlayers, localPlayerInfo);
+                     numPlayers, localPlayerInfo, Shop::getInfo());
 }
 
 std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::string& matchName) {

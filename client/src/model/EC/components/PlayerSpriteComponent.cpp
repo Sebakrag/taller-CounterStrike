@@ -31,9 +31,7 @@ void PlayerSpriteComponent::update(const PlayerState state, const TypeWeapon wea
     setFrame(row, 0);
 }
 
-PlayerState PlayerSpriteComponent::getState() const {
-    return state;
-}
+PlayerState PlayerSpriteComponent::getState() const { return state; }
 
 
 // void PlayerSpriteComponent::setTypeWeaponEquipped(const TypeWeapon weapon_type) {

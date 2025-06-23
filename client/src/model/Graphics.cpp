@@ -37,10 +37,20 @@ Renderer Graphics::create_renderer(Window& window) {
     return ren;
 }
 
-void Graphics::render(World& world) {
-    renderer.Clear();
-    world.render(*this);
-    renderer.Present();
+// void Graphics::render(World& world) {
+//     renderer.Clear();
+//     world.render();
+//     // mouse.render();  // TODO: crear un mouse.
+//     renderer.Present();
+// }
+
+void Graphics::clear() { renderer.Clear(); }
+
+void Graphics::present() { renderer.Present(); }
+
+void Graphics::fillRect(const Rect& rect, const Color& color) {
+    renderer.SetDrawColor(color);
+    renderer.FillRect(rect);
 }
 
 void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect) {

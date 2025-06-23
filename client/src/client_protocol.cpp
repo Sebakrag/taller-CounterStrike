@@ -65,9 +65,11 @@ void ClientProtocol::sendGameAction(const GameAction& gameAction) {
 
     if (gameAction.type == BuyWeapon) {
         buffer.push_back(encodeWeapon(gameAction.weapon));
-    } else if (gameAction.type == BuyAmmo || gameAction.type == ChangeWeapon) {
-        buffer.push_back(encodeTypeWeapon(gameAction.typeWeapon));
+    } else if (gameAction.type == BuyAmmo) {
+        buffer.push_back(encodeAmmoType(gameAction.ammoType));
         insertBigEndian16(gameAction.count_ammo, buffer);
+    } else if (gameAction.type == ChangeWeapon) {
+        buffer.push_back(encodeTypeWeapon(gameAction.typeWeapon));
     } else if (gameAction.type == Attack || gameAction.type == Walk) {
         insertFloatNormalized3Bytes(gameAction.direction.getX(), buffer);
         insertFloatNormalized3Bytes(gameAction.direction.getY(), buffer);
@@ -133,10 +135,16 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     socket.recvall(playerInfobytes.data(), sizeof(uint8_t) * size_buffer);
     LocalPlayerInfo localPlayerInfo(playerInfobytes);
 
+    // ShopInfo
+    int size_buffer_shop = recvBigEndian16();
+    std::vector<uint8_t> shopInfobytes(size_buffer_shop);
+    socket.recvall(shopInfobytes.data(), sizeof(uint8_t) * size_buffer_shop);
+    ShopInfo shopInfo(shopInfobytes);
+
     return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags),
                      FOVConfig(isActive, screenW, screenH, circleR, fovAngle, visibilityDistance,
                                transparency),
-                     tilemap, numPlayers, localPlayerInfo);
+                     tilemap, numPlayers, localPlayerInfo, shopInfo);
 }
 
 

@@ -1,4 +1,5 @@
 #include "../../include/weapon/weapon_knife.h"
+
 #include <random>
 
 //-------------
@@ -39,9 +40,7 @@ std::vector<Projectile> WeaponKnife::shoot(float /*posX*/, float /*posY*/, float
     return {};
 }
 
-float WeaponKnife::getMaxDamage() const {
-    return maxDamage;
-}
+float WeaponKnife::getMaxDamage() const { return maxDamage; }
 
 int WeaponKnife::calculateDamage(float /*distance*/) const {
     std::random_device rd;

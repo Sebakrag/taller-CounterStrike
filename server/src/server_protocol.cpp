@@ -61,6 +61,14 @@ void ServerProtocol::sendMatchInfo(const MatchInfo& matchInfo) {
     for (uint8_t& b: playerInfobytes) {
         buffer.push_back(b);
     }
+
+    // ShopInfo
+    std::vector<uint8_t> shopInfoBytes = matchInfo.shopInfo.toBytes();
+    insertBigEndian16(shopInfoBytes.size(), buffer);
+    for (uint8_t& b: shopInfoBytes) {
+        buffer.push_back(b);
+    }
+
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
@@ -161,10 +169,13 @@ GameAction ServerProtocol::recvGameAction() {
     if (type == BuyWeapon) {
         socket.recvall(&byte, sizeof(uint8_t));
         gameAction.weapon = decodeWeapon(byte);
-    } else if (type == BuyAmmo || type == ChangeWeapon) {
+    } else if (type == BuyAmmo) {
+        socket.recvall(&byte, 1);
+        gameAction.ammoType = decodeAmmoType(byte);
+        gameAction.count_ammo = recvBigEndian16();
+    } else if (type == ChangeWeapon) {
         socket.recvall(&byte, 1);
         gameAction.typeWeapon = decodeTypeWeapon(byte);
-        gameAction.count_ammo = recvBigEndian16();
     } else if (type == Attack || type == Walk) {
         float dir_x = recvFloatNormalized();
         float dir_y = recvFloatNormalized();
