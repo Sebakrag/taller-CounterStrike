@@ -133,10 +133,16 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     socket.recvall(playerInfobytes.data(), sizeof(uint8_t) * size_buffer);
     LocalPlayerInfo localPlayerInfo(playerInfobytes);
 
+    // ShopInfo
+    int size_buffer_shop = recvBigEndian16();
+    std::vector<uint8_t> shopInfobytes(size_buffer_shop);
+    socket.recvall(shopInfobytes.data(), sizeof(uint8_t) * size_buffer_shop);
+    ShopInfo shopInfo(shopInfobytes);
+
     return MatchInfo(name, WindowConfig(window_width, window_heigth, window_flags),
                      FOVConfig(isActive, screenW, screenH, circleR, fovAngle, visibilityDistance,
                                transparency),
-                     tilemap, numPlayers, localPlayerInfo);
+                     tilemap, numPlayers, localPlayerInfo, shopInfo);
 }
 
 

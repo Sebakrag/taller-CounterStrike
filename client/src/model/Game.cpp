@@ -3,20 +3,31 @@
 #include <chrono>
 #include <thread>
 
+#include "client/client_constants.h"
+
 Game::Game(Client& client, const MatchInfo& match_info):
         client(client),
         graphics(match_info.win_config, match_info.fovConfig, match_info.name),
         world(graphics, match_info.tileMap, match_info.win_config, match_info.numPlayers,
-              match_info.localPlayerInfo, match_info.shopInfo),
-        eventHandler(client, world),
+              match_info.localPlayerInfo),
+        shop(graphics, match_info.shopInfo, SHOP_FONT_FILE_NAME, SHOP_FONT_SIZE),
+        eventHandler(client, world, shop),
         is_running(true) {}
 
 void Game::update(const float dt) {
     gameInfo = client.getGameInfo();
     world.update(gameInfo, dt);
+    // graphics.updateMouse();
 }
 
-void Game::render() { graphics.render(world); }
+void Game::render() {
+    graphics.clear();
+    world.render();
+    if (gameInfo.gamePhase == GamePhase::Preparation)
+        shop.render();
+    // graphics.renderMouse(); // El mouse debe ser lo ultimo que renderizamos.
+    graphics.present();
+}
 
 void Game::start() {
     using clock = std::chrono::steady_clock;

@@ -1,17 +1,15 @@
 #include "../../../client/include/model/World.h"
 
 #include "../../../client/include/model/EC/components/TransformComponent.h"
-#include "client/client_constants.h"
 
 World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig,
-             const int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap,
-             const ShopInfo& shopInfo):
+             const int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap):
+        graphics(graphics),
         gamePhase(GamePhase::Preparation),
         entt_mgr(comp_mgr, numPlayers),
         comp_updater(entt_mgr, comp_mgr),
         map(tileMap, graphics),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
-        shop(graphics, shopInfo, SHOP_FONT_FILE_NAME, SHOP_FONT_SIZE),
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
         render_sys(local_player),
         audio_sys(comp_mgr, graphics.getMixer()) {}
@@ -20,30 +18,19 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
 void World::update(const GameInfo& gameInfo, const float dt) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
     gamePhase = gameInfo.gamePhase;
-    switch (gamePhase) {
-        case GamePhase::Combat: {
-            currentWeapon = gameInfo.localPlayer.weapon;
-            local_player_pos = gameInfo.localPlayer.position;
+    if (gamePhase == GamePhase::Combat) {
+        currentWeapon = gameInfo.localPlayer.weapon;
+        local_player_pos = gameInfo.localPlayer.position;
 
-            comp_updater.update(gameInfo.getSnapshots());
+        comp_updater.update(gameInfo.getSnapshots());
 
-            audio_sys.update(local_player_pos);  // Play the sound effects.
-            break;
-        }
-        case GamePhase::Preparation: {
-            // Si estamos en la fase de preparacion tengo que ponerle play a la musica.
-            // Puedo crear una abstraccion Audio.
-            // Creo que seria lo mismo para GamePhase::EndOfMatch.
-            break;
-        }
-        default:
-            break;
+        audio_sys.update(local_player_pos);  // Play the sound effects.
     }
 
     player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
 }
 
-void World::render(Graphics& graphics) {
+void World::render() {
     // TODO: podriamos guardar el angulo de rotacion del player como miembro de World asi
     /// desacoplamos a World completamente de TransformComponent.
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
@@ -57,10 +44,6 @@ void World::render(Graphics& graphics) {
     render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
     player_HUD.render(graphics);
-
-    if (gamePhase == GamePhase::Preparation) {
-        shop.render();
-    }
 }
 
 AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {

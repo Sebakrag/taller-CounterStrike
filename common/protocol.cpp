@@ -227,6 +227,17 @@ uint8_t Protocol_::encodeWeaponState(const WeaponState& state) {
     }
 }
 
+uint8_t Protocol_::encodeAmmoType(const AmmoType& ammoType) {
+    switch (ammoType) {
+        case AmmoType::Primary:
+            return BYTE_PRIMARY_AMMO;
+        case AmmoType::Secondary:
+            return BYTE_SECONDARY_AMMO;
+        default:
+            return BYTE_NONE_AMMO;  // Valor predeterminado en caso de error
+    }
+}
+
 uint8_t Protocol_::encodeMenuActionType(const MenuActionType& gameActionType) {
     switch (gameActionType) {
         case MenuActionType::Exit:
@@ -427,6 +438,19 @@ Weapon Protocol_::decodeWeapon(uint8_t byte) {
             return Weapon::Awp;
         default:
             throw std::runtime_error("Error. Arma desconocida. No se puede decodificar");
+    }
+}
+
+AmmoType Protocol_::decodeAmmoType(uint8_t byte) {
+    switch (byte) {
+        case BYTE_PRIMARY_AMMO:
+            return AmmoType::Primary;
+        case BYTE_SECONDARY_AMMO:
+            return AmmoType::Secondary;
+        case BYTE_NONE_AMMO:
+            return AmmoType::None;
+        default:
+            throw std::runtime_error("Error. Ammo type desconocido. No se puede decodificar");
     }
 }
 

@@ -7,7 +7,7 @@
 ShopInfo::ShopInfo() {}
 
 ShopInfo::ShopInfo(const std::unordered_map<Weapon, int>& weaponPrices,
-                   const std::unordered_map<Weapon, int>& ammoPrices):
+                   const std::unordered_map<AmmoType, int>& ammoPrices):
         weaponPrices(weaponPrices), ammoPrices(ammoPrices) {}
 
 std::vector<uint8_t> ShopInfo::toBytes() const {
@@ -20,8 +20,8 @@ std::vector<uint8_t> ShopInfo::toBytes() const {
     }
 
     Protocol_::insertBigEndian16(ammoPrices.size(), buffer);
-    for (const auto& [weapon, price]: ammoPrices) {
-        buffer.push_back(Protocol_::encodeWeapon(weapon));
+    for (const auto& [ammoType, price]: ammoPrices) {
+        buffer.push_back(Protocol_::encodeAmmoType(ammoType));
         Protocol_::insertBigEndian16(price, buffer);
     }
 
@@ -43,7 +43,7 @@ ShopInfo::ShopInfo(const std::vector<uint8_t>& bytes) {
     uint16_t ammoCount = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
     for (uint16_t i = 0; i < ammoCount; ++i) {
-        Weapon w = Protocol_::decodeWeapon(bytes[index++]);
+        AmmoType w = Protocol_::decodeAmmoType(bytes[index++]);
         int price = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
         index += 2;
         ammoPrices[w] = price;
@@ -59,8 +59,8 @@ void ShopInfo::print() const {
     }
 
     std::cout << "Ammo Prices:" << std::endl;
-    for (const auto& [w, price]: ammoPrices) {
-        std::cout << "  Weapon: " << static_cast<int>(w) << " -> $" << price << std::endl;
+    for (const auto& [a, price]: ammoPrices) {
+        std::cout << "  Weapon: " << static_cast<int>(a) << " -> $" << price << std::endl;
     }
 
     std::cout << "=================" << std::endl;

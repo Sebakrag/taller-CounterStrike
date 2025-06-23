@@ -24,6 +24,7 @@ target_sources(taller_client
         src/model/FieldOfView.cpp
         src/model/Game.cpp
         src/model/Map.cpp
+        src/model/Shop.cpp
         src/model/Graphics.cpp
         src/model/HUD.cpp
         src/model/World.cpp
@@ -76,6 +77,7 @@ target_sources(taller_client
         include/model/Graphics.h
         include/model/HUD.h
         include/model/Map.h
+        include/model/Shop.h
         include/model/World.h
         include/model/EC/AudioSystem.h
         include/model/EC/Entity.h

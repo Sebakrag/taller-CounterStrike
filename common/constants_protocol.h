@@ -12,6 +12,11 @@
 #define BYTE_WEAPON_M3 0x03
 #define BYTE_WEAPON_AWP 0x04
 
+// AmmoType { None, Primary, Secondary };
+#define BYTE_PRIMARY_AMMO 0x01
+#define BYTE_SECONDARY_AMMO 0x02
+#define BYTE_NONE_AMMO 0x03
+
 // WeaponState
 #define BYTE_WEAPON_STATE_DROPPED 0x01
 #define BYTE_WEAPON_STATE_EQUIPPED 0x02

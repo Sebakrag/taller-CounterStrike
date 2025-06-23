@@ -10,6 +10,7 @@
 #include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/utils/Vec2D.h"
 
+using SDL2pp::Color;
 using SDL2pp::Mixer;
 using SDL2pp::NullOpt;
 using SDL2pp::Optional;
@@ -34,6 +35,7 @@ private:
 
     Window window;
     Renderer renderer;
+    // Mouse mouse;  // TODO: crear un mouse con textura y renderizarlo despues del mundo.
     // TODO: puedo encapsular todo lo relacionado al audio del juego en una clase Audio.
     Mixer mixer;
 
@@ -44,7 +46,10 @@ public:
     Graphics(const WindowConfig& config, const FOVConfig& fov_config,
              const std::string& match_name);
 
-    void render(World& world);
+    // void render(World& world);
+    void clear();
+    void present();
+    void fillRect(const Rect& rect, const Color& color);
     void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,
               const Optional<Rect>& dstRect = NullOpt);
     void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,

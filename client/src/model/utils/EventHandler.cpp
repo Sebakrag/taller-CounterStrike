@@ -4,16 +4,46 @@
 #include "../../../../common/types.h"
 #include "../../../../common/utils/Vec2D.h"
 
-EventHandler::EventHandler(Client& client, World& world): client(client), world(world) {}
+EventHandler::EventHandler(Client& client, World& world, Shop& shop):
+        client(client), world(world), shop(shop) {}
 
-void EventHandler::handleEvents(bool& gameIsRunning) {
+void EventHandler::handleEvents(bool& gameIsRunning, const GamePhase gamePhase) {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             gameIsRunning = false;
             client.ExitGame();
             return;
-        } else if (e.type == SDL_KEYDOWN) {
+        }
+        // Si estamos en fase de preparacion y hay shop, solo permitir interacción con la tienda
+        if (gamePhase == GamePhase::Preparation) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                shop.handleClick(e.button.x, e.button.y);
+
+                if (shop.isBuyButtonClicked(e.button.x, e.button.y)) {
+                    ShopSelection selection = shop.getSelectionType();
+
+                    switch (selection) {
+                        case ShopSelection::WeaponSelected:
+                            // TODO: implementar el metodo de cliente
+                            // client.buyWeapon(shop.getSelectedWeapon());
+                            break;
+                        case ShopSelection::PrimaryAmmoSelected:
+                        case ShopSelection::SecondaryAmmoSelected:
+                            // TODO: implementar el metodo de cliente
+                            // client.buyAmmo(shop.getSelectedAmmoType());
+                            break;
+                        default:
+                            break;
+                    }
+
+                    shop.resetSelection();
+                }
+            }
+            return;  // Evitamos manejar cualquier otro evento en fase preparacion
+        }
+
+        if (e.type == SDL_KEYDOWN) {  // TODO: cambiar a switch.
             if (e.key.repeat == 0)
                 handleKeyDown(e.key.keysym.scancode, gameIsRunning);
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {

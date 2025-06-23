@@ -15,12 +15,12 @@
 #include "FieldOfView.h"
 #include "HUD.h"
 #include "Map.h"
-#include "Shop.h"
 
 class Graphics;
 
 class World {
 private:
+    Graphics& graphics;
     GamePhase gamePhase;
     ComponentManager comp_mgr;
     EntityManager entt_mgr;
@@ -29,7 +29,6 @@ private:
     Map map;
     Camera camera;
     FieldOfView player_FOV;
-    Shop shop;
 
     // TODO: podemos crear un struct para la info del localplayer.
     Entity local_player;  // This is the actual player that interacts with his own program.
@@ -48,10 +47,10 @@ public:
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// ///
     World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
-          const LocalPlayerInfo& firstLocalPlayerSnap, const ShopInfo& shopInfo);
+          const LocalPlayerInfo& firstLocalPlayerSnap);
 
     void update(const GameInfo& gameInfo, float dt);
-    void render(Graphics& graphics);
+    void render();
     AimInfo getPlayerAimInfo(int mouseX, int mouseY);
 };
 

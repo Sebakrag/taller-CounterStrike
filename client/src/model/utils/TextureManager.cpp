@@ -8,52 +8,55 @@
 
 using SDL2pp::Surface;
 
+Renderer* TextureManager::renderer = nullptr;
 std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::textures;
 
 void TextureManager::init(Renderer& ren) {
+    renderer = &ren;
+
     // Players textures
     constexpr Color playerColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
-    loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::GUERRILLA, GUERRILLA_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::SEAL_FORCE, SEAL_FORCE_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::GERMAN_GSG_9, GERMAN_GSG_9_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::UK_SAS, UK_SAS_IMG, playerColorKey);
-    loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
+    loadTexture(SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
+    loadTexture(SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
+    loadTexture(SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);
+    loadTexture(SpriteType::GUERRILLA, GUERRILLA_IMG, playerColorKey);
+    loadTexture(SpriteType::SEAL_FORCE, SEAL_FORCE_IMG, playerColorKey);
+    loadTexture(SpriteType::GERMAN_GSG_9, GERMAN_GSG_9_IMG, playerColorKey);
+    loadTexture(SpriteType::UK_SAS, UK_SAS_IMG, playerColorKey);
+    loadTexture(SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
 
     // Weapons textures
     constexpr Color weaponColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
-    loadTexture(ren, SpriteType::AK47, AK47_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::AWP, AWP_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::KNIFE, KNIFE_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::M3, M3_IMG, weaponColorKey);
-    loadTexture(ren, SpriteType::BULLET, BULLET_IMG, weaponColorKey);
+    loadTexture(SpriteType::AK47, AK47_IMG, weaponColorKey);
+    loadTexture(SpriteType::AWP, AWP_IMG, weaponColorKey);
+    loadTexture(SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
+    loadTexture(SpriteType::KNIFE, KNIFE_IMG, weaponColorKey);
+    loadTexture(SpriteType::M3, M3_IMG, weaponColorKey);
+    loadTexture(SpriteType::BULLET, BULLET_IMG, weaponColorKey);
 
     // Map textures
-    loadTexture(ren, SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);
-    loadTexture(ren, SpriteType::DESERT_MAP, DESERT_TILE_SET_IMG);
-    loadTexture(ren, SpriteType::AZTEC_MAP, AZTEC_TILE_SET_IMG);
+    loadTexture(SpriteType::TRAINING_MAP, TRAINING_TILE_SET_IMG);
+    loadTexture(SpriteType::DESERT_MAP, DESERT_TILE_SET_IMG);
+    loadTexture(SpriteType::AZTEC_MAP, AZTEC_TILE_SET_IMG);
 
     // HUD textures:
     constexpr Color hudColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
-    loadTexture(ren, SpriteType::HUD_NUMBERS, HUD_NUMS, hudColorKey);
-    loadTexture(ren, SpriteType::HUD_SYMBOLS, HUD_SYMB, hudColorKey);
+    loadTexture(SpriteType::HUD_NUMBERS, HUD_NUMS, hudColorKey);
+    loadTexture(SpriteType::HUD_SYMBOLS, HUD_SYMB, hudColorKey);
 }
 
-void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path) {
+void TextureManager::loadTexture(const SpriteType type, const std::string& path) {
     Surface surface(path);
-    textures[type] = std::make_shared<Texture>(ren, surface);
+    textures[type] = std::make_shared<Texture>(*renderer, surface);
 }
 
-void TextureManager::loadTexture(Renderer& ren, const SpriteType type, const std::string& path,
+void TextureManager::loadTexture(const SpriteType type, const std::string& path,
                                  const Color& colorKey) {
     Surface surface(path);
     const Uint32 mappedKey = SDL_MapRGB(surface.Get()->format, colorKey.GetRed(),
                                         colorKey.GetGreen(), colorKey.GetBlue());
     surface.SetColorKey(SDL_TRUE, mappedKey);
-    textures[type] = std::make_shared<Texture>(ren, surface);
+    textures[type] = std::make_shared<Texture>(*renderer, surface);
 }
 
 std::shared_ptr<Texture> TextureManager::getTexture(const SpriteType type) {
@@ -68,4 +71,13 @@ std::shared_ptr<Texture> TextureManager::getTextureMap(const TypeTileMap& typeTi
     } else {
         return textures[SpriteType::TRAINING_MAP];
     }
+}
+
+std::unique_ptr<Texture> TextureManager::createTextTexture(const std::string& text, Font& font,
+                                                           const Color& color) {
+    if (!renderer)
+        throw std::runtime_error("Renderer not initialized in TextureManager!");
+
+    Surface surface = font.RenderText_Blended(text, color);
+    return std::make_unique<Texture>(*renderer, surface);
 }

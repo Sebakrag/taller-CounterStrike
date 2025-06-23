@@ -12,6 +12,7 @@ using ServerEntityID = uint32_t;
 
 enum class Weapon : unsigned char { None, Glock, Ak47, M3, Awp, Knife, Bomb };
 enum class TypeWeapon : unsigned char { Primary, Secondary, Knife, Bomb };
+enum class AmmoType : unsigned char { None, Primary, Secondary };
 enum class Team : unsigned char { Terrorist, CounterTerrorist };
 enum class GamePhase : unsigned char { Preparation, Combat, EndOfMatch };
 enum class BombState : unsigned char { Dropped, Carried, Planted, Exploded, Defused };

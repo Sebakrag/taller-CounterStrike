@@ -9,11 +9,11 @@
 
 struct ShopInfo {
     std::unordered_map<Weapon, int> weaponPrices;
-    std::unordered_map<Weapon, int> ammoPrices;
+    std::unordered_map<AmmoType, int> ammoPrices;
 
     ShopInfo();
     ShopInfo(const std::unordered_map<Weapon, int>& weaponPrices,
-             const std::unordered_map<Weapon, int>& ammoPrices);
+             const std::unordered_map<AmmoType, int>& ammoPrices);
 
     explicit ShopInfo(const std::vector<uint8_t>& bytes);
     std::vector<uint8_t> toBytes() const;
