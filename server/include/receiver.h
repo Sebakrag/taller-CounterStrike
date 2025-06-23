@@ -13,7 +13,7 @@
 // idea.
 // recibe por el protocolo la GameAction.
 // crea la PlayerAction y la carga en la queue de PlayerActions
-
+// Importante. No cerrar la queue aquí nunca. De eso se encarga el gameloop
 class Receiver: public Thread {
 private:
     std::string username;

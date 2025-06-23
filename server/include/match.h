@@ -1,10 +1,10 @@
 #ifndef MATCH_H
 #define MATCH_H
 
+#include <list>
 #include <random>
 #include <string>
 #include <vector>
-#include <list>
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
@@ -12,14 +12,14 @@
 #include "weapon/projectile.h"
 
 #include "map.h"
-#include "shop.h"
 #include "physics_engine.h"
 #include "player.h"
+#include "shop.h"
 #include "types2.h"
 
 class Match {
 private:
-    std::vector<Player> players;
+    std::list<Player> players;
     std::string id_scenario;
     Map map;
     GamePhase phase;

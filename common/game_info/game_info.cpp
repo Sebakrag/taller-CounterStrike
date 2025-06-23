@@ -16,7 +16,8 @@
 
 GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float timeLeft,
                    const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
-                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items, const ShopInfo& shop):
+                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items,
+                   const ShopInfo& shop):
         gamePhase(gamePhase),
         bomb(bomb),
         timeLeft(timeLeft),
@@ -51,7 +52,6 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                           bytes.begin() + index + SIZE_LOCAL_PLAYER_INFO);
     localPlayer = LocalPlayerInfo(localPlayerBytes);
     index += SIZE_LOCAL_PLAYER_INFO;
-    localPlayer.print();
     // cargo snapshot
     const auto x = localPlayer.position.getX();
     const auto y = localPlayer.position.getY();
@@ -73,7 +73,6 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> playerBytes(bytes.begin() + index, bytes.begin() + index + size);
 
         PlayerInfo p(playerBytes);
-        p.print();
         // otherPlayers.emplace_back(p);
         const float x = p.position.getX();
         const float y = p.position.getY();

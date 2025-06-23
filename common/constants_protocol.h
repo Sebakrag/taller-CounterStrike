@@ -87,6 +87,8 @@
 #define BYTE_CHANGE_WEAPON 0X06
 #define BYTE_PICK_UP 0X07
 #define BYTE_ROTATE 0X08
+#define BYTE_DEFUSE_BOMB 0X09
+#define BYTE_EXIT_MATCH 0X10
 
 // Acciones del servidor:
 //--------------------------

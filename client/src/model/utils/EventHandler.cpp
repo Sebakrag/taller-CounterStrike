@@ -24,13 +24,15 @@ void EventHandler::handleEvents(bool& gameIsRunning) {
     handleKeyboardEvents(gameIsRunning);
     handleMouseEvents(gameIsRunning);
 }
-// TODO: Unificar funciones de keyboard (No esta saliendo bien cuando presiono ESC)
+
 void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     // salir
-    if (state[SDL_SCANCODE_ESCAPE])
+    if (state[SDL_SCANCODE_ESCAPE]) {
         gameIsRunning = false;
+        // client.ExitGame();
+    }
 
     Uint32 now = SDL_GetTicks();
     if (now - lastKeyboardPress < DELAY_KEYBOARD_PRESS)

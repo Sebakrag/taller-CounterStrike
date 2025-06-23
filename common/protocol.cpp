@@ -275,6 +275,10 @@ uint8_t Protocol_::encodeGameActionType(const GameActionType& gameActionType) {
             return BYTE_PICK_UP;
         case GameActionType::Rotate:
             return BYTE_ROTATE;
+        case GameActionType::DefuseBomb:
+            return BYTE_DEFUSE_BOMB;
+        case GameActionType::ExitMatch:
+            return BYTE_EXIT_MATCH;
         default:
             throw std::runtime_error(
                     "Error. Tipo de acción de juego desconocida. No se puede codificar");
@@ -481,6 +485,10 @@ GameActionType Protocol_::decodeGameActionType(uint8_t byte) {
             return GameActionType::PickUp;
         case BYTE_ROTATE:
             return GameActionType::Rotate;
+        case BYTE_DEFUSE_BOMB:
+            return GameActionType::DefuseBomb;
+        case BYTE_EXIT_MATCH:
+            return GameActionType::ExitMatch;
         default:
             throw std::runtime_error(
                     "Error. Tipo de acción de juego desconocida. No se puede decodificar");

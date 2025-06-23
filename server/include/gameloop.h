@@ -42,6 +42,8 @@ public:
 
 private:
     void run() override;
+
+    void removePlayer(const std::string& username);
 };
 
 #endif  // GAMELOOP_H_

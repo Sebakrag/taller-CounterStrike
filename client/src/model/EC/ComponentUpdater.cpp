@@ -108,15 +108,15 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
             if (prev_info.weapon_id != curr_weapon)
                 soundComp.addEvent(SoundEvent::ChangeWeapon);
 
-            std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
-                      << std::endl;
+            // std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
+            //           << std::endl;
 
             if (curr_health < prev_info.health) {
                 soundComp.addEvent(SoundEvent::TakeDamage);
             }
 
-            std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
-                      << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
+            // std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
+            //           << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
 
             if (curr_state == PlayerState::Attacking && prev_info.state != PlayerState::Attacking) {
                 // Quizas que deberia enviar un evento de sonido al componente de su arma.

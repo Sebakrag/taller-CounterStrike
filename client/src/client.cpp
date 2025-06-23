@@ -28,6 +28,7 @@ void Client::ExitGame() {
         sender.kill();
         receiver.join();
         sender.join();
+        protocol.sendGameAction(GameAction(GameActionType::ExitMatch));
     }
     status = Disconnected;
 }

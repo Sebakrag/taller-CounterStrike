@@ -87,8 +87,8 @@ enum GameActionType {
     ChangeWeapon,
     PickUp,
     Rotate,
-    PlantBomb,
-    DefuseBomb
+    DefuseBomb,
+    ExitMatch
 };
 
 struct GameAction {
