@@ -4,8 +4,8 @@
 #include <unordered_map>
 
 #include "SDL2pp/Mixer.hh"
-#include "common/utils/Vec2D.h"
-#include "model/utils/SoundLibrary.h"
+#include "../../../../common/utils/Vec2D.h"
+#include "../../model/utils/SoundLibrary.h"
 
 #include "ComponentManager.h"
 

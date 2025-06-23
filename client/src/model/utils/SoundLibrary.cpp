@@ -1,12 +1,12 @@
-#include "client/include/model/utils/SoundLibrary.h"
+#include "../../../../client/include/model/utils/SoundLibrary.h"
 
 #include <stdexcept>
 
-#include "client/client_constants.h"
+#include "../../../../client/client_constants.h"
 
 SoundLibrary::SoundLibrary() {
     loadPLayerSounds();
-    // loadBombSounds();
+    loadBombSounds();
     loadRadioSounds();
 }
 

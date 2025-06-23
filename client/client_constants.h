@@ -74,6 +74,7 @@
 #define TAKE_DAMAGE_SOUND (PLAYER_SOUNDS_PATH + "/hit.wav")
 #define DIE_SOUND (PLAYER_SOUNDS_PATH + "/die.wav")
 
+
 // Weapon (sounds)
 // #define KNIFE_HIT_SOUND (WEAPON_SOUNDS_PATH + "/knife_hit.wav")
 #define KNIFE_SLASH_SOUND (WEAPON_SOUNDS_PATH + "/knife_slash.wav")

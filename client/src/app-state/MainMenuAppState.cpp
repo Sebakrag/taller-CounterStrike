@@ -39,7 +39,7 @@ std::optional<AppStateCode> MainMenuAppState::update() {
                 return AppStateCode::MAIN_MENU;
             }
             QString gameName = nid.textValue().trimmed();
-            bool success = controller->getClient()->CreateMatch(gameName.toStdString());
+            bool success = controller->getClient()->CreateMatch(gameName.toStdString(), "escenario1");
 
             if (!success) {
                 showStyledWarning("Error", "No se pudo crear la partida. Es posible que ya exista "

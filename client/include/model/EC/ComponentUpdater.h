@@ -41,7 +41,8 @@ private:
             old_entities;  // entities that weren't created in the current frame.
 
     std::unordered_map<Entity, PreviousPlayerInfo> previous_player_info;
-
+    BombState previusBombState = BombState::Hidden;
+    int previusTimeLeft = 30; // de la bomba en segundos
     ///
     /// @brief Synchronize all the entities that exists in the server (that comes in the snapshot).
     /// In order to do this, it creates or destroy entities as needed.
@@ -55,14 +56,17 @@ private:
     /// @note This function should be call right after the method "syncEntities". If not, an
     /// unknown behavior could take place.
     ///
-    void updateComponents();
+    void updateComponents(int timeLeft);
     void updatePlayerSoundComponent(Entity e, SoundComponent& soundComp,
                                     const PlayerSnapshot& playerSnap, const Vec2D& curr_pos);
+
+    void updateBombSoundComponent(SoundComponent& soundComp,
+                                    const BombSnapshot bombSnap, int currentTimeLeft);
 
 public:
     ComponentUpdater(EntityManager& em, ComponentManager& cm);
 
-    void update(const std::vector<EntitySnapshot>& snapshots);
+    void update(const std::vector<EntitySnapshot>& snapshots, int timeLeft);
 };
 
 

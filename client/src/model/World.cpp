@@ -20,7 +20,7 @@ void World::update(float dt, const GameInfo& gameInfo) {
     currentWeapon = gameInfo.localPlayer.weapon;
     local_player_pos = gameInfo.localPlayer.position;
 
-    comp_updater.update(gameInfo.getSnapshots());
+    comp_updater.update(gameInfo.getSnapshots(), gameInfo.timeLeft);
 
     player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
 
