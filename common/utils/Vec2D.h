@@ -29,6 +29,14 @@ public:
     Vec2D operator*(const Vec2D& other) const;
     Vec2D operator/(const Vec2D& other) const;
 
+    // Operador de comparación para permitir el uso de Vec2D como clave en std::map
+    bool operator<(const Vec2D& other) const {
+        if (x != other.x) {
+            return x < other.x;
+        }
+        return y < other.y;
+    }
+
     float dot(const Vec2D& other) const;
 
     Vec2D& normalize();

@@ -68,6 +68,16 @@ std::vector<std::string> ScenarioRegistry::listAvailableMaps(const std::string& 
     return availableMaps;
 }
 
+// Definir un comparador personalizado para Vec2D
+struct Vec2DCompare {
+    bool operator()(const Vec2D& a, const Vec2D& b) const {
+        if (a.getX() != b.getX()) {
+            return a.getX() < b.getX();
+        }
+        return a.getY() < b.getY();
+    }
+};
+
 bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::string& mapsDirectory) {
     try {
         std::string filePath = mapsDirectory + "/" + mapName + ".yaml";
@@ -78,16 +88,21 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
             return false;
         }
         
-        std::string yamlMapName = mapName;
-        if (mapNode["name"] && mapNode["name"].IsScalar()) {
-            yamlMapName = mapNode["name"].as<std::string>();
+        // Obtener el tipo de mapa
+        TypeTileMap mapType = TypeTileMap::Desert; // Por defecto
+        if (mapNode["map_type"] && mapNode["map_type"].IsScalar()) {
+            std::string mapTypeStr = mapNode["map_type"].as<std::string>();
+            // Convertir string a TypeTileMap (puedes expandir según los tipos disponibles)
+            if (mapTypeStr == "Desert") {
+                mapType = TypeTileMap::Desert;
+            } else if (mapTypeStr == "Game") {
+                mapType = TypeTileMap::Desert;
+            }
         }
         
-        TileMap tileMap;
-        
+        // Obtener la matriz
+        std::vector<std::vector<int>> matrix;
         if (mapNode["matrix"] && mapNode["matrix"].IsSequence()) {
-            std::vector<std::vector<int>> matrix;
-            
             for (const auto& row : mapNode["matrix"]) {
                 if (row.IsSequence()) {
                     std::vector<int> rowData;
@@ -97,16 +112,85 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
                     matrix.push_back(rowData);
                 }
             }
-            
-            if (!matrix.empty() && !matrix[0].empty()) {
-                tileMap = TileMap(matrix);
-            } else {
-                return false;
-            }
         } else {
             return false;
         }
         
+        if (matrix.empty() || matrix[0].empty()) {
+            return false;
+        }
+        
+        // Construir el mapa de tipos de tiles
+        std::map<int, TypeTile> tileTypes;
+        if (mapNode["tiles"] && mapNode["tiles"].IsSequence()) {
+            for (const auto& tileNode : mapNode["tiles"]) {
+                if (tileNode["id"] && tileNode.IsMap()) {
+                    int tileId = tileNode["id"].as<int>();
+                    if (tileNode["type"] && tileNode["type"].IsScalar()) {
+                        std::string typeStr = tileNode["type"].as<std::string>();
+                        TypeTile type = TypeTile::None; // Por defecto
+                        
+                        // Convertir string a TypeTile
+                        if (typeStr == "solid") {
+                            type = TypeTile::Solid;
+                        } else if (typeStr == "empty") {
+                            type = TypeTile::None;
+                        } else if (typeStr == "ct_zone") {
+                            type = TypeTile::CT_Zone;
+                        } else if (typeStr == "t_zone") {
+                            type = TypeTile::T_Zone;
+                        } else if (typeStr == "bomb_zone") {
+                            type = TypeTile::BombZone;
+                        }
+                        
+                        tileTypes[tileId] = type;
+                    } else {
+                        // Si no se especifica el tipo, asumimos solid para barreras y empty para el resto
+                        tileTypes[tileId] = (tileId == 4) ? TypeTile::Solid : TypeTile::None;
+                    }
+                }
+            }
+        }
+        
+        // Construir el mapa de armas (opcional)
+        std::map<Vec2D, Weapon, Vec2DCompare> weaponsMap;
+        if (mapNode["weapons"] && mapNode["weapons"].IsSequence()) {
+            for (const auto& weaponNode : mapNode["weapons"]) {
+                if (weaponNode.IsMap() && weaponNode["pos"] && weaponNode["type"]) {
+                    int x = weaponNode["pos"][0].as<int>();
+                    int y = weaponNode["pos"][1].as<int>();
+                    Vec2D pos(x, y);
+                    
+                    std::string weaponType = weaponNode["type"].as<std::string>();
+                    Weapon weapon = Weapon::Knife; // Por defecto
+                    
+                    // Convertir string a Weapon
+                    if (weaponType == "ak47") {
+                        weapon = Weapon::Ak47;
+                    } else if (weaponType == "awp") {
+                        weapon = Weapon::Awp;
+                    } else if (weaponType == "m3") {
+                        weapon = Weapon::M3;
+                    } else if (weaponType == "glock") {
+                        weapon = Weapon::Glock;
+                    }
+                    
+                    weaponsMap[pos] = weapon;
+                }
+            }
+        }
+        
+        // Sin embargo, necesitamos un std::map<Vec2D, Weapon> sin comparador personalizado
+        // para pasarlo al constructor de TileMap. Convertimos nuestro mapa:
+        std::map<Vec2D, Weapon> standardWeaponsMap;
+        for (const auto& pair : weaponsMap) {
+            standardWeaponsMap.insert(std::make_pair(pair.first, pair.second));
+        }
+        
+        // Crear el TileMap con todos los datos obtenidos
+        TileMap tileMap(mapType, matrix, tileTypes, standardWeaponsMap);
+        
+        // Guardar en el registro de escenarios
         scenarios[mapName] = tileMap;
         
         return true;

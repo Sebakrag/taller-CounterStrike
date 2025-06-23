@@ -1,5 +1,5 @@
 #include "../include/client_handler.h"
-
+#include "../include/scenario_registry.h"
 #include <iostream>
 #include <list>
 #include <ostream>
@@ -77,7 +77,7 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
             std::string selectedScenario = menuAction.scenario_name;
             
             if (!ScenarioRegistry::existsScenario(selectedScenario)) {
-                ScenarioRegistry::loadMapFromYaml(selectedScenario);
+                ScenarioRegistry::loadMapFromYaml(selectedScenario);       
             }
             
             if (ScenarioRegistry::existsScenario(selectedScenario)) {

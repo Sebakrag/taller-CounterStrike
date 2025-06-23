@@ -35,6 +35,9 @@ public:
 
     // Método para cargar los mapas disponibles
     static void loadAvailableMaps(const std::string& mapsDirectory = "../maps");
+
+    // Método para cargar un mapa específico desde YAML
+    static bool loadMapFromYaml(const std::string& mapName, const std::string& mapsDirectory = "../maps");
     
 };
 
