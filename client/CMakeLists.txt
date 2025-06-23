@@ -20,6 +20,7 @@ target_sources(taller_client
         src/ui/ScenarioSelectionDialog.cpp
         src/ui/NameInputDialog.cpp
         src/ui/StyledMessageBox.cpp
+        src/ui/AudioManager.cpp
         # model:
         src/model/Camera.cpp
         src/model/FieldOfView.cpp
@@ -71,6 +72,7 @@ target_sources(taller_client
         include/ui/ScenarioSelectionDialog.h
         include/ui/StyledMessageBox.h
         include/ui/UIConstants.h
+        include/ui/AudioManager.h
         # model:
         include/model/Camera.h
         include/model/FieldOfView.h

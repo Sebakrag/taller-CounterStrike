@@ -49,6 +49,7 @@ target_include_directories(taller_common PUBLIC .)
 #
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
 # sudo apt install qt6-base-dev qt6-tools-dev qt6-tools-dev-tools
+# sudo apt install qt6-multimedia-dev
 
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
@@ -122,7 +123,7 @@ endif()
 if(TALLER_CLIENT)
 
     # 1) Encontrar Qt6 y activar AUTORCC/AUTOMOC/AUTOUIC
-    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui Multimedia)
     set(CMAKE_AUTOMOC   ON)
     set(CMAKE_AUTOUIC   ON)
     set(CMAKE_AUTORCC   ON)
@@ -157,6 +158,7 @@ if(TALLER_CLIENT)
         Qt6::Widgets 
         Qt6::Core 
         Qt6::Gui
+        Qt6::Multimedia
     )
 endif()
 

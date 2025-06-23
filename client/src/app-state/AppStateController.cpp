@@ -7,6 +7,7 @@
 #include "../../../client/include/app-state/LobbyAppState.h"
 #include "../../../client/include/app-state/LoginAppState.h"
 #include "../../../client/include/app-state/MainMenuAppState.h"
+#include "ui/AudioManager.h"
 
 AppStateController::AppStateController() { current_state = new LoginAppState(this); }
 
@@ -27,16 +28,27 @@ void AppStateController::transition_to(const AppStateCode& new_state) {
     switch (new_state) {
         case AppStateCode::MAIN_MENU: {
             current_state = new MainMenuAppState(this);
+            // Iniciar música de menú si no está reproduciendo
+            if (!AudioManager::getInstance().isPlaying()) {
+                AudioManager::getInstance().playMenuMusic();
+            }
             break;
         }
         case AppStateCode::LOBBY:
             current_state = new LobbyAppState(this);
+            // Iniciar música de menú si no está reproduciendo
+            if (!AudioManager::getInstance().isPlaying()) {
+                AudioManager::getInstance().playMenuMusic();
+            }
             break;
         case AppStateCode::GAME_MATCH:
             current_state = new GameMatchAppState(this);
+            // Detener música de menú al iniciar el juego
+            AudioManager::getInstance().stopMusic();
             break;
         case AppStateCode::QUIT:
-            std::cout << "[Controller] Quiting client program\n";
+            // Detener música antes de salir
+            AudioManager::getInstance().stopMusic();
             return;
         default:
             throw std::runtime_error("Unknown app state.");
