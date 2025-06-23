@@ -568,7 +568,7 @@ void MapEditor::loadAvailableTiles()
         }
         
         // Ruta al tileset
-        QString tilesetPath = QString("/client/assets/tiles/%1").arg(tilesetFile);
+        QString tilesetPath = QString("client/assets/tiles/%1").arg(tilesetFile);
         
         // Cortar el tileset en tiles individuales (32x32 pixeles)
         tilePixmaps = sliceTilesetImage(tilesetPath, 32, 32);
@@ -661,7 +661,7 @@ void MapEditor::loadAvailableTiles()
 
 void MapEditor::loadAvailableWeapons() {
     // Ruta a los assets de armas en client/assets/weapons/
-    QString weaponsPath = "/client/assets/weapons/";
+    QString weaponsPath = "client/assets/weapons/";
     
     // Comprobar que el scroll area y el grupo de botones existen
     if (!weaponsScrollArea || !weaponButtons) {
@@ -1533,7 +1533,7 @@ void MapEditor::preloadMapWithBaseTile()
 void MapEditor::generateMapFile(const QString &fileName)
 {
     // Asegurar que exista el directorio de mapas dentro de server
-    QString serverDir = "../server/";
+    QString serverDir = "server/";
     QString mapsDir = serverDir + "maps/";
     QDir dir(QDir::current());
     

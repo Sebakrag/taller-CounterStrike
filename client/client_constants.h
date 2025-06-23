@@ -34,7 +34,7 @@
 #define BULLET_IMG (WEAPON_PATH + "/bullet.bmp")
 
 // Maps
-#define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/tileset_desierto_(4x11).png")
+#define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/desert_tiles.png")
 #define AZTEC_TILE_SET_IMG (TILE_SETS_PATH + "/aztec_tiles.png")
 #define TRAINING_TILE_SET_IMG (TILE_SETS_PATH + "/training_tiles.png")
 

@@ -142,7 +142,7 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
             out << YAML::Value << YAML::BeginSeq;
             
             // Mapa de traducciones de IDs de armas a nombres de archivo
-            // Estos son los nombres de archivo de las armas en /client/assets/weapons/
+            // Estos son los nombres de archivo de las armas en client/assets/weapons/
             QMap<int, QString> weaponIdToName;
             // ID 1 = primera arma, ID 2 = segunda arma, etc.
             // Los ID números son asignados en loadAvailableWeapons() según el orden alfabético
