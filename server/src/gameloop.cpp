@@ -25,14 +25,18 @@ void GameLoop::run() {
             PlayerAction playerAction;
             while (queueActionsPlayers->try_pop(playerAction)) {
                 // habría que poner una condicion de temporizador o cantidad de iteraciones maxima
-                match.processAction(playerAction, 1.0f / ITR_PER_SEC);
+                if (playerAction.gameAction.type == GameActionType::ExitMatch) {
+                    removePlayer(playerAction.player_username);
+                } else {
+                    match.processAction(playerAction, 1.0f / ITR_PER_SEC);
+                }
             }
 
             match.updateState(1.0 / ITR_PER_SEC);
-            /*if (match.getGamePhase() == GamePhase::EndOfMatch) {
+            if (match.getGamePhase() == GamePhase::EndOfMatch) {
                 std::cout << "==> Fase de fin de partida alcanzada. Finalizando el Gameloop\n";
                 // stop(); CONSULTAR ESTO, DEBERIA CORTAR?
-            }*/
+            }
 
             // 2. envío el estado de juego a cada jugador
             for (auto it = queuesPlayers.begin(); it != queuesPlayers.end();) {
@@ -42,14 +46,17 @@ void GameLoop::run() {
                     queue->try_push(match.generateGameInfo(user_name));
                     ++it;
                 } catch (ClosedQueue& e) {  // si un jugador se fue de la partida (cerró el juego)
+                    // removePlayer(user_name);
                     it = queuesPlayers.erase(it);  // borro queue y continúo
-                    std::cout << "borro queue" << std::endl;
+                                                   //
+                    // std::cout << "borro queue" << std::endl;
                     if (queuesPlayers.size() == 0) {
                         // si se fueron todos los jugadores, termina el gameloop
                         stop();
                     }
                 }
             }
+            match.resetStatesOfPlayers();
 
             // 3. calculo cuanto tiempo dormir.
             auto time_end = std::chrono::steady_clock::now();
@@ -75,19 +82,34 @@ void GameLoop::run() {
 }
 
 void GameLoop::kill() {
-    queueActionsPlayers->close();
+    try {
+        queueActionsPlayers->close();
+    } catch (...) {}
     for (auto queue: queuesPlayers) {
         // queue->close();
     }
     stop();
 }
 
-// bool GameLoop::containsPlayer(const std::string& username) const {
-//     return match.containsPlayer(username);
-// }
-
-// PlayerInfo GameLoop::getPlayerInfo(const std::string& username) const {
-//     return match.generatePlayerInfo(username);
-// }
 const Match& GameLoop::getMatch() const { return match; }
+
 std::shared_ptr<Queue<PlayerAction>> GameLoop::getActionsQueue() { return queueActionsPlayers; }
+
+void GameLoop::removePlayer(const std::string& username) {
+    match.removePlayer(username);  // (asumí que tenés este método o agregalo)
+
+    auto it = queuesPlayers.find(username);
+    if (it != queuesPlayers.end()) {
+        // it->second->close();  // cierra la queue => Sender atrapa ClosedQueue
+        std::cout << "borro queue" << std::endl;
+        queuesPlayers.erase(it);
+        std::cout << "Jugador '" << username << "' abandonó la partida.\n";
+    }
+
+    // si se fueron todos los jugadores, termina el gameloop
+    if (queuesPlayers.empty()) {
+        //    std::cout << "Todos los jugadores abandonaron. Terminando partida.\n";
+        //    queueActionsPlayers->close();
+        stop();
+    }
+}

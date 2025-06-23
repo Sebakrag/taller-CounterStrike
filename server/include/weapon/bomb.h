@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 
+#include "../../../common/game_info/game_info.h"
 #include "../../../common/types.h"
 #include "../../../server/include/id_generator.h"
 #include "../../../server/include/map.h"
@@ -37,17 +38,22 @@ public:
     void pickUp(const std::string& playerId);
     bool plant(float x, float y, Map& map);
     bool defuse();
+    void equip();
+    void hide();
 
     // Update loop
     void update(double elapsedTime);
 
     // Accesos
+    uint32_t getServerId() const;
     float getX() const;
     float getY() const;
     Vec2D getPlantedPosition() const;
     std::string getCarrierId() const;
     BombState getState() const;
     double getTimer() const;
+
+    BombInfo generateBombInfo() const;
 
     // CONSTANTES static para inicializar en server.cpp.
 private:

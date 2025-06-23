@@ -1,12 +1,13 @@
-#include "client/include/model/EC/ComponentUpdater.h"
+#include "../../../../client/include/model/EC/ComponentUpdater.h"
 
-#include "client/include/model/EC/components/EquippedWeaponComponent.h"
-#include "client/include/model/EC/components/PlayerSpriteComponent.h"
-#include "client/include/model/EC/components/SoundComponent.h"
-#include "client/include/model/EC/components/SpriteComponent.h"
-#include "client/include/model/EC/components/TransformComponent.h"
-#include "client/include/model/EC/components/WeaponSpriteComponent.h"
-#include "client/include/model/utils/SoundEvent.h"
+#include "../../../../client/include/model/EC/components/EquippedWeaponComponent.h"
+#include "../../../../client/include/model/EC/components/PlayerSpriteComponent.h"
+#include "../../../../client/include/model/EC/components/SoundComponent.h"
+#include "../../../../client/include/model/EC/components/SpriteComponent.h"
+#include "../../../../client/include/model/EC/components/TransformComponent.h"
+#include "../../../../client/include/model/EC/components/WeaponSpriteComponent.h"
+#include "../../../../client/include/model/utils/SoundEvent.h"
+#include "model/EC/components/BombSpriteComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
@@ -22,8 +23,8 @@ void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots
     if (old_entities.capacity() < snapshots.size()) {
         old_entities.reserve(snapshots.size());
     }
-    old_entities
-            .clear();  // OJO: Si agrego un campo de tipo std::string en EntitySnapshot, entonces el
+    old_entities.clear();
+    // OJO: Si agrego un campo de tipo std::string en EntitySnapshot, entonces el
     // struct OldEntityEntry puede dejar de ser trivially_destructible y la
     // operacion old_entities.clear() puede pasar de ser O(1) a O(n).
 
@@ -61,10 +62,16 @@ void ComponentUpdater::updateComponents() {
                 weaponSpr->setState(weapon->state);
             }
         }
+        if (const auto bombSpr = comp_mgr.getComponent<BombSpriteComponent>(e)) {
+            if (const auto bomb = std::get_if<BombSnapshot>(&snap.data)) {
+                bombSpr->setState(bomb->state);
+            }
+        }
         if (const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e)) {
             if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
-                // playerSpr->setTypeWeaponEquipped(player->weapon_type);
-                playerSpr->update(player->state, player->weapon_type);
+                playerSpr->update(player->state,
+                                  player->weapon_type);  // TODO: Actualizar el SpriteType (en
+                                                         // cambio de ronda)
             }
         }
         if (const auto soundComp = comp_mgr.getComponent<SoundComponent>(e)) {
@@ -86,6 +93,7 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
     const Entity curr_weapon = entt_mgr.get(playerSnap.equipped_weapon_id);
     const PlayerState curr_state = playerSnap.state;
     const int curr_health = playerSnap.hp;
+    Weapon equippedWeapon = playerSnap.equipped_weapon;
 
     if (const auto it = previous_player_info.find(e); it != previous_player_info.end()) {
         const auto& prev_info = it->second;
@@ -100,21 +108,32 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
             if (prev_info.weapon_id != curr_weapon)
                 soundComp.addEvent(SoundEvent::ChangeWeapon);
 
-            std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
-                      << std::endl;
+            // std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
+            //           << std::endl;
 
             if (curr_health < prev_info.health) {
                 soundComp.addEvent(SoundEvent::TakeDamage);
             }
 
-            std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
-                      << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
+            // std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
+            //           << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
 
-            if (curr_state == PlayerState::Attacking) {
+            if (curr_state == PlayerState::Attacking && prev_info.state != PlayerState::Attacking) {
                 // Quizas que deberia enviar un evento de sonido al componente de su arma.
                 // (en el caso de que querramos distinguir sonidos de arma.)
-                soundComp.addEvent(SoundEvent::Shoot);
-            } else if (curr_state == PlayerState::PickingUp) {
+                if (equippedWeapon == Weapon::Ak47)
+                    soundComp.addEvent(SoundEvent::ShootAK47);
+                else if (equippedWeapon == Weapon::Awp)
+                    soundComp.addEvent(SoundEvent::ShootAWP);
+                else if (equippedWeapon == Weapon::M3)
+                    soundComp.addEvent(SoundEvent::ShootM3);
+                else if (equippedWeapon == Weapon::Glock)
+                    soundComp.addEvent(SoundEvent::ShootGlock);
+                else if (equippedWeapon == Weapon::Knife)
+                    soundComp.addEvent(SoundEvent::KnifeSlash);
+                // soundComp.addEvent(SoundEvent::Shoot);
+            } else if (curr_state == PlayerState::PickingUp &&
+                       prev_info.state != PlayerState::PickingUp) {
                 soundComp.addEvent(SoundEvent::DropWeapon);
             }
         }

@@ -89,6 +89,7 @@ void ServerProtocol::sendMatchRoomInfo(const MatchRoomInfo& info) {
         insertBigEndian16(info.players[i].username.length(), buffer);
         insertStringBytes(info.players[i].username, buffer);
         buffer.push_back(encodeTeam(info.players[i].team));
+        buffer.push_back(encodeBool(info.players[i].is_player_host));
     }
     if (info.matchStarted)
         buffer.push_back(BYTE_TRUE);

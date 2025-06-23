@@ -125,11 +125,41 @@ std::shared_ptr<Queue<PlayerAction>> GameManager::getActionsQueue(const std::str
     return gameLoops.at(matchName)->getActionsQueue();
 }
 
+void GameManager::reapDeadGameloops() {
+    for (auto it = gameLoops.begin(); it != gameLoops.end();) {
+        if (!it->second->is_alive()) {
+            // borro matchRoom
+            std::string nameMatch = it->first;
+            deleteMatchRoom(nameMatch);
+            // borro gameloop
+            it->second->join();
+            std::cout << "gameloop cosechado" << std::endl;
+            it = gameLoops.erase(it);  // borra y avanza el iterador
+        } else {
+            ++it;
+        }
+    }
+}
+
+void GameManager::deleteMatchRoom(const std::string& matchName) {
+    auto it = lobbies.find(matchName);
+    if (it != lobbies.end()) {
+        lobbies.erase(it);
+        std::cout << "Lobby '" << matchName << "' eliminado.\n";
+    } else {
+        std::cout << "deleteMatchRoom: no existe el lobby '" << matchName << "'.\n";
+    }
+}
+
+
 // asegurarse de que solo la clase server pueda llamar a este metodo.
 void GameManager::killAllMatchs() {
+    std::cout << "killeo todas los gameloops" << std::endl;
     std::lock_guard<std::mutex> lock(m);
+    reapDeadGameloops();
     for (auto& [matchName, gameLoop]: gameLoops) {
         gameLoop->kill();
+        std::cout << "gameloop killeado." << std::endl;
         gameLoop->join();
     }
     gameLoops.clear();

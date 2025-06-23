@@ -11,16 +11,15 @@
 #include "player_info.h"
 
 // GameInfo::GameInfo():
-//         gamePhase(GamePhase::Preparation), bombPlanted(false), bombX(0), bombY(0), timeLeft(30)
+//         gamePhase(GamePhase::Preparation), bombState(false), bombX(0), bombY(0), timeLeft(30)
 //         {}
 
-GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
+GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float timeLeft,
                    const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
-                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items, const ShopInfo& shop):
+                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items,
+                   const ShopInfo& shop):
         gamePhase(gamePhase),
-        bombPlanted(bombPlanted),
-        bombX(bombX),
-        bombY(bombY),
+        bomb(bomb),
         timeLeft(timeLeft),
         localPlayer(localPlayer),
         otherPlayers(otherPlayers),
@@ -34,31 +33,32 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
     gamePhase = Protocol_::decodeGamePhase(bytes[0]);
     size_t index = 1;
 
-    // Bomb info
-    bombPlanted = Protocol_::decodeBool(bytes[index]);
-    index += 1;
-    bombX = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
-    bombY = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
-    index += 2;
+    // Bomb
+    std::vector<uint8_t> bombBytes(bytes.begin() + index, bytes.begin() + index + SIZE_BOMB_INFO);
+    bomb = BombInfo(bombBytes);
+    index += SIZE_BOMB_INFO;
+
+    EntitySnapshot bombEntt(bomb.server_entt_id, EntityType::BOMB, bomb.getSpriteType(), bomb.pos_x,
+                            bomb.pos_y, 0, true, bomb.state);
+    entities.emplace_back(bombEntt);
 
     // Time left
     timeLeft =
             Protocol_::getFloat(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
     index += 4;
+
     // local Player.
     std::vector<uint8_t> localPlayerBytes(bytes.begin() + index,
                                           bytes.begin() + index + SIZE_LOCAL_PLAYER_INFO);
     localPlayer = LocalPlayerInfo(localPlayerBytes);
     index += SIZE_LOCAL_PLAYER_INFO;
-    localPlayer.print();
     // cargo snapshot
     const auto x = localPlayer.position.getX();
     const auto y = localPlayer.position.getY();
     EntitySnapshot entity(localPlayer.server_entt_id, EntityType::PLAYER,
                           localPlayer.generateSpriteType(), x, y, localPlayer.angle_direction, true,
                           localPlayer.health, localPlayer.money, localPlayer.state,
-                          localPlayer.equipped_weapon_id, localPlayer.team,
+                          localPlayer.equipped_weapon_id, localPlayer.weapon, localPlayer.team,
                           localPlayer.weapon_type);
     entities.emplace_back(entity);
 
@@ -73,14 +73,13 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> playerBytes(bytes.begin() + index, bytes.begin() + index + size);
 
         PlayerInfo p(playerBytes);
-        p.print();
-        // otherPlayers.emplace_back(p);
+        otherPlayers.emplace_back(p);
         const float x = p.position.getX();
         const float y = p.position.getY();
 
         EntitySnapshot entity(p.server_entt_id, EntityType::PLAYER, p.generateSpriteType(), x, y,
-                              p.angle_direction, true, p.state, p.equipped_weapon_id, p.team,
-                              p.weapon_type);
+                              p.angle_direction, true, p.state, p.equipped_weapon_id, p.weapon,
+                              p.team, p.weapon_type);
         entities.emplace_back(entity);
 
         index += size;
@@ -95,7 +94,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                          bytes.begin() + index + SIZE_BULLET_INFO);
 
         BulletInfo b(bulletBytes);
-        // bullets.emplace_back(b);
+        bullets.emplace_back(b);
         EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, b.pos_x, b.pos_y,
                               b.direction.calculateAngleDegrees(), b.active);
         entities.emplace_back(entity);
@@ -112,7 +111,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                          bytes.begin() + index + SIZE_ITEM_INFO);
 
         WeaponInfo weapon(weaponBytes);
-        // weapons.emplace_back(weapon)
+        weapons.emplace_back(weapon);
         EntitySnapshot entity(weapon.server_entt_id, EntityType::WEAPON, weapon.getSpriteType(),
                               weapon.pos_x, weapon.pos_y, 0, true, weapon.state);
         entities.emplace_back(entity);
@@ -129,9 +128,9 @@ std::vector<uint8_t> GameInfo::toBytes() const {
     buffer.push_back(Protocol_::encodeGamePhase(gamePhase));
 
     // bomb
-    buffer.push_back(Protocol_::encodeBool(bombPlanted));
-    Protocol_::insertBigEndian16(bombX, buffer);
-    Protocol_::insertBigEndian16(bombY, buffer);
+    for (uint8_t& b: bomb.toBytes()) {
+        buffer.push_back(b);
+    }
 
     // time
     Protocol_::insertFloat4Bytes(timeLeft, buffer);
@@ -192,8 +191,8 @@ void GameInfo::print() const {
     }
 
     std::cout << "\nBomb:" << std::endl;
-    std::cout << "Planted: " << (bombPlanted ? "Yes" : "No") << std::endl;
-    std::cout << "Position: (" << bombX << "," << bombY << ")" << std::endl;
+    std::cout << "Bomb State: " << static_cast<int>(bomb.state) << std::endl;
+    std::cout << "Position: (" << bomb.pos_x << "," << bomb.pos_y << ")" << std::endl;
 
     std::cout << "\nTime Left: " << timeLeft << std::endl;
 }

@@ -49,7 +49,7 @@ public:
     void killAllMatchs();
 
 private:
-    // void reapDeadGameloops();
+    void reapDeadGameloops();
 
     void deleteMatchRoom(const std::string& matchName);
 };

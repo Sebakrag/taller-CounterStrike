@@ -34,6 +34,7 @@ target_sources(taller_client
         src/model/EC/EntityFactory.cpp
         src/model/EC/EntityManager.cpp
         src/model/EC/RenderSystem.cpp
+        src/model/EC/components/BombSpriteComponent.cpp
         src/model/EC/components/PlayerSpriteComponent.cpp
         src/model/EC/components/SoundComponent.cpp
         src/model/EC/components/TransformComponent.cpp
@@ -89,6 +90,7 @@ target_sources(taller_client
         include/model/EC/ComponentPool.h
         include/model/EC/ComponentUpdater.h
         include/model/EC/RenderSystem.h
+        include/model/EC/components/BombSpriteComponent.h
         include/model/EC/components/BulletSpriteComponent.h
         include/model/EC/components/EquippedWeaponComponent.h
         include/model/EC/components/PlayerSpriteComponent.h

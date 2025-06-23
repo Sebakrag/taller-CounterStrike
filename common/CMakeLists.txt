@@ -10,6 +10,7 @@ target_sources(taller_common
         tile.cpp
         tile_map.cpp
 
+        game_info/bomb_info.cpp
         game_info/player_info.cpp
         game_info/game_info.cpp
         game_info/bullet_info.cpp
@@ -35,6 +36,7 @@ target_sources(taller_common
         tile.h
         tile_map.h
 
+        game_info/bomb_info.h
         game_info/player_info.h
         game_info/game_info.h
         game_info/bullet_info.h

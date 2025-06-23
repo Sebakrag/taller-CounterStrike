@@ -168,8 +168,8 @@ const std::vector<std::vector<int>> arena_desierto1 = {
          13, 22, 38, 3,  3, 17, 13, 13, 13, 13, 13, 13, 13, 13, 1},
         {1,  2,  13, 15, 13, 13, 2,  13, 13, 19, 3, 3, 17, 13, 13,
          13, 13, 19, 3,  3,  17, 13, 13, 2,  2,  2, 2, 2,  2,  1},
-        {1,  2,  13, 13, 13, 13, 2, 13, 2, 34, 45, 45, 36, 13, 13,
-         13, 13, 34, 45, 45, 36, 2, 13, 2, 13, 13, 13, 13, 2,  1},
+        {1, 2,  13, 13, 13, 13, 2, 13, 2, 34, 45, 45, 36, 13, 13,
+         4, 13, 34, 45, 45, 36, 2, 13, 2, 13, 13, 13, 13, 2,  1},
         {1,  2,  2,  2, 2, 2,  2,  13, 13, 19, 3,  3,  17, 13, 13,
          13, 13, 19, 3, 3, 17, 13, 13, 2,  13, 13, 16, 13, 2,  1},
         {1,  13, 13, 13, 13, 13, 13, 13, 13, 19, 3, 3,  40, 23, 13,
@@ -186,8 +186,13 @@ const std::vector<std::vector<int>> arena_desierto1 = {
 TileMap TileMap::getLevelDemo() {
     std::map<int, TypeTile> typesTiles;
     for (int i = 0; i < 12; i++) {
+        if (i == 4) {
+            typesTiles[i] = BombZone;
+            continue;
+        }
         typesTiles[i] = Solid;
     }
+
     typesTiles[15] = T_Zone;
     typesTiles[16] = CT_Zone;
     return TileMap(TypeTileMap::Desert, arena_desierto1, typesTiles);

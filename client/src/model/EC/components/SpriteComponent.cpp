@@ -1,8 +1,8 @@
-#include "client/include/model/EC/components/SpriteComponent.h"
+#include "../../../../../client/include/model/EC/components/SpriteComponent.h"
 
-#include "client/client_constants.h"
-#include "client/include/model/utils/SpriteMetadataProvider.h"
-#include "client/include/model/utils/TextureManager.h"
+#include "../../../../../client/client_constants.h"
+#include "../../../../../client/include/model/utils/SpriteMetadataProvider.h"
+#include "../../../../../client/include/model/utils/TextureManager.h"
 
 void SpriteComponent::init(const SpriteType type) {
     setTexture(type);

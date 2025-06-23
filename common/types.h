@@ -14,7 +14,7 @@ enum class Weapon : unsigned char { None, Glock, Ak47, M3, Awp, Knife, Bomb };
 enum class TypeWeapon : unsigned char { Primary, Secondary, Knife, Bomb };
 enum class Team : unsigned char { Terrorist, CounterTerrorist };
 enum class GamePhase : unsigned char { Preparation, Combat, EndOfMatch };
-enum class BombState : unsigned char { Dropped, Carried, Planted, Exploded, Defused };
+enum class BombState : unsigned char { Dropped, Equipped, Hidden, Planted, Exploded, Defused };
 
 enum class PlayerState : unsigned char {
     Idle,
@@ -45,10 +45,13 @@ enum class TypeTileMap { Desert, Aztec, Training };
 struct PlayerInfoLobby {
     std::string username;
     Team team;
+    bool is_player_host;  // puede variar si el creador original abandona la partida
 
     PlayerInfoLobby() {}
-    PlayerInfoLobby(const std::string& username, const Team team): username(username), team(team) {}
+    PlayerInfoLobby(const std::string& username, const Team team, bool is_player_host):
+            username(username), team(team), is_player_host(is_player_host) {}
 };
+
 
 struct MatchRoomInfo {
     bool matchStarted;
@@ -87,9 +90,10 @@ enum GameActionType {
     ChangeWeapon,
     PickUp,
     Rotate,
-    PlantBomb,
-    DefuseBomb
+    DefuseBomb,
+    ExitMatch
 };
+
 
 struct GameAction {
     GameActionType type = Null;

@@ -14,7 +14,14 @@ struct FOVConfig {
     float visibilityDistance;  // maximum visible distance from player (in world units)
     float transparency;        // alpha value between 0 (fully transparent) and 1 (opaque)
 
-    FOVConfig() = default;
+    FOVConfig():
+            isActive(false),
+            screenWidth(0),
+            screenHeight(0),
+            circleRadius(0),
+            fovAngle(0),
+            visibilityDistance(0),
+            transparency(0) {}
 
     explicit FOVConfig(bool is_active, int screen_width, int screen_height, int circle_radius,
                        float fov_angle, float visibility_distance, float transparency):

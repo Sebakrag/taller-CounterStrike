@@ -15,7 +15,7 @@
 ClientProtocol::ClientProtocol(const std::string& hostname, const std::string& servname,
                                const std::string& username):
         Protocol_(hostname, servname), username(username) {
-    // sendUserName(username);
+    sendUserName(username);
 }
 
 
@@ -102,7 +102,6 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     uint16_t length = recvBigEndian16();
     name.resize(length);
     socket.recvall(name.data(), sizeof(uint8_t) * length);
-    std::cout << "nombre de la partida: " << name << std::endl;
     // recibo el window_config
     int window_width = recvBigEndian16();
     int window_heigth = recvBigEndian16();
@@ -120,7 +119,6 @@ MatchInfo ClientProtocol::recvMatchInfo() {
 
     // recibo el tilemap
     int size_buffer_tilemap = recvBigEndian32();
-    std::cout << "-> size del buffer del tilemap: " << size_buffer_tilemap << std::endl;
     std::vector<uint8_t> bytes_tilemap(size_buffer_tilemap);
     socket.recvall(bytes_tilemap.data(), sizeof(uint8_t) * size_buffer_tilemap);
 
@@ -200,7 +198,10 @@ MatchRoomInfo ClientProtocol::recvUpdateMatchRoom() {
         name.resize(length);
         socket.recvall(name.data(), sizeof(uint8_t) * length);  // nombre
         socket.recvall(&byte, sizeof(uint8_t));                 // team
-        list.push_back(PlayerInfoLobby(name, decodeTeam(byte)));
+        Team team = decodeTeam(byte);
+        socket.recvall(&byte, sizeof(uint8_t));
+        bool is_host = decodeBool(byte);
+        list.emplace_back(PlayerInfoLobby(name, team, is_host));
     }
     // recibo el booleano
     bool started = false;

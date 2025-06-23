@@ -6,10 +6,14 @@
 #include "SpriteComponent.h"
 
 class PlayerSpriteComponent: public SpriteComponent {
+private:
+    PlayerState state = PlayerState::Idle;
+
 public:
     void init(SpriteType type, PlayerState state, TypeWeapon weapon_type);
     void update(PlayerState state, TypeWeapon weapon_type);
     // void setTypeWeaponEquipped(TypeWeapon weapon_type);
+    PlayerState getState() const;
 };
 
 #endif  // PLAYERSPRITECOMPONENT_H

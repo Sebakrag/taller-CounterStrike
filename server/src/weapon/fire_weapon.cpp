@@ -4,17 +4,19 @@
 #include <iostream>
 #include <random>
 
-FireWeapon::FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision, float maxRange, float maxDamage):
-        Weapon_(damage, maxDamage), price(price), bullets(bullets), rateOfFire(rateOfFire),
-        lastShotTimeS(0), basePrecision(basePrecision), maxRange(maxRange), maxDamage(maxDamage) {}
+FireWeapon::FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision,
+                       float maxRange, float maxDamage):
+        Weapon_(damage, maxDamage),
+        price(price),
+        bullets(bullets),
+        rateOfFire(rateOfFire),
+        lastShotTimeS(0),
+        basePrecision(basePrecision),
+        maxRange(maxRange),
+        maxDamage(maxDamage) {}
 
 
 bool FireWeapon::canShoot(double currentTime) const {
-    if (bullets > 0)
-        std::cout << "balas ok" << std::endl;
-    std::cout << "currentTime:" << currentTime << std::endl;
-    std::cout << "lastShotTimeS:" << lastShotTimeS << std::endl;
-    std::cout << "getCooldownS:" << getCooldownS() << std::endl;
     return (bullets > 0) && ((currentTime - lastShotTimeS) >= getCooldownS());
 }
 
@@ -30,9 +32,7 @@ float FireWeapon::getBasePrecision() const { return basePrecision; }
 
 float FireWeapon::getMaxRange() const { return maxRange; }
 
-float FireWeapon::getMaxDamage() const {
-    return maxDamage;
-}
+float FireWeapon::getMaxDamage() const { return maxDamage; }
 
 int FireWeapon::calculateDamage(float distance) const {
     float factor = 1.0f - (distance / maxRange);

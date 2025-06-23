@@ -23,7 +23,7 @@ private:
     std::string myMatch;
     GameManager& gameManager;
     std::shared_ptr<Queue<GameInfo>> senderQueue;
-    Sender sender;
+    Sender* sender = nullptr;
     Receiver* receiver = nullptr;  // uso puntero para no tener que inicializarla en el constructor.
 
 public:

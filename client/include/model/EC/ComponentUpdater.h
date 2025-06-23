@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "common/dtos/EntitySnapshot.h"
+#include "../../../../common/dtos/EntitySnapshot.h"
 #include "components/SoundComponent.h"
 
 #include "ComponentManager.h"

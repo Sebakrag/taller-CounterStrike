@@ -17,8 +17,10 @@ private:
     void create_player_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
     void create_weapon_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
     void create_bullet_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
+    void create_bomb_entt(const Entity& new_entt, const EntitySnapshot& snap) const;
 
     void setPlayersComponentsCapacity(int numPlayers) const;
+    void setBombComponentsCapacity(int numBomb) const;
 
 public:
     EntityFactory(ComponentManager& cm, int numPlayers);
