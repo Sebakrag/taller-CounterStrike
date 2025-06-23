@@ -10,7 +10,7 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
         username(user_name),
         sender(protocol, send_queue),
         receiver(protocol, recv_queue) {
-    protocol.sendUserName(user_name);
+    // protocol.sendUserName(user_name);
     bool ok = protocol.recvConfirmation();
     if (!ok) {
         throw std::runtime_error(
