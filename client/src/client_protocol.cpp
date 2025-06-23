@@ -15,7 +15,7 @@
 ClientProtocol::ClientProtocol(const std::string& hostname, const std::string& servname,
                                const std::string& username):
         Protocol_(hostname, servname), username(username) {
-    // sendUserName(username);
+    sendUserName(username);
 }
 
 
@@ -39,7 +39,8 @@ void ClientProtocol::sendMenuAction(const MenuAction& action) {
         insertBigEndian16(length, buffer);
         insertStringBytes(action.name_match, buffer);
         if (action.type == Create) {
-            buffer.push_back(action.id_scenary);
+            insertBigEndian16(action.scenario_name.length(), buffer);
+            insertStringBytes(action.scenario_name, buffer);
         }
     }
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
@@ -101,7 +102,6 @@ MatchInfo ClientProtocol::recvMatchInfo() {
     uint16_t length = recvBigEndian16();
     name.resize(length);
     socket.recvall(name.data(), sizeof(uint8_t) * length);
-    std::cout << "nombre de la partida: " << name << std::endl;
     // recibo el window_config
     int window_width = recvBigEndian16();
     int window_heigth = recvBigEndian16();
@@ -119,7 +119,6 @@ MatchInfo ClientProtocol::recvMatchInfo() {
 
     // recibo el tilemap
     int size_buffer_tilemap = recvBigEndian32();
-    std::cout << "-> size del buffer del tilemap: " << size_buffer_tilemap << std::endl;
     std::vector<uint8_t> bytes_tilemap(size_buffer_tilemap);
     socket.recvall(bytes_tilemap.data(), sizeof(uint8_t) * size_buffer_tilemap);
 
@@ -227,4 +226,39 @@ GameInfo ClientProtocol::recvGameInfo() {
     } else {
         throw std::runtime_error("Error. Byte incorrecto");
     }
+}
+
+std::vector<std::string> ClientProtocol::recvListScenaries() {
+    std::string message;
+    uint8_t byte = 0;
+
+    int r = socket.recvall(&byte, sizeof(uint8_t));
+    if (r == 0) {
+        throw std::runtime_error(
+                "Error. No se recibió ningún byte. Probablemente se cerró el Server.");
+    }
+    if (byte != BYTE_SCENARIOS_LIST) {
+        throw std::runtime_error(
+                "Error. Se esperaba recibir la lista de escenarios y llegó otro mensaje.");
+    }
+
+    // recibo el length
+    uint16_t length = recvBigEndian16();
+
+    // recibo el string
+    message.resize(length);
+    socket.recvall(message.data(), sizeof(uint8_t) * length);
+
+    // Divido el mensaje por '\n' y retorno como vector
+    std::vector<std::string> scenarioNames;
+    std::stringstream ss(message);
+    std::string line;
+
+    while (std::getline(ss, line, '\n')) {
+        if (!line.empty()) {
+            scenarioNames.push_back(line);
+        }
+    }
+
+    return scenarioNames;
 }

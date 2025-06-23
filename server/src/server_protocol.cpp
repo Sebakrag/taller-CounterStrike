@@ -108,6 +108,18 @@ void ServerProtocol::sendGameInfo(const GameInfo& gameInfo) {
     socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
 }
 
+void ServerProtocol::sendListOfScenarios(const std::vector<std::string>& scenarios) {
+    std::vector<uint8_t> buffer;
+    buffer.push_back(BYTE_SCENARIOS_LIST);
+    std::string msg;
+    for (const auto& scenario: scenarios) {
+        msg += scenario + "\n";
+    }
+    insertBigEndian16(msg.length(), buffer);
+    insertStringBytes(msg, buffer);
+    socket.sendall(buffer.data(), sizeof(uint8_t) * buffer.size());
+}
+
 std::string ServerProtocol::recvUsername() {
     uint8_t byte = 0;
     socket.recvall(&byte, sizeof(uint8_t));
@@ -129,7 +141,7 @@ MenuAction ServerProtocol::recvMenuAction() {
 
     MenuActionType type = decodeMenuActionType(byte);
     std::string name = "";
-    int id_scenary = 0;
+    std::string scenario_name = "";
 
     if (type == Create || type == Join) {
         uint16_t length = recvBigEndian16();
@@ -137,11 +149,13 @@ MenuAction ServerProtocol::recvMenuAction() {
         socket.recvall(name.data(), sizeof(uint8_t) * length);
 
         if (type == Create) {
-            socket.recvall(&byte, sizeof(uint8_t));
-            id_scenary = byte;
+            // Recibir el nombre del escenario
+            uint16_t scenario_length = recvBigEndian16();
+            scenario_name.resize(scenario_length);
+            socket.recvall(scenario_name.data(), sizeof(uint8_t) * scenario_length);
         }
     }
-    return MenuAction(type, name, id_scenary);
+    return MenuAction(type, name, scenario_name);
 }
 
 

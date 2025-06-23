@@ -32,9 +32,10 @@ public:
 
     // Acciones en el menu principal
     void ExitGame();
-    bool CreateMatch(const std::string& match_name);
+    bool CreateMatch(const std::string& match_name, const std::string& scenario_name = "");
     void JoinMatch(const std::string& match_name);
     std::vector<std::string> refreshMatchList();
+    std::vector<std::string> getScenarioList();
 
     // Acciones en el lobby (antes de empezar la partida)
     void LeaveMatch();  // regresa la menú principal

@@ -38,6 +38,8 @@ enum class PlayerSkin {
     CounterTerrorist4
 };
 
+enum class TypeItem { Coin, Glock, Ak47, M3, Awp, Bomb };
+
 enum class TypeTileMap { Desert, Aztec, Training };
 
 struct PlayerInfoLobby {
@@ -49,6 +51,7 @@ struct PlayerInfoLobby {
     PlayerInfoLobby(const std::string& username, const Team team, bool is_player_host):
             username(username), team(team), is_player_host(is_player_host) {}
 };
+
 
 struct MatchRoomInfo {
     bool matchStarted;
@@ -62,16 +65,16 @@ struct MatchRoomInfo {
 // DTOs
 //--------
 // menu.
-enum MenuActionType { Exit, Create, Join, List };
+enum MenuActionType { Exit, Create, Join, List, ListScenarios };
 
 struct MenuAction {
     const MenuActionType type;
     const std::string name_match;
-    const int id_scenary = 0;
+    const std::string scenario_name = "";
 
     explicit MenuAction(MenuActionType type, const std::string& name_match = "",
-                        int id_scenary = 0):
-            type(type), name_match(name_match), id_scenary(id_scenary) {}
+                        const std::string& scenario_name = ""):
+            type(type), name_match(name_match), scenario_name(scenario_name) {}
 };
 
 // lobby
@@ -90,6 +93,7 @@ enum GameActionType {
     DefuseBomb,
     ExitMatch
 };
+
 
 struct GameAction {
     GameActionType type = Null;

@@ -28,13 +28,12 @@ void Client::ExitGame() {
         sender.kill();
         receiver.join();
         sender.join();
-        protocol.sendGameAction(GameAction(GameActionType::ExitMatch));
     }
     status = Disconnected;
 }
 
-bool Client::CreateMatch(const std::string& match_name) {
-    protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, 0));
+bool Client::CreateMatch(const std::string& match_name, const std::string& scenario_name) {
+    protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, scenario_name));
     bool created = protocol.recvConfirmation();
     if (created) {
         std::cout << "La partida se creó correctamente." << std::endl;
@@ -66,6 +65,12 @@ std::vector<std::string> Client::refreshMatchList() {
     //     std::cout << " - " << partida << std::endl;
     // }
     return list_matchs;
+}
+
+std::vector<std::string> Client::getScenarioList() {
+    protocol.sendMenuAction(MenuAction(MenuActionType::ListScenarios));
+    std::vector<std::string> scenario_list = protocol.recvListScenaries();
+    return scenario_list;
 }
 
 // in Lobby.
@@ -102,12 +107,6 @@ std::vector<PlayerInfoLobby> Client::refreshPlayersList() {
     MatchRoomInfo info = protocol.recvUpdateMatchRoom();
     if (info.matchStarted) {
         startThreads();
-    }
-    for (auto p: info.players) {
-        if (p.is_player_host) {
-            if (p.username == username)
-                player_creator = true;
-        }
     }
     return info.players;
 }
