@@ -568,7 +568,7 @@ void MapEditor::loadAvailableTiles()
         }
         
         // Ruta al tileset
-        QString tilesetPath = QString("client/assets/tiles/%1").arg(tilesetFile);
+        QString tilesetPath = QString("client/assets/gfx/tiles/%1").arg(tilesetFile);
         
         // Cortar el tileset en tiles individuales (32x32 pixeles)
         tilePixmaps = sliceTilesetImage(tilesetPath, 32, 32);
@@ -660,8 +660,8 @@ void MapEditor::loadAvailableTiles()
 // como parte de la simplificación para trabajar solo con tiles y armas
 
 void MapEditor::loadAvailableWeapons() {
-    // Ruta a los assets de armas en client/assets/weapons/
-    QString weaponsPath = "client/assets/weapons/";
+    // Ruta a los assets de armas en client/assets/gfx/weapons/
+    QString weaponsPath = "client/assets/gfx/weapons/";
     
     // Comprobar que el scroll area y el grupo de botones existen
     if (!weaponsScrollArea || !weaponButtons) {
