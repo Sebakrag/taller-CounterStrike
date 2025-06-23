@@ -7,7 +7,14 @@
 #include "client/include/model/EC/components/SoundComponent.h"
 #include "client/include/model/EC/components/TransformComponent.h"
 
-AudioSystem::AudioSystem(ComponentManager& cm, Mixer& m): comp_mgr(cm), mixer(m) {}
+namespace {
+constexpr float MAX_SOUND_DISTANCE =
+        600.0f;  // TODO: Quizas que lo podemos agregar al archivo de config del server.
+constexpr int MAX_SOUNDS_PER_FRAME = 10;  // Limite global de reproducción de sonidos por frame
+}  // namespace
+
+
+AudioSystem::AudioSystem(ComponentManager& cm, Audio& m): comp_mgr(cm), audio(m) {}
 
 void AudioSystem::update(const Vec2D& listenerPos) {
     int soundsPlayed = 0;
@@ -33,17 +40,16 @@ void AudioSystem::update(const Vec2D& listenerPos) {
                 auto it = activeLoops[e].find(ev);
                 if (it == activeLoops[e].end()) {
                     if (const auto chunk = sound_lib.get(ev)) {
-                        const int channel =
-                                mixer.PlayChannel(-1, *chunk, -1);  // -1 = loop infinito
-                        mixer.SetVolume(channel, volume);
+                        const int channel = audio.playLoopChannel(-1, *chunk);
+                        audio.setVolume(channel, volume);
                         activeLoops[e][ev] = channel;
                     }
                 }
             } else if (soundsPlayed < MAX_SOUNDS_PER_FRAME) {
                 // One-shot sound: solo reproducimos si no nos pasamos del límite global
                 if (const auto chunk = sound_lib.get(ev)) {
-                    const int channel = mixer.PlayChannel(-1, *chunk, 0);
-                    mixer.SetVolume(channel, volume);
+                    const int channel = audio.playChannel(-1, *chunk);
+                    audio.setVolume(channel, volume);
                     ++soundsPlayed;
                 }
             }
@@ -53,7 +59,7 @@ void AudioSystem::update(const Vec2D& listenerPos) {
         auto& prev = activeLoops[e];
         for (auto it = prev.begin(); it != prev.end();) {
             if (!currentLoops.contains(it->first)) {
-                mixer.HaltChannel(it->second);
+                audio.haltChannel(it->second);
                 it = prev.erase(it);
             } else {
                 ++it;
@@ -66,7 +72,7 @@ void AudioSystem::update(const Vec2D& listenerPos) {
     // Limpiamos entidades que ya no existen
     for (auto it = activeLoops.begin(); it != activeLoops.end();) {
         if (!entitiesWithSound.contains(it->first)) {
-            for (auto& [_, ch]: it->second) mixer.HaltChannel(ch);
+            for (auto& [_, ch]: it->second) audio.haltChannel(ch);
             it = activeLoops.erase(it);
         } else {
             ++it;

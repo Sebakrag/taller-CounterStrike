@@ -17,6 +17,7 @@
 #include "Map.h"
 
 class Graphics;
+class Audio;
 
 class World {
 private:
@@ -47,8 +48,8 @@ public:
     /// @param numPlayers number of players that will play the game match.
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// ///
-    World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
-          const LocalPlayerInfo& firstLocalPlayerSnap);
+    World(Graphics& graphics, Audio& audio, const TileMap& tileMap, const WindowConfig& winConfig,
+          int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap);
 
     void update(const GameInfo& gameInfo, float dt);
     void render();

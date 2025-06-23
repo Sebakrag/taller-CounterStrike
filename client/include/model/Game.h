@@ -5,6 +5,7 @@
 #include "../../../common/dtos/MatchInfo.h"
 #include "utils/EventHandler.h"
 
+#include "Audio.h"
 #include "Graphics.h"
 #include "Shop.h"
 #include "World.h"
@@ -19,7 +20,7 @@ private:
 
     Client& client;  // This is the connection with the server.
     Graphics graphics;
-    // Audio audio // Modulo encargado de ecapsular el audio del juego (Mixer, Music, etc.)
+    Audio audio;  // Modulo encargado de ecapsular el audio del juego (Mixer, Music, etc.)
     World world;
     Shop shop;
     EventHandler eventHandler;

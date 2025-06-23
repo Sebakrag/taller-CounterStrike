@@ -20,6 +20,7 @@ target_sources(taller_client
         src/ui/NameInputDialog.cpp
         src/ui/StyledMessageBox.cpp
         # model:
+        src/model/Audio.cpp
         src/model/Camera.cpp
         src/model/FieldOfView.cpp
         src/model/Game.cpp
@@ -72,6 +73,7 @@ target_sources(taller_client
         include/ui/StyledMessageBox.h
         include/ui/UIConstants.h
         # model:
+        include/model/Audio.h
         include/model/Camera.h
         include/model/FieldOfView.h
         include/model/Game.h

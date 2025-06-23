@@ -8,7 +8,7 @@
 Game::Game(Client& client, const MatchInfo& match_info):
         client(client),
         graphics(match_info.win_config, match_info.fovConfig, match_info.name),
-        world(graphics, match_info.tileMap, match_info.win_config, match_info.numPlayers,
+        world(graphics, audio, match_info.tileMap, match_info.win_config, match_info.numPlayers,
               match_info.localPlayerInfo),
         shop(graphics, match_info.shopInfo, SHOP_FONT_FILE_NAME, SHOP_FONT_SIZE),
         eventHandler(client, world, shop),
@@ -23,8 +23,11 @@ void Game::update(const float dt) {
 void Game::render() {
     graphics.clear();
     world.render();
-    if (gameInfo.gamePhase == GamePhase::Preparation)
+    if (gameInfo.gamePhase == GamePhase::Preparation) {
+        audio.haltAllChannels();
+        // audio.playMusic();
         shop.render();
+    }
     // graphics.renderMouse(); // El mouse debe ser lo ultimo que renderizamos.
     graphics.present();
 }
