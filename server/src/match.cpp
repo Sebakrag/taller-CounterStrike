@@ -220,7 +220,6 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             default:
                 std::cout << "Accion invalida en fase de preparacion\n";
                 break;
-
         }
     }
 }
@@ -273,13 +272,15 @@ void Match::updateState(double elapsedTime) {
 
             float impactDist;
             bool hitByPrecision = true;
-            //const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
+            // const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
             const std::unique_ptr<Weapon_> rawWeapon = WeaponFactory::create(proj.getWeaponUsed());
             auto* weapon = dynamic_cast<FireWeapon*>(rawWeapon.get());
-            if (!weapon) continue;
+            if (!weapon)
+                continue;
             Player* shooter = getPlayer(proj.getShooter());
 
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon, impactDist, hitByPrecision)) {
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon,
+                                             impactDist, hitByPrecision)) {
                 if (!hitByPrecision) {
                     proj.deactivate();
                     break;
@@ -466,7 +467,7 @@ void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
         float impactDistance;
         if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
                                     direction.getY(), target, impactDistance) &&
-                                    !isFriendlyFire(attacker->getId(), target.getTeam())) {
+            !isFriendlyFire(attacker->getId(), target.getTeam())) {
             Weapon_* knife = attacker->getEquippedWeaponInstance();
             int damage = knife->calculateDamage(0);
             target.takeDamage(damage);
@@ -524,7 +525,7 @@ void Match::advancePhase() {
         }
 
         // Desactivamos todos los proyectiles para que se dejen de renderizar
-        for (auto& proj : projectiles) {
+        for (auto& proj: projectiles) {
             if (proj.isActive())
                 proj.deactivate();
         }
@@ -597,20 +598,19 @@ void Match::rankPlayers() {
     std::sort(terrorists.begin(), terrorists.end(), compareByScore);
     std::sort(counterterrorists.begin(), counterterrorists.end(), compareByScore);
 
-    std::cout << "GANADOR: " << (roundWinner == Team::Terrorist ? "TERRORISTAS" : "ANTITERRORISTAS") << std::endl;
+    std::cout << "GANADOR: " << (roundWinner == Team::Terrorist ? "TERRORISTAS" : "ANTITERRORISTAS")
+              << std::endl;
 
     std::cout << "==> LEADERBOARD FINAL:\n";
     std::cout << "--- Terrorists ---\n";
-    for (const auto* p : terrorists) {
+    for (const auto* p: terrorists) {
         std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
-                  << ", Deaths: " << p->stats.deaths
-                  << ", Money: " << p->stats.moneyEarned << "\n";
+                  << ", Deaths: " << p->stats.deaths << ", Money: " << p->stats.moneyEarned << "\n";
     }
 
     std::cout << "--- Counter-Terrorists ---\n";
-    for (const auto* p : counterterrorists) {
+    for (const auto* p: counterterrorists) {
         std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
-                  << ", Deaths: " << p->stats.deaths
-                  << ", Money: " << p->stats.moneyEarned << "\n";
+                  << ", Deaths: " << p->stats.deaths << ", Money: " << p->stats.moneyEarned << "\n";
     }
 }

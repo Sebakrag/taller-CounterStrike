@@ -16,7 +16,8 @@
 
 GameInfo::GameInfo(GamePhase gamePhase, bool bombPlanted, int bombX, int bombY, float timeLeft,
                    const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
-                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items, const ShopInfo& shop):
+                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items,
+                   const ShopInfo& shop):
         gamePhase(gamePhase),
         bombPlanted(bombPlanted),
         bombX(bombX),

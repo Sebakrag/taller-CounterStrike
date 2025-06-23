@@ -7,14 +7,13 @@ Game::Game(Client& client, const MatchInfo& match_info):
         client(client),
         graphics(match_info.win_config, match_info.fovConfig, match_info.name),
         world(graphics, match_info.tileMap, match_info.win_config, match_info.numPlayers,
-              match_info.localPlayerInfo),
+              match_info.localPlayerInfo, match_info.shopInfo),
         eventHandler(client, world),
         is_running(true) {}
 
 void Game::update(const float dt) {
-    // Cuando refactoricemos getGameInfo para que devuelva un GameInfo tenemos que modificar
-    // esta funcion para decidir en que fase del juego nos encontramos.
-    world.update(dt, client.getGameInfo());
+    gameInfo = client.getGameInfo();
+    world.update(gameInfo, dt);
 }
 
 void Game::render() { graphics.render(world); }
@@ -43,7 +42,7 @@ void Game::start() {
         previous = current;
 
         // Lógica de juego (usa delta time)
-        eventHandler.handleEvents(is_running);
+        eventHandler.handleEvents(is_running, gameInfo.gamePhase);
         update(frame_time.count());  // en segundos. O quizas para actualizar las animaciones
                                      // deberia utilizar el clock del servidor?
         render();

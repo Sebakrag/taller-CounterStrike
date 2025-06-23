@@ -9,6 +9,7 @@
 #define TILE_SETS_PATH std::string("client/assets/gfx/tiles")
 #define WEAPON_PATH std::string("client/assets/gfx/weapons")
 #define HUD_PATH std::string("client/assets/gfx/hud")
+#define FONT_PATH std::string("client/assets/gfx/fonts")
 
 // Paths (sounds)
 #define PLAYER_SOUNDS_PATH std::string("client/assets/sfx/player")
@@ -77,6 +78,10 @@
     (RADIO_SOUNDS_PATH + "/bombpl.ogg")  // Mas que un sound es un mensaje que dice la radio
 #define BOMB_DEFUSED_SOUND (RADIO_SOUNDS_PATH + "/bombdef.ogg")
 #define GO_SOUND (RADIO_SOUNDS_PATH + "/go.ogg")
+
+// Shop
+#define SHOP_FONT_FILE_NAME (FONT_PATH + "OpenSans-Light.ttf")
+#define SHOP_FONT_SIZE 16
 
 
 #endif  // CLIENTCONSTANTS_H

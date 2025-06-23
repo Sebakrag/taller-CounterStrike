@@ -1,20 +1,21 @@
 #include "../include/shop.h"
 
-namespace { //Precios de armas y municiones
-    const std::unordered_map<Weapon, int> weaponPrices = {
+namespace {  // Precios de armas y municiones
+const std::unordered_map<Weapon, int> weaponPrices = {
         {Weapon::Ak47, 200},
         {Weapon::M3, 300},
         {Weapon::Awp, 450},
-    };
+};
 
-    const std::unordered_map<Weapon, int> ammoPrices = {
+const std::unordered_map<Weapon, int> ammoPrices = {
         {Weapon::Ak47, 20},
         {Weapon::M3, 30},
         {Weapon::Awp, 50},
-    };
-}
+};
+}  // namespace
 
-bool Shop::buyPrimaryWeapon(Player &player, Weapon weaponToBuy, std::vector<DroppedWeapon> &droppedWeapons) {
+bool Shop::buyPrimaryWeapon(Player& player, Weapon weaponToBuy,
+                            std::vector<DroppedWeapon>& droppedWeapons) {
     if (!weaponPrices.contains(weaponToBuy))
         return false;
 
@@ -22,13 +23,11 @@ bool Shop::buyPrimaryWeapon(Player &player, Weapon weaponToBuy, std::vector<Drop
     if (!player.spendMoney(price))
         return false;
 
-    //Drop del arma anterior
+    // Drop del arma anterior
     if (player.getPrimaryWeapon()) {
         if (player.getPrimaryWeapon()) {
-            droppedWeapons.emplace_back(
-                std::move(player.dropPrimaryWeapon()),
-                Vec2D(player.getX(), player.getY())
-                );
+            droppedWeapons.emplace_back(std::move(player.dropPrimaryWeapon()),
+                                        Vec2D(player.getX(), player.getY()));
         }
     }
 
@@ -58,6 +57,4 @@ bool Shop::buyAmmo(Player& player, Weapon selectedWeapon, int amount) {
     return true;
 }
 
-ShopInfo Shop::getInfo() {
-    return ShopInfo(weaponPrices, ammoPrices);
-}
+ShopInfo Shop::getInfo() { return ShopInfo(weaponPrices, ammoPrices); }

@@ -32,9 +32,9 @@ void PhysicsEngine::movePlayer(Player& player, float dirX, float dirY, float del
 }
 
 
-bool PhysicsEngine::shotHitPlayer(float projX, float projY,
-                                  const Player& shooter,
-                                  const Player& target, const FireWeapon& weapon, float& impactDistance, bool& hitByPrecision) {
+bool PhysicsEngine::shotHitPlayer(float projX, float projY, const Player& shooter,
+                                  const Player& target, const FireWeapon& weapon,
+                                  float& impactDistance, bool& hitByPrecision) {
     static std::default_random_engine rng(std::random_device{}());
     static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
@@ -51,14 +51,17 @@ bool PhysicsEngine::shotHitPlayer(float projX, float projY,
         float dyShooter = target.getY() - shooter.getY();
         impactDistance = std::sqrt(dxShooter * dxShooter + dyShooter * dyShooter);
 
-        float precision = calculatePrecisionByDistance(impactDistance, weapon.getMaxRange(), weapon.getBasePrecision());
+        float precision = calculatePrecisionByDistance(impactDistance, weapon.getMaxRange(),
+                                                       weapon.getBasePrecision());
         float roll = dist(rng);
 
         if (roll <= precision) {
-            std::cout << "Disparo ACERTADO  - distancia: " << impactDistance <<  " - precision: " << precision << ", roll: " << roll << std::endl;
+            std::cout << "Disparo ACERTADO  - distancia: " << impactDistance
+                      << " - precision: " << precision << ", roll: " << roll << std::endl;
             hitByPrecision = true;
         } else {
-            std::cout << "Disparo FALLADO - distancia: " << impactDistance <<  " - precision: " << precision << ", roll: " << roll << std::endl;
+            std::cout << "Disparo FALLADO - distancia: " << impactDistance
+                      << " - precision: " << precision << ", roll: " << roll << std::endl;
             hitByPrecision = false;
         }
         return true;
@@ -77,7 +80,8 @@ float PhysicsEngine::calculatePrecisionByDistance(float distance, float maxRange
         return 0.0f;
 
     float factor = 1.0f - (distance / maxRange);
-    float adjustedFactor = std::max(factor, 0.3f);  // No baja de 0.25 mientras esté dentro del alcance
+    float adjustedFactor =
+            std::max(factor, 0.3f);  // No baja de 0.25 mientras esté dentro del alcance
     return basePrecision * adjustedFactor;
 }
 

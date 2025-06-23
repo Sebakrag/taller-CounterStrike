@@ -21,7 +21,7 @@ private:
     // Audio audio // Modulo encargado de ecapsular el audio del juego (Mixer, Music, etc.)
     World world;
     EventHandler eventHandler;
-    GameInfo gameInfo;  // TODO: Quizas solo necesitamos guardar el GamePhase.
+    GameInfo gameInfo;  // TODO: quizas solo nos alcanza con GamePhase.
 
     bool is_running;
     void update(float dt);

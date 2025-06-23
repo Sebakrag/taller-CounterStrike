@@ -12,7 +12,7 @@ std::unordered_map<SpriteType, std::shared_ptr<Texture>> TextureManager::texture
 
 void TextureManager::init(Renderer& ren) {
     // Players textures
-    const Color playerColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
+    constexpr Color playerColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
     loadTexture(ren, SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
     loadTexture(ren, SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);
@@ -23,7 +23,7 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::FRENCH_GIGN, FRENCH_GIGN_IMG, playerColorKey);
 
     // Weapons textures
-    const Color weaponColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
+    constexpr Color weaponColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::AK47, AK47_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::AWP, AWP_IMG, weaponColorKey);
     loadTexture(ren, SpriteType::GLOCK, GLOCK_IMG, weaponColorKey);
@@ -37,7 +37,7 @@ void TextureManager::init(Renderer& ren) {
     loadTexture(ren, SpriteType::AZTEC_MAP, AZTEC_TILE_SET_IMG);
 
     // HUD textures:
-    const Color hudColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
+    constexpr Color hudColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
     loadTexture(ren, SpriteType::HUD_NUMBERS, HUD_NUMS, hudColorKey);
     loadTexture(ren, SpriteType::HUD_SYMBOLS, HUD_SYMB, hudColorKey);
 }

@@ -11,9 +11,9 @@
 #include "weapon/projectile.h"
 
 #include "map.h"
-#include "shop.h"
 #include "physics_engine.h"
 #include "player.h"
+#include "shop.h"
 #include "types2.h"
 
 class Match {

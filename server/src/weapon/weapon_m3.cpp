@@ -14,7 +14,8 @@ float WeaponM3::MAX_RANGE = 0;
 int WeaponM3::MAX_DAMAGE = 0;
 
 
-void WeaponM3::init(int damage, float price, int bullets, int rate_of_fire, float precision, float max_range, int max_damage) {
+void WeaponM3::init(int damage, float price, int bullets, int rate_of_fire, float precision,
+                    float max_range, int max_damage) {
     if (initialized == false) {
         DAMAGE = damage;
         PRICE = price;
@@ -28,7 +29,9 @@ void WeaponM3::init(int damage, float price, int bullets, int rate_of_fire, floa
 }
 //------------
 
-WeaponM3::WeaponM3(): FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE, MAX_DAMAGE) {}
+WeaponM3::WeaponM3():
+        FireWeapon(DAMAGE, PRICE, INITIAL_BULLETS, RATE_OF_FIRE, PRECISION, MAX_RANGE, MAX_DAMAGE) {
+}
 
 Weapon WeaponM3::getWeaponType() const { return Weapon::M3; }
 

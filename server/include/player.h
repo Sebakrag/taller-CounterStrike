@@ -11,9 +11,9 @@
 #include "../../common/types.h"
 #include "weapon/weapon.h"
 #include "weapon/weapon_factory.h"
-#include "types2.h"
 
 #include "id_generator.h"
+#include "types2.h"
 
 class Player {
 private:

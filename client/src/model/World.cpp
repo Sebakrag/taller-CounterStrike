@@ -1,40 +1,53 @@
 #include "../../../client/include/model/World.h"
 
-#include <vector>
-
 #include "../../../client/include/model/EC/components/TransformComponent.h"
+#include "client/client_constants.h"
 
 World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig,
-             const int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap):
+             const int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap,
+             const ShopInfo& shopInfo):
+        gamePhase(GamePhase::Preparation),
         entt_mgr(comp_mgr, numPlayers),
         comp_updater(entt_mgr, comp_mgr),
         map(tileMap, graphics),
         camera(winConfig.width, winConfig.height, tileMap.getColCount(), tileMap.getRowCount()),
+        shop(graphics, shopInfo, SHOP_FONT_FILE_NAME, SHOP_FONT_SIZE),
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
         render_sys(local_player),
         audio_sys(comp_mgr, graphics.getMixer()) {}
 
 
-void World::update(float dt, const GameInfo& gameInfo) {
+void World::update(const GameInfo& gameInfo, const float dt) {
     if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
-    // gameInfo.print();
-    // std::cout << "hay " << gameInfo.bullets.size() << " balas en el mapa" << std::endl;
-    // for (auto b: gameInfo.bullets) {
-    //     b.print();
-    // }
-    currentWeapon = gameInfo.localPlayer.weapon;
-    local_player_pos = gameInfo.localPlayer.position;
+    gamePhase = gameInfo.gamePhase;
+    switch (gamePhase) {
+        case GamePhase::Combat: {
+            currentWeapon = gameInfo.localPlayer.weapon;
+            local_player_pos = gameInfo.localPlayer.position;
 
-    comp_updater.update(gameInfo.getSnapshots());
+            comp_updater.update(gameInfo.getSnapshots());
+
+            audio_sys.update(local_player_pos);  // Play the sound effects.
+            break;
+        }
+        case GamePhase::Preparation: {
+            // Si estamos en la fase de preparacion tengo que ponerle play a la musica.
+            // Puedo crear una abstraccion Audio.
+            // Creo que seria lo mismo para GamePhase::EndOfMatch.
+            break;
+        }
+        default:
+            break;
+    }
 
     player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
-
-    audio_sys.update(local_player_pos);  // Play the sound effects.
 }
 
 void World::render(Graphics& graphics) {
+    // TODO: podriamos guardar el angulo de rotacion del player como miembro de World asi
+    /// desacoplamos a World completamente de TransformComponent.
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-    // std::cout << playerPos << std::endl;
+
     camera.follow(local_player_pos);
 
     map.render2(graphics, camera);
@@ -44,6 +57,10 @@ void World::render(Graphics& graphics) {
     render_sys.renderEntities(graphics, comp_mgr, camera, player_FOV);
 
     player_HUD.render(graphics);
+
+    if (gamePhase == GamePhase::Preparation) {
+        shop.render();
+    }
 }
 
 AimInfo World::getPlayerAimInfo(const int mouseX, const int mouseY) {

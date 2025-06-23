@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
+
 #include "../types.h"
 
 struct ShopInfo {
