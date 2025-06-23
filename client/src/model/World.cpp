@@ -18,7 +18,7 @@ World::World(Graphics& graphics, Audio& audio, const TileMap& tileMap,
 
 
 void World::update(const GameInfo& gameInfo, const float dt) {
-    if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
+    if (dt == 1) {}  // TODO: dt sirve para las animaciones.
     gamePhase = gameInfo.gamePhase;
     if (gamePhase == GamePhase::Combat) {
         currentWeapon = gameInfo.localPlayer.weapon;
@@ -35,6 +35,7 @@ void World::update(const GameInfo& gameInfo, const float dt) {
 void World::render() {
     // TODO: podriamos guardar el angulo de rotacion del player como miembro de World asi
     /// desacoplamos a World completamente de TransformComponent.
+    /// Atencion: el angulo tiene que estar en degrees para el renderizado!!
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
 
     camera.follow(local_player_pos);

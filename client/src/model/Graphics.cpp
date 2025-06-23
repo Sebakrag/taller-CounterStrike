@@ -3,7 +3,6 @@
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
-#include "../../../client/client_constants.h"
 #include "../../../client/include/model/World.h"
 #include "../../../client/include/model/utils/DynamicStencil.h"
 #include "../../../client/include/model/utils/TextureManager.h"

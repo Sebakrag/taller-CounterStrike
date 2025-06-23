@@ -1,6 +1,7 @@
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -46,8 +47,8 @@ public:
 
     MatchInfo getMatchInfo();
 
-    GameInfo getGameInfo();     // sync
-    GameInfo tryGetGameInfo();  // Async
+    GameInfo getGameInfo();                    // sync
+    std::optional<GameInfo> tryGetGameInfo();  // Async
 
     // GameActions (pushea en la sender_queue internamente)
     void move(const Vec2D& direction);

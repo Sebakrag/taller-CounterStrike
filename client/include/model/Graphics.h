@@ -33,7 +33,6 @@ private:
     Window window;
     Renderer renderer;
     // Mouse mouse;  // TODO: crear un mouse con textura y renderizarlo despues del mundo.
-    // TODO: puedo encapsular todo lo relacionado al audio del juego en una clase Audio.
 
     Window create_window(const WindowConfig& config, const std::string& match_name) const;
     Renderer create_renderer(Window& window);

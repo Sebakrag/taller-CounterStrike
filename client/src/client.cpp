@@ -126,10 +126,12 @@ GameInfo Client::getGameInfo() {
     return g;
 }
 
-GameInfo Client::tryGetGameInfo() {
+std::optional<GameInfo> Client::tryGetGameInfo() {
     GameInfo g;
-    recv_queue.try_pop(g);  // o pop(). Tener en cuenta si la interfaz debe esperar o seguir igual
-    return g;
+    // o pop(). Tener en cuenta si la interfaz debe esperar o seguir igual
+    if (recv_queue.try_pop(g))
+        return g;
+    return std::nullopt;
 }
 
 void Client::move(const Vec2D& direction) {

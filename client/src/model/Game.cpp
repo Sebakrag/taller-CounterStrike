@@ -15,9 +15,18 @@ Game::Game(Client& client, const MatchInfo& match_info):
         is_running(true) {}
 
 void Game::update(const float dt) {
-    gameInfo = client.getGameInfo();
-    world.update(gameInfo, dt);
-    switch (gameInfo.gamePhase) {
+    // Es importante que la comunicacion con el server sea asincronica.
+    // El cliente debe poder renderizar sin todavia haber recibido informacion del servidor.
+    // De esta forma independizamos los FPS del gameloop del cliente del tickrate del servidor.
+    auto maybeNewGameInfo = client.tryGetGameInfo();
+    if (maybeNewGameInfo.has_value()) {
+        GameInfo gameInfo(maybeNewGameInfo.value());
+        world.update(gameInfo, dt);
+        currGamePhase = gameInfo.gamePhase;
+    }
+
+    // switch (gameInfo.gamePhase) {
+    switch (currGamePhase) {
         case GamePhase::Combat:
             if (audio.isMusicPlaying())
                 audio.haltMusic();
@@ -35,7 +44,10 @@ void Game::update(const float dt) {
 void Game::render() {
     graphics.clear();
     world.render();
-    if (gameInfo.gamePhase == GamePhase::Preparation) {
+    // if (gameInfo.gamePhase == GamePhase::Preparation) {
+    //     shop.render();
+    // }
+    if (currGamePhase == GamePhase::Preparation) {
         shop.render();
     }
     // graphics.renderMouse(); // El mouse debe ser lo ultimo que renderizamos.
@@ -66,10 +78,19 @@ void Game::start() {
         previous = current;
 
         // Lógica de juego (usa delta time)
-        eventHandler.handleEvents(is_running, gameInfo.gamePhase);
+        // eventHandler.handleEvents(is_running, gameInfo.gamePhase);
+        eventHandler.handleEvents(is_running, currGamePhase);
+        auto start = std::chrono::steady_clock::now();
         update(frame_time.count());  // en segundos. O quizas para actualizar las animaciones
                                      // deberia utilizar el clock del servidor?
+        auto afterUpdate = std::chrono::steady_clock::now();
         render();
+        auto afterRender = std::chrono::steady_clock::now();
+        std::cout << "[Update took]: "
+                  << std::chrono::duration<float>(afterUpdate - start).count() * 1000 << " ms\n";
+        std::cout << "[Render took]: "
+                  << std::chrono::duration<float>(afterRender - afterUpdate).count() * 1000
+                  << " ms\n";
 
         // Esperar el tiempo restante del frame
         const auto post_logic = clock::now();
