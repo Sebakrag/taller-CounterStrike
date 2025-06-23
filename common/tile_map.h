@@ -80,6 +80,9 @@ public:
      * no hay problema en perder esa información).
      */
     std::vector<uint8_t> toBytes() const;
+
+    const std::map<Vec2D, Weapon>& getWeaponPositions() const { return weaponPositions; }
+
 };
 
 

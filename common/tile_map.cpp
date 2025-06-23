@@ -94,7 +94,7 @@ TileMap::TileMap(const std::vector<uint8_t>& buffer) {
     row_count = Protocol_::getBigEndian32(buffer[1], buffer[2], buffer[3], buffer[4]);
     col_count = Protocol_::getBigEndian32(buffer[5], buffer[6], buffer[7], buffer[8]);
 
-    if (size != row_count * col_count + 9) {
+    if (size < row_count * col_count + 9) {
         throw std::runtime_error("ERROR. No se pudo construir el TileMap."
                                  "El buffer no corresponde a un TileMap válido.");
     }
@@ -127,6 +127,7 @@ std::vector<uint8_t> TileMap::toBytes() const {
             buffer.push_back((uint8_t)matriz[i][j].getIdTile());
         }
     }
+    
     return buffer;
 }
 

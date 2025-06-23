@@ -1,5 +1,5 @@
 #include "../include/client_handler.h"
-
+#include "../include/scenario_registry.h"
 #include <iostream>
 #include <list>
 #include <memory>
@@ -96,10 +96,22 @@ std::string ClientHandler::getUsername() { return username; }
 void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
     bool aux = false;
     switch (menuAction.type) {
-        case MenuActionType::Create:
-            aux = gameManager.createMatch(menuAction.name_match, username, senderQueue, "demo");
+        case MenuActionType::Create: {
+            std::string selectedScenario = menuAction.scenario_name;
+            
+            if (!ScenarioRegistry::existsScenario(selectedScenario)) {
+                ScenarioRegistry::loadMapFromYaml(selectedScenario);       
+            }
+            
+            if (ScenarioRegistry::existsScenario(selectedScenario)) {
+                aux = gameManager.createMatch(menuAction.name_match, username, senderQueue, selectedScenario);
+            } else {
+                aux = gameManager.createMatch(menuAction.name_match, username, senderQueue, "demo");
+            }
+            
             protocol.sendConfirmation(aux);
             break;
+        }
         case MenuActionType::Join:
             aux = gameManager.JoinMatch(menuAction.name_match, username, senderQueue);
             protocol.sendConfirmation(aux);
@@ -107,6 +119,11 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
         case MenuActionType::List: {
             std::list<std::string> matchs_list = gameManager.listMatchs();
             protocol.sendListOfMatchs(matchs_list);
+            break;
+        }
+        case MenuActionType::ListScenarios: {
+            std::vector<std::string> scenarios = ScenarioRegistry::listAvailableMaps();
+            protocol.sendListOfScenarios(scenarios);
             break;
         }
         case MenuActionType::Exit:
@@ -133,6 +150,7 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             gameManager.QuitMatch(myMatch, username);
             myMatch = "";
             status = InMenu;
+            protocol.sendConfirmation(true);
             break;
         case LobbyAction::StartMatch: {
             bool ok = gameManager.StartMatch(username, myMatch);
