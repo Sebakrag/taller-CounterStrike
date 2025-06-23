@@ -7,6 +7,7 @@
 #include <climits>
 #include <fstream>
 #include "mapElements.h"
+#include "./common/constants.h"
 
 bool YamlHandler::saveMapToYaml(const QString &fileName, 
                                 const QList<MapElement*> &elements, 
@@ -165,9 +166,10 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
                     qWarning() << "No se encontró nombre para el arma con ID:" << weaponId;
                     out << YAML::Key << "type" << YAML::Value << weaponId;
                 }
-                
+
+               
                 out << YAML::Key << "position" << YAML::Value << YAML::Flow << YAML::BeginSeq 
-                    << weapon->getPosition().x() << weapon->getPosition().y() << YAML::EndSeq;
+                    << (weapon->getPosition().x())*TILE_SIZE+TILE_SIZE/2 << (weapon->getPosition().y())*TILE_SIZE+TILE_SIZE/2 << YAML::EndSeq;
                 out << YAML::EndMap;
             }
             out << YAML::EndSeq;

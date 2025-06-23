@@ -39,9 +39,6 @@ Match::Match(const std::string& id_scenario):
     // droppedWeapons.emplace_back(DroppedWeapon{std::move(bomb), {300, 300}});
 
     const auto& weaponPositions = map.getWeaponPositions();
-    
-    std::cout << "Match creado con escenario: " << id_scenario << std::endl;
-    std::cout << "Cantidad de armas en el escenario: " << weaponPositions.size() << std::endl;
     for (const auto& weaponPair : weaponPositions) {
         const Vec2D& position = weaponPair.first;
         Weapon weaponType = weaponPair.second;
