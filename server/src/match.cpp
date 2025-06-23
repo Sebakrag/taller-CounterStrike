@@ -212,7 +212,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 break;
             }
             case GameActionType::BuyAmmo: {
-                if (!Shop::buyAmmo(*player, gameAction.weapon, gameAction.count_ammo)) {
+                if (!Shop::buyAmmo(*player, gameAction.ammoType, gameAction.count_ammo)) {
                     std::cout << "Compra de munición fallida. Revise su saldo\n";
                 }
                 break;
@@ -448,7 +448,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
     }
 
     return GameInfo(this->phase, bomb.isPlanted(), bomb.getX(), bomb.getY(), timeLeft,
-                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo, Shop::getInfo());
+                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo);
 }
 
 // void Match::showPlayers() const {

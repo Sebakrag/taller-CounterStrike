@@ -65,9 +65,11 @@ void ClientProtocol::sendGameAction(const GameAction& gameAction) {
 
     if (gameAction.type == BuyWeapon) {
         buffer.push_back(encodeWeapon(gameAction.weapon));
-    } else if (gameAction.type == BuyAmmo || gameAction.type == ChangeWeapon) {
-        buffer.push_back(encodeTypeWeapon(gameAction.typeWeapon));
+    } else if (gameAction.type == BuyAmmo) {
+        buffer.push_back(encodeAmmoType(gameAction.ammoType));
         insertBigEndian16(gameAction.count_ammo, buffer);
+    } else if (gameAction.type == ChangeWeapon) {
+        buffer.push_back(encodeTypeWeapon(gameAction.typeWeapon));
     } else if (gameAction.type == Attack || gameAction.type == Walk) {
         insertFloatNormalized3Bytes(gameAction.direction.getX(), buffer);
         insertFloatNormalized3Bytes(gameAction.direction.getY(), buffer);

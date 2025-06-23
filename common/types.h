@@ -94,7 +94,8 @@ enum GameActionType {
 
 struct GameAction {
     GameActionType type = Null;
-    Weapon weapon = Weapon::None;               // rellenar si se quiere comprar una.
+    Weapon weapon = Weapon::None;  // rellenar si se quiere comprar una.
+    AmmoType ammoType = AmmoType::None;
     TypeWeapon typeWeapon = TypeWeapon::Knife;  // rellenar si se quiere cambiar o comprar municion.
     int count_ammo = 0;                         // rellenar si quiere comprar municion
     Vec2D direction;
@@ -104,8 +105,11 @@ struct GameAction {
     explicit GameAction(GameActionType type, Weapon weapon = Weapon::Glock):
             type(type), weapon(weapon) {}
 
-    explicit GameAction(GameActionType type, TypeWeapon typeWeapon, int count_ammo = 0):
-            type(type), typeWeapon(typeWeapon), count_ammo(count_ammo) {}
+    explicit GameAction(GameActionType type, AmmoType ammoType, int count_ammo = 0):
+            type(type), ammoType(ammoType), count_ammo(count_ammo) {}
+
+    explicit GameAction(GameActionType type, TypeWeapon typeWeapon):
+            type(type), typeWeapon(typeWeapon) {}
 
     explicit GameAction(GameActionType type, const Vec2D& direction):
             type(type), direction(direction) {}

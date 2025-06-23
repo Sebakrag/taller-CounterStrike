@@ -132,6 +132,8 @@ Weapon_* Player::getEquippedWeaponInstance() const {
 
 Weapon_* Player::getPrimaryWeapon() const { return primaryWeapon.get(); }
 
+Weapon_* Player::getSecondaryWeapon() const { return secondaryWeapon.get(); }
+
 bool Player::isAlive() const { return state != PlayerState::Dead; }
 
 bool Player::canShoot(double currentTime) const {

@@ -15,7 +15,7 @@ class Shop {
 public:
     static bool buyPrimaryWeapon(Player& player, Weapon weaponToBuy,
                                  std::vector<DroppedWeapon>& droppedWeapons);
-    static bool buyAmmo(Player& player, Weapon selectedWeapon, int amount);
+    static bool buyAmmo(Player& player, AmmoType selectedWeapon, int amount);
     static ShopInfo getInfo();
 };
 

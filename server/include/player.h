@@ -60,6 +60,7 @@ public:
     TypeWeapon getEquippedWeapon() const;
     Weapon getSpecificEquippedWeapon() const;
     Weapon_* getPrimaryWeapon() const;
+    Weapon_* getSecondaryWeapon() const;
     bool isAlive() const;
     bool canShoot(double currentTime) const;
     void takeDamage(int dmg);

@@ -50,7 +50,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                           bytes.begin() + index + SIZE_LOCAL_PLAYER_INFO);
     localPlayer = LocalPlayerInfo(localPlayerBytes);
     index += SIZE_LOCAL_PLAYER_INFO;
-    localPlayer.print();
+    // localPlayer.print();
     // cargo snapshot
     const auto x = localPlayer.position.getX();
     const auto y = localPlayer.position.getY();
@@ -72,7 +72,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> playerBytes(bytes.begin() + index, bytes.begin() + index + size);
 
         PlayerInfo p(playerBytes);
-        p.print();
+        // p.print();
         // otherPlayers.emplace_back(p);
         const float x = p.position.getX();
         const float y = p.position.getY();

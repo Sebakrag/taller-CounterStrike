@@ -25,11 +25,13 @@ void EventHandler::handleEvents(bool& gameIsRunning, const GamePhase gamePhase) 
 
                     switch (selection) {
                         case ShopSelection::WeaponSelected:
+                            std::cout << "[COMPRO ARMA]" << std::endl;
                             // TODO: implementar el metodo de cliente
                             // client.buyWeapon(shop.getSelectedWeapon());
                             break;
                         case ShopSelection::PrimaryAmmoSelected:
                         case ShopSelection::SecondaryAmmoSelected:
+                            std::cout << "[COMPRO BALAS]" << std::endl;
                             // TODO: implementar el metodo de cliente
                             // client.buyAmmo(shop.getSelectedAmmoType());
                             break;
@@ -37,7 +39,7 @@ void EventHandler::handleEvents(bool& gameIsRunning, const GamePhase gamePhase) 
                             break;
                     }
 
-                    shop.resetSelection();
+                    // shop.resetSelection();
                 }
             }
             return;  // Evitamos manejar cualquier otro evento en fase preparacion
