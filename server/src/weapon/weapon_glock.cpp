@@ -40,6 +40,6 @@ std::vector<Projectile> WeaponGlock::shoot(float posX, float posY, float dirX, f
     lastShotTimeS = currentTime;
     bullets--;
 
-    Projectile p(posX, posY, dirX, dirY, 500.0f, 1000.0f, shooter, Weapon::Glock);
+    Projectile p(posX, posY, dirX, dirY, 500.0f, maxRange, shooter, Weapon::Glock);
     return {p};
 }

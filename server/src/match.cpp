@@ -272,6 +272,11 @@ void Match::updateState(double elapsedTime) {
 
         proj.update(static_cast<float>(elapsedTime));
 
+        if (proj.hasExceededRange()) {
+            proj.deactivate();
+            continue;
+        }
+
         for (auto& target: players) {
             if (target.getId() == proj.getShooter() || !target.isAlive())
                 continue;
