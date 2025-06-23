@@ -4,6 +4,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <list>
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
@@ -27,7 +28,7 @@ private:
     bool roundOver = false;
     Team roundWinner;
     std::vector<Projectile> projectiles;
-    std::vector<DroppedWeapon> droppedWeapons;
+    std::list<DroppedWeapon> droppedWeapons;
     Bomb bomb;
 
     double current_time = 0;  // (en ms) se incrementa en cada update

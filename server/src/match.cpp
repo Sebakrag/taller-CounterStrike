@@ -160,13 +160,11 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             }
 
             case GameActionType::PickUp: {
-                std::cout << "recibí pick up" << std::endl;
                 for (auto it = droppedWeapons.begin(); it != droppedWeapons.end(); ++it) {
                     if (!it->weapon ) continue;
                     if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(),
                                                           it->position.getX(),
                                                           it->position.getY())) {
-
                         // Drop de arma equipada
                         if (player->getPrimaryWeapon()) {
                             std::unique_ptr<Weapon_> droppedWeapon = player->dropPrimaryWeapon();
@@ -175,6 +173,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                                                         Vec2D(player->getX(), player->getY()));
                         }
 
+                        // pickup del nueva arma
                         player->setPrimaryWeapon(std::move(it->weapon));
                         player->setState(PlayerState::PickingUp);
                         droppedWeapons.erase(it);
@@ -272,10 +271,14 @@ void Match::updateState(double elapsedTime) {
                 }
 
                 if (!target.isAlive()) {
+                    std::cout << "Target murio, dropea arma" << std::endl;
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
-                    if (droppedWeapon != nullptr)
+                    std::cout << "Arma a dropear por muerte: " << droppedWeapon << std::endl;
+                    if (droppedWeapon != nullptr) {
+                        std::cout << "Agrego arma al vector " << droppedWeapon << std::endl;
                         droppedWeapons.emplace_back(std::move(droppedWeapon),
                                                     Vec2D(target.getX(), target.getY()));
+                    }
                     if (bomb.isCarriedBy(target.getId())) {
                         bomb.drop(target.getX(), target.getY());
                     }
