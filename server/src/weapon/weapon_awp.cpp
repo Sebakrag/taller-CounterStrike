@@ -42,6 +42,6 @@ std::vector<Projectile> WeaponAwp::shoot(float posX, float posY, float dirX, flo
     lastShotTimeS = currentTime;
     bullets--;
 
-    Projectile p(posX, posY, dirX, dirY, 600.0f, 2000.0f, shooter, Weapon::Awp);
+    Projectile p(posX, posY, dirX, dirY, 600.0f, maxRange, shooter, Weapon::Awp);
     return {p};
 }

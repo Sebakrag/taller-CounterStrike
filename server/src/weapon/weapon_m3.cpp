@@ -52,7 +52,7 @@ std::vector<Projectile> WeaponM3::shoot(float posX, float posY, float dirX, floa
         float angleOffset = (i - numPellets / 2) * spreadAngle;
         float newDirX = dirX * std::cos(angleOffset) - dirY * std::sin(angleOffset);
         float newDirY = dirX * std::sin(angleOffset) + dirY * std::cos(angleOffset);
-        Projectile p(posX, posY, newDirX, newDirY, 400.0f, 500.0f, shooter, Weapon::M3);
+        Projectile p(posX, posY, newDirX, newDirY, 400.0f, maxRange, shooter, Weapon::M3);
         projectiles.push_back(p);
     }
 

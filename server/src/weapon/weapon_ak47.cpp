@@ -70,7 +70,7 @@ std::vector<Projectile> WeaponAk47::shoot(float posX, float posY, float dirX, fl
         float spawnY = posY - normDirY * offsetFactor;
 
         // Projectile p(posX, posY, dirX, dirY, 450.0f, 900.0f, shooter, Weapon::Ak47);
-        Projectile p(spawnX, spawnY, dirX, dirY, 450.0f, 900.0f, shooter, Weapon::Ak47);
+        Projectile p(spawnX, spawnY, dirX, dirY, 450.0f, maxRange, shooter, Weapon::Ak47);
         projectiles.push_back(p);
     }
 
