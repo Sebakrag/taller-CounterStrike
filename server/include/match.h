@@ -12,6 +12,7 @@
 #include "weapon/projectile.h"
 
 #include "map.h"
+#include "shop.h"
 #include "physics_engine.h"
 #include "player.h"
 #include "types2.h"
@@ -33,6 +34,11 @@ private:
 
     double current_time = 0;  // (en ms) se incrementa en cada update
 
+    // static constexpr int MAX_ROUNDS = 10;
+    // static constexpr double PREPARATION_TIME = 30.0;
+    static constexpr float BASE_MONEY_BONUS = 300.0f;
+    static constexpr float KILL_BONUS = 10.0f;
+    static constexpr float WIN_BONUS = 100.0f;
 
 public:
     explicit Match(const std::string& id_scenario);
@@ -72,6 +78,7 @@ private:
     void handleKnifeAttack(Player* attacker, const Vec2D& direction);
     void setPosSpawnPlayer(Player& p);
     bool isFriendlyFire(const std::string& shooterId, Team targetTeam) const;
+    void rankPlayers();
 
 
     // CONSTANTES static para inicializar en server.cpp.

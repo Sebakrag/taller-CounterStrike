@@ -40,7 +40,6 @@ Player::Player(const std::string& name, const Team team, const Vec2D& position):
         equippedWeapon(TypeWeapon::Knife),
         id_weapon(knife->getServerId()),
         money(INITIAL_MONEY),
-        kills(0),
         skinT(PlayerSkin::Terrorist3),
         skinCT(PlayerSkin::CounterTerrorist3) {
     std::cout << "Server ID del Player: " << serverId << std::endl;
@@ -168,6 +167,7 @@ void Player::takeDamage(int dmg) {
     if (health <= 0) {
         health = 0;
         state = PlayerState::Dead;
+        stats.registerDeath();
     }
 }
 
@@ -198,6 +198,19 @@ void Player::revive() {
 void Player::setTeam(Team newTeam) { team = newTeam; }
 
 void Player::setState(PlayerState newState) { state = newState; }
+
+bool Player::spendMoney(int amount) {
+    if (money >= amount) {
+        money -= amount;
+        return true;
+    }
+    return false;
+}
+
+void Player::addMoney(int amount) {
+    money += amount;
+    stats.addMoney(amount);
+}
 
 LocalPlayerInfo Player::generateLocalPlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;

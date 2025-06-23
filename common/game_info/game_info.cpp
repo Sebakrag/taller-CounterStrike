@@ -16,14 +16,15 @@
 
 GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float timeLeft,
                    const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
-                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items):
+                   const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items, const ShopInfo& shop):
         gamePhase(gamePhase),
         bomb(bomb),
         timeLeft(timeLeft),
         localPlayer(localPlayer),
         otherPlayers(otherPlayers),
         bullets(bullets),
-        weapons(items) {}
+        weapons(items),
+        shop(shop) {}
 
 // TODO: modularizar. (Hacer 4 metodos privados)
 GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
@@ -117,6 +118,9 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         entities.emplace_back(entity);
         index += SIZE_ITEM_INFO;
     }
+
+    std::vector<uint8_t> shopBytes(bytes.begin() + index, bytes.end());
+    shop = ShopInfo(shopBytes);
 }
 
 std::vector<uint8_t> GameInfo::toBytes() const {
@@ -161,6 +165,9 @@ std::vector<uint8_t> GameInfo::toBytes() const {
         auto item_bytes = item.toBytes();
         buffer.insert(buffer.end(), item_bytes.begin(), item_bytes.end());
     }
+
+    std::vector<uint8_t> shopBytes = shop.toBytes();
+    buffer.insert(buffer.end(), shopBytes.begin(), shopBytes.end());
 
     return buffer;
 }

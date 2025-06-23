@@ -25,10 +25,11 @@ private:
     static int RATE_OF_FIRE;
     static float PRECISION;
     static float MAX_RANGE;
+    static int MAX_DAMAGE;
 
 public:
     // Para cargar los valores del config.yaml
-    static void init(int damage, int bullets, int rate_of_fire, float precision, float max_range);
+    static void init(int damage, int bullets, int rate_of_fire, float precision, float max_range, int max_damage);
 };
 
 #endif
