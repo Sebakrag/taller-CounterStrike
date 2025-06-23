@@ -568,7 +568,7 @@ void MapEditor::loadAvailableTiles()
         }
         
         // Ruta al tileset
-        QString tilesetPath = QString("../client/assets/tiles/%1").arg(tilesetFile);
+        QString tilesetPath = QString("/client/assets/tiles/%1").arg(tilesetFile);
         
         // Cortar el tileset en tiles individuales (32x32 pixeles)
         tilePixmaps = sliceTilesetImage(tilesetPath, 32, 32);
@@ -661,7 +661,7 @@ void MapEditor::loadAvailableTiles()
 
 void MapEditor::loadAvailableWeapons() {
     // Ruta a los assets de armas en client/assets/weapons/
-    QString weaponsPath = "../client/assets/weapons/";
+    QString weaponsPath = "/client/assets/weapons/";
     
     // Comprobar que el scroll area y el grupo de botones existen
     if (!weaponsScrollArea || !weaponButtons) {
@@ -1181,117 +1181,6 @@ QString MapEditor::obtenerNombreArchivo()
     }
 }
 
-// Método para cargar un mapa
-void MapEditor::loadMapClicked()
-{
-    // Verificar que exista el directorio server/maps
-    QDir currentDir(QDir::current());
-    QString serverDir = "../server/";
-    QString mapsPath = serverDir + "maps/";
-    
-    qDebug() << "Buscando directorio para cargar mapas:" << currentDir.absolutePath();
-    
-    // Primero verificar que existe la carpeta server
-    if (!currentDir.exists(serverDir)) {
-        qDebug() << "La carpeta server no existe. Intentando crear carpeta server.";
-        bool created = currentDir.mkdir(serverDir);
-        qDebug() << "Creando directorio server:" << (created ? "Éxito" : "Fallo");
-    }
-    
-    // Ahora intentar crear maps dentro de server si no existe
-    if (!currentDir.exists(mapsPath)) {
-        bool created = currentDir.mkpath(mapsPath); // mkpath crea directorios recursivamente si es necesario
-        qDebug() << "Creando directorio server/maps:" << (created ? "Éxito" : "Fallo");
-    }
-    
-    // Obtener la ruta absoluta para mostrar en el diálogo
-    QString absoluteMapsPath = currentDir.absoluteFilePath(mapsPath);
-    qDebug() << "Directorio de mapas para cargar:" << absoluteMapsPath;
-    
-    QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Abrir Mapa"), absoluteMapsPath, tr("Archivos YAML (*.yaml)"));
-        
-    if (!fileName.isEmpty()) {
-        loadMapFromFile(fileName);
-    }
-}
-
-// Método para cargar un mapa desde un archivo
-void MapEditor::loadMapFromFile(const QString &fileName)
-{
-    // Limpiar la escena actual
-    QList<QGraphicsItem*> itemsToRemove;
-    foreach (QGraphicsItem *item, scene->items()) {
-        if (dynamic_cast<DragAndDrop*>(item)) {
-            itemsToRemove.append(item);
-        }
-        // También eliminar tiles (son QGraphicsPixmapItem con zValue -0.5)
-        else if (QGraphicsItem* pixmapItem = dynamic_cast<QGraphicsItem*>(item)) {
-            if (pixmapItem->zValue() == -0.5 && dynamic_cast<TileItem*>(pixmapItem)) {
-                itemsToRemove.append(item);
-            }
-        }
-    }
-    
-    // Eliminar elementos manteniendo el fondo
-    foreach (QGraphicsItem *item, itemsToRemove) {
-        scene->removeItem(item);
-        delete item;
-    }
-    
-    // Limpiar el mapa de tiles colocados
-    placedTiles.clear();
-    
-    QList<MapElement*> elements;
-    int terrainType;
-    QString mapName;
-    
-    // Cargar el mapa usando YamlHandler
-    if (YamlHandler::loadMapFromYaml(fileName, elements, terrainType, mapName)) {
-        // Actualizar el tipo de terreno
-        currentTerrainType = terrainType;
-        currentMapName = mapName;
-        backgroundSelection(terrainType);
-        
-        // Crear elementos gráficos para cada elemento del mapa
-        foreach (MapElement *element, elements) {
-            // Si es un tile, procesarlo diferente
-            if (element->getType() == TILE) {
-                Tile *tile = dynamic_cast<Tile*>(element);
-                if (tile && tile->getTileId() >= 0 && tilePixmaps.contains(tile->getTileId())) {
-                    // Obtener la posición de la cuadrícula
-                    QPoint gridPos = getTileGridPosition(tile->getPosition());
-                    
-                    // Colocar el tile en esa posición
-                    TileItem* tileItem = new TileItem(tilePixmaps[tile->getTileId()], tile->getTileId(), QString("Tile_%1").arg(tile->getTileId()), scene);
-                    tileItem->setPos(gridPos.x() * 32, gridPos.y() * 32);
-                    tileItem->setZValue(-0.5);
-                    scene->addItem(tileItem);
-                    
-                    // Guardar la referencia del tile colocado
-                    placedTiles[QPair<int, int>(gridPos.x(), gridPos.y())] = tile->getTileId();
-                    
-                    qDebug() << "Cargando tile" << tile->getTileId() << "en posición" << gridPos.x() << "," << gridPos.y();
-                }
-            } else {
-                // Procesar otros elementos normalmente
-                DragAndDrop *item = createDragAndDropItem(element);
-                if (item) {
-                    scene->addItem(item);
-                }
-            }
-        }
-        
-        // Liberar memoria de los elementos cargados
-        qDeleteAll(elements);
-        elements.clear();
-        
-        QMessageBox::information(this, "Carga Exitosa", "El mapa ha sido cargado correctamente");
-    } else {
-        QMessageBox::critical(this, "Error", "No se pudo cargar el mapa");
-    }
-} //TODO: DELETE
-
 // Método para validar que el mapa cumpla con los requisitos
 bool MapEditor::validateMap()
 {
@@ -1572,7 +1461,7 @@ void MapEditor::preloadMapWithBaseTile()
     
     // Obtener el primer tile (ID 1) como tile base para precargar
     // Si no existe el ID 1, usar el primer tile disponible
-    int baseTileId = 4;
+    int baseTileId = 25;
     if (!tilePixmaps.contains(baseTileId)) {
         baseTileId = tilePixmaps.firstKey();
     }

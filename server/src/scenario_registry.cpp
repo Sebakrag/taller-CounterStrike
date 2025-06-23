@@ -53,6 +53,7 @@ std::vector<std::string> ScenarioRegistry::listAvailableMaps(const std::string& 
         std::filesystem::path dirPath(mapsDirectory);
         
         if (!std::filesystem::exists(dirPath)) {
+            std::cerr << "ERROR - El directorio de mapas no existe: '" << dirPath.string() << "'" << std::endl;
             return availableMaps;
         }
         
@@ -62,6 +63,9 @@ std::vector<std::string> ScenarioRegistry::listAvailableMaps(const std::string& 
                 availableMaps.push_back(mapName);
             }
         }
+
+        std::cerr << "DEBUG - Mapas disponibles en '" << mapsDirectory << "':\n";
+
     } catch (const std::exception& e) {
     }
     
@@ -95,8 +99,10 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
             // Convertir string a TypeTileMap (puedes expandir según los tipos disponibles)
             if (mapTypeStr == "Desert") {
                 mapType = TypeTileMap::Desert;
-            } else if (mapTypeStr == "Game") {
-                mapType = TypeTileMap::Desert;
+            } else if (mapTypeStr == "Aztec") {
+                mapType = TypeTileMap::Aztec;
+            } else if (mapTypeStr == "Training") {
+                mapType = TypeTileMap::Training;
             }
         }
         
@@ -133,7 +139,7 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
                         // Convertir string a TypeTile
                         if (typeStr == "solid") {
                             type = TypeTile::Solid;
-                        } else if (typeStr == "empty") {
+                        } else if (typeStr == "") {
                             type = TypeTile::None;
                         } else if (typeStr == "ct_zone") {
                             type = TypeTile::CT_Zone;

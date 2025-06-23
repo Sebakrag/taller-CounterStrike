@@ -6,8 +6,8 @@
 
 // Paths (graphics)
 #define PLAYER_PATH std::string("client/assets/gfx/player")
-#define TILE_SETS_PATH std::string("client/assets/gfx/tiles")
-#define WEAPON_PATH std::string("client/assets/gfx/weapons")
+#define TILE_SETS_PATH std::string("client/assets/tiles")
+#define WEAPON_PATH std::string("client/assets/weapons")
 #define HUD_PATH std::string("client/assets/gfx/hud")
 
 // Paths (sounds)

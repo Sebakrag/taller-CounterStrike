@@ -13,18 +13,5 @@ public:
                              int terrainType,
                              const QString &mapName);
     
-    // Cargar mapa desde archivo YAML
-    static bool loadMapFromYaml(const QString &fileName, 
-                               QList<MapElement*> &elements, 
-                               int &terrainType,
-                               QString &mapName); //TODO: DELETE
-    
 private:
-    // Métodos auxiliares para serialización
-    static void serializeWeapon(YAML::Emitter &out, const Weapon *weapon);
-    static void serializeTile(YAML::Emitter &out, const Tile *tile);
-    
-    // Métodos auxiliares para deserialización
-    static Weapon* deserializeWeapon(const YAML::Node &node);
-    static Tile* deserializeTile(const YAML::Node &node);
 };
