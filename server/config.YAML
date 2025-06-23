@@ -5,7 +5,7 @@ match_room:
 
 match:
   round_duration: 10 # duración máxima de la ronda en segundos
-  preparation_time: 30 # tiempo para la fase de preparación o previa de la ronda (tiempo de tienda)
+  preparation_time: 15 # tiempo para la fase de preparación o previa de la ronda (tiempo de tienda)
   max_rounds: 10 # cantidad de rondas de la partida
 
 player:

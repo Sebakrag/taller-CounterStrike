@@ -17,6 +17,18 @@ Game::Game(Client& client, const MatchInfo& match_info):
 void Game::update(const float dt) {
     gameInfo = client.getGameInfo();
     world.update(gameInfo, dt);
+    switch (gameInfo.gamePhase) {
+        case GamePhase::Combat:
+            if (audio.isMusicPlaying())
+                audio.haltMusic();
+            break;
+        case GamePhase::Preparation:
+        case GamePhase::EndOfMatch:
+            audio.haltAllChannels();
+            if (!audio.isMusicPlaying())
+                audio.playLoopMusic(0.5);
+            break;
+    }
     // graphics.updateMouse();
 }
 
@@ -24,8 +36,6 @@ void Game::render() {
     graphics.clear();
     world.render();
     if (gameInfo.gamePhase == GamePhase::Preparation) {
-        audio.haltAllChannels();
-        // audio.playMusic();
         shop.render();
     }
     // graphics.renderMouse(); // El mouse debe ser lo ultimo que renderizamos.

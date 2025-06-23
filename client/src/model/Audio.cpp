@@ -1,5 +1,7 @@
 #include "client/include/model/Audio.h"
 
+#include "client/client_constants.h"
+
 namespace {
 constexpr int MAX_CHANNELS_ALLOCATED = 64;
 }  // namespace
@@ -7,7 +9,8 @@ constexpr int MAX_CHANNELS_ALLOCATED = 64;
 
 Audio::Audio():
         sdl_mixer(MIX_INIT_OGG),
-        mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) {
+        mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096),
+        music(SHOP_MUSIC_FILE_NAME) {
     mixer.AllocateChannels(MAX_CHANNELS_ALLOCATED);
 }
 
@@ -28,3 +31,14 @@ void Audio::haltChannel(const int channel) { mixer.HaltChannel(channel); }
 void Audio::haltAllChannels() {
     mixer.HaltChannel(-1);  // -1 to halt all channels.
 }
+
+void Audio::playLoopMusic(const float vol_percentage) {
+    setMusicVolume(MIX_MAX_VOLUME * vol_percentage);
+    mixer.PlayMusic(music, -1);  // -1 = loop infinito
+}
+
+int Audio::setMusicVolume(const int volume) { return mixer.SetMusicVolume(volume); }
+
+void Audio::haltMusic() { mixer.HaltMusic(); }
+
+bool Audio::isMusicPlaying() const { return mixer.IsMusicPlaying(); }
