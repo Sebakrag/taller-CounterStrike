@@ -99,5 +99,6 @@
 #define BYTE_MATCH_LIST 0xC1    // server envía al cliente
 #define BYTE_PLAYERS_LIST 0xC2  // server envía al cliente
 #define BYTE_GAME_INFO 0xC3
+#define BYTE_SCENARIOS_LIST 0xC4
 
 #endif  // CONSTANTS_PROTOCOL_H_

@@ -29,6 +29,13 @@ public:
 
     static const WindowConfig& getWindowConfig();
     static const FOVConfig& getFovConfig();
+
+    // Método para listar los archivos YAML de mapas disponibles
+    static std::vector<std::string> listAvailableMaps(const std::string& mapsDirectory = "../maps");
+
+    // Método para cargar los mapas disponibles
+    static void loadAvailableMaps(const std::string& mapsDirectory = "../maps");
+    
 };
 
 #endif  // SCENARIO_REGISTRY_H_

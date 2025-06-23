@@ -20,7 +20,7 @@ public:
 
     void sendUserName(const std::string& username);
 
-    void recvListScenaries();
+    std::vector<std::string> recvListScenaries();
 
     MatchInfo recvMatchInfo();
     /**

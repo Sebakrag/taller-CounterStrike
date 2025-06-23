@@ -62,16 +62,16 @@ struct MatchRoomInfo {
 // DTOs
 //--------
 // menu.
-enum MenuActionType { Exit, Create, Join, List };
+enum MenuActionType { Exit, Create, Join, List, ListScenarios };
 
 struct MenuAction {
     const MenuActionType type;
     const std::string name_match;
-    const int id_scenary = 0;
+    const std::string scenario_name = "";
 
     explicit MenuAction(MenuActionType type, const std::string& name_match = "",
-                        int id_scenary = 0):
-            type(type), name_match(name_match), id_scenary(id_scenary) {}
+                        const std::string& scenario_name = ""):
+            type(type), name_match(name_match), scenario_name(scenario_name) {}
 };
 
 // lobby

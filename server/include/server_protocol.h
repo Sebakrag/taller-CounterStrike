@@ -31,6 +31,8 @@ public:
 
     void sendGameInfo(const GameInfo& gameInfo);
 
+    void sendListOfScenarios(const std::vector<std::string>& scenarios);
+
     std::string recvUsername();
 
     MenuAction recvMenuAction();
