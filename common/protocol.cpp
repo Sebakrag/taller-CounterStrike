@@ -209,6 +209,10 @@ uint8_t Protocol_::encodeWeapon(const Weapon& weapon) {
             return BYTE_WEAPON_M3;
         case Weapon::Awp:
             return BYTE_WEAPON_AWP;
+        case Weapon::Knife:
+            return BYTE_WEAPON_KNIFE;
+        case Weapon::Bomb:
+            return BYTE_WEAPON_BOMB;
         default:
             return BYTE_WEAPON_NONE;  // Valor predeterminado en caso de error
     }
@@ -344,39 +348,6 @@ uint8_t Protocol_::encodePlayerSkin(const PlayerSkin& playerSkin) {
     }
 }
 
-uint8_t Protocol_::encodeTypeItem(const TypeItem& typeItem) {
-    switch (typeItem) {
-        case TypeItem::Coin:
-            return BYTE_ITEM_COIN;
-        case TypeItem::Glock:
-            return BYTE_ITEM_GLOCK;
-        case TypeItem::Ak47:
-            return BYTE_ITEM_AK47;
-        case TypeItem::M3:
-            return BYTE_ITEM_M3;
-        case TypeItem::Awp:
-            return BYTE_ITEM_AWP;
-        case TypeItem::Bomb:
-            return BYTE_ITEM_BOMB;
-        default:
-            throw std::runtime_error("Error. Tipo de item desconocido. No se puede codificar");
-    }
-}
-
-uint8_t Protocol_::encodeEntityType(const EntityType& entityType) {
-    switch (entityType) {
-        case EntityType::PLAYER:
-            return 1;
-        case EntityType::WEAPON:
-            return 2;
-        case EntityType::BULLET:
-            return 3;
-        case EntityType::BOMB:
-            return 4;
-        default:
-            throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede codificar");
-    }
-}
 
 uint8_t Protocol_::encodeTypeTileMap(const TypeTileMap& type) {
     if (type == TypeTileMap::Aztec)
@@ -387,6 +358,24 @@ uint8_t Protocol_::encodeTypeTileMap(const TypeTileMap& type) {
         return BYTE_MAP_TRAINING;
 }
 
+uint8_t Protocol_::encodeBombState(const BombState& state) {
+    switch (state) {
+        case BombState::Dropped:
+            return BYTE_BOMB_DROPPED;
+        case BombState::Equipped:
+            return BYTE_BOMB_EQUIPPED;
+        case BombState::Hidden:
+            return BYTE_BOMB_HIDDEN;
+        case BombState::Planted:
+            return BYTE_BOMB_PLANTED;
+        case BombState::Exploded:
+            return BYTE_BOMB_EXPLODED;
+        case BombState::Defused:
+            return BYTE_BOMB_DEFUSED;
+        default:
+            throw std::runtime_error("Error. Estado de bomba desconocido. No se puede codificar");
+    }
+}
 
 // Decodificadores.
 //----------------------------------------------------------------------------------
@@ -425,6 +414,10 @@ Weapon Protocol_::decodeWeapon(uint8_t byte) {
             return Weapon::M3;
         case BYTE_WEAPON_AWP:
             return Weapon::Awp;
+        case BYTE_WEAPON_KNIFE:
+            return Weapon::Knife;
+        case BYTE_WEAPON_BOMB:
+            return Weapon::Bomb;
         default:
             throw std::runtime_error("Error. Arma desconocida. No se puede decodificar");
     }
@@ -561,40 +554,6 @@ PlayerSkin Protocol_::decodePlayerSkin(uint8_t byte) {
     }
 }
 
-TypeItem Protocol_::decodeTypeItem(uint8_t byte) {
-    switch (byte) {
-        case BYTE_ITEM_COIN:
-            return TypeItem::Coin;
-        case BYTE_ITEM_GLOCK:
-            return TypeItem::Glock;
-        case BYTE_ITEM_AK47:
-            return TypeItem::Ak47;
-        case BYTE_ITEM_M3:
-            return TypeItem::M3;
-        case BYTE_ITEM_AWP:
-            return TypeItem::Awp;
-        case BYTE_ITEM_BOMB:
-            return TypeItem::Bomb;
-        default:
-            throw std::runtime_error("Error. Tipo de item desconocido. No se puede decodificar");
-    }
-}
-
-EntityType Protocol_::decodeEntityType(uint8_t byte) {
-    switch (byte) {
-        case 1:
-            return EntityType::PLAYER;
-        case 2:
-            return EntityType::WEAPON;
-        case 3:
-            return EntityType::BULLET;
-        case 4:
-            return EntityType::BOMB;
-        default:
-            throw std::runtime_error("Error. Tipo de entidad desconocido. No se puede decodificar");
-    }
-}
-
 TypeTileMap Protocol_::decodeTypeTileMap(uint8_t byte) {
     switch (byte) {
         case BYTE_MAP_AZTEC:
@@ -608,5 +567,23 @@ TypeTileMap Protocol_::decodeTypeTileMap(uint8_t byte) {
     }
 }
 
+BombState Protocol_::decodeBombState(uint8_t byte) {
+    switch (byte) {
+        case BYTE_BOMB_DROPPED:
+            return BombState::Dropped;
+        case BYTE_BOMB_EQUIPPED:
+            return BombState::Equipped;
+        case BYTE_BOMB_HIDDEN:
+            return BombState::Hidden;
+        case BYTE_BOMB_PLANTED:
+            return BombState::Planted;
+        case BYTE_BOMB_EXPLODED:
+            return BombState::Exploded;
+        case BYTE_BOMB_DEFUSED:
+            return BombState::Defused;
+        default:
+            throw std::runtime_error("Error. Estado de bomba desconcido. No se puede decodificar");
+    }
+}
 
 void Protocol_::shutDown(int how) { socket.shutdown(how); }

@@ -45,7 +45,7 @@ std::vector<uint8_t> WeaponInfo::toBytes() const {
     buffer.push_back(Protocol_::encodeWeaponState(state));
     // ammo (2bytes)
     Protocol_::insertBigEndian16(ammo, buffer);
-    // pos (2 bytes cada uno)
+    // pos (4 bytes cada uno)
     Protocol_::insertFloat4Bytes(pos_x, buffer);
     Protocol_::insertFloat4Bytes(pos_y, buffer);
 
@@ -65,8 +65,6 @@ SpriteType WeaponInfo::getSpriteType() {
             return SpriteType::M3;
         case Weapon::Awp:
             return SpriteType::AWP;
-        case Weapon::Bomb:
-            return SpriteType::BOMB;
         default:
             throw std::runtime_error("Falla en WeaponInfo::getSpriteType()");
     }

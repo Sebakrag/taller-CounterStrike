@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <vector>
 
@@ -63,11 +64,14 @@ bool Match::addPlayer(const std::string& username) {
 }
 
 void Match::removePlayer(const std::string& username) {
-    for (auto& p: players) {
-        if (p.getId() == username) {
-            // players.erase(std::find(players.begin(), players.end(), p));
+    for (auto it = players.begin(); it != players.end(); ++it) {
+        if (it->getId() == username) {
+            std::cout << "Jugador " << username << " eliminado del partido." << std::endl;
+            players.erase(it);
+            return;
         }
     }
+    std::cout << "Jugador " << username << " no encontrado en match." << std::endl;
 }
 
 Player* Match::getPlayer(const std::string& playerName) {
@@ -103,7 +107,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
     Player* player = getPlayer(action.player_username);
     if (!player || !player->isAlive())
         return;
-    player->setState(PlayerState::Idle);
+    // player->setState(PlayerState::Idle);
 
     GameAction gameAction = action.gameAction;
     if (phase == GamePhase::Combat) {
@@ -156,19 +160,20 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             }
 
             case GameActionType::PickUp: {
-                std::cout << "recibí pick up" << std::endl;
                 for (auto it = droppedWeapons.begin(); it != droppedWeapons.end(); ++it) {
+                    if (!it->weapon ) continue;
                     if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(),
                                                           it->position.getX(),
                                                           it->position.getY())) {
-                        std::cout << "toqué un arma dropeada!" << std::endl;
                         // Drop de arma equipada
                         if (player->getPrimaryWeapon()) {
-                            droppedWeapons.emplace_back(std::move(player->dropPrimaryWeapon()),
+                            std::unique_ptr<Weapon_> droppedWeapon = player->dropPrimaryWeapon();
+                            if (droppedWeapon == nullptr) continue;
+                            droppedWeapons.emplace_back(std::move(droppedWeapon),
                                                         Vec2D(player->getX(), player->getY()));
                         }
 
-                        // Pickup arma dropeada
+                        // pickup del nueva arma
                         player->setPrimaryWeapon(std::move(it->weapon));
                         player->setState(PlayerState::PickingUp);
                         droppedWeapons.erase(it);
@@ -181,7 +186,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                                                       bomb.getY())) {
                     if (player->getTeam() == Team::Terrorist) {
                         bomb.pickUp(player->getId());
-                        std::cout << "Jugador " << player->getId() << " agarro la bomba. \n";
+                        player->setBomb(&bomb);
                     }
                 }
                 return;
@@ -191,10 +196,10 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 player->setAngle(action.gameAction.angle);
                 break;
             }
-            case GameActionType::PlantBomb: {
-                processPlant(action.player_username);
-                break;
-            }
+            // case GameActionType::PlantBomb: {
+            //     processPlant(action.player_username);
+            //     break;
+            // }
             case GameActionType::DefuseBomb: {
                 processDefuse(action.player_username);
                 break;
@@ -290,13 +295,16 @@ void Match::updateState(double elapsedTime) {
                 }
 
                 if (!target.isAlive()) {
+                    // actualizo las estadisticas
                     shooter->stats.registerKill();
                     shooter->addMoney(KILL_BONUS);
 
+                    // Dropeo su arma
                     std::unique_ptr<Weapon_> droppedWeapon = target.dropPrimaryWeapon();
-                    if (droppedWeapon)
+                    if (droppedWeapon != nullptr) {
                         droppedWeapons.emplace_back(std::move(droppedWeapon),
                                                     Vec2D(target.getX(), target.getY()));
+                    }
                     if (bomb.isCarriedBy(target.getId())) {
                         bomb.drop(target.getX(), target.getY());
                     }
@@ -326,11 +334,13 @@ void Match::processPlant(const std::string& playerName) {
     Player* player = getPlayer(playerName);
     if (!player || !player->isAlive() || player->getTeam() != Team::Terrorist)
         return;
-
+    std::cout << playerName << " intenta colocar la bomba" << std::endl;
     if (!bomb.isCarriedBy(playerName))
         return;
 
     if (bomb.plant(player->getX(), player->getY(), map)) {
+        player->setBomb(nullptr);
+        player->setEquippedWeapon(TypeWeapon::Primary);
         std::cout << "Player " << playerName << " planted the bomb at (" << player->getX() << ", "
                   << player->getY() << ")\n";
     }
@@ -420,17 +430,39 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         } else {
             playersInfo.emplace_back(p.generatePlayerInfo());
         }
-        // cargo info del arma equipada.
-        WeaponInfo w(p.getEquippedWeaponInstance()->generateWeaponInfo(WeaponState::EQUIPPED));
-        weaponsInfo.emplace_back(w);
+        // TODO: Creo que es innecesario
+        // if (bomb.isCarried()) {
+        //     if (bomb.getCarrierId() == p.getId()) {
+        //         // cargo información de la bomba
+        //         if (p.getEquippedWeapon() == TypeWeapon::Bomb) {
+        //             weaponsInfo.emplace_back(bomb.generateWeaponInfo(BombState::Equipped));
+        //         } else {
+        //             weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::HIDDEN));
+        //         }
+        //     }
+        // }
+
+        // cargo info del arma equipada. (si tiene la bomba ya se cargó)
+        if (p.getEquippedWeapon() != TypeWeapon::Bomb) {
+            auto weapon_ptr = p.getEquippedWeaponInstance();
+            if (weapon_ptr == nullptr) {
+                continue;
+            }
+            WeaponInfo w(weapon_ptr->generateWeaponInfo(WeaponState::EQUIPPED));
+            weaponsInfo.emplace_back(w);
+        }
 
         if (p.getEquippedWeapon() != TypeWeapon::Primary) {
-            // cargo info del primary weapon como hidden.
+            // cargo info del primary weapon como hidden si no la está usando.
             Weapon_* p_weapon = p.getPrimaryWeapon();
             if (p_weapon != nullptr)
                 weaponsInfo.emplace_back(p_weapon->generateWeaponInfo(WeaponState::HIDDEN));
         }
     }
+    // si la bomba está dropeda cargo esta información.
+    // if (bomb.isDropped()) {
+    //     weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::DROPPED));
+    // }
     // cargo bullets
     for (auto& p: projectiles) {
         bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
@@ -446,7 +478,8 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         timeLeft = bomb.getTimer();
     }
 
-    return GameInfo(this->phase, bomb.isPlanted(), bomb.getX(), bomb.getY(), timeLeft,
+
+    return GameInfo(this->phase, bomb.generateBombInfo(), timeLeft,
                     localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo, Shop::getInfo());
 }
 
@@ -466,6 +499,7 @@ void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
         float impactDistance;
         if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
                                     direction.getY(), target, impactDistance) &&
+
                                     !isFriendlyFire(attacker->getId(), target.getTeam())) {
             Weapon_* knife = attacker->getEquippedWeaponInstance();
             int damage = knife->calculateDamage(0);
@@ -479,6 +513,9 @@ void Match::advancePhase() {
         std::cout << "==> INICIA RONDA " << roundsPlayed + 1 << "\n";
 
         // Limpieza entre rondas
+        for (auto& p : players) {
+            p.setBomb(nullptr);
+        }
         bomb.reset();
         projectiles.clear();
         // droppedWeapons.clear(); // esto puede ser mejor mantenerlas
@@ -502,6 +539,7 @@ void Match::advancePhase() {
             std::uniform_int_distribution<> dis(0, terrorists.size() - 1);
             Player* bombCarrier = terrorists[dis(gen)];
             bomb.assignTo(bombCarrier->getId());
+            bombCarrier->setBomb(&bomb);
             std::cout << "La bomba fue asignada a: " << bombCarrier->getId() << "\n";
         }
 
@@ -574,6 +612,13 @@ bool Match::isFriendlyFire(const std::string& shooterId, Team targetTeam) const 
 
     const Player& shooter = *it;
     return shooter.getTeam() == targetTeam;
+}
+
+void Match::resetStatesOfPlayers() {
+    for (auto& player: players) {
+        if (player.isAlive())
+            player.setState(PlayerState::Idle);
+    }
 }
 
 void Match::rankPlayers() {

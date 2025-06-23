@@ -5,7 +5,12 @@ enum class SoundEvent {
     None,
     // Player sounds
     Walk,
-    Shoot,
+    // Shoot,//sacar shoot solo.
+    ShootAK47,
+    ShootAWP,
+    ShootM3,
+    ShootGlock,
+    KnifeSlash,
     ChangeWeapon,
     Die,
     PickUpWeapon,

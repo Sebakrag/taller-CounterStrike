@@ -32,6 +32,7 @@ private:
     Entity local_player;  // This is the actual player that interacts with his own program.
     Weapon currentWeapon = Weapon::Knife;  // para consultar en EventHandler
     Vec2D local_player_pos;
+    // Entity bomb; // TODO: Reconozco a la bomba?
 
     HUD player_HUD;
     RenderSystem render_sys;

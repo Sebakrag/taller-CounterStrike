@@ -49,8 +49,14 @@ Player::Player(const std::string& name, const Team team, const Vec2D& position):
 
 void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {
     primaryWeapon = std::move(weapon);
-    if (equippedWeapon == TypeWeapon::Primary) {
+    if (primaryWeapon && equippedWeapon == TypeWeapon::Primary) {
         id_weapon = primaryWeapon->getServerId();
+    }
+}
+void Player::setBomb(Bomb* _bomb) {
+    bomb = _bomb;
+    if (_bomb == nullptr) {
+        setEquippedWeapon(TypeWeapon::Secondary);
     }
 }
 
@@ -58,22 +64,28 @@ void Player::setEquippedWeapon(TypeWeapon type) {
 
     switch (type) {
         case TypeWeapon::Primary:
-            if (primaryWeapon == nullptr) {  // si no tiene una, no cambio
+            if (primaryWeapon == nullptr) {
                 return;
             }
             id_weapon = primaryWeapon->getServerId();
+            if (bomb != nullptr)
+                bomb->hide();
             break;
         case TypeWeapon::Secondary:
             id_weapon = secondaryWeapon->getServerId();
+            if (bomb != nullptr)
+                bomb->hide();
             break;
         case TypeWeapon::Bomb:
-            // if (bomb == nullptr) { // si no tiene una, no cambio
-            //     return;
-            // }
-            //  id_weapon = knife->getServerId(); // TODO: id para la bomba.
+            if (bomb == nullptr)  // si no tiene una, no cambio
+                return;
+            bomb->equip();
+            id_weapon = bomb->getServerId();
             break;
         case TypeWeapon::Knife:
             id_weapon = knife->getServerId();
+            if (bomb != nullptr)
+                bomb->hide();
             break;
         default:
             break;
@@ -163,18 +175,24 @@ std::vector<Projectile> Player::shoot(float dirX, float dirY, double currentTime
     Weapon_* weapon = getEquippedWeaponInstance();
     if (!weapon)  // || !weapon->canShoot(currentTime)) //se chequea en weapon->shoot()
         return {};
-    state = PlayerState::Attacking;
+    if (weapon->canShoot(currentTime))
+        state = PlayerState::Attacking;
     return weapon->shoot(posX, posY, dirX, dirY, name, currentTime);
 }
 
-std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() { return std::move(primaryWeapon); }
+std::unique_ptr<Weapon_> Player::dropPrimaryWeapon() {
+    if (!primaryWeapon) return nullptr;
+    if (!isAlive() && equippedWeapon == TypeWeapon::Primary) {
+        setEquippedWeapon(TypeWeapon::Knife);
+    }
+    return std::move(primaryWeapon);
+}
 
 uint32_t Player::getServerId() const { return serverId; }
 
 void Player::revive() {
     health = INITIAL_HEALTH;
     state = PlayerState::Idle;
-    // deberiamos resetear la posicion a la del spawn segun equipo
 }
 
 void Player::setTeam(Team newTeam) { team = newTeam; }
@@ -212,5 +230,5 @@ PlayerInfo Player::generatePlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
 
     return PlayerInfo(serverId, name, team, currentSkin, state, Vec2D(posX, posY), angle,
-                      equippedWeapon, id_weapon);
+                      equippedWeapon, getSpecificEquippedWeapon(), id_weapon);
 }

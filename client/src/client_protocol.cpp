@@ -199,7 +199,10 @@ MatchRoomInfo ClientProtocol::recvUpdateMatchRoom() {
         name.resize(length);
         socket.recvall(name.data(), sizeof(uint8_t) * length);  // nombre
         socket.recvall(&byte, sizeof(uint8_t));                 // team
-        list.push_back(PlayerInfoLobby(name, decodeTeam(byte)));
+        Team team = decodeTeam(byte);
+        socket.recvall(&byte, sizeof(uint8_t));
+        bool is_host = decodeBool(byte);
+        list.emplace_back(PlayerInfoLobby(name, team, is_host));
     }
     // recibo el booleano
     bool started = false;

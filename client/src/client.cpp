@@ -102,6 +102,12 @@ std::vector<PlayerInfoLobby> Client::refreshPlayersList() {
     if (info.matchStarted) {
         startThreads();
     }
+    for (auto p: info.players) {
+        if (p.is_player_host) {
+            if (p.username == username)
+                player_creator = true;
+        }
+    }
     return info.players;
 }
 

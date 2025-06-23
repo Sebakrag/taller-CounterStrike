@@ -4,6 +4,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <list>
 
 #include "../../common/game_info/game_info.h"
 #include "../../common/types.h"
@@ -28,7 +29,7 @@ private:
     bool roundOver = false;
     Team roundWinner;
     std::vector<Projectile> projectiles;
-    std::vector<DroppedWeapon> droppedWeapons;
+    std::list<DroppedWeapon> droppedWeapons;
     Bomb bomb;
 
     double current_time = 0;  // (en ms) se incrementa en cada update
@@ -42,20 +43,16 @@ private:
 public:
     explicit Match(const std::string& id_scenario);
 
-    // void addPlayer(Player&& player);
     bool addPlayer(const std::string& playerName);
     void removePlayer(const std::string& playerName);
-    bool movePlayer(const std::string& playerName, const float dx, const float dy, float deltaTime);
-    Player* getPlayer(const std::string& playerName);
+
+    Player* getPlayer(const std::string& playerName);  // este metodo está raro que sea publico
+    GamePhase getGamePhase() const;
     void processAction(const PlayerAction& action, const float deltaTime);
     void updateState(double elapsedTime);
-    void processPlant(const std::string& playerName);
-    void processDefuse(const std::string& playerName);
-    void checkRoundEnd();
-    void advancePhase();
-    GamePhase getGamePhase() const;
 
-    // MatchInfo generateMatchInfo() const; (necesitaría recibir el nameMatch en el constructor)
+    // MatchInfo generateMatchInfo() const; (necesitaría recibir el nameMatch en el constructor. me
+    // ahorro los 4 metodos)
     bool containsPlayer(const std::string& username) const;
     LocalPlayerInfo generateLocalPlayerInfo(const std::string& username) const;
     const std::string& getIdScenario() const;
@@ -63,11 +60,19 @@ public:
 
     GameInfo generateGameInfo(const std::string& username) const;
 
+    void resetStatesOfPlayers();  // si no se nos ocurre algo mejor. Está bien que lo haga el
+                                  // gameloop?
     // void showPlayers() const;
     // std::vector<std::string> getPlayers();
 
     // metodos privados:
 private:
+    bool movePlayer(const std::string& playerName, const float dx, const float dy, float deltaTime);
+    void processPlant(const std::string& playerName);
+    void processDefuse(const std::string& playerName);
+
+    void checkRoundEnd();
+    void advancePhase();
     // void processActionShop(Player* player, const GameAction &gameAction, const float deltaTime);
     // void processActionMatch(Player* player, const GameAction &gameAction, const float deltaTime);
     void handleKnifeAttack(Player* attacker, const Vec2D& direction);

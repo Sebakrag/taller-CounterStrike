@@ -10,6 +10,7 @@
 #include "player.h"
 
 #define RADIUS_PLAYER_TOUCH 20.0f  // distancia de contacto para agarrar un drop
+#define RADIUS_KNIFE 20.0f         // distancia de contacto para golpear con el knife
 
 class PhysicsEngine {
 public:

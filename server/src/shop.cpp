@@ -14,7 +14,7 @@ namespace { //Precios de armas y municiones
     };
 }
 
-bool Shop::buyPrimaryWeapon(Player &player, Weapon weaponToBuy, std::vector<DroppedWeapon> &droppedWeapons) {
+bool Shop::buyPrimaryWeapon(Player &player, Weapon weaponToBuy, std::list<DroppedWeapon> &droppedWeapons) {
     if (!weaponPrices.contains(weaponToBuy))
         return false;
 

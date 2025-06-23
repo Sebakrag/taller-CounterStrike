@@ -1,4 +1,4 @@
-#include "client/include/model/EC/components/SoundComponent.h"
+#include "../../../../../client/include/model/EC/components/SoundComponent.h"
 
 #include <algorithm>
 

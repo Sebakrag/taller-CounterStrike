@@ -11,15 +11,17 @@
 
 struct PlayerSnapshot;
 struct WeaponSnapshot;
+struct BombSnapshot;
 
 using ServerEntityID = uint32_t;
-using SpecificData = std::variant<std::monostate, PlayerSnapshot, WeaponSnapshot>;
+using SpecificData = std::variant<std::monostate, PlayerSnapshot, WeaponSnapshot, BombSnapshot>;
 
 struct PlayerSnapshot {
     int hp;  // health
     int money;
     PlayerState state;
     ServerEntityID equipped_weapon_id;
+    Weapon equipped_weapon;
     Team team;
     TypeWeapon weapon_type;
 };
@@ -27,6 +29,10 @@ struct PlayerSnapshot {
 struct WeaponSnapshot {
     WeaponState state;
     // AmmoInfo ammoInfo;
+};
+
+struct BombSnapshot {
+    BombState state;
 };
 
 struct EntitySnapshot {
@@ -45,14 +51,16 @@ struct EntitySnapshot {
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive, int hp, int money, PlayerState state,
-                   ServerEntityID equipped_weapon_id, Team team, TypeWeapon weapon_type);
+                   ServerEntityID equipped_weapon_id, Weapon equppedWeapon, Team team,
+                   TypeWeapon weapon_type);
 
     ///
     /// @brief Constructor para el PLAYER.
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive, PlayerState state,
-                   ServerEntityID equipped_weapon_id, Team team, TypeWeapon weapon_type);
+                   ServerEntityID equipped_weapon_id, Weapon equippedWeapon, Team team,
+                   TypeWeapon weapon_type);
 
     ///
     /// @brief Constructor para un WEAPON.
@@ -65,6 +73,12 @@ struct EntitySnapshot {
     ///
     EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
                    float pos_y, float angle, bool alive);
+
+    ///
+    /// @brief Constructor para un BOMB.
+    ///
+    EntitySnapshot(ServerEntityID id, EntityType entt_type, SpriteType sprite, float pos_x,
+                   float pos_y, float angle, bool alive, BombState state);
 
     EntitySnapshot(const EntitySnapshot& other) = default;
     EntitySnapshot& operator=(const EntitySnapshot& other) = default;

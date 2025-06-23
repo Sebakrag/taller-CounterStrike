@@ -9,6 +9,7 @@
 #include "../../common/game_info/local_player_info.h"
 #include "../../common/game_info/player_info.h"
 #include "../../common/types.h"
+#include "weapon/bomb.h"
 #include "weapon/weapon.h"
 #include "weapon/weapon_factory.h"
 #include "types2.h"
@@ -29,12 +30,13 @@ private:
     std::unique_ptr<Weapon_> knife;
     std::unique_ptr<Weapon_> primaryWeapon;
     std::unique_ptr<Weapon_> secondaryWeapon;
+    Bomb* bomb = nullptr;
     TypeWeapon equippedWeapon;
     uint32_t id_weapon;  // necesito esto
 
     float money;
-    const PlayerSkin skinT;   // para cuando es terrorista
-    const PlayerSkin skinCT;  // para cuando es anti terrorista
+    PlayerSkin skinT;   // para cuando es terrorista
+    PlayerSkin skinCT;  // para cuando es anti terrorista
 
 public:
     Statistics stats;
@@ -43,6 +45,7 @@ public:
                     const Vec2D& position = Vec2D());
 
     void setPrimaryWeapon(std::unique_ptr<Weapon_> weapon);
+    void setBomb(Bomb* bomb);
     void setEquippedWeapon(TypeWeapon type);
 
     float getX() const;
