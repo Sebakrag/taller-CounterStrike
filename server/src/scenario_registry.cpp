@@ -161,37 +161,82 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
         // Construir el mapa de armas (opcional)
         std::map<Vec2D, Weapon, Vec2DCompare> weaponsMap;
         if (mapNode["weapons"] && mapNode["weapons"].IsSequence()) {
+                    << mapNode["weapons"].size() << " arma(s)" << std::endl;
+            
             for (const auto& weaponNode : mapNode["weapons"]) {
-                if (weaponNode.IsMap() && weaponNode["pos"] && weaponNode["type"]) {
-                    int x = weaponNode["pos"][0].as<int>();
-                    int y = weaponNode["pos"][1].as<int>();
-                    Vec2D pos(x, y);
-                    
-                    std::string weaponType = weaponNode["type"].as<std::string>();
-                    Weapon weapon = Weapon::Knife; // Por defecto
-                    
-                    // Convertir string a Weapon
-                    if (weaponType == "ak47") {
-                        weapon = Weapon::Ak47;
-                    } else if (weaponType == "awp") {
-                        weapon = Weapon::Awp;
-                    } else if (weaponType == "m3") {
-                        weapon = Weapon::M3;
-                    } else if (weaponType == "glock") {
-                        weapon = Weapon::Glock;
+                
+                // Verificar si el nodo es un mapa
+                if (!weaponNode.IsMap()) {
+                    std::cerr << "Error: El nodo de arma no es un mapa YAML" << std::endl;
+                    continue;
+                }
+                
+                // Verificar si tiene la clave 'position'
+                bool hasPosition = weaponNode["position"] ? true : false;
+                
+                // Verificar si tiene la clave 'type'
+                bool hasType = weaponNode["type"] ? true : false;
+                
+                if (hasPosition && hasType) {
+                    try {
+                        // Verificar que position sea una secuencia con al menos 2 elementos
+                        if (!weaponNode["position"].IsSequence() || weaponNode["position"].size() < 2) {
+                            std::cerr << "Error: El campo 'position' no es una secuencia válida" << std::endl;
+                            continue;
+                        }
+                        
+                        // Usar position tal como aparece en el YAML
+                        int x = weaponNode["position"][0].as<int>();
+                        int y = weaponNode["position"][1].as<int>();
+                        Vec2D pos(x, y);
+                        
+                        if (!weaponNode["type"].IsScalar()) {
+                            std::cerr << "Error: El campo 'type' no es un valor escalar" << std::endl;
+                            continue;
+                        }
+                        
+                        std::string weaponType = weaponNode["type"].as<std::string>();
+                        
+                        Weapon weapon = Weapon::Knife; // Por defecto
+                        
+                        // Convertir string a Weapon
+                        if (weaponType == "ak47") {
+                            weapon = Weapon::Ak47;
+                        } else if (weaponType == "awp") {
+                            weapon = Weapon::Awp;
+                        } else if (weaponType == "m3" || weaponType == "shotgun") {
+                            weapon = Weapon::M3;
+                        } else if (weaponType == "glock" || weaponType == "pistol") {
+                            weapon = Weapon::Glock;
+                        } else {
+                            std::cerr << "ADVERTENCIA: Tipo de arma '" << weaponType 
+                                    << "' no reconocido. Usando arma por defecto." << std::endl;
+                        }
+                        
+                        // Debug: mostrar arma añadida
+                        std::cerr << "arma añadida: tipo=" << weaponType 
+                                << " en posición (" << x << "," << y << ")" << std::endl;
+                        
+                        weaponsMap[pos] = weapon;
+                    } catch (const YAML::Exception& e) {
+                        std::cerr << "Error al procesar un arma YAML: " << e.what() << std::endl;
+                    } catch (const std::exception& e) {
+                        std::cerr << "Error general al procesar un arma: " << e.what() << std::endl;
                     }
-                    
-                    weaponsMap[pos] = weapon;
+                } else {
+                    std::cerr << "Error: El nodo de arma no contiene los campos necesarios" << std::endl;
                 }
             }
+        } else {
+            std::cerr << "No se encontró una sección de armas válida en el YAML" << std::endl;
         }
-        
+                
         // Sin embargo, necesitamos un std::map<Vec2D, Weapon> sin comparador personalizado
         // para pasarlo al constructor de TileMap. Convertimos nuestro mapa:
         std::map<Vec2D, Weapon> standardWeaponsMap;
         for (const auto& pair : weaponsMap) {
             standardWeaponsMap.insert(std::make_pair(pair.first, pair.second));
-        }
+        }        
         
         // Crear el TileMap con todos los datos obtenidos
         TileMap tileMap(mapType, matrix, tileTypes, standardWeaponsMap);
