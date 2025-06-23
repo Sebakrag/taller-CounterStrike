@@ -127,6 +127,7 @@ void ClientHandler::handleLobbyActions(const LobbyAction& lobbyAction) {
             gameManager.QuitMatch(myMatch, username);
             myMatch = "";
             status = InMenu;
+            protocol.sendConfirmation(true);
             break;
         case LobbyAction::StartMatch: {
             bool ok = gameManager.StartMatch(username, myMatch);

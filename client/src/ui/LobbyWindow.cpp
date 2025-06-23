@@ -188,7 +188,11 @@ void LobbyWindow::centerOnScreen() {
 
 void LobbyWindow::onStartGame() { done(StartGame); }
 
-void LobbyWindow::onLeaveGame() { done(LeaveGame); }
+void LobbyWindow::onLeaveGame() { 
+    // Cerrar la ventana y enviar el código de resultado LeaveGame
+    // para que LobbyAppState lo procese correctamente
+    done(LeaveGame); 
+}
 
 void LobbyWindow::onRefreshPlayers() {
     players = client->refreshPlayersList();

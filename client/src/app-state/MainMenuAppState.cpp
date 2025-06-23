@@ -17,13 +17,10 @@ extern Client* g_client;
 
 MainMenuAppState::MainMenuAppState(AppStateController* ctrl) {
     controller = ctrl;
-    std::cout << "[MainMenuAppState] Constructor called" << std::endl;
-    // Initialize g_client to nullptr to avoid accessing uninitialized memory
     g_client = nullptr;
 }
 
 std::optional<AppStateCode> MainMenuAppState::update() {
-    // Get client pointer and check if it's valid
     Client* client_ptr = controller->getClient();
     if (client_ptr == nullptr) {
         std::cerr << "[MainMenuAppState] Error: Client pointer is null" << std::endl;

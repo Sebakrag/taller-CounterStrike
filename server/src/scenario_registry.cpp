@@ -53,7 +53,7 @@ std::vector<std::string> ScenarioRegistry::listAvailableMaps(const std::string& 
         std::filesystem::path dirPath(mapsDirectory);
         
         if (!std::filesystem::exists(dirPath)) {
-            std::cerr << "ERROR - El directorio de mapas no existe: '" << dirPath.string() << "'" << std::endl;
+            std::cerr << "[scenario_registry] ERROR: El directorio de mapas no existe: '" << dirPath.string() << "'" << std::endl;
             return availableMaps;
         }
         
@@ -63,8 +63,6 @@ std::vector<std::string> ScenarioRegistry::listAvailableMaps(const std::string& 
                 availableMaps.push_back(mapName);
             }
         }
-
-        std::cerr << "DEBUG - Mapas disponibles en '" << mapsDirectory << "':\n";
 
     } catch (const std::exception& e) {
     }
@@ -126,17 +124,17 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
             return false;
         }
         
-        // Construir el mapa de tipos de tiles
         std::map<int, TypeTile> tileTypes;
         if (mapNode["tiles"] && mapNode["tiles"].IsSequence()) {
             for (const auto& tileNode : mapNode["tiles"]) {
                 if (tileNode["id"] && tileNode.IsMap()) {
                     int tileId = tileNode["id"].as<int>();
+                    
                     if (tileNode["type"] && tileNode["type"].IsScalar()) {
                         std::string typeStr = tileNode["type"].as<std::string>();
-                        TypeTile type = TypeTile::None; // Por defecto
                         
-                        // Convertir string a TypeTile
+                        TypeTile type = TypeTile::None; 
+                        
                         if (typeStr == "solid") {
                             type = TypeTile::Solid;
                         } else if (typeStr == "") {
@@ -151,41 +149,28 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
                         
                         tileTypes[tileId] = type;
                     } else {
-                        // Si no se especifica el tipo, asumimos solid para barreras y empty para el resto
-                        tileTypes[tileId] = (tileId == 4) ? TypeTile::Solid : TypeTile::None;
+                        tileTypes[tileId] = TypeTile::None;
                     }
                 }
             }
         }
         
-        // Construir el mapa de armas (opcional)
         std::map<Vec2D, Weapon, Vec2DCompare> weaponsMap;
         if (mapNode["weapons"] && mapNode["weapons"].IsSequence()) {
-                    << mapNode["weapons"].size() << " arma(s)" << std::endl;
             
             for (const auto& weaponNode : mapNode["weapons"]) {
                 
-                // Verificar si el nodo es un mapa
-                if (!weaponNode.IsMap()) {
-                    std::cerr << "Error: El nodo de arma no es un mapa YAML" << std::endl;
-                    continue;
-                }
-                
-                // Verificar si tiene la clave 'position'
                 bool hasPosition = weaponNode["position"] ? true : false;
                 
-                // Verificar si tiene la clave 'type'
                 bool hasType = weaponNode["type"] ? true : false;
                 
                 if (hasPosition && hasType) {
                     try {
-                        // Verificar que position sea una secuencia con al menos 2 elementos
                         if (!weaponNode["position"].IsSequence() || weaponNode["position"].size() < 2) {
                             std::cerr << "Error: El campo 'position' no es una secuencia válida" << std::endl;
                             continue;
                         }
                         
-                        // Usar position tal como aparece en el YAML
                         int x = weaponNode["position"][0].as<int>();
                         int y = weaponNode["position"][1].as<int>();
                         Vec2D pos(x, y);
@@ -196,10 +181,9 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
                         }
                         
                         std::string weaponType = weaponNode["type"].as<std::string>();
-                        
-                        Weapon weapon = Weapon::Knife; // Por defecto
-                        
-                        // Convertir string a Weapon
+                    
+                        Weapon weapon = Weapon::Ak47;
+
                         if (weaponType == "ak47") {
                             weapon = Weapon::Ak47;
                         } else if (weaponType == "awp") {
@@ -208,40 +192,28 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
                             weapon = Weapon::M3;
                         } else if (weaponType == "glock" || weaponType == "pistol") {
                             weapon = Weapon::Glock;
-                        } else {
-                            std::cerr << "ADVERTENCIA: Tipo de arma '" << weaponType 
-                                    << "' no reconocido. Usando arma por defecto." << std::endl;
                         }
-                        
-                        // Debug: mostrar arma añadida
-                        std::cerr << "arma añadida: tipo=" << weaponType 
-                                << " en posición (" << x << "," << y << ")" << std::endl;
                         
                         weaponsMap[pos] = weapon;
                     } catch (const YAML::Exception& e) {
-                        std::cerr << "Error al procesar un arma YAML: " << e.what() << std::endl;
+                        std::cerr << "[scenario_registry] ERROR: error processing yaml map " << e.what() << std::endl;
                     } catch (const std::exception& e) {
-                        std::cerr << "Error general al procesar un arma: " << e.what() << std::endl;
+                        std::cerr << "[scenario_registry] ERROR: error processing yaml weapon" << e.what() << std::endl;
                     }
                 } else {
-                    std::cerr << "Error: El nodo de arma no contiene los campos necesarios" << std::endl;
+                    std::cerr << "[scenario_registry] ERROR: the weapons node is not correctly setted" << std::endl;
                 }
             }
         } else {
-            std::cerr << "No se encontró una sección de armas válida en el YAML" << std::endl;
+            std::cerr << "[scenario_registry] ERROR: there are not weapons in the yaml map" << std::endl;
         }
                 
-        // Sin embargo, necesitamos un std::map<Vec2D, Weapon> sin comparador personalizado
-        // para pasarlo al constructor de TileMap. Convertimos nuestro mapa:
         std::map<Vec2D, Weapon> standardWeaponsMap;
         for (const auto& pair : weaponsMap) {
             standardWeaponsMap.insert(std::make_pair(pair.first, pair.second));
         }        
         
-        // Crear el TileMap con todos los datos obtenidos
         TileMap tileMap(mapType, matrix, tileTypes, standardWeaponsMap);
-        
-        // Guardar en el registro de escenarios
         scenarios[mapName] = tileMap;
         
         return true;

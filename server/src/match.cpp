@@ -69,8 +69,6 @@ Match::Match(const std::string& id_scenario):
                 break;
         }
     }
-    
-    std::cout << "Armas cargadas desde el mapa: " << droppedWeapons.size() << std::endl;
 }
 
 // void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }
