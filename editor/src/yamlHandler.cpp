@@ -148,10 +148,8 @@ bool YamlHandler::saveMapToYaml(const QString &fileName,
             // Los ID números son asignados en loadAvailableWeapons() según el orden alfabético
             weaponIdToName[1] = "ak47";
             weaponIdToName[2] = "awp";
-            weaponIdToName[3] = "carbine";
-            weaponIdToName[4] = "pistol";
-            weaponIdToName[5] = "rifle";
-            weaponIdToName[6] = "shotgun";
+            weaponIdToName[3] = "glock";
+            weaponIdToName[4] = "m3";
             
             for (const Weapon* weapon : weapons) {
                 out << YAML::BeginMap;

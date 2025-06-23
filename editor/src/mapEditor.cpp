@@ -691,9 +691,9 @@ void MapEditor::loadAvailableWeapons() {
         return;
     }
     
-    // Filtrar por archivos de imagen
+    // Filtrar por archivos de imagen que contengan "icon" en su nombre
     QStringList filters;
-    filters << "*.png" << "*.jpg" << "*.bmp" << "*.gif";
+    filters << "*icon*.png" << "*icon*.jpg" << "*icon*.bmp" << "*icon*.gif";
     dir.setNameFilters(filters);
     QStringList files = dir.entryList(filters, QDir::Files, QDir::Name);
     
@@ -765,7 +765,7 @@ void MapEditor::loadAvailableWeapons() {
         weaponId++;
     }
     
-    qDebug() << "Se cargaron" << weaponPixmaps.size() << "armas";
+    qDebug() << "Se cargaron" << weaponPixmaps.size() << "armas (solo iconos)";
 }
 
 // Método para manejar la selección de tiles

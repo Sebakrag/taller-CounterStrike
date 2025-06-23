@@ -188,9 +188,9 @@ bool ScenarioRegistry::loadMapFromYaml(const std::string& mapName, const std::st
                             weapon = Weapon::Ak47;
                         } else if (weaponType == "awp") {
                             weapon = Weapon::Awp;
-                        } else if (weaponType == "m3" || weaponType == "shotgun") {
+                        } else if (weaponType == "m3") {
                             weapon = Weapon::M3;
-                        } else if (weaponType == "glock" || weaponType == "pistol") {
+                        } else if (weaponType == "glock") {
                             weapon = Weapon::Glock;
                         }
                         
