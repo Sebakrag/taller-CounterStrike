@@ -9,7 +9,10 @@
 #include "../../../client/include/app-state/MainMenuAppState.h"
 #include "ui/AudioManager.h"
 
-AppStateController::AppStateController() { current_state = new LoginAppState(this); }
+AppStateController::AppStateController() { 
+    current_state = new LoginAppState(this); 
+    AudioManager::getInstance().playMenuMusic();
+}
 
 void AppStateController::update() {
     auto maybe_new_state = current_state->update();
