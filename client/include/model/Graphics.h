@@ -9,6 +9,7 @@
 #include "../../../common/dtos/FovConfig.h"
 #include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/utils/Vec2D.h"
+#include "utils/Mouse.h"
 
 using SDL2pp::Color;
 using SDL2pp::NullOpt;
@@ -32,7 +33,7 @@ private:
 
     Window window;
     Renderer renderer;
-    // Mouse mouse;  // TODO: crear un mouse con textura y renderizarlo despues del mundo.
+    std::unique_ptr<Mouse> mouse;
 
     Window create_window(const WindowConfig& config, const std::string& match_name) const;
     Renderer create_renderer(Window& window);
@@ -52,6 +53,9 @@ public:
               double angle, const Optional<Point>& center = NullOpt, int flip = 0);
 
     Vec2D getDrawableWindowDimension() const;
+
+    void updateMouse();
+    void renderMouse();
 
     // agrego metodos par usar en el map
     std::shared_ptr<Texture> createTargetTexture(int w, int h);
