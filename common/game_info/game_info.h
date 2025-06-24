@@ -13,6 +13,7 @@
 #include "player_info.h"
 #include "weapon_info.h"
 #include "shop_info.h"
+#include "stats_info.h"
 
 // Acá están todos los datos que va a recibir la interfaz grafica
 // en cada frame. Son los que enviará el gameloop del server en cada iteración.
@@ -34,12 +35,14 @@ public:
     std::vector<BulletInfo> bullets;
     std::vector<WeaponInfo> weapons;
     ShopInfo shop;
+    StatsInfo stats;
 
     GameInfo() {}
 
     GameInfo(GamePhase gamePhase, const BombInfo& bomb, float timeLeft,
              const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
-             const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items, const ShopInfo& shop);
+             const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items,
+             const ShopInfo& shop, const StatsInfo& stats = StatsInfo());
 
     GameInfo(const GameInfo& other) = default;
     GameInfo& operator=(const GameInfo& other) = default;

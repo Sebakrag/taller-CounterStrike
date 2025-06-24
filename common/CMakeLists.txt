@@ -17,6 +17,8 @@ target_sources(taller_common
         game_info/weapon_info.cpp
         game_info/local_player_info.cpp
         game_info/shop_info.cpp
+        game_info/player_stats_info.cpp
+        game_info/stats_info.cpp
 
         utils/AngleUtils.cpp
         utils/Vec2D.cpp
@@ -43,6 +45,8 @@ target_sources(taller_common
         game_info/weapon_info.h
         game_info/local_player_info.h
         game_info/shop_info.h
+        game_info/player_stats_info.h
+        game_info/stats_info.h
 
         utils/AngleUtils.h
         utils/Vec2D.h

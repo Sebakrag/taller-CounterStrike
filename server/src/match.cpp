@@ -483,6 +483,13 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         timeLeft = bomb.getTimer();
     }
 
+    if (phase == GamePhase::EndOfMatch) {
+        StatsInfo stats = generateStatsInfo();  // Asumimos que ya tenés este método implementado
+        return GameInfo(phase, bomb.generateBombInfo(), timeLeft,
+                        localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo,
+                        Shop::getInfo(), stats);
+    }
+
 
     return GameInfo(this->phase, bomb.generateBombInfo(), timeLeft,
                     localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo, Shop::getInfo());
@@ -663,4 +670,17 @@ void Match::rankPlayers() {
                   << ", Deaths: " << p->stats.deaths
                   << ", Money: " << p->stats.moneyEarned << "\n";
     }
+}
+
+StatsInfo Match::generateStatsInfo() const {
+    StatsInfo info;
+    for (const auto& p : players) {
+        const auto& s = p.getStats();
+        PlayerStatsInfo psi(p.getId(), s.kills, s.deaths, s.moneyEarned);
+        if (p.getTeam() == Team::Terrorist)
+            info.terroristStats.push_back(psi);
+        else
+            info.counterStats.push_back(psi);
+    }
+    return info;
 }

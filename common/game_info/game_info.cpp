@@ -17,7 +17,7 @@
 GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float timeLeft,
                    const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
                    const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items,
-                   const ShopInfo& shop):
+                   const ShopInfo& shop, const StatsInfo& stats):
         gamePhase(gamePhase),
         bomb(bomb),
         timeLeft(timeLeft),
@@ -25,7 +25,8 @@ GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float 
         otherPlayers(otherPlayers),
         bullets(bullets),
         weapons(items),
-        shop(shop) {}
+        shop(shop),
+        stats(stats) {}
 
 // TODO: modularizar. (Hacer 4 metodos privados)
 GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
@@ -118,8 +119,18 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         index += SIZE_ITEM_INFO;
     }
 
+    // shop
     std::vector<uint8_t> shopBytes(bytes.begin() + index, bytes.end());
     shop = ShopInfo(shopBytes);
+    index += SIZE_SHOP_INFO;
+
+    // stats
+    if (gamePhase == GamePhase::EndOfMatch) {
+        uint16_t statsSize = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
+        index += 2;
+        std::vector<uint8_t> statsBytes(bytes.begin() + index, bytes.begin() + index + statsSize);
+        stats = StatsInfo(statsBytes);
+    }
 }
 
 std::vector<uint8_t> GameInfo::toBytes() const {
@@ -165,8 +176,15 @@ std::vector<uint8_t> GameInfo::toBytes() const {
         buffer.insert(buffer.end(), item_bytes.begin(), item_bytes.end());
     }
 
+    //shop
     std::vector<uint8_t> shopBytes = shop.toBytes();
     buffer.insert(buffer.end(), shopBytes.begin(), shopBytes.end());
+
+    if (gamePhase == GamePhase::EndOfMatch) {
+        std::vector<uint8_t> statsBytes = stats.toBytes();
+        Protocol_::insertBigEndian16(statsBytes.size(), buffer);
+        buffer.insert(buffer.end(), statsBytes.begin(), statsBytes.end());
+    }
 
     return buffer;
 }

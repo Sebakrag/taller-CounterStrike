@@ -74,6 +74,7 @@ public:
     void setState(PlayerState newState);
     bool spendMoney(int amount);
     void addMoney(int amount);
+    const Statistics& getStats() const;
 
     uint32_t getServerId() const;
 

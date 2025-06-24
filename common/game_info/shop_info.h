@@ -6,6 +6,8 @@
 #include <vector>
 #include "../types.h"
 
+#define SIZE_SHOP_INFO 22
+
 struct ShopInfo {
     std::unordered_map<Weapon, int> weaponPrices;
     std::unordered_map<Weapon, int> ammoPrices;
