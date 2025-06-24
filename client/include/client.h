@@ -56,9 +56,9 @@ public:
     void rotate(float angle);
     void changeWeapon(const TypeWeapon& typeWeapon);
     void pickUpItem();
-    // TODO: Implementar estos metodos.
     void buyWeapon(Weapon weapon);
     void buyAmmo(AmmoType ammoType);
+    void defuseBomb();
 
     ~Client();
 

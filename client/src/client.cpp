@@ -159,6 +159,8 @@ void Client::buyAmmo(const AmmoType ammoType) {
     send_queue.try_push(GameAction(GameActionType::BuyAmmo, ammoType, 10));
 }
 
+void Client::defuseBomb() { send_queue.try_push(GameAction(GameActionType::DefuseBomb)); }
+
 Client::~Client() {}
 
 Status Client::getStatus() { return status; }

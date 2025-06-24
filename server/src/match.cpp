@@ -363,8 +363,8 @@ void Match::processDefuse(const std::string& playerName) {
                                                               bomb.getX(), bomb.getY())) {
         if (bomb.defuse()) {
             std::cout << "Player " << playerName << " defused the bomb!\n";
-            roundOver = true;
-            roundWinner = Team::CounterTerrorist;
+            // roundOver = true;
+            // roundWinner = Team::CounterTerrorist;
         }
     }
 }
@@ -398,6 +398,10 @@ void Match::checkRoundEnd() {
         roundOver = true;
         roundWinner = Team::Terrorist;
         std::cout << "Todos los antiterroristas murieron. Ganan los terroristas. \n";
+    }
+    if (bomb.getState() == BombState::Defused) {
+        roundOver = true;
+        roundWinner = Team::CounterTerrorist;
     }
 }
 

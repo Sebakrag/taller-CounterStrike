@@ -4,8 +4,8 @@ match_room:
   max_players: 10 # cantidad máxima de jugadores
 
 match:
-  round_duration: 10 # duración máxima de la ronda en segundos
-  preparation_time: 15 # tiempo para la fase de preparación o previa de la ronda (tiempo de tienda)
+  round_duration: 120 # duración máxima de la ronda en segundos
+  preparation_time: 10 # tiempo para la fase de preparación o previa de la ronda (tiempo de tienda)
   max_rounds: 10 # cantidad de rondas de la partida
 
 player:
@@ -62,7 +62,7 @@ window:
   fullscreen: 0 # 0 para ventana, 1 para pantalla completa
 
 fov:
-  active: 1 # 0 para desactivar fov, 1 para activar fov
+  active: 0 # 0 para desactivar fov, 1 para activar fov
   circle_radius: 32 #radio del del circulo de vision alrededor del player (en px)
   angle: 55 # amplitud del cono de visión (en grados de 0 a 360)
   visibility_distance: 0 # distancia de vision en px (si vale 0 se adapta a las dimensiones de la ventana)
