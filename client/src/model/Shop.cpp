@@ -8,14 +8,14 @@
 using SDL2pp::NullOpt;
 
 namespace {
-constexpr float MENU_WIDTH_RATIO = 0.4f;
-constexpr float MENU_HEIGHT_RATIO = 0.6f;
+constexpr float MENU_WIDTH_RATIO = 0.6f;
+constexpr float MENU_HEIGHT_RATIO = 0.8f;
 constexpr int PADDING = 10;
-constexpr Color SEMI_TRANSPARENT_BLACK = {0, 0, 0, 180};  // background color
+constexpr Color SEMI_TRANSPARENT_BLACK = {0, 0, 0, 50};  // background color
 constexpr Color WHITE = {255, 255, 255, 255};             // text color
-constexpr Color BLUE_GREY = {35, 50, 65, 255};            // items color
-constexpr Color SELECTED_COLOR = {85, 80, 50, 255};       // Brown color
-constexpr Color DARK_GREEN = {45, 65, 25, 255};           // Buy button color
+constexpr Color BLUE_GREY = {0, 0, 0, 60};            // items color
+constexpr Color SELECTED_COLOR = {135, 206, 250, 150};  // Celeste (LightSkyBlue)
+constexpr Color DARK_GREEN = {45, 65, 25, 180};           // Buy button color
 }  // namespace
 
 Shop::Shop(Graphics& graphics, const ShopInfo& shop_info, const std::string& font_filename,

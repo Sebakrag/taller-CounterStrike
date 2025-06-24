@@ -143,21 +143,22 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
 void ComponentUpdater::updateBombSoundComponent(SoundComponent& soundComp,
                                                 const BombSnapshot bombSnap, int currentTimeLeft) {
     BombState currentState = bombSnap.state;
-
     if (currentState == BombState::Planted) {
         if (previusBombState != BombState::Planted) {
             soundComp.addEvent(SoundEvent::PlantBomb);
         }
         // beep cada 2 segundos
         if (currentTimeLeft > 5) {
-            if (currentTimeLeft != previusTimeLeft && currentTimeLeft % 2 == 0) {
+            if (currentTimeLeft % 2 == 0) {
                 soundComp.addEvent(SoundEvent::BombBeep);
+                std::cout << "BEEP1 "  << currentTimeLeft<< std::endl;
             }
         }
         // beep cada 1 segundo
         else if (currentTimeLeft <= 5) {
             if (currentTimeLeft != previusTimeLeft) {
                 soundComp.addEvent(SoundEvent::BombBeep);
+                std::cout << "BEEP2 "  << currentTimeLeft<< std::endl;
             }
         }
     }

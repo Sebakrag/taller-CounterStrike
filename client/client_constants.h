@@ -99,7 +99,7 @@
 
 // Shop
 #define SHOP_FONT_FILE_NAME (FONT_PATH + "/OpenSans-Light.ttf")
-#define SHOP_FONT_SIZE 16
+#define SHOP_FONT_SIZE 24
 #define SHOP_MUSIC_FILE_NAME (MUSIC_SOUNDS_PATH + "/unrealsoftware.wav")
 
 
