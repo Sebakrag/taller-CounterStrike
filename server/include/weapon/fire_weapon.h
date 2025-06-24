@@ -17,7 +17,8 @@ protected:
     float maxDamage;
 
 public:
-    FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision, float maxRange, float maxDamage);
+    FireWeapon(int damage, float price, int bullets, int rateOfFire, float basePrecision,
+               float maxRange, float maxDamage);
 
     ~FireWeapon() override = default;
 

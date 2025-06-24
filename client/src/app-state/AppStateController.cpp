@@ -9,9 +9,9 @@
 #include "../../../client/include/app-state/MainMenuAppState.h"
 //#include "ui/AudioManager.h"
 
-AppStateController::AppStateController() { 
-    current_state = new LoginAppState(this); 
-    //AudioManager::getInstance().playMenuMusic();
+AppStateController::AppStateController() {
+    current_state = new LoginAppState(this);
+    // AudioManager::getInstance().playMenuMusic();
 }
 
 void AppStateController::update() {
@@ -32,7 +32,7 @@ void AppStateController::transition_to(const AppStateCode& new_state) {
         case AppStateCode::MAIN_MENU: {
             current_state = new MainMenuAppState(this);
             // Iniciar música de menú si no está reproduciendo
-            //if (!AudioManager::getInstance().isPlaying()) {
+            // if (!AudioManager::getInstance().isPlaying()) {
             //    AudioManager::getInstance().playMenuMusic();
             //}
             break;
@@ -40,18 +40,18 @@ void AppStateController::transition_to(const AppStateCode& new_state) {
         case AppStateCode::LOBBY:
             current_state = new LobbyAppState(this);
             // Iniciar música de menú si no está reproduciendo
-            //if (!AudioManager::getInstance().isPlaying()) {
+            // if (!AudioManager::getInstance().isPlaying()) {
             //    AudioManager::getInstance().playMenuMusic();
             //}
             break;
         case AppStateCode::GAME_MATCH:
             current_state = new GameMatchAppState(this);
             // Detener música de menú al iniciar el juego
-            //AudioManager::getInstance().stopMusic();
+            // AudioManager::getInstance().stopMusic();
             break;
         case AppStateCode::QUIT:
             // Detener música antes de salir
-            //AudioManager::getInstance().stopMusic();
+            // AudioManager::getInstance().stopMusic();
             return;
         default:
             throw std::runtime_error("Unknown app state.");
@@ -69,7 +69,8 @@ void AppStateController::setClient(std::unique_ptr<Client> c) {
     try {
         client = std::move(c);
     } catch (const std::exception& e) {
-        std::cerr << "[AppStateController] ERROR: Exception in setClient: " << e.what() << std::endl;
+        std::cerr << "[AppStateController] ERROR: Exception in setClient: " << e.what()
+                  << std::endl;
     } catch (...) {
         std::cerr << "[AppStateController] ERROR: Unknown exception in setClient" << std::endl;
     }

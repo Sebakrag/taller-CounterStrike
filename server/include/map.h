@@ -1,8 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "../../common/tile_map.h"
 
@@ -19,7 +19,7 @@ public:
 
     Vec2D getPositionTZone();
     Vec2D getPositionCTZone();
-    
+
     // Método para obtener las posiciones de armas del TileMap
     const std::map<Vec2D, Weapon>& getWeaponPositions() const;
 };

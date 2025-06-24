@@ -60,8 +60,15 @@ TEST(ProtocoloMatchInfo, ClienteRecibeMatchInfoCorrectamente) {
                            30,                             // ammo
                            24);
 
+    std::unordered_map<Weapon, int> weaponPrices = {
+            {Weapon::Ak47, 200}, {Weapon::M3, 200}, {Weapon::Awp, 200}};
+
+    std::unordered_map<AmmoType, int> ammoPrices = {{AmmoType::Primary, 20},
+                                                    {AmmoType::Secondary, 30}};
+    ShopInfo shop(weaponPrices, ammoPrices);
+
     // 5) Montar MatchInfo
-    MatchInfo info("SalaTest", win_conf, fov_conf, tile_map, 2, player);
+    MatchInfo info("SalaTest", win_conf, fov_conf, tile_map, 2, player, shop);
 
     // 6) Servidor en hilo
     std::thread srv([&] { server_thread_send_matchinfo(info); });

@@ -40,10 +40,10 @@ Match::Match(const std::string& id_scenario):
     // droppedWeapons.emplace_back(DroppedWeapon{std::move(bomb), {300, 300}});
 
     const auto& weaponPositions = map.getWeaponPositions();
-    for (const auto& weaponPair : weaponPositions) {
+    for (const auto& weaponPair: weaponPositions) {
         const Vec2D& position = weaponPair.first;
         Weapon weaponType = weaponPair.second;
-        
+
         switch (weaponType) {
             case Weapon::Ak47: {
                 auto ak47 = std::make_unique<WeaponAk47>();
@@ -192,14 +192,16 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
 
             case GameActionType::PickUp: {
                 for (auto it = droppedWeapons.begin(); it != droppedWeapons.end(); ++it) {
-                    if (!it->weapon ) continue;
+                    if (!it->weapon)
+                        continue;
                     if (PhysicsEngine::playerTouchingItem(player->getX(), player->getY(),
                                                           it->position.getX(),
                                                           it->position.getY())) {
                         // Drop de arma equipada
                         if (player->getPrimaryWeapon()) {
                             std::unique_ptr<Weapon_> droppedWeapon = player->dropPrimaryWeapon();
-                            if (droppedWeapon == nullptr) continue;
+                            if (droppedWeapon == nullptr)
+                                continue;
                             droppedWeapons.emplace_back(std::move(droppedWeapon),
                                                         Vec2D(player->getX(), player->getY()));
                         }
@@ -248,7 +250,7 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
                 break;
             }
             case GameActionType::BuyAmmo: {
-                if (!Shop::buyAmmo(*player, gameAction.weapon, gameAction.count_ammo)) {
+                if (!Shop::buyAmmo(*player, gameAction.ammoType, gameAction.count_ammo)) {
                     std::cout << "Compra de munición fallida. Revise su saldo\n";
                 }
                 break;
@@ -256,7 +258,6 @@ void Match::processAction(const PlayerAction& action, const float deltaTime) {
             default:
                 std::cout << "Accion invalida en fase de preparacion\n";
                 break;
-
         }
     }
 }
@@ -314,13 +315,15 @@ void Match::updateState(double elapsedTime) {
 
             float impactDist;
             bool hitByPrecision = true;
-            //const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
+            // const std::unique_ptr<Weapon_> weapon = WeaponFactory::create(proj.getWeaponUsed());
             const std::unique_ptr<Weapon_> rawWeapon = WeaponFactory::create(proj.getWeaponUsed());
             auto* weapon = dynamic_cast<FireWeapon*>(rawWeapon.get());
-            if (!weapon) continue;
+            if (!weapon)
+                continue;
             Player* shooter = getPlayer(proj.getShooter());
 
-            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon, impactDist, hitByPrecision)) {
+            if (PhysicsEngine::shotHitPlayer(proj.getX(), proj.getY(), *shooter, target, *weapon,
+                                             impactDist, hitByPrecision)) {
                 if (!hitByPrecision) {
                     proj.deactivate();
                     break;
@@ -391,8 +394,8 @@ void Match::processDefuse(const std::string& playerName) {
                                                               bomb.getX(), bomb.getY())) {
         if (bomb.defuse()) {
             std::cout << "Player " << playerName << " defused the bomb!\n";
-            roundOver = true;
-            roundWinner = Team::CounterTerrorist;
+            // roundOver = true;
+            // roundWinner = Team::CounterTerrorist;
         }
     }
 }
@@ -426,6 +429,10 @@ void Match::checkRoundEnd() {
         roundOver = true;
         roundWinner = Team::Terrorist;
         std::cout << "Todos los antiterroristas murieron. Ganan los terroristas. \n";
+    }
+    if (bomb.getState() == BombState::Defused) {
+        roundOver = true;
+        roundWinner = Team::CounterTerrorist;
     }
 }
 
@@ -466,17 +473,6 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
         } else {
             playersInfo.emplace_back(p.generatePlayerInfo());
         }
-        // TODO: Creo que es innecesario
-        // if (bomb.isCarried()) {
-        //     if (bomb.getCarrierId() == p.getId()) {
-        //         // cargo información de la bomba
-        //         if (p.getEquippedWeapon() == TypeWeapon::Bomb) {
-        //             weaponsInfo.emplace_back(bomb.generateWeaponInfo(BombState::Equipped));
-        //         } else {
-        //             weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::HIDDEN));
-        //         }
-        //     }
-        // }
 
         // cargo info del arma equipada. (si tiene la bomba ya se cargó)
         if (p.getEquippedWeapon() != TypeWeapon::Bomb) {
@@ -495,10 +491,7 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
                 weaponsInfo.emplace_back(p_weapon->generateWeaponInfo(WeaponState::HIDDEN));
         }
     }
-    // si la bomba está dropeda cargo esta información.
-    // if (bomb.isDropped()) {
-    //     weaponsInfo.emplace_back(bomb.generateWeaponInfo(WeaponState::DROPPED));
-    // }
+
     // cargo bullets
     for (auto& p: projectiles) {
         bulletsInfo.emplace_back(p.getServerId(), p.getWeaponUsed(), p.getX(), p.getY(),
@@ -515,15 +508,14 @@ GameInfo Match::generateGameInfo(const std::string& username) const {
     }
 
     if (phase == GamePhase::EndOfMatch) {
-        StatsInfo stats = generateStatsInfo();  // Asumimos que ya tenés este método implementado
-        return GameInfo(phase, bomb.generateBombInfo(), timeLeft,
-                        localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo,
-                        Shop::getInfo(), stats);
+        StatsInfo stats = generateStatsInfo();
+        return GameInfo(phase, bomb.generateBombInfo(), timeLeft, localPlayerInfo, playersInfo,
+                        bulletsInfo, weaponsInfo, stats);
     }
 
 
-    return GameInfo(this->phase, bomb.generateBombInfo(), timeLeft,
-                    localPlayerInfo, playersInfo, bulletsInfo, weaponsInfo, Shop::getInfo());
+    return GameInfo(this->phase, bomb.generateBombInfo(), timeLeft, localPlayerInfo, playersInfo,
+                    bulletsInfo, weaponsInfo);
 }
 
 // void Match::showPlayers() const {
@@ -543,7 +535,7 @@ void Match::handleKnifeAttack(Player* attacker, const Vec2D& direction) {
         if (PhysicsEngine::knifeHit(attacker->getX(), attacker->getY(), direction.getX(),
                                     direction.getY(), target, impactDistance) &&
 
-                                    !isFriendlyFire(attacker->getId(), target.getTeam())) {
+            !isFriendlyFire(attacker->getId(), target.getTeam())) {
             Weapon_* knife = attacker->getEquippedWeaponInstance();
             int damage = knife->calculateDamage(0);
             target.takeDamage(damage);
@@ -556,7 +548,7 @@ void Match::advancePhase() {
         std::cout << "==> INICIA RONDA " << roundsPlayed + 1 << "\n";
 
         // Limpieza entre rondas
-        for (auto& p : players) {
+        for (auto& p: players) {
             p.setBomb(nullptr);
         }
         bomb.reset();
@@ -605,7 +597,7 @@ void Match::advancePhase() {
         }
 
         // Desactivamos todos los proyectiles para que se dejen de renderizar
-        for (auto& proj : projectiles) {
+        for (auto& proj: projectiles) {
             if (proj.isActive())
                 proj.deactivate();
         }
@@ -685,27 +677,26 @@ void Match::rankPlayers() {
     std::sort(terrorists.begin(), terrorists.end(), compareByScore);
     std::sort(counterterrorists.begin(), counterterrorists.end(), compareByScore);
 
-    std::cout << "GANADOR: " << (roundWinner == Team::Terrorist ? "TERRORISTAS" : "ANTITERRORISTAS") << std::endl;
+    std::cout << "GANADOR: " << (roundWinner == Team::Terrorist ? "TERRORISTAS" : "ANTITERRORISTAS")
+              << std::endl;
 
     std::cout << "==> LEADERBOARD FINAL:\n";
     std::cout << "--- Terrorists ---\n";
-    for (const auto* p : terrorists) {
+    for (const auto* p: terrorists) {
         std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
-                  << ", Deaths: " << p->stats.deaths
-                  << ", Money: " << p->stats.moneyEarned << "\n";
+                  << ", Deaths: " << p->stats.deaths << ", Money: " << p->stats.moneyEarned << "\n";
     }
 
     std::cout << "--- Counter-Terrorists ---\n";
-    for (const auto* p : counterterrorists) {
+    for (const auto* p: counterterrorists) {
         std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
-                  << ", Deaths: " << p->stats.deaths
-                  << ", Money: " << p->stats.moneyEarned << "\n";
+                  << ", Deaths: " << p->stats.deaths << ", Money: " << p->stats.moneyEarned << "\n";
     }
 }
 
 StatsInfo Match::generateStatsInfo() const {
     StatsInfo info;
-    for (const auto& p : players) {
+    for (const auto& p: players) {
         const auto& s = p.getStats();
         PlayerStatsInfo psi(p.getId(), s.kills, s.deaths, s.moneyEarned);
         if (p.getTeam() == Team::Terrorist)

@@ -38,7 +38,8 @@ std::optional<AppStateCode> LoginAppState::update() {
             AppStateCode next_state = AppStateCode::MAIN_MENU;
             return next_state;
         } catch (const std::exception& e) {
-            std::cerr << "[LoginAppState] ERROR: Client not in lobby status" << e.what() << std::endl;
+            std::cerr << "[LoginAppState] ERROR: Client not in lobby status" << e.what()
+                      << std::endl;
             return AppStateCode::LOGIN;
         }
     }

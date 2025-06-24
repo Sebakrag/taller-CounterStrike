@@ -127,7 +127,7 @@ std::vector<uint8_t> TileMap::toBytes() const {
             buffer.push_back((uint8_t)matriz[i][j].getIdTile());
         }
     }
-    
+
     return buffer;
 }
 

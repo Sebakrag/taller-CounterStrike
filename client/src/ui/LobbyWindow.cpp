@@ -5,13 +5,13 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QListWidget>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScreen>
 #include <QSizePolicy>
 #include <QVBoxLayout>
-#include <QMessageBox>
 
 #include "../include/client.h"
 #include "ui/UIConstants.h"
@@ -189,18 +189,20 @@ void LobbyWindow::centerOnScreen() {
 
 void LobbyWindow::onStartGame() { done(StartGame); }
 
-void LobbyWindow::onLeaveGame() { 
+void LobbyWindow::onLeaveGame() {
     try {
         // Cerrar la ventana y enviar el código de resultado LeaveGame
         // para que LobbyAppState lo procese correctamente
         done(LeaveGame);
     } catch (const std::exception& e) {
         std::cerr << "Error al abandonar el lobby: " << e.what() << std::endl;
-        
-        QMessageBox::critical(this, "Error", QString("No se pudo abandonar la partida: %1").arg(e.what()));
+
+        QMessageBox::critical(this, "Error",
+                              QString("No se pudo abandonar la partida: %1").arg(e.what()));
     } catch (...) {
         std::cerr << "Error desconocido al abandonar el lobby" << std::endl;
-        QMessageBox::critical(this, "Error", "Ocurrió un error desconocido al abandonar la partida");
+        QMessageBox::critical(this, "Error",
+                              "Ocurrió un error desconocido al abandonar la partida");
     }
 }
 

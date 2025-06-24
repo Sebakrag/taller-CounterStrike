@@ -1,5 +1,6 @@
 #include "../../../../client/include/model/EC/ComponentUpdater.h"
 
+#include "../../../../client/include/model/EC/components/BombSpriteComponent.h"
 #include "../../../../client/include/model/EC/components/EquippedWeaponComponent.h"
 #include "../../../../client/include/model/EC/components/PlayerSpriteComponent.h"
 #include "../../../../client/include/model/EC/components/SoundComponent.h"
@@ -7,7 +8,6 @@
 #include "../../../../client/include/model/EC/components/TransformComponent.h"
 #include "../../../../client/include/model/EC/components/WeaponSpriteComponent.h"
 #include "../../../../client/include/model/utils/SoundEvent.h"
-#include "../../../../client/include/model/EC/components/BombSpriteComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
@@ -69,17 +69,14 @@ void ComponentUpdater::updateComponents(int timeLeft) {
         }
         if (const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e)) {
             if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
-                playerSpr->update(player->state,
-                                  player->weapon_type);  // TODO: Actualizar el SpriteType (en
-                                                         // cambio de ronda)
+                playerSpr->update(snap.sprite_type, player->state, player->weapon_type);
             }
         }
 
         if (const auto soundComp = comp_mgr.getComponent<SoundComponent>(e)) {
             if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
                 updatePlayerSoundComponent(e, *soundComp, *player, {snap.pos_x, snap.pos_y});
-            }
-            else if (auto b = std::get_if<BombSnapshot>(&snap.data)){
+            } else if (auto b = std::get_if<BombSnapshot>(&snap.data)) {
                 updateBombSoundComponent(*soundComp, *b, timeLeft);
             }
         }
@@ -143,20 +140,21 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
             e, PreviousPlayerInfo{curr_state, curr_weapon, curr_pos, curr_health});
 }
 
-void ComponentUpdater::updateBombSoundComponent(SoundComponent& soundComp, const BombSnapshot bombSnap, int currentTimeLeft) {
+void ComponentUpdater::updateBombSoundComponent(SoundComponent& soundComp,
+                                                const BombSnapshot bombSnap, int currentTimeLeft) {
     BombState currentState = bombSnap.state;
 
     if (currentState == BombState::Planted) {
-        if(previusBombState != BombState::Planted) {
+        if (previusBombState != BombState::Planted) {
             soundComp.addEvent(SoundEvent::PlantBomb);
         }
-        //beep cada 2 segundos
+        // beep cada 2 segundos
         if (currentTimeLeft > 5) {
-            if (currentTimeLeft != previusTimeLeft && currentTimeLeft %2 == 0) {
+            if (currentTimeLeft != previusTimeLeft && currentTimeLeft % 2 == 0) {
                 soundComp.addEvent(SoundEvent::BombBeep);
             }
         }
-        //beep cada 1 segundo
+        // beep cada 1 segundo
         else if (currentTimeLeft <= 5) {
             if (currentTimeLeft != previusTimeLeft) {
                 soundComp.addEvent(SoundEvent::BombBeep);
@@ -164,7 +162,7 @@ void ComponentUpdater::updateBombSoundComponent(SoundComponent& soundComp, const
         }
     }
     if (currentState == BombState::Exploded && previusBombState != BombState::Exploded) {
-        soundComp.addEvent(SoundEvent::BombExploded);    
+        soundComp.addEvent(SoundEvent::BombExploded);
     }
     if (currentState == BombState::Defused && previusBombState != BombState::Defused) {
         soundComp.addEvent(SoundEvent::DefuseBomb);

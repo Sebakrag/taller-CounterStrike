@@ -12,9 +12,9 @@
 #include "weapon/bomb.h"
 #include "weapon/weapon.h"
 #include "weapon/weapon_factory.h"
-#include "types2.h"
 
 #include "id_generator.h"
+#include "types2.h"
 
 class Player {
 private:
@@ -63,6 +63,7 @@ public:
     TypeWeapon getEquippedWeapon() const;
     Weapon getSpecificEquippedWeapon() const;
     Weapon_* getPrimaryWeapon() const;
+    Weapon_* getSecondaryWeapon() const;
     bool isAlive() const;
     bool canShoot(double currentTime) const;
     void takeDamage(int dmg);

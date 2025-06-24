@@ -65,7 +65,7 @@ TEST(ProtocoloGameInfo, ClienteRecibeGameInfoCorrectamente) {
             WeaponInfo(21, Weapon::Awp, WeaponState::EQUIPPED, 5, -9.9f, 0.1f)};
 
     // TODO: sacar el shop cuando se actualice el constructor de gameInfo.
-    GameInfo info(phase, bomb, timeLeft, local, others, bullets, weapons, ShopInfo());
+    GameInfo info(phase, bomb, timeLeft, local, others, bullets, weapons, StatsInfo());
 
     // 2) Arrancar servidor
     std::thread srv([&] { server_thread_send_gameinfo(info); });

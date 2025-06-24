@@ -1,9 +1,9 @@
 #ifndef PLAYER_STATS_INFO_H
 #define PLAYER_STATS_INFO_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 #include "../protocol.h"
 

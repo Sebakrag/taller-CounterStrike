@@ -3,21 +3,56 @@
 #include <chrono>
 #include <thread>
 
+#include "client/client_constants.h"
+
 Game::Game(Client& client, const MatchInfo& match_info):
         client(client),
         graphics(match_info.win_config, match_info.fovConfig, match_info.name),
-        world(graphics, match_info.tileMap, match_info.win_config, match_info.numPlayers,
+        world(graphics, audio, match_info.tileMap, match_info.win_config, match_info.numPlayers,
               match_info.localPlayerInfo),
-        eventHandler(client, world),
+        shop(graphics, match_info.shopInfo, SHOP_FONT_FILE_NAME, SHOP_FONT_SIZE),
+        eventHandler(client, world, shop),
         is_running(true) {}
 
 void Game::update(const float dt) {
-    // Cuando refactoricemos getGameInfo para que devuelva un GameInfo tenemos que modificar
-    // esta funcion para decidir en que fase del juego nos encontramos.
-    world.update(dt, client.getGameInfo());
+    // Es importante que la comunicacion con el server sea asincronica.
+    // El cliente debe poder renderizar sin todavia haber recibido informacion del servidor.
+    // De esta forma independizamos los FPS del gameloop del cliente del tickrate del servidor.
+    auto maybeNewGameInfo = client.tryGetGameInfo();
+    if (maybeNewGameInfo.has_value()) {
+        GameInfo gameInfo(maybeNewGameInfo.value());
+        world.update(gameInfo, dt);
+        currGamePhase = gameInfo.gamePhase;
+    }
+
+    // switch (gameInfo.gamePhase) {
+    switch (currGamePhase) {
+        case GamePhase::Combat:
+            if (audio.isMusicPlaying())
+                audio.haltMusic();
+            break;
+        case GamePhase::Preparation:
+        case GamePhase::EndOfMatch:
+            audio.haltAllChannels();
+            if (!audio.isMusicPlaying())
+                audio.playLoopMusic(0.5);
+            break;
+    }
+    // graphics.updateMouse();
 }
 
-void Game::render() { graphics.render(world); }
+void Game::render() {
+    graphics.clear();
+    world.render();
+    // if (gameInfo.gamePhase == GamePhase::Preparation) {
+    //     shop.render();
+    // }
+    if (currGamePhase == GamePhase::Preparation) {
+        shop.render();
+    }
+    // graphics.renderMouse(); // El mouse debe ser lo ultimo que renderizamos.
+    graphics.present();
+}
 
 void Game::start() {
     using clock = std::chrono::steady_clock;
@@ -43,10 +78,15 @@ void Game::start() {
         previous = current;
 
         // Lógica de juego (usa delta time)
-        eventHandler.handleEvents(is_running);
+        // eventHandler.handleEvents(is_running, gameInfo.gamePhase);
+        eventHandler.handleEvents(is_running, currGamePhase);
+        // auto start = std::chrono::steady_clock::now();
         update(frame_time.count());  // en segundos. O quizas para actualizar las animaciones
                                      // deberia utilizar el clock del servidor?
+        // auto afterUpdate = std::chrono::steady_clock::now();
         render();
+        // auto afterRender = std::chrono::steady_clock::now();
+
 
         // Esperar el tiempo restante del frame
         const auto post_logic = clock::now();
@@ -59,7 +99,7 @@ void Game::start() {
         // FPS debug cada 1 segundo
         ++frame_count;
         if ((clock::now() - fps_timer) >= seconds(1.0f)) {
-            std::cout << "FPS: " << frame_count << std::endl;
+            // std::cout << "FPS: " << frame_count << std::endl;
             frame_count = 0;
             fps_timer = clock::now();
         }
