@@ -7,16 +7,16 @@
 #include "../../../../client/include/model/EC/components/TransformComponent.h"
 #include "../../../../client/include/model/EC/components/WeaponSpriteComponent.h"
 #include "../../../../client/include/model/utils/SoundEvent.h"
-#include "model/EC/components/BombSpriteComponent.h"
+#include "../../../../client/include/model/EC/components/BombSpriteComponent.h"
 
 ComponentUpdater::ComponentUpdater(EntityManager& em, ComponentManager& cm):
         entt_mgr(em), comp_mgr(cm) {
     old_entities.reserve(INITIAL_OLD_ENTITIES_SIZE);
 }
 
-void ComponentUpdater::update(const std::vector<EntitySnapshot>& snapshots) {
+void ComponentUpdater::update(const std::vector<EntitySnapshot>& snapshots, int timeLeft) {
     syncEntities(snapshots);
-    updateComponents();
+    updateComponents(timeLeft);
 }
 
 void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots) {
@@ -45,7 +45,7 @@ void ComponentUpdater::syncEntities(const std::vector<EntitySnapshot>& snapshots
     }
 }
 
-void ComponentUpdater::updateComponents() {
+void ComponentUpdater::updateComponents(int timeLeft) {
     // Here I can just use the old_entities vector (because all the new entities are already
     // updated, since they were just created).
     for (const auto& [e, snap]: old_entities) {
@@ -74,9 +74,13 @@ void ComponentUpdater::updateComponents() {
                                                          // cambio de ronda)
             }
         }
+
         if (const auto soundComp = comp_mgr.getComponent<SoundComponent>(e)) {
             if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
                 updatePlayerSoundComponent(e, *soundComp, *player, {snap.pos_x, snap.pos_y});
+            }
+            else if (auto b = std::get_if<BombSnapshot>(&snap.data)){
+                updateBombSoundComponent(*soundComp, *b, timeLeft);
             }
         }
 
@@ -108,15 +112,9 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
             if (prev_info.weapon_id != curr_weapon)
                 soundComp.addEvent(SoundEvent::ChangeWeapon);
 
-            // std::cout << "[Previous HP]: " << prev_info.health << "[Current HP]: " << curr_health
-            //           << std::endl;
-
             if (curr_health < prev_info.health) {
                 soundComp.addEvent(SoundEvent::TakeDamage);
             }
-
-            // std::cout << "[Previous State]: " << static_cast<int>(prev_info.state)
-            //           << "[Current State]: " << static_cast<int>(curr_state) << std::endl;
 
             if (curr_state == PlayerState::Attacking && prev_info.state != PlayerState::Attacking) {
                 // Quizas que deberia enviar un evento de sonido al componente de su arma.
@@ -143,4 +141,35 @@ void ComponentUpdater::updatePlayerSoundComponent(const Entity e, SoundComponent
     // previous_player_info[e] = {curr_state, curr_weapon, curr_pos};
     previous_player_info.insert_or_assign(
             e, PreviousPlayerInfo{curr_state, curr_weapon, curr_pos, curr_health});
+}
+
+void ComponentUpdater::updateBombSoundComponent(SoundComponent& soundComp, const BombSnapshot bombSnap, int currentTimeLeft) {
+    BombState currentState = bombSnap.state;
+
+    if (currentState == BombState::Planted) {
+        if(previusBombState != BombState::Planted) {
+            soundComp.addEvent(SoundEvent::PlantBomb);
+        }
+        //beep cada 2 segundos
+        if (currentTimeLeft > 5) {
+            if (currentTimeLeft != previusTimeLeft && currentTimeLeft %2 == 0) {
+                soundComp.addEvent(SoundEvent::BombBeep);
+            }
+        }
+        //beep cada 1 segundo
+        else if (currentTimeLeft <= 5) {
+            if (currentTimeLeft != previusTimeLeft) {
+                soundComp.addEvent(SoundEvent::BombBeep);
+            }
+        }
+    }
+    if (currentState == BombState::Exploded && previusBombState != BombState::Exploded) {
+        soundComp.addEvent(SoundEvent::BombExploded);    
+    }
+    if (currentState == BombState::Defused && previusBombState != BombState::Defused) {
+        soundComp.addEvent(SoundEvent::DefuseBomb);
+    }
+
+    previusBombState = currentState;
+    previusTimeLeft = currentTimeLeft;
 }

@@ -30,14 +30,45 @@ Match::Match(const std::string& id_scenario):
         roundsPlayed(0),
         roundTimer(PREPARATION_TIME) {
     // TODO: Harcodeo un dropped weapon para probar. Eliminarlo.
-    auto ak47 = std::make_unique<WeaponAk47>();
-    droppedWeapons.emplace_back(DroppedWeapon{std::move(ak47), {300, 300}});
-    auto m3 = std::make_unique<WeaponM3>();
-    droppedWeapons.emplace_back(DroppedWeapon{std::move(m3), {400, 350}});
-    auto awp = std::make_unique<WeaponAwp>();
-    droppedWeapons.emplace_back(DroppedWeapon{std::move(awp), {600, 380}});
+    // auto ak47 = std::make_unique<WeaponAk47>();
+    // droppedWeapons.emplace_back(DroppedWeapon{std::move(ak47), {300, 300}});
+    // auto m3 = std::make_unique<WeaponM3>();
+    // droppedWeapons.emplace_back(DroppedWeapon{std::move(m3), {400, 350}});
+    // auto awp = std::make_unique<WeaponAwp>();
+    // droppedWeapons.emplace_back(DroppedWeapon{std::move(awp), {600, 380}});
     // auto bomb = std::make_unique<Bomb>();
     // droppedWeapons.emplace_back(DroppedWeapon{std::move(bomb), {300, 300}});
+
+    const auto& weaponPositions = map.getWeaponPositions();
+    for (const auto& weaponPair : weaponPositions) {
+        const Vec2D& position = weaponPair.first;
+        Weapon weaponType = weaponPair.second;
+        
+        switch (weaponType) {
+            case Weapon::Ak47: {
+                auto ak47 = std::make_unique<WeaponAk47>();
+                droppedWeapons.emplace_back(DroppedWeapon{std::move(ak47), position});
+                break;
+            }
+            case Weapon::M3: {
+                auto m3 = std::make_unique<WeaponM3>();
+                droppedWeapons.emplace_back(DroppedWeapon{std::move(m3), position});
+                break;
+            }
+            case Weapon::Awp: {
+                auto awp = std::make_unique<WeaponAwp>();
+                droppedWeapons.emplace_back(DroppedWeapon{std::move(awp), position});
+                break;
+            }
+            case Weapon::Glock: {
+                auto glock = std::make_unique<WeaponGlock>();
+                droppedWeapons.emplace_back(DroppedWeapon{std::move(glock), position});
+                break;
+            }
+            default:
+                break;
+        }
+    }
 }
 
 // void Match::addPlayer(Player&& player) { players.emplace_back(std::move(player)); }

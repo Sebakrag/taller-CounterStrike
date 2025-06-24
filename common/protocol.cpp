@@ -241,6 +241,8 @@ uint8_t Protocol_::encodeMenuActionType(const MenuActionType& gameActionType) {
             return BYTE_JOIN_MATCH;
         case MenuActionType::List:
             return BYTE_LIST_MATCHS;
+        case MenuActionType::ListScenarios:
+            return BYTE_SCENARIOS_LIST;
         default:
             throw std::runtime_error("Error. Tipo de acción desconocida. No se puede codificar");
     }
@@ -450,6 +452,8 @@ MenuActionType Protocol_::decodeMenuActionType(uint8_t byte) {
             return MenuActionType::List;
         case BYTE_EXIT:
             return MenuActionType::Exit;
+        case BYTE_SCENARIOS_LIST:
+            return MenuActionType::ListScenarios;
         default:
             throw std::runtime_error(
                     "Error. Tipo de acción de menú desconocida. No se puede decodificar");

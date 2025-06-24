@@ -1,7 +1,7 @@
 #ifndef EQUIPPEDWEAPONCOMPONENT_H
 #define EQUIPPEDWEAPONCOMPONENT_H
 
-#include "client/include/model/EC/Entity.h"
+#include "../../../../../client/include/model/EC/Entity.h"
 
 class EquippedWeaponComponent {
 private:

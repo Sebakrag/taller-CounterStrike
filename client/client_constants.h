@@ -45,7 +45,7 @@
 #define BOMB_PLANTED_IMG_2 (WEAPON_PATH + "/bomb_planted_spritesheet (32x128).png")
 
 // Maps
-#define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/tileset_desierto_(4x11).png")
+#define DESERT_TILE_SET_IMG (TILE_SETS_PATH + "/desert_tiles.png")
 #define AZTEC_TILE_SET_IMG (TILE_SETS_PATH + "/aztec_tiles.png")
 #define TRAINING_TILE_SET_IMG (TILE_SETS_PATH + "/training_tiles.png")
 
@@ -73,6 +73,7 @@
 #define SHOOT_SOUND (WEAPON_SOUNDS_PATH + "/glock18.wav")  // TODO: Esto estaria de mas
 #define TAKE_DAMAGE_SOUND (PLAYER_SOUNDS_PATH + "/hit.wav")
 #define DIE_SOUND (PLAYER_SOUNDS_PATH + "/die.wav")
+
 
 // Weapon (sounds)
 // #define KNIFE_HIT_SOUND (WEAPON_SOUNDS_PATH + "/knife_hit.wav")

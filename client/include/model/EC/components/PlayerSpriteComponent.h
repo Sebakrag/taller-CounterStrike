@@ -1,7 +1,7 @@
 #ifndef PLAYERSPRITECOMPONENT_H
 #define PLAYERSPRITECOMPONENT_H
 
-#include "common/types.h"
+#include "../../../../../common/types.h"
 
 #include "SpriteComponent.h"
 
