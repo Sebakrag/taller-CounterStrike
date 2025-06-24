@@ -46,45 +46,55 @@ install_dependencies() {
         apt-get update
         
         # Instalar dependencias básicas de desarrollo
-        apt-get install -y build-essential git cmake pkg-config
+        apt-get install -y build-essential git cmake pkg-config wget
         
         # Instalar las dependencias de Qt
-        apt-get install -y qt6-base-dev qt6-base-dev-tools qt6-multimedia-dev
+        apt-get install -y qt6-base-dev qt6-base-dev-tools qt6-multimedia-dev libqt6opengl6-dev
         
         # Instalar las bibliotecas SDL2 y extensiones
         apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
         
-        # Bibliotecas de audio
-        apt-get install -y libopus-dev libopusfile-dev libfluidsynth-dev libwavpack-dev libfreetype-dev
+        # Bibliotecas de audio completas
+        apt-get install -y libopus-dev libopusfile-dev libfluidsynth-dev libwavpack-dev libfreetype-dev libxmp-dev
+        apt-get install -y fluidsynth wavpack libmodplug-dev
         
         # Dependencias gráficas adicionales que suelen faltar en contenedores
         apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev \
             libxss-dev libwayland-dev libxkbcommon-dev libgles2-mesa-dev libgl1-mesa-dev libegl1-mesa-dev \
-            libdrm-dev libgbm-dev libpulse-dev libasound2-dev libpipewire-0.3-dev 
+            libdrm-dev libgbm-dev libpulse-dev libasound2-dev 
+            
+        # Soporte para PipeWire (audio moderno en Linux)
+        apt-get install -y libpipewire-0.3-dev
         
         # Instalar yaml-cpp explícitamente
         apt-get install -y libyaml-cpp-dev
         
     elif [[ "$OS" == *"Fedora"* ]]; then
         # Para Fedora
-        dnf install -y git cmake gcc g++ make
+        dnf install -y git cmake gcc g++ make pkg-config wget
         dnf install -y qt6-qtbase-devel qt6-qttools-devel qt6-qtmultimedia-devel
         dnf install -y SDL2-devel SDL2_image-devel SDL2_ttf-devel SDL2_mixer-devel
-        dnf install -y opus-devel opusfile-devel fluidsynth-devel wavpack-devel freetype-devel
+        dnf install -y opus-devel opusfile-devel fluidsynth-devel wavpack-devel freetype-devel xmp-devel
+        dnf install -y fluidsynth wavpack libmodplug-devel
+        dnf install -y pipewire-devel pulseaudio-libs-devel alsa-lib-devel
         dnf install -y yaml-cpp-devel
+        
     elif [[ "$OS" == *"Arch"* ]]; then
         # Para Arch
-        pacman -Sy --noconfirm git cmake gcc make
+        pacman -Sy --noconfirm git cmake gcc make pkg-config wget
         pacman -Sy --noconfirm qt6-base qt6-tools qt6-multimedia
         pacman -Sy --noconfirm sdl2 sdl2_image sdl2_ttf sdl2_mixer
-        pacman -Sy --noconfirm opus opusfile fluidsynth wavpack freetype2
+        pacman -Sy --noconfirm opus opusfile fluidsynth wavpack freetype2 libxmp
+        pacman -Sy --noconfirm fluidsynth wavpack libmodplug
+        pacman -Sy --noconfirm pipewire pulseaudio alsa-lib
         pacman -Sy --noconfirm yaml-cpp
     else
         echo -e "${RED}Sistema operativo no soportado: $OS${NC}"
         echo "Por favor, instale las dependencias manualmente:"
         echo "- git, cmake, compilador C++"
         echo "- Qt6 (Widgets, Core, Gui, Multimedia)"
-        echo "- libopus, libopusfile, fluidsynth, wavpack, freetype"
+        echo "- SDL2 y extensiones (image, ttf, mixer)"
+        echo "- libopus, libopusfile, fluidsynth, wavpack, freetype, libxmp"
         echo "- yaml-cpp"
         exit 1
     fi
