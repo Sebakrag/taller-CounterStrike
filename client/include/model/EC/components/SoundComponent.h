@@ -8,7 +8,7 @@
 class SoundComponent {
 private:
     std::vector<SoundEvent> eventsToPlay;
-
+    int contador = 0;
 public:
     SoundComponent();
 

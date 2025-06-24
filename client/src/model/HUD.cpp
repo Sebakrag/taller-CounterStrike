@@ -47,7 +47,7 @@ void HUD::renderHealth(Graphics& graphics, const int baseY) {
         color = COLOR_RED;
     }
     // Dibujamos el símbolo del reloj igual que antes
-    symbolsRenderer.renderSymbol(graphics, HUDSymbolType::CLOCK, MARGIN, baseY, SCALE);
+    symbolsRenderer.renderSymbol(graphics, HUDSymbolType::HEALTH, MARGIN, baseY, SCALE);
     // Ahora dibujamos el texto en rojo
     numberRenderer.renderFromText(graphics, std::to_string(health), MARGIN + SYMBOL_W + TEXT_PADDING, baseY, color);
 }
@@ -60,13 +60,16 @@ void HUD::renderTime(Graphics& graphics, const int screenW, const int baseY) {
 
     SDL_Color color = COLOR_WHITE;
     if (bombState == BombState::Planted) {
+        symbolsRenderer.renderSymbol(graphics, HUDSymbolType::BOMB, centerX, baseY, SCALE);
         color = COLOR_RED;
     } else if (bombState == BombState::Defused) {
+        symbolsRenderer.renderSymbol(graphics, HUDSymbolType::BOMB, centerX, baseY, SCALE);
         color = COLOR_GREEN;
     }
-    // Dibujamos el símbolo del reloj igual que antes
-    symbolsRenderer.renderSymbol(graphics, HUDSymbolType::CLOCK, centerX, baseY, SCALE);
-    // Ahora dibujamos el texto en rojo
+    else{ 
+        symbolsRenderer.renderSymbol(graphics, HUDSymbolType::CLOCK, centerX, baseY, SCALE);
+    }
+    
     numberRenderer.renderFromText(graphics, timeStr, centerX + SYMBOL_W + TEXT_PADDING, baseY, color);
 
 }

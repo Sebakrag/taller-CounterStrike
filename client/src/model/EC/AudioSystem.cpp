@@ -1,16 +1,16 @@
-#include "client/include/model/EC/AudioSystem.h"
+#include "../../../../client/include/model/EC/AudioSystem.h"
 
 #include <unordered_set>
 
 #include <SDL2/SDL_audio.h>
 
-#include "client/include/model/EC/components/SoundComponent.h"
-#include "client/include/model/EC/components/TransformComponent.h"
+#include "../../../../client/include/model/EC/components/SoundComponent.h"
+#include "../../../../client/include/model/EC/components/TransformComponent.h"
 
 namespace {
 constexpr float MAX_SOUND_DISTANCE =
         600.0f;  // TODO: Quizas que lo podemos agregar al archivo de config del server.
-constexpr int MAX_SOUNDS_PER_FRAME = 10;  // Limite global de reproducción de sonidos por frame
+constexpr int MAX_SOUNDS_PER_FRAME = 300;  // Limite global de reproducción de sonidos por frame
 }  // namespace
 
 
@@ -28,8 +28,9 @@ void AudioSystem::update(const Vec2D& listenerPos) {
 
         const int volumePercent =
                 static_cast<int>(calculateVolumePercentage(soundPos, listenerPos));
-        if (volumePercent == 0)
+        if (volumePercent == 0) {
             return;
+        }
 
         std::unordered_set<SoundEvent> currentLoops;
 
@@ -45,12 +46,14 @@ void AudioSystem::update(const Vec2D& listenerPos) {
                         activeLoops[e][ev] = channel;
                     }
                 }
-            } else if (soundsPlayed < MAX_SOUNDS_PER_FRAME) {
-                // One-shot sound: solo reproducimos si no nos pasamos del límite global
+            } 
+            if (soundsPlayed < MAX_SOUNDS_PER_FRAME) {
                 if (const auto chunk = sound_lib.get(ev)) {
                     audio.playChannel(-1, *chunk, volumePercent);
                     ++soundsPlayed;
                 }
+            } else {
+                std::cout << "Límite global alcanzado, se salta evento: " << static_cast<int>(ev) << " de entidad " << e << std::endl;
             }
         }
 

@@ -149,7 +149,7 @@ void ComponentUpdater::updateBombSoundComponent(SoundComponent& soundComp,
         }
         // beep cada 2 segundos
         if (currentTimeLeft > 5) {
-            if (currentTimeLeft % 2 == 0) {
+            if (currentTimeLeft != previusTimeLeft && currentTimeLeft % 2 == 0) {
                 soundComp.addEvent(SoundEvent::BombBeep);
                 std::cout << "BEEP1 "  << currentTimeLeft<< std::endl;
             }

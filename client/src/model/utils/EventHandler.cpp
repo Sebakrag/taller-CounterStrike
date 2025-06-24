@@ -1,4 +1,5 @@
 #include "../../../../client/include/model/utils/EventHandler.h"
+#include <SDL2/SDL_scancode.h>
 
 #include "../../../../client/dtos/AimInfo.h"
 #include "../../../../common/types.h"
@@ -88,7 +89,7 @@ void EventHandler::handleKeyDown(const SDL_Scancode sc) const {
         case SDL_SCANCODE_4:
             client.changeWeapon(TypeWeapon::Bomb);
             break;
-        case SDL_SCANCODE_R:
+        case SDL_SCANCODE_SPACE:
             client.defuseBomb();
             break;
         default:
