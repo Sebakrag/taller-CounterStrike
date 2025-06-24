@@ -17,7 +17,8 @@ protected:
     uint32_t serverId;
 
 public:
-    explicit Weapon_(const int damage, const int maxDamage): damage(damage), maxDamage(maxDamage), serverId(IdGenerator::getNextId()) {}
+    explicit Weapon_(const int damage, const int maxDamage):
+            damage(damage), maxDamage(maxDamage), serverId(IdGenerator::getNextId()) {}
     virtual ~Weapon_() = default;
 
     virtual bool canShoot(double currentTime) const = 0;

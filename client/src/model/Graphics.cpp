@@ -3,24 +3,19 @@
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
-#include "../../../client/client_constants.h"
 #include "../../../client/include/model/World.h"
 #include "../../../client/include/model/utils/DynamicStencil.h"
 #include "../../../client/include/model/utils/TextureManager.h"
 
 #define GAME_NAME "Counter Strike"
-#define MAX_CHANNELS_ALLOCATED 64
 
 Graphics::Graphics(const WindowConfig& config, const FOVConfig& fov_config,
                    const std::string& match_name):
         sdl(SDL_INIT_VIDEO || SDL_INIT_AUDIO),
         sdl_image(IMG_INIT_PNG | IMG_INIT_JPG),
-        sdl_mixer(MIX_INIT_OGG),
         sdl_ttf(),
         window(create_window(config, match_name)),
-        renderer(create_renderer(window)),
-        mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) {
-    mixer.AllocateChannels(MAX_CHANNELS_ALLOCATED);
+        renderer(create_renderer(window)) {
     TextureManager::init(renderer);
     DynamicStencil::init(renderer, fov_config);
 }
@@ -37,10 +32,20 @@ Renderer Graphics::create_renderer(Window& window) {
     return ren;
 }
 
-void Graphics::render(World& world) {
-    renderer.Clear();
-    world.render(*this);
-    renderer.Present();
+// void Graphics::render(World& world) {
+//     renderer.Clear();
+//     world.render();
+//     // mouse.render();  // TODO: crear un mouse.
+//     renderer.Present();
+// }
+
+void Graphics::clear() { renderer.Clear(); }
+
+void Graphics::present() { renderer.Present(); }
+
+void Graphics::fillRect(const Rect& rect, const Color& color) {
+    renderer.SetDrawColor(color);
+    renderer.FillRect(rect);
 }
 
 void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect) {
@@ -70,5 +75,3 @@ void Graphics::clearWithTransparentBlack() {
     renderer.SetDrawColor(0, 0, 0, 0);
     renderer.Clear();
 }
-
-Mixer& Graphics::getMixer() { return mixer; }

@@ -1,6 +1,8 @@
 #ifndef STATS_INFO_H
 #define STATS_INFO_H
 
+#include <vector>
+
 #include "player_stats_info.h"
 
 struct StatsInfo {

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../game_info/local_player_info.h"
+#include "../game_info/shop_info.h"
 #include "../tile_map.h"
 
 #include "FovConfig.h"
@@ -17,18 +18,20 @@ struct MatchInfo {
     int numPlayers;  // TODO: reemplazar por un struct que cargue con la cant maxima de cada tipo
                      // entidad.
     LocalPlayerInfo localPlayerInfo;
+    ShopInfo shopInfo;
 
     MatchInfo() = default;
 
     MatchInfo(const std::string& name, const WindowConfig& win_config, const FOVConfig& fovConfig,
-              const TileMap& tile_map, const int numPlayers,
-              const LocalPlayerInfo& localPlayerInfo):
+              const TileMap& tile_map, const int numPlayers, const LocalPlayerInfo& localPlayerInfo,
+              const ShopInfo& shopInfo):
             name(name),
             win_config(win_config),
             fovConfig(fovConfig),
             tileMap(tile_map),
             numPlayers(numPlayers),
-            localPlayerInfo(localPlayerInfo) {}
+            localPlayerInfo(localPlayerInfo),
+            shopInfo(shopInfo) {}
 
 
     MatchInfo(const MatchInfo& other) = default;

@@ -4,34 +4,115 @@
 #include "../../../../common/types.h"
 #include "../../../../common/utils/Vec2D.h"
 
-EventHandler::EventHandler(Client& client, World& world): client(client), world(world) {}
+EventHandler::EventHandler(Client& client, World& world, Shop& shop):
+        client(client), world(world), shop(shop) {}
 
-void EventHandler::handleEvents(bool& gameIsRunning) {
+void EventHandler::handleEvents(bool& gameIsRunning, const GamePhase gamePhase) {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             gameIsRunning = false;
             client.ExitGame();
             return;
-        } else if (e.type == SDL_KEYDOWN) {
-            if (e.key.repeat == 0)
-                handleKeyDown(e.key.keysym.scancode, gameIsRunning);
-        } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-            handleMouseButtonDown(e.button);
+        }
+        // Manejo global de ESC (aplicable a cualquier fase)
+        if (e.type == SDL_KEYDOWN && e.key.repeat == 0 &&
+            e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            gameIsRunning = false;
+            client.ExitGame();
+            return;
+        }
+        switch (gamePhase) {
+            case GamePhase::Preparation:
+                handlePreparationPhaseEvents(e);
+                break;
+            case GamePhase::Combat:
+                handleCombatPhaseEvents(e);
+                break;
+            default:
+                break;
         }
     }
+    // Una sola vez por frame
+    if (gamePhase == GamePhase::Combat) {
+        handleKeyboardEvents(gameIsRunning);
+        handleMouseEvents(gameIsRunning);
+    }
+}
 
-    handleKeyboardEvents(gameIsRunning);
-    handleMouseEvents(gameIsRunning);
+void EventHandler::handlePreparationPhaseEvents(const SDL_Event& e) const {
+    // En la fase de preparacion solo permitimos interaccion con la tienda.
+    if (e.type == SDL_MOUSEBUTTONDOWN) {
+        if (shop.isBuyButtonClicked(e.button.x, e.button.y)) {
+            switch (shop.getSelectionType()) {
+                case ShopSelection::WeaponSelected:
+                    client.buyWeapon(shop.getSelectedWeapon());
+                    return;
+                case ShopSelection::PrimaryAmmoSelected:
+                case ShopSelection::SecondaryAmmoSelected:
+                    client.buyAmmo(shop.getSelectedAmmoType());
+                    return;
+                default:
+                    return;
+            }
+        }
+        shop.handleClick(e.button.x, e.button.y);
+    }
+}
+
+void EventHandler::handleCombatPhaseEvents(const SDL_Event& e) const {
+    switch (e.type) {
+        case SDL_KEYDOWN:
+            if (e.key.repeat == 0)
+                handleKeyDown(e.key.keysym.scancode);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            handleMouseButtonDown(e.button);
+            break;
+        default:
+            break;
+    }
+}
+
+void EventHandler::handleKeyDown(const SDL_Scancode sc) const {
+    switch (sc) {
+        case SDL_SCANCODE_1:
+            client.changeWeapon(TypeWeapon::Primary);
+            break;
+        case SDL_SCANCODE_2:
+            client.changeWeapon(TypeWeapon::Secondary);
+            break;
+        case SDL_SCANCODE_3:
+            client.changeWeapon(TypeWeapon::Knife);
+            break;
+        case SDL_SCANCODE_4:
+            client.changeWeapon(TypeWeapon::Bomb);
+            break;
+        case SDL_SCANCODE_R:
+            client.defuseBomb();
+            break;
+        default:
+            break;
+    }
+}
+
+void EventHandler::handleMouseButtonDown(const SDL_MouseButtonEvent& b) const {
+    AimInfo aimInfo = world.getPlayerAimInfo(b.x, b.y);
+    if (b.button == SDL_BUTTON_LEFT) {
+        client.shoot(aimInfo);
+    } else if (b.button == SDL_BUTTON_RIGHT) {
+        client.pickUpItem();
+    }
 }
 
 void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     // salir
-    if (state[SDL_SCANCODE_ESCAPE]) {
+    if (state[SDL_SCANCODE_ESCAPE] || !gameIsRunning) {
         gameIsRunning = false;
-        // client.ExitGame();
+        client.ExitGame();
+        return;
     }
 
     Uint32 now = SDL_GetTicks();
@@ -58,32 +139,6 @@ void EventHandler::handleKeyboardEvents(bool& gameIsRunning) {
     }
 }
 
-void EventHandler::handleKeyDown(SDL_Scancode sc, bool& gameIsRunning) const {
-    if (sc == SDL_SCANCODE_ESCAPE)
-        gameIsRunning = false;
-
-    // cambiar de arma
-    if (sc == SDL_SCANCODE_1) {
-        client.changeWeapon(TypeWeapon::Primary);
-    } else if (sc == SDL_SCANCODE_2) {
-        client.changeWeapon(TypeWeapon::Secondary);
-    } else if (sc == SDL_SCANCODE_3) {
-        client.changeWeapon(TypeWeapon::Knife);
-    } else if (sc == SDL_SCANCODE_4) {
-        client.changeWeapon(TypeWeapon::Bomb);
-    }
-}
-
-
-void EventHandler::handleMouseButtonDown(const SDL_MouseButtonEvent& b) {
-    AimInfo aimInfo = world.getPlayerAimInfo(b.x, b.y);
-    if (b.button == SDL_BUTTON_LEFT) {
-        client.shoot(aimInfo);
-    } else if (b.button == SDL_BUTTON_RIGHT) {
-        client.pickUpItem();
-    }
-}
-
 void EventHandler::handleMouseEvents(const bool gameIsRunning) {
     if (!gameIsRunning) {
         return;
@@ -98,13 +153,15 @@ void EventHandler::handleMouseEvents(const bool gameIsRunning) {
     const Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
 
     const AimInfo aimInfo = world.getPlayerAimInfo(mouseX, mouseY);
-    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) {  // si mantiene el click izquierdo
-        if (aimInfo.currentWeapon == Weapon::Ak47) {
-            client.shoot(aimInfo);
-        }
+    if (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT) &&
+        isAutomatic(aimInfo.currentWeapon)) {  // si mantiene el click izquierdo
+        client.shoot(aimInfo);
     }
     if (aimInfo.angle != lastAimAngle) {  // Solo rotar si el ángulo realmente cambió
         client.rotate(aimInfo.angle);
         lastAimAngle = aimInfo.angle;
     }
 }
+
+// TODO: Esta funcion deberia ser utilitaria (no deberia estar en EventHandler).
+bool EventHandler::isAutomatic(const Weapon weapon) const { return weapon == Weapon::Ak47; }

@@ -31,14 +31,15 @@ public:
     static const FOVConfig& getFovConfig();
 
     // Método para listar los archivos YAML de mapas disponibles
-    static std::vector<std::string> listAvailableMaps(const std::string& mapsDirectory = "server/maps");
+    static std::vector<std::string> listAvailableMaps(
+            const std::string& mapsDirectory = "server/maps");
 
     // Método para cargar los mapas disponibles
     static void loadAvailableMaps(const std::string& mapsDirectory = "server/mapss");
 
     // Método para cargar un mapa específico desde YAML
-    static bool loadMapFromYaml(const std::string& mapName, const std::string& mapsDirectory = "server/maps");
-    
+    static bool loadMapFromYaml(const std::string& mapName,
+                                const std::string& mapsDirectory = "server/maps");
 };
 
 #endif  // SCENARIO_REGISTRY_H_

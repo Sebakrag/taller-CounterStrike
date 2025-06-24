@@ -17,9 +17,12 @@
 #include "Map.h"
 
 class Graphics;
+class Audio;
 
 class World {
 private:
+    Graphics& graphics;
+    GamePhase gamePhase;
     ComponentManager comp_mgr;
     EntityManager entt_mgr;
     ComponentUpdater comp_updater;
@@ -45,13 +48,12 @@ public:
     /// @param numPlayers number of players that will play the game match.
     /// @param firstLocalPlayerSnap initial snapshot that the server send about our local_player.
     /// ///
-    World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig, int numPlayers,
-          const LocalPlayerInfo& firstLocalPlayerSnap);
+    World(Graphics& graphics, Audio& audio, const TileMap& tileMap, const WindowConfig& winConfig,
+          int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap);
 
-    void update(float dt, const GameInfo& gameInfo);
-    void render(Graphics& graphics);
+    void update(const GameInfo& gameInfo, float dt);
+    void render();
     AimInfo getPlayerAimInfo(int mouseX, int mouseY);
-    Vec2D getPlayerPosition() const;
 };
 
 #endif  // WORLD_H

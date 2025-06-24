@@ -10,7 +10,7 @@
 #include "../../../common/dtos/WindowConfig.h"
 #include "../../../common/utils/Vec2D.h"
 
-using SDL2pp::Mixer;
+using SDL2pp::Color;
 using SDL2pp::NullOpt;
 using SDL2pp::Optional;
 using SDL2pp::Point;
@@ -18,7 +18,6 @@ using SDL2pp::Rect;
 using SDL2pp::Renderer;
 using SDL2pp::SDL;
 using SDL2pp::SDLImage;
-using SDL2pp::SDLMixer;
 using SDL2pp::SDLTTF;
 using SDL2pp::Texture;
 using SDL2pp::Window;
@@ -29,13 +28,11 @@ class Graphics {
 private:
     SDL sdl;
     SDLImage sdl_image;
-    SDLMixer sdl_mixer;
     SDLTTF sdl_ttf;
 
     Window window;
     Renderer renderer;
-    // TODO: puedo encapsular todo lo relacionado al audio del juego en una clase Audio.
-    Mixer mixer;
+    // Mouse mouse;  // TODO: crear un mouse con textura y renderizarlo despues del mundo.
 
     Window create_window(const WindowConfig& config, const std::string& match_name) const;
     Renderer create_renderer(Window& window);
@@ -44,7 +41,10 @@ public:
     Graphics(const WindowConfig& config, const FOVConfig& fov_config,
              const std::string& match_name);
 
-    void render(World& world);
+    // void render(World& world);
+    void clear();
+    void present();
+    void fillRect(const Rect& rect, const Color& color);
     void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,
               const Optional<Rect>& dstRect = NullOpt);
     void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,
@@ -57,8 +57,6 @@ public:
     void setRenderTarget(Texture& tex);
     void resetRenderTarget();
     void clearWithTransparentBlack();
-
-    Mixer& getMixer();
 };
 
 #endif  // GRAPHICS_H

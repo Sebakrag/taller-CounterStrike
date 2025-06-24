@@ -132,10 +132,12 @@ GameInfo Client::getGameInfo() {
     return g;
 }
 
-GameInfo Client::tryGetGameInfo() {
+std::optional<GameInfo> Client::tryGetGameInfo() {
     GameInfo g;
-    recv_queue.try_pop(g);  // o pop(). Tener en cuenta si la interfaz debe esperar o seguir igual
-    return g;
+    // o pop(). Tener en cuenta si la interfaz debe esperar o seguir igual
+    if (recv_queue.try_pop(g))
+        return g;
+    return std::nullopt;
 }
 
 void Client::move(const Vec2D& direction) {
@@ -153,8 +155,17 @@ void Client::changeWeapon(const TypeWeapon& typeWeapon) {
     send_queue.try_push(GameAction(GameActionType::ChangeWeapon, typeWeapon));
 }
 
-
 void Client::pickUpItem() { send_queue.try_push(GameAction(GameActionType::PickUp)); }
+
+void Client::buyWeapon(const Weapon weapon) {
+    send_queue.try_push(GameAction(GameActionType::BuyWeapon, weapon));
+}
+
+void Client::buyAmmo(const AmmoType ammoType) {
+    send_queue.try_push(GameAction(GameActionType::BuyAmmo, ammoType, 10));
+}
+
+void Client::defuseBomb() { send_queue.try_push(GameAction(GameActionType::DefuseBomb)); }
 
 Client::~Client() {}
 

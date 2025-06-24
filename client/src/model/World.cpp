@@ -2,8 +2,11 @@
 
 #include "../../../client/include/model/EC/components/TransformComponent.h"
 
-World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& winConfig,
-             const int numPlayers, const LocalPlayerInfo& firstLocalPlayerSnap):
+World::World(Graphics& graphics, Audio& audio, const TileMap& tileMap,
+             const WindowConfig& winConfig, const int numPlayers,
+             const LocalPlayerInfo& firstLocalPlayerSnap):
+        graphics(graphics),
+        gamePhase(GamePhase::Preparation),
         entt_mgr(comp_mgr, numPlayers),
         comp_updater(entt_mgr, comp_mgr),
         map(tileMap, graphics),
@@ -11,25 +14,31 @@ World::World(Graphics& graphics, const TileMap& tileMap, const WindowConfig& win
         local_player(entt_mgr.create_local_player(firstLocalPlayerSnap)),
         // bomb(entt_mgr.create_bomb(firstBombSnap)),
         render_sys(local_player),
-        audio_sys(comp_mgr, graphics.getMixer()) {}
+        audio_sys(comp_mgr, audio) {}
 
 
-void World::update(float dt, const GameInfo& gameInfo) {
-    if (dt == 1) {}  // para que compile. Si no lo usamos sacar el parametro 'dt'
-    // gameInfo.print();
-    currentWeapon = gameInfo.localPlayer.weapon;
-    local_player_pos = gameInfo.localPlayer.position;
+void World::update(const GameInfo& gameInfo, const float dt) {
+    if (dt == 1) {}  // TODO: dt sirve para las animaciones.
+    gamePhase = gameInfo.gamePhase;
+    if (gamePhase == GamePhase::Combat) {
+        currentWeapon = gameInfo.localPlayer.weapon;
+        local_player_pos = gameInfo.localPlayer.position;
 
-    comp_updater.update(gameInfo.getSnapshots(), gameInfo.timeLeft);
+        // comp_updater.update(gameInfo.getSnapshots());
+        comp_updater.update(gameInfo.getSnapshots(), gameInfo.timeLeft);
+
+        audio_sys.update(local_player_pos);  // Play the sound effects.
+    }
 
     player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
-
-    audio_sys.update(local_player_pos);  // Play the sound effects.
 }
 
-void World::render(Graphics& graphics) {
+void World::render() {
+    // TODO: podriamos guardar el angulo de rotacion del player como miembro de World asi
+    /// desacoplamos a World completamente de TransformComponent.
+    /// Atencion: el angulo tiene que estar en degrees para el renderizado!!
     const auto tCompLocalPlayer = comp_mgr.getComponent<TransformComponent>(local_player);
-    // std::cout << playerPos << std::endl;
+
     camera.follow(local_player_pos);
 
     map.render2(graphics, camera);

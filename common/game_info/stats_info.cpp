@@ -1,6 +1,8 @@
 #include "stats_info.h"
-#include "../protocol.h"
+
 #include <iostream>
+
+#include "../protocol.h"
 
 StatsInfo::StatsInfo(const std::vector<uint8_t>& bytes) {
     size_t index = 0;
@@ -29,14 +31,14 @@ std::vector<uint8_t> StatsInfo::toBytes() const {
     std::vector<uint8_t> bytes;
 
     Protocol_::insertBigEndian16(terroristStats.size(), bytes);
-    for (const auto& ps : terroristStats) {
+    for (const auto& ps: terroristStats) {
         auto p_bytes = ps.toBytes();
         Protocol_::insertBigEndian16(p_bytes.size(), bytes);
         bytes.insert(bytes.end(), p_bytes.begin(), p_bytes.end());
     }
 
     Protocol_::insertBigEndian16(counterStats.size(), bytes);
-    for (const auto& ps : counterStats) {
+    for (const auto& ps: counterStats) {
         auto p_bytes = ps.toBytes();
         Protocol_::insertBigEndian16(p_bytes.size(), bytes);
         bytes.insert(bytes.end(), p_bytes.begin(), p_bytes.end());
@@ -48,10 +50,12 @@ std::vector<uint8_t> StatsInfo::toBytes() const {
 void StatsInfo::print() const {
     std::cout << "== StatisticsInfo ==" << std::endl;
     std::cout << "Terrorists:" << std::endl;
-    for (const auto& p : terroristStats)
-        std::cout << p.username << ": K=" << p.kills << ", D=" << p.deaths << ", $" << p.moneyEarned << std::endl;
+    for (const auto& p: terroristStats)
+        std::cout << p.username << ": K=" << p.kills << ", D=" << p.deaths << ", $" << p.moneyEarned
+                  << std::endl;
 
     std::cout << "Counter-Terrorists:" << std::endl;
-    for (const auto& p : counterStats)
-        std::cout << p.username << ": K=" << p.kills << ", D=" << p.deaths << ", $" << p.moneyEarned << std::endl;
+    for (const auto& p: counterStats)
+        std::cout << p.username << ": K=" << p.kills << ", D=" << p.deaths << ", $" << p.moneyEarned
+                  << std::endl;
 }

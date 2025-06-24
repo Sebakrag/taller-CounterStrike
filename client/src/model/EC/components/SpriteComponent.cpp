@@ -13,7 +13,6 @@ void SpriteComponent::init(const SpriteType type) {
     spriteRect.SetH(frameHeight);
     spriteRect.SetX(0);
     spriteRect.SetY(0);
-    std::cout << "SriteComponent instanciadooo!" << std::endl;
 }
 
 void SpriteComponent::setFrame(const int row, const int col) {

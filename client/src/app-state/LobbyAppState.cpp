@@ -10,9 +10,7 @@
 // Referencia a la variable global definida en MainMenuWindow.cpp
 extern Client* g_client;
 
-LobbyAppState::LobbyAppState(AppStateController* ctrl) {
-    controller = ctrl;
-}
+LobbyAppState::LobbyAppState(AppStateController* ctrl) { controller = ctrl; }
 
 std::optional<AppStateCode> LobbyAppState::update() {
     Client* client = controller->getClient();
@@ -58,5 +56,4 @@ std::optional<AppStateCode> LobbyAppState::update() {
     return std::nullopt;
 }
 
-LobbyAppState::~LobbyAppState() {
-}
+LobbyAppState::~LobbyAppState() {}

@@ -2,15 +2,15 @@
 #define SCENARIO_SELECTION_DIALOG_H
 
 #include <QDialog>
-#include <QListWidget>
-#include <QPushButton>
 #include <QLabel>
+#include <QListWidget>
 #include <QPixmap>
+#include <QPushButton>
 #include <QVBoxLayout>
-#include <vector>
 #include <string>
+#include <vector>
 
-class ScenarioSelectionDialog : public QDialog {
+class ScenarioSelectionDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -41,4 +41,4 @@ private slots:
     void onSelectClicked();
 };
 
-#endif // SCENARIO_SELECTION_DIALOG_H
+#endif  // SCENARIO_SELECTION_DIALOG_H
