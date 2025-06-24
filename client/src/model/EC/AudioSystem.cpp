@@ -10,7 +10,7 @@
 namespace {
 constexpr float MAX_SOUND_DISTANCE =
         600.0f;  // TODO: Quizas que lo podemos agregar al archivo de config del server.
-constexpr int MAX_SOUNDS_PER_FRAME = 300;  // Limite global de reproducción de sonidos por frame
+constexpr int MAX_SOUNDS_PER_FRAME = 20;  // Limite global de reproducción de sonidos por frame
 }  // namespace
 
 
@@ -46,8 +46,7 @@ void AudioSystem::update(const Vec2D& listenerPos) {
                         activeLoops[e][ev] = channel;
                     }
                 }
-            } 
-            if (soundsPlayed < MAX_SOUNDS_PER_FRAME) {
+            } else if (soundsPlayed < MAX_SOUNDS_PER_FRAME) {
                 if (const auto chunk = sound_lib.get(ev)) {
                     audio.playChannel(-1, *chunk, volumePercent);
                     ++soundsPlayed;
