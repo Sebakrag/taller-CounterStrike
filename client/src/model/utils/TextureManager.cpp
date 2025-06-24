@@ -3,6 +3,7 @@
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_surface.h>
+#include <SDL2pp/SDL2pp.hh>
 
 #include "client/client_constants.h"
 
@@ -45,6 +46,10 @@ void TextureManager::init(Renderer& ren) {
     constexpr Color hudColorKey = {0, 0, 0, SDL_ALPHA_OPAQUE};
     loadTexture(SpriteType::HUD_NUMBERS, HUD_NUMS, hudColorKey);
     loadTexture(SpriteType::HUD_SYMBOLS, HUD_SYMB, hudColorKey);
+
+    // Mouse pointer texture:
+    constexpr Color mouseColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
+    loadTexture(SpriteType::MOUSE_POINTER, MOUSE_POINTER_IMG, mouseColorKey);
 }
 
 void TextureManager::loadTexture(const SpriteType type, const std::string& path) {

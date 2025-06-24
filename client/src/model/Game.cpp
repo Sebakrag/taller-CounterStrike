@@ -38,7 +38,7 @@ void Game::update(const float dt) {
                 audio.playLoopMusic(0.5);
             break;
     }
-    // graphics.updateMouse();
+    graphics.updateMouse();
 }
 
 void Game::render() {
@@ -60,7 +60,7 @@ void Game::render() {
         default:
             break;
     }
-    // graphics.renderMouse(); // El mouse debe ser lo ultimo que renderizamos.
+    graphics.renderMouse();  // El mouse debe ser lo ultimo que renderizamos.
     graphics.present();
 }
 
@@ -116,45 +116,6 @@ void Game::start() {
 
 Game::~Game() {}
 
-
-// void Game::start() {
-//     using clock = std::chrono::high_resolution_clock;
-//     using time_point = clock::time_point;
-//
-//     const std::chrono::duration<float> target_frame_duration(1.0f / FPS);
-//
-//     time_point previous = clock::now();
-//     const int MAX_UPDATES_PER_FRAME = 3;
-//     float accumulator = 0.0f;
-//     const float dt = 1.0f / FPS;
-//
-//     while (is_running) {
-//         auto start = clock::now();
-//
-//         eventHandler.handleEvents(is_running);
-//
-//         accumulator += (start - previous).count();
-//         previous = start;
-//
-//         int updates = 0;
-//         while (accumulator >= dt && updates < MAX_UPDATES_PER_FRAME) {
-//             update(dt);
-//             accumulator -= dt;
-//             updates++;
-//         }
-//
-//         render();  // Idealmente con interpolación usando accumulator/dt
-//
-//         auto end = clock::now();
-//         auto frame_time = end - start;
-//
-//         if (frame_time < target_frame_duration) {
-//             std::this_thread::sleep_for(target_frame_duration - frame_time);
-//         }
-//     }
-// }
-
-
 // void Game::start() {
 //     using clock = std::chrono::high_resolution_clock;
 //     using time_point = clock::time_point;
@@ -183,32 +144,5 @@ Game::~Game() {}
 //         if (frame_time < target_frame_duration) {
 //             std::this_thread::sleep_for(target_frame_duration - frame_time);
 //         }
-//     }
-// }
-
-
-// void Game::start() {
-//     constexpr float FIXED_DT = 1.0f / 60.0f;  // 60 updates por segundo
-//     constexpr float MAX_ACCUMULATED_TIME = 0.25f;
-//
-//     float accumulator = 0.0f;
-//     auto previous = std::chrono::steady_clock::now();
-//
-//     while (is_running) {
-//         auto now = std::chrono::steady_clock::now();
-//         float frame_time = std::chrono::duration<float>(now - previous).count();
-//         previous = now;
-//
-//         frame_time = std::min(frame_time, MAX_ACCUMULATED_TIME);
-//         accumulator += frame_time;
-//
-//         eventHandler.handleEvents(is_running);
-//
-//         while (accumulator >= FIXED_DT) {
-//             update(FIXED_DT);
-//             accumulator -= FIXED_DT;
-//         }
-//
-//         render();
 //     }
 // }
