@@ -29,7 +29,7 @@ private:
 public:
     explicit NumberRenderer(SpriteType type, int w = NUMBER_WIDTH, int h = CHAR_HEIGHT);
 
-    void renderFromText(Graphics& graphics, const std::string& text, int x, int y);
+    void renderFromText(Graphics& graphics, const std::string& text, int x, int y, SDL_Color color = {255, 255, 255, 255});
     Rect measureText(const std::string& text);
 
     void setRenderSize(int w, int h);

@@ -54,7 +54,8 @@ void SoundLibrary::loadPLayerSounds() {
     loadSound(SoundEvent::ShootAK47, AK47_SOUND);
     loadSound(SoundEvent::ShootM3, M3_SOUND);
     loadSound(SoundEvent::KnifeSlash, KNIFE_SLASH_SOUND);
-    // loadSound(SoundEvent::KnifeSlash, SHOOT_SOUND);
+    loadSound(SoundEvent::KnifeHit, KNIFE_HIT_SOUND);
+    loadSound(SoundEvent::WeaponClick, WEAPON_CLICK_SOUND);
 
     loadSound(SoundEvent::TakeDamage, TAKE_DAMAGE_SOUND);
     loadSound(SoundEvent::Die, DIE_SOUND);
@@ -68,4 +69,7 @@ void SoundLibrary::loadBombSounds() {
 void SoundLibrary::loadRadioSounds() {
     loadSound(SoundEvent::PlantBomb, BOMB_PLANTED_SOUND);
     loadSound(SoundEvent::DefuseBomb, BOMB_DEFUSED_SOUND);
+    loadSound(SoundEvent::Go, GO_SOUND);
+    loadSound(SoundEvent::TerroristWin, TERRORIST_WIN_SOUND);
+    loadSound(SoundEvent::CTWin, CT_WIN_SOUND);
 }

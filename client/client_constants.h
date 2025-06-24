@@ -76,20 +76,22 @@
 
 
 // Weapon (sounds)
-// #define KNIFE_HIT_SOUND (WEAPON_SOUNDS_PATH + "/knife_hit.wav")
+#define KNIFE_HIT_SOUND (WEAPON_SOUNDS_PATH + "/knife_hit.wav")
 #define KNIFE_SLASH_SOUND (WEAPON_SOUNDS_PATH + "/knife_slash.wav")
 #define GLOCK_SOUND (WEAPON_SOUNDS_PATH + "/glock18.wav")
-#define AK47_SOUND (WEAPON_SOUNDS_PATH + "/ak47.wav")
+#define AK47_SOUND (WEAPON_SOUNDS_PATH + "/ak47_V2.wav")
 #define AWP_SOUND (WEAPON_SOUNDS_PATH + "/awp.wav")
 #define M3_SOUND (WEAPON_SOUNDS_PATH + "/m3.wav")
 #define BOMB_BEEP_SOUND (WEAPON_SOUNDS_PATH + "/bomb_beep.wav")
 #define BOMB_EXPLOSION_SOUND (WEAPON_SOUNDS_PATH + "/bomb_explosion.wav")
+#define WEAPON_CLICK_SOUND (WEAPON_SOUNDS_PATH + "/weapon_click.wav")
 
 // Radio (sounds)
 #define BOMB_PLANTED_SOUND \
     (RADIO_SOUNDS_PATH + "/bombpl.ogg")  // Mas que un sound es un mensaje que dice la radio
 #define BOMB_DEFUSED_SOUND (RADIO_SOUNDS_PATH + "/bombdef.ogg")
 #define GO_SOUND (RADIO_SOUNDS_PATH + "/go.ogg")
-
+#define TERRORIST_WIN_SOUND (RADIO_SOUNDS_PATH + "/terwin.ogg")
+#define CT_WIN_SOUND (RADIO_SOUNDS_PATH + "/ctwin.ogg")
 
 #endif  // CLIENTCONSTANTS_H

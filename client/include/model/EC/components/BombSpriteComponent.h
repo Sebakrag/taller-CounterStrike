@@ -12,8 +12,9 @@ class BombSpriteComponent: public SpriteComponent {
 private:
     BombState state;
     Vec2D renderOffset;  // Sirve para renderizar el arma justo arriba de las manos del jugador.
+    int tickCounter = 0;
 
-    void setFrameForState(BombState state);
+    void setFrameForState(BombState state, int timeLeft);
 
 public:
     BombSpriteComponent():
@@ -21,7 +22,7 @@ public:
             renderOffset(HORIZONTAL_RENDER_OFFSET, VERTICAL_RENDER_OFFSET) {}
 
     void init(SpriteType type, BombState initialState);
-    void setState(BombState newState);
+    void setState(BombState newState, int timeLeft = 0);
     BombState getState() const;
     Vec2D getRenderOffset() const;
 };

@@ -22,7 +22,7 @@ void World::update(float dt, const GameInfo& gameInfo) {
 
     comp_updater.update(gameInfo.getSnapshots(), gameInfo.timeLeft);
 
-    player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
+    player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft, gameInfo.bomb.state);
 
     audio_sys.update(local_player_pos);  // Play the sound effects.
 }

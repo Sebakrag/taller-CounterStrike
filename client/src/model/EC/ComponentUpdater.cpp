@@ -64,7 +64,7 @@ void ComponentUpdater::updateComponents(int timeLeft) {
         }
         if (const auto bombSpr = comp_mgr.getComponent<BombSpriteComponent>(e)) {
             if (const auto bomb = std::get_if<BombSnapshot>(&snap.data)) {
-                bombSpr->setState(bomb->state);
+                bombSpr->setState(bomb->state, timeLeft);
             }
         }
         if (const auto playerSpr = comp_mgr.getComponent<PlayerSpriteComponent>(e)) {
