@@ -35,6 +35,9 @@ enum class SpriteType : unsigned char {
     // HUD sprite types:
     HUD_NUMBERS,
     HUD_SYMBOLS,
+
+    // Mouse:
+    MOUSE_POINTER,
 };
 
 #endif  // SPRITETYPE_H
