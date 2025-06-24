@@ -18,6 +18,7 @@ Graphics::Graphics(const WindowConfig& config, const FOVConfig& fov_config,
         renderer(create_renderer(window)) {
     TextureManager::init(renderer);
     DynamicStencil::init(renderer, fov_config);
+    mouse = std::make_unique<Mouse>();
 }
 
 Window Graphics::create_window(const WindowConfig& config, const std::string& match_name) const {
@@ -29,6 +30,7 @@ Window Graphics::create_window(const WindowConfig& config, const std::string& ma
 Renderer Graphics::create_renderer(Window& window) {
     Renderer ren(window, -1, SDL_RENDERER_ACCELERATED);
     ren.SetDrawColor(0, 0, 0, 255);
+    ren.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     return ren;
 }
 
@@ -67,6 +69,16 @@ void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<
 Vec2D Graphics::getDrawableWindowDimension() const {
     const Point dimension = window.GetDrawableSize();
     return {static_cast<float>(dimension.GetX()), static_cast<float>(dimension.GetY())};
+}
+
+void Graphics::updateMouse() {
+    if (mouse)
+        mouse->update();
+}
+
+void Graphics::renderMouse() {
+    if (mouse)
+        mouse->render(*this);
 }
 
 std::shared_ptr<Texture> Graphics::createTargetTexture(int width, int height) {

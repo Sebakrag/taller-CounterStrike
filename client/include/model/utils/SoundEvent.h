@@ -11,6 +11,8 @@ enum class SoundEvent {
     ShootM3,
     ShootGlock,
     KnifeSlash,
+    KnifeHit,
+    WeaponClick,
     ChangeWeapon,
     Die,
     PickUpWeapon,
@@ -19,6 +21,10 @@ enum class SoundEvent {
     // Radio sounds
     PlantBomb,
     DefuseBomb,
+    Go,
+    TerroristWin,
+    CTWin,
+
     // Bomb sounds
     BombBeep,
     BombExploded,

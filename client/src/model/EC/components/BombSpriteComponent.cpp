@@ -1,23 +1,24 @@
-#include "client/include/model/EC/components/BombSpriteComponent.h"
+#include "../../../../../client/include/model/EC/components/BombSpriteComponent.h"
 
 void BombSpriteComponent::init(const SpriteType type, const BombState initialState) {
     SpriteComponent::init(type);
     state = initialState;
-    setFrameForState(state);
+    setFrameForState(state, 0);
 }
 
-void BombSpriteComponent::setState(const BombState newState) {
+void BombSpriteComponent::setState(const BombState newState, int timeLeft) {
     if (newState == state)
         return;
     state = newState;
-    setFrameForState(state);
+    setFrameForState(state, timeLeft);
 }
 
 BombState BombSpriteComponent::getState() const { return state; }
 
 Vec2D BombSpriteComponent::getRenderOffset() const { return renderOffset; }
 
-void BombSpriteComponent::setFrameForState(const BombState state) {
+void BombSpriteComponent::setFrameForState(const BombState state, int timeLeft) {
+    tickCounter++;
     int row = 0;
     switch (state) {
         case BombState::Dropped:
@@ -39,5 +40,27 @@ void BombSpriteComponent::setFrameForState(const BombState state) {
         default:
             return;
     }
-    setFrame(row, 0);
+    int col = 0;
+    std::cout << "timeLeft: " << timeLeft <<std::endl;
+    if (state == BombState::Planted) {
+        //beep cada 2 segundos
+        if (timeLeft > 5) {
+            if (timeLeft %2 == 0) {
+                col = 1;
+                std::cout << "titilo" <<std::endl;
+            }
+            else {
+                col = 0;
+            }
+        }
+        //beep cada 1 segundo
+        else if (timeLeft <= 5) {
+            if ((tickCounter / 30) % 2 == 0) {  // Suponiendo 60fps
+                col = 2;
+            } else {
+                col = 0;
+            }
+        }
+    }
+    setFrame(row, col);
 }

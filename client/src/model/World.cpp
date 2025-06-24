@@ -37,7 +37,9 @@ void World::update(const GameInfo& gameInfo, const float dt) {
 
     audio_sys.update(local_player_pos);  // Play the sound effects.
 
-    player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft);
+    player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft, gameInfo.bomb.state);
+
+    audio_sys.update(local_player_pos);  // Play the sound effects.
 }
 
 void World::render() {

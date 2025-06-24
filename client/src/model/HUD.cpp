@@ -9,25 +9,12 @@ HUD::HUD(): numberRenderer(SpriteType::HUD_NUMBERS), symbolsRenderer(SpriteType:
     numberRenderer.setRenderSize(SYMBOL_W, SYMBOL_H);
 }
 
-// void HUD::updateFromSnapshot(const EntitySnapshot& snap) {
-//     // TODO: Recibir el timeLeft en segundos.
-//     timeLeft++;
-//     if (const auto player = std::get_if<PlayerSnapshot>(&snap.data)) {
-//         health = player->hp;
-//         money = player->money;
-//         ammoInfo.totalAmmo =
-//                 player->ammo;  // TODO: eliminar ammo de player. AHora hay que obtenerlo del
-//                 arma.
-//         ammoInfo.ammoLoaded = 5;
-//     }
-// }
-
-void HUD::updateFromSnapshot(const LocalPlayerInfo& player, float _timeLeft) {
+void HUD::updateFromSnapshot(const LocalPlayerInfo& player, float _timeLeft, BombState _bombState) {
     timeLeft = static_cast<int>(_timeLeft);
     health = player.health;
     money = player.money;
-    ammoInfo.totalAmmo = player.ammo_weapon;
-    ammoInfo.ammoLoaded = 5;  // TODO: AGREGAR campo en LocalPlayerInfo
+    ammo = player.ammo_weapon;
+    bombState = _bombState;
 }
 
 void HUD::render(Graphics& graphics) {
@@ -50,7 +37,19 @@ void HUD::renderSymbolAndText(Graphics& graphics, const HUDSymbolType symbol,
 }
 
 void HUD::renderHealth(Graphics& graphics, const int baseY) {
-    renderSymbolAndText(graphics, HUDSymbolType::HEALTH, std::to_string(health), MARGIN, baseY);
+    SDL_Color color;
+
+    if (health > 60) {
+        color = COLOR_GREEN;
+    } else if (health > 20) {
+        color = COLOR_YELLOW;
+    } else {
+        color = COLOR_RED;
+    }
+    // Dibujamos el símbolo del reloj igual que antes
+    symbolsRenderer.renderSymbol(graphics, HUDSymbolType::CLOCK, MARGIN, baseY, SCALE);
+    // Ahora dibujamos el texto en rojo
+    numberRenderer.renderFromText(graphics, std::to_string(health), MARGIN + SYMBOL_W + TEXT_PADDING, baseY, color);
 }
 
 void HUD::renderTime(Graphics& graphics, const int screenW, const int baseY) {
@@ -59,11 +58,21 @@ void HUD::renderTime(Graphics& graphics, const int screenW, const int baseY) {
     const int totalW = SYMBOL_W + TEXT_PADDING + textBounds.GetW();
     const int centerX = (screenW - totalW) / 2;
 
-    renderSymbolAndText(graphics, HUDSymbolType::CLOCK, timeStr, centerX, baseY);
+    SDL_Color color = COLOR_WHITE;
+    if (bombState == BombState::Planted) {
+        color = COLOR_RED;
+    } else if (bombState == BombState::Defused) {
+        color = COLOR_GREEN;
+    }
+    // Dibujamos el símbolo del reloj igual que antes
+    symbolsRenderer.renderSymbol(graphics, HUDSymbolType::CLOCK, centerX, baseY, SCALE);
+    // Ahora dibujamos el texto en rojo
+    numberRenderer.renderFromText(graphics, timeStr, centerX + SYMBOL_W + TEXT_PADDING, baseY, color);
+
 }
 
 void HUD::renderAmmo(Graphics& graphics, const int screenW, const int baseY) {
-    const std::string ammoStr = formatAmmo(ammoInfo);
+    const std::string ammoStr = formatAmmo(ammo);
     const Rect textBounds = numberRenderer.measureText(ammoStr);
     const int totalW = SYMBOL_W + TEXT_PADDING + textBounds.GetW();
     const int rightX = screenW - totalW - MARGIN;
@@ -93,30 +102,9 @@ std::string HUD::formatTime(const int seconds) {
 }
 
 
-std::string HUD::formatAmmo(const AmmoInfo& ammoInfo) {
+std::string HUD::formatAmmo(const int& ammo) {
     std::ostringstream oss;
-    oss << std::setw(2) << std::setfill('0') << ammoInfo.ammoLoaded << "|" << std::setw(3)
-        << std::setfill('0') << ammoInfo.totalAmmo;
+    oss << std::setfill('0') << ammo;
 
     return oss.str();
 }
-
-
-// TODO: Refactorizar utilizando componentes.
-// Version de update utilizando ComponentManager:
-// void HUD::update(ComponentManager& comp_mgr, Entity player_id) {
-//     if (auto healthComp = comp_mgr.getComponent<HealthComponent>(player_id)) {
-//         health = healthComp->getCurrent();
-//     }
-//
-//     if (auto weapon = comp_mgr.getComponent<EquippedWeaponComponent>(player_id)) {
-//         Entity weapon_id = weapon->getID();
-//         if (auto ammoComp = comp_mgr.getComponent<AmmoComponent>(weapon_id)) {
-//             ammoInfo = ammoComp->getAmmoInfo();
-//         }
-//     }
-//
-//     if (auto moneyComp = comp_mgr.getComponent<MoneyComponent>(player_id)) {
-//         money = moneyComp->getAmount();
-//     }
-// }

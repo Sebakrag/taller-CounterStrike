@@ -15,8 +15,9 @@ NumberRenderer::NumberRenderer(const SpriteType type, const int w, const int h):
 }
 
 void NumberRenderer::renderFromText(Graphics& graphics, const std::string& text, const int x,
-                                    const int y) {
+                                    const int y, SDL_Color color) {
     int cursorX = x;
+    texture->SetColorMod(color.r, color.g, color.b);
 
     for (const char c: text) {
         Rect srcRect = getSourceRect(c);
@@ -28,6 +29,9 @@ void NumberRenderer::renderFromText(Graphics& graphics, const std::string& text,
 
         cursorX += scaledW;
     }
+
+    // Restaurar a blanco
+    texture->SetColorMod(255, 255, 255);
 }
 
 Rect NumberRenderer::measureText(const std::string& text) {
