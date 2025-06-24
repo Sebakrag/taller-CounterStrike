@@ -1,4 +1,4 @@
-/*
+
 #include "../../../client/include/ui/AudioManager.h"
 
 #include <QAudioOutput>
@@ -74,4 +74,4 @@ bool AudioManager::isPlaying() const {
     return musicPlaying && mediaPlayer &&
            mediaPlayer->playbackState() == QMediaPlayer::PlayingState;
 }
-*/
+

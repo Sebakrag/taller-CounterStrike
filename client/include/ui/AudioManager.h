@@ -1,10 +1,10 @@
 #ifndef AUDIO_MANAGER_H_
 #define AUDIO_MANAGER_H_
 
-//#include <QMediaPlayer>
-//#include <QAudioOutput>
-//#include <QString>
-/*#include <string>
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#include <QString>
+#include <string>
 #include <memory>
 
 class AudioManager {
@@ -32,9 +32,9 @@ private:
     AudioManager();
     ~AudioManager();
 
-    //std::unique_ptr<QMediaPlayer> mediaPlayer;
-    //std::unique_ptr<QAudioOutput> audioOutput;
+    std::unique_ptr<QMediaPlayer> mediaPlayer;
+    std::unique_ptr<QAudioOutput> audioOutput;
     bool musicPlaying;
 };
-*/
+
 #endif  // AUDIO_MANAGER_H_
