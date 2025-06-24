@@ -4,9 +4,9 @@ match_room:
   max_players: 10 # cantidad máxima de jugadores
 
 match:
-  round_duration: 120 # duración máxima de la ronda en segundos
+  round_duration: 100 # duración máxima de la ronda en segundos
   preparation_time: 10 # tiempo para la fase de preparación o previa de la ronda (tiempo de tienda)
-  max_rounds: 10 # cantidad de rondas de la partida
+  max_rounds: 5 # cantidad de rondas de la partida
 
 player:
   speed: 80 # velocidad del jugador

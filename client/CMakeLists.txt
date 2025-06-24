@@ -30,6 +30,7 @@ target_sources(taller_client
         src/model/Shop.cpp
         src/model/Graphics.cpp
         src/model/HUD.cpp
+        src/model/StatisticsPanel.cpp
         src/model/World.cpp
         src/model/EC/AudioSystem.cpp
         src/model/EC/ComponentUpdater.cpp
@@ -85,6 +86,7 @@ target_sources(taller_client
         include/model/HUD.h
         include/model/Map.h
         include/model/Shop.h
+        include/model/StatisticsPanel.h
         include/model/World.h
         include/model/EC/AudioSystem.h
         include/model/EC/Entity.h

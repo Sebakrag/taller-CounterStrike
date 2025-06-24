@@ -48,6 +48,13 @@ void Graphics::fillRect(const Rect& rect, const Color& color) {
     renderer.FillRect(rect);
 }
 
+void Graphics::fillRectBlended(const Rect& rect, const Color& color) {
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(color);
+    renderer.FillRect(rect);
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+}
+
 void Graphics::draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect) {
     renderer.Copy(tex, srcRect, dstRect);
 }
