@@ -45,16 +45,22 @@ install_dependencies() {
         # Actualiza la lista de paquetes
         apt-get update
         
-        # Instala herramientas básicas de compilación
-        apt-get install -y git cmake build-essential
+        # Instalar dependencias básicas de desarrollo
+        apt-get install -y build-essential git cmake pkg-config
         
-        # Instala dependencias de Qt6
-        apt-get install -y qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-multimedia-dev
+        # Instalar las dependencias de Qt
+        apt-get install -y qt6-base-dev qt6-base-dev-tools qt6-multimedia-dev
         
-        # Instala dependencias de SDL2
-        apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev 
-        apt-get install -y libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth 
-        apt-get install -y libwavpack1 libwavpack-dev libfreetype-dev wavpack
+        # Instalar las bibliotecas SDL2 y extensiones
+        apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+        
+        # Bibliotecas de audio
+        apt-get install -y libopus-dev libopusfile-dev libfluidsynth-dev libwavpack-dev libfreetype-dev
+        
+        # Dependencias gráficas adicionales que suelen faltar en contenedores
+        apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev \
+            libxss-dev libwayland-dev libxkbcommon-dev libgles2-mesa-dev libgl1-mesa-dev libegl1-mesa-dev \
+            libdrm-dev libgbm-dev libpulse-dev libasound2-dev libpipewire-0.3-dev 
         
         # Instalar yaml-cpp explícitamente
         apt-get install -y libyaml-cpp-dev
