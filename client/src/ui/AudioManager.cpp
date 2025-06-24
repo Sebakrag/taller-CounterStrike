@@ -1,4 +1,4 @@
-/*
+
 #include "../../../client/include/ui/AudioManager.h"
 
 #include <QAudioOutput>
@@ -41,8 +41,7 @@ void AudioManager::playMenuMusic() {
     // Verificar si el archivo existe como recurso
     QFile file("client/assets/sfx/music/menu.wav");
     if (!file.exists()) {
-        std::cerr << "[AudioManager] ERROR: El archivo de audio NO EXISTE como recurso en la ruta
-indicada" << std::endl;
+        std::cerr << "[AudioManager] ERROR: El archivo de audio NO EXISTE como recurso en la ruta indicada" << std::endl;
     }
 
     // Establecer la fuente de la música (Probamos ambas opciones)
@@ -74,4 +73,4 @@ bool AudioManager::isPlaying() const {
     return musicPlaying && mediaPlayer &&
            mediaPlayer->playbackState() == QMediaPlayer::PlayingState;
 }
-*/
+
