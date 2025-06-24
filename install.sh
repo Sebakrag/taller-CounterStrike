@@ -18,7 +18,7 @@ NC='\033[0m' # Sin color
 # Nombre del proyecto
 PROJECT_NAME="CounterStrike"
 
-# Verificar si se está ejecutando como root 
+# Verificar si se está ejecutando como root
 if [ "$EUID" -ne 0 ]; then
   echo -e "${RED}Este script debe ejecutarse como root${NC}"
   echo "Por favor, ejecutar como: sudo $0"
@@ -45,56 +45,40 @@ install_dependencies() {
         # Actualiza la lista de paquetes
         apt-get update
         
-        # Instalar dependencias básicas de desarrollo
-        apt-get install -y build-essential git cmake pkg-config wget
+        # Instala herramientas básicas de compilación
+        apt-get install -y git cmake build-essential
         
-        # Instalar las dependencias de Qt
-        apt-get install -y qt6-base-dev qt6-base-dev-tools qt6-multimedia-dev libqt6opengl6-dev
+        # Instala dependencias de Qt6
+        apt-get install -y qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-multimedia-dev
         
-        # Instalar las bibliotecas SDL2 y extensiones
-        apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
-        
-        # Bibliotecas de audio completas
-        apt-get install -y libopus-dev libopusfile-dev libfluidsynth-dev libwavpack-dev libfreetype-dev libxmp-dev
-        apt-get install -y fluidsynth wavpack libmodplug-dev
-        
-        # Dependencias gráficas adicionales que suelen faltar en contenedores
-        apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev \
-            libxss-dev libwayland-dev libxkbcommon-dev libgles2-mesa-dev libgl1-mesa-dev libegl1-mesa-dev \
-            libdrm-dev libgbm-dev libpulse-dev libasound2-dev 
-            
-        # Soporte para PipeWire (audio moderno en Linux)
-        apt-get install -y libpipewire-0.3-dev
+        # Instala dependencias de SDL2
+        apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev 
+        apt-get install -y libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth 
+        apt-get install -y libwavpack1 libwavpack-dev libfreetype-dev wavpack
         
         # Instalar yaml-cpp explícitamente
         apt-get install -y libyaml-cpp-dev
         
     elif [[ "$OS" == *"Fedora"* ]]; then
         # Para Fedora
-        dnf install -y git cmake gcc g++ make pkg-config wget
+        dnf install -y git cmake gcc g++ make
         dnf install -y qt6-qtbase-devel qt6-qttools-devel qt6-qtmultimedia-devel
         dnf install -y SDL2-devel SDL2_image-devel SDL2_ttf-devel SDL2_mixer-devel
-        dnf install -y opus-devel opusfile-devel fluidsynth-devel wavpack-devel freetype-devel xmp-devel
-        dnf install -y fluidsynth wavpack libmodplug-devel
-        dnf install -y pipewire-devel pulseaudio-libs-devel alsa-lib-devel
+        dnf install -y opus-devel opusfile-devel fluidsynth-devel wavpack-devel freetype-devel
         dnf install -y yaml-cpp-devel
-        
     elif [[ "$OS" == *"Arch"* ]]; then
         # Para Arch
-        pacman -Sy --noconfirm git cmake gcc make pkg-config wget
+        pacman -Sy --noconfirm git cmake gcc make
         pacman -Sy --noconfirm qt6-base qt6-tools qt6-multimedia
         pacman -Sy --noconfirm sdl2 sdl2_image sdl2_ttf sdl2_mixer
-        pacman -Sy --noconfirm opus opusfile fluidsynth wavpack freetype2 libxmp
-        pacman -Sy --noconfirm fluidsynth wavpack libmodplug
-        pacman -Sy --noconfirm pipewire pulseaudio alsa-lib
+        pacman -Sy --noconfirm opus opusfile fluidsynth wavpack freetype2
         pacman -Sy --noconfirm yaml-cpp
     else
         echo -e "${RED}Sistema operativo no soportado: $OS${NC}"
         echo "Por favor, instale las dependencias manualmente:"
         echo "- git, cmake, compilador C++"
         echo "- Qt6 (Widgets, Core, Gui, Multimedia)"
-        echo "- SDL2 y extensiones (image, ttf, mixer)"
-        echo "- libopus, libopusfile, fluidsynth, wavpack, freetype, libxmp"
+        echo "- libopus, libopusfile, fluidsynth, wavpack, freetype"
         echo "- yaml-cpp"
         exit 1
     fi
@@ -106,13 +90,12 @@ install_dependencies() {
 compile_project() {
     echo -e "${BLUE}Compilando el proyecto...${NC}"
     
-    # Ejecutar make compile-debug desde el directorio raíz
-    echo -e "${BLUE}Ejecutando make compile-debug desde directorio raíz...${NC}"
-    make compile-debug
-    
-    # Entrar al directorio build y compilar
-    echo -e "${BLUE}Entrando al directorio build y ejecutando make...${NC}"
+    # Crear y entrar al directorio de compilación
+    mkdir -p build
     cd build
+    
+    # Configurar con CMake
+    cmake .. -DCMAKE_BUILD_TYPE=Release
     
     # Compilar utilizando todos los núcleos disponibles
     if [[ "$OS" == "Darwin" ]]; then
@@ -150,35 +133,51 @@ run_tests() {
 # Función para instalar el proyecto
 install_project() {
     echo -e "${BLUE}Instalando $PROJECT_NAME...${NC}"
-
-    # Crear directorios necesarios
+    
+    # Crear directorios de instalación si no existen
     mkdir -p /usr/bin
     mkdir -p /var/$PROJECT_NAME/assets
-    mkdir -p /etc/$PROJECT_NAME/maps
-
-    # Copiar binarios
-    cp build/taller_client /usr/bin/$PROJECT_NAME-client
-    cp build/taller_server /usr/bin/$PROJECT_NAME-server
-    cp build/taller_editor /usr/bin/$PROJECT_NAME-editor
-
-    # Copiar carpeta de assets
-    cp -r client/assets/* /var/$PROJECT_NAME/assets/
+    mkdir -p /etc/$PROJECT_NAME
     
-    # Copiar mapas
-    cp -r server/maps/* /etc/$PROJECT_NAME/maps/
-
-    # Establecer permisos ejecutables
+    # Instalar binarios
+    echo -e "${BLUE}Instalando binarios en /usr/bin...${NC}"
+    cp taller_client /usr/bin/$PROJECT_NAME-client
+    cp taller_server /usr/bin/$PROJECT_NAME-server
+    cp taller_editor /usr/bin/$PROJECT_NAME-editor
+    
+    # Hacer los binarios ejecutables
     chmod +x /usr/bin/$PROJECT_NAME-client
     chmod +x /usr/bin/$PROJECT_NAME-server
     chmod +x /usr/bin/$PROJECT_NAME-editor
-
+    
+    # Volver al directorio raíz del proyecto
+    cd ..
+    
+    # Copiar assets
+    echo -e "${BLUE}Copiando assets a /var/$PROJECT_NAME/...${NC}"
+    cp -r client/assets/* /var/$PROJECT_NAME/assets/
+    
+    # Copiar archivos de configuración
+    echo -e "${BLUE}Copiando archivos de configuración a /etc/$PROJECT_NAME/...${NC}"
+    # Copiar mapas como configuración
+    cp -r server/maps /etc/$PROJECT_NAME/
+    
+    # Crear archivo de configuración principal si no existe
+    if [ ! -f /etc/$PROJECT_NAME/config.yaml ]; then
+        cat > /etc/$PROJECT_NAME/config.yaml << EOF
+# Archivo de configuración para $PROJECT_NAME
+server:
+  port: 8080
+  max_clients: 32
+  maps_directory: /etc/$PROJECT_NAME/maps
+client:
+  assets_directory: /var/$PROJECT_NAME/assets
+EOF
+    fi
+    
     # Crear enlaces simbólicos para que la aplicación encuentre los recursos
     ln -sf /var/$PROJECT_NAME/assets /usr/bin/assets
     ln -sf /etc/$PROJECT_NAME/maps /usr/bin/maps
-    
-    # Crear enlaces simbólicos adicionales en las rutas donde el código los busca
-    mkdir -p /usr/bin/client
-    ln -sf /var/$PROJECT_NAME/assets /usr/bin/client/assets
     
     echo -e "${GREEN}Instalación completada correctamente${NC}"
     
@@ -188,16 +187,6 @@ install_project() {
     echo -e "Para ejecutar el servidor: ${GREEN}$PROJECT_NAME-server${NC}"
     echo -e "Para ejecutar el editor de mapas: ${GREEN}$PROJECT_NAME-editor${NC}"
     echo -e "${BLUE}=========================${NC}"
-    
-    # Detectar si estamos en Docker
-    if grep -q docker /proc/1/cgroup 2>/dev/null || [ -f /.dockerenv ]; then
-        echo -e "${BLUE}=== Ejecución en Docker ===${NC}"
-        echo -e "Se ha detectado que este instalador se está ejecutando en un contenedor Docker."
-        echo -e "Para aplicaciones gráficas, use el script auxiliar: ${GREEN}run-vnc.sh${NC}"
-        echo -e "Ejemplo: ${GREEN}run-vnc.sh CounterStrike-editor${NC}"
-        echo -e "Luego conecte desde su host a ${GREEN}vnc://localhost:5900${NC}"
-        echo -e "${BLUE}=========================${NC}"
-    fi
 }
 
 # Función principal
@@ -221,41 +210,3 @@ main() {
 
 # Ejecutar la función principal
 main
-
-# Instrucciones para Docker
-cat << "EOT"
-
-==============================================
-NOTA PARA ENTORNOS DOCKER
-==============================================
-
-Si estás ejecutando este instalador en un contenedor Docker y deseas
-usar las aplicaciones gráficas (cliente/editor), necesitarás configurar
-el acceso al servidor X11.
-
-Para ejecutar CounterStrike en Docker con interfaz gráfica:
-
-1. En tu host (fuera de Docker), permite conexiones X11:
-   $ xhost +local:docker
-
-2. Inicia el contenedor con las opciones adecuadas:
-   $ docker run -it --name counterstrike \
-     -e DISPLAY=$DISPLAY \
-     -v /tmp/.X11-unix:/tmp/.X11-unix \
-     --network=host \
-     ubuntu:latest bash
-
-3. Dentro del contenedor, instala el proyecto como de costumbre:
-   $ apt update && apt install -y git sudo
-   $ git clone https://github.com/Sebakrag/taller-CounterStrike.git
-   $ cd taller-CounterStrike
-   $ chmod +x install.sh
-   $ sudo ./install.sh
-
-Si solo necesitas probar el servidor sin interfaz gráfica, puedes
-ejecutarlo directamente en cualquier contenedor Docker sin 
-configuración adicional:
-   $ CounterStrike-server
-
-==============================================
-EOT
