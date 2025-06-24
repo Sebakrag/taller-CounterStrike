@@ -150,51 +150,31 @@ run_tests() {
 # Función para instalar el proyecto
 install_project() {
     echo -e "${BLUE}Instalando $PROJECT_NAME...${NC}"
-    
-    # Crear directorios de instalación si no existen
+
+    # Crear directorios necesarios
     mkdir -p /usr/bin
     mkdir -p /var/$PROJECT_NAME/assets
-    mkdir -p /etc/$PROJECT_NAME
+    mkdir -p /etc/$PROJECT_NAME/maps
+
+    # Copiar binarios
+    cp build/client/taller_client /usr/bin/$PROJECT_NAME-client
+    cp build/server/taller_server /usr/bin/$PROJECT_NAME-server
+    cp build/editor/taller_editor /usr/bin/$PROJECT_NAME-editor
+
+    # Copiar carpeta de assets
+    cp -r client/assets/* /var/$PROJECT_NAME/assets/
     
-    # Instalar binarios
-    echo -e "${BLUE}Instalando binarios en /usr/bin...${NC}"
-    cp taller_client /usr/bin/$PROJECT_NAME-client
-    cp taller_server /usr/bin/$PROJECT_NAME-server
-    cp taller_editor /usr/bin/$PROJECT_NAME-editor
-    
-    # Hacer los binarios ejecutables
+    # Copiar mapas
+    cp -r server/maps/* /etc/$PROJECT_NAME/maps/
+
+    # Establecer permisos ejecutables
     chmod +x /usr/bin/$PROJECT_NAME-client
     chmod +x /usr/bin/$PROJECT_NAME-server
     chmod +x /usr/bin/$PROJECT_NAME-editor
-    
-    # Volver al directorio raíz del proyecto
-    cd ..
-    
-    # Copiar assets
-    echo -e "${BLUE}Copiando assets a /var/$PROJECT_NAME/...${NC}"
-    cp -r client/assets/* /var/$PROJECT_NAME/assets/
-    
-    # Copiar archivos de configuración
-    echo -e "${BLUE}Copiando archivos de configuración a /etc/$PROJECT_NAME/...${NC}"
-    # Copiar mapas como configuración
-    cp -r server/maps /etc/$PROJECT_NAME/
-    
-    # Crear archivo de configuración principal si no existe
-    if [ ! -f /etc/$PROJECT_NAME/config.yaml ]; then
-        cat > /etc/$PROJECT_NAME/config.yaml << EOF
-# Archivo de configuración para $PROJECT_NAME
-server:
-  port: 8080
-  max_clients: 32
-  maps_directory: /etc/$PROJECT_NAME/maps
-client:
-  assets_directory: /var/$PROJECT_NAME/assets
-EOF
-    fi
-    
+
     # Crear enlaces simbólicos para que la aplicación encuentre los recursos
-    ln -sf /var/$PROJECT_NAME/assets /usr/bin/assets
-    ln -sf /etc/$PROJECT_NAME/maps /usr/bin/maps
+    mkdir -p /usr/bin/client
+    ln -sf /var/$PROJECT_NAME/assets /usr/bin/client/assets
     
     echo -e "${GREEN}Instalación completada correctamente${NC}"
     
@@ -204,6 +184,16 @@ EOF
     echo -e "Para ejecutar el servidor: ${GREEN}$PROJECT_NAME-server${NC}"
     echo -e "Para ejecutar el editor de mapas: ${GREEN}$PROJECT_NAME-editor${NC}"
     echo -e "${BLUE}=========================${NC}"
+    
+    # Detectar si estamos en Docker
+    if grep -q docker /proc/1/cgroup 2>/dev/null || [ -f /.dockerenv ]; then
+        echo -e "${BLUE}=== Ejecución en Docker ===${NC}"
+        echo -e "Se ha detectado que este instalador se está ejecutando en un contenedor Docker."
+        echo -e "Para aplicaciones gráficas, use el script auxiliar: ${GREEN}run-vnc.sh${NC}"
+        echo -e "Ejemplo: ${GREEN}run-vnc.sh CounterStrike-editor${NC}"
+        echo -e "Luego conecte desde su host a ${GREEN}vnc://localhost:5900${NC}"
+        echo -e "${BLUE}=========================${NC}"
+    fi
 }
 
 # Función principal
@@ -227,3 +217,41 @@ main() {
 
 # Ejecutar la función principal
 main
+
+# Instrucciones para Docker
+cat << "EOT"
+
+==============================================
+NOTA PARA ENTORNOS DOCKER
+==============================================
+
+Si estás ejecutando este instalador en un contenedor Docker y deseas
+usar las aplicaciones gráficas (cliente/editor), necesitarás configurar
+el acceso al servidor X11.
+
+Para ejecutar CounterStrike en Docker con interfaz gráfica:
+
+1. En tu host (fuera de Docker), permite conexiones X11:
+   $ xhost +local:docker
+
+2. Inicia el contenedor con las opciones adecuadas:
+   $ docker run -it --name counterstrike \
+     -e DISPLAY=$DISPLAY \
+     -v /tmp/.X11-unix:/tmp/.X11-unix \
+     --network=host \
+     ubuntu:latest bash
+
+3. Dentro del contenedor, instala el proyecto como de costumbre:
+   $ apt update && apt install -y git sudo
+   $ git clone https://github.com/Sebakrag/taller-CounterStrike.git
+   $ cd taller-CounterStrike
+   $ chmod +x install.sh
+   $ sudo ./install.sh
+
+Si solo necesitas probar el servidor sin interfaz gráfica, puedes
+ejecutarlo directamente en cualquier contenedor Docker sin 
+configuración adicional:
+   $ CounterStrike-server
+
+==============================================
+EOT
