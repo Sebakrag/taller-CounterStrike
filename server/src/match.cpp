@@ -556,9 +556,7 @@ void Match::advancePhase() {
         // droppedWeapons.clear(); // esto puede ser mejor mantenerlas
 
         for (auto& p: players) {
-            p.revive();
             setPosSpawnPlayer(p);
-            p.setEquippedWeapon(TypeWeapon::Knife);
         }
 
         // Asignar la bomba a un terrorista vivo
@@ -602,12 +600,19 @@ void Match::advancePhase() {
                 proj.deactivate();
         }
 
+
+
         // Fin de la partida
         if (roundsPlayed >= MAX_ROUNDS) {
             std::cout << "==> PARTIDA TERMINADA\n";
             rankPlayers();
             phase = GamePhase::EndOfMatch;
             return;
+        }
+
+        for (auto& p: players) {
+            p.revive();
+            p.setEquippedWeapon(TypeWeapon::Knife);
         }
 
         // Pasar a la fase de preparacion
@@ -676,22 +681,6 @@ void Match::rankPlayers() {
 
     std::sort(terrorists.begin(), terrorists.end(), compareByScore);
     std::sort(counterterrorists.begin(), counterterrorists.end(), compareByScore);
-
-    std::cout << "GANADOR: " << (roundWinner == Team::Terrorist ? "TERRORISTAS" : "ANTITERRORISTAS")
-              << std::endl;
-
-    std::cout << "==> LEADERBOARD FINAL:\n";
-    std::cout << "--- Terrorists ---\n";
-    for (const auto* p: terrorists) {
-        std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
-                  << ", Deaths: " << p->stats.deaths << ", Money: " << p->stats.moneyEarned << "\n";
-    }
-
-    std::cout << "--- Counter-Terrorists ---\n";
-    for (const auto* p: counterterrorists) {
-        std::cout << "Jugador " << p->getId() << " - Kills: " << p->stats.kills
-                  << ", Deaths: " << p->stats.deaths << ", Money: " << p->stats.moneyEarned << "\n";
-    }
 }
 
 StatsInfo Match::generateStatsInfo() const {

@@ -20,7 +20,7 @@ World::World(Graphics& graphics, Audio& audio, const TileMap& tileMap,
 void World::update(const GameInfo& gameInfo, const float dt) {
     if (dt == 1) {}  // TODO: dt sirve para las animaciones.
     gamePhase = gameInfo.gamePhase;
-    if (gamePhase == GamePhase::Combat) {
+    /*if (gamePhase == GamePhase::Combat) {
         currentWeapon = gameInfo.localPlayer.weapon;
         local_player_pos = gameInfo.localPlayer.position;
 
@@ -28,7 +28,14 @@ void World::update(const GameInfo& gameInfo, const float dt) {
         comp_updater.update(gameInfo.getSnapshots(), gameInfo.timeLeft);
 
         audio_sys.update(local_player_pos);  // Play the sound effects.
-    }
+    }*/
+    currentWeapon = gameInfo.localPlayer.weapon;
+    local_player_pos = gameInfo.localPlayer.position;
+
+    // comp_updater.update(gameInfo.getSnapshots());
+    comp_updater.update(gameInfo.getSnapshots(), gameInfo.timeLeft);
+
+    audio_sys.update(local_player_pos);  // Play the sound effects.
 
     player_HUD.updateFromSnapshot(gameInfo.localPlayer, gameInfo.timeLeft, gameInfo.bomb.state);
 
