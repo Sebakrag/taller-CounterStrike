@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 project(taller_tp
     VERSION 1.0
-    HOMEPAGE_URL "https://github.com/URL-HERE"
+    HOMEPAGE_URL "https://github.com/Sebakrag/taller-CounterStrike"
     LANGUAGES CXX
     )
 
@@ -48,12 +48,18 @@ target_include_directories(taller_common PUBLIC .)
 # In xubuntu 24.04 these are:
 #
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
-#
+# sudo apt install qt6-base-dev qt6-tools-dev qt6-tools-dev-tools
+# sudo apt install qt6-multimedia-dev
 
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
 if(TALLER_CLIENT OR TALLER_EDITOR)
     include(FetchContent)
+
+    SET(SDL2PP_WITH_IMAGE YES)
+    SET(SDL2PP_WITH_TTF YES)
+    SET(SDL2PP_WITH_MIXER YES)
+
     FetchContent_Declare(
         SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
@@ -99,9 +105,34 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
     FetchContent_MakeAvailable(SDL2 SDL2_image SDL2_mixer SDL2_ttf libSDL2pp)
 endif()
 
+# Agregar yaml-cpp para el editor y servidor
+if(TALLER_EDITOR OR TALLER_SERVER)
+    include(FetchContent)
+    FetchContent_Declare(
+        yaml-cpp
+        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+        GIT_TAG yaml-cpp-0.7.0
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(yaml-cpp)
+endif()
+
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+
+    # 1) Encontrar Qt6 y activar AUTORCC/AUTOMOC/AUTOUIC
+    find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui Multimedia)
+    set(CMAKE_AUTOMOC   ON)
+    set(CMAKE_AUTOUIC   ON)
+    set(CMAKE_AUTORCC   ON)
+
+    # 2) Procesar .qrc de client para generar qrc_resources.cpp en build/
+    qt6_add_resources(
+            RCC_SOURCES
+            "${CMAKE_SOURCE_DIR}/client/resources/resources.qrc"
+    )
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
 
@@ -116,9 +147,19 @@ if(TALLER_CLIENT)
 
     # add libSDL2pp's headers
     target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+    target_include_directories(taller_client PRIVATE ${SDL2_IMAGE_SOURCE_DIR}/include)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_client 
+        PRIVATE
+        taller_common
+        SDL2pp::SDL2pp
+        SDL2_image::SDL2_image
+        Qt6::Widgets 
+        Qt6::Core 
+        Qt6::Gui
+        Qt6::Multimedia
+    )
 endif()
 
 if(TALLER_SERVER)
@@ -135,7 +176,11 @@ if(TALLER_SERVER)
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    target_link_libraries(taller_server 
+        PRIVATE
+        taller_common
+        yaml-cpp
+    )
 endif()
 
 if(TALLER_EDITOR)
@@ -155,7 +200,14 @@ if(TALLER_EDITOR)
     target_include_directories(taller_editor PRIVATE ${libSDL2pp_SOURCE_DIR})
 
     # Link the taller_common lib target
-    target_link_libraries(taller_editor taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_editor 
+        taller_common 
+        SDL2pp::SDL2pp
+        yaml-cpp
+        Qt6::Widgets
+        Qt6::Core
+        Qt6::Gui
+    )
 endif()
 
 
@@ -175,6 +227,26 @@ if(TALLER_TESTS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
+
+    # —————————————————————————————————————————————————
+    #  Qt integration
+    # —————————————————————————————————————————————————
+
+    # Si Qt no está en rutas estándar, ajusta aquí:
+    # set(CMAKE_PREFIX_PATH "/ruta/a/Qt/6.5.0/lib/cmake")
+
+    if(TALLER_CLIENT)
+        find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+        
+        # Activa el procesamiento automático de moc, uic y rcc
+        set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTOUIC ON)
+        set(CMAKE_AUTORCC ON)
+    endif()
+
+    # —————————————————————————————————————————————————
+    #  Fin Qt integration
+    # —————————————————————————————————————————————————
 
     # target for testing
     # HEY!! TODO XXX: Change the name of the executable to the one you like!

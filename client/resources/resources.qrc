@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Animaciones -->
+        <file>animations/cs_logo.gif</file>
+        <!-- Fondos e imágenes -->
+        <file>images/cs_background.jpg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,70 @@
+# Configuración de constantes en el juego
+
+match_room:
+  max_players: 10 # cantidad máxima de jugadores
+
+match:
+  round_duration: 100 # duración máxima de la ronda en segundos
+  preparation_time: 10 # tiempo para la fase de preparación o previa de la ronda (tiempo de tienda)
+  max_rounds: 5 # cantidad de rondas de la partida
+
+player:
+  speed: 80 # velocidad del jugador
+  money: 800 # monedas iniciales
+  health: 100 # salud máxima
+
+weapons:
+  ak47:
+    damage: 35 # daño por bala
+    price: 2700 # precio del arma
+    bullets: 30
+    rate_of_fire: 56
+    precision: 0.8
+    max_range: 350
+    max_damage: 55
+
+  awp:
+    damage: 100 # daño por disparo
+    price: 3500 # precio del arma
+    bullets: 10
+    rate_of_fire: 20
+    precision: 1
+    max_range: 1000
+    max_damage: 100
+
+  glock:
+    damage: 45 # daño por bala
+    bullets: 40
+    rate_of_fire: 700
+    precision: 0.8
+    max_range: 300
+    max_damage: 65
+
+  knife:
+    damage: 20 # daño del cuchillo
+    max_damage: 50
+
+  m3:
+    damage: 70 # daño por disparo
+    price: 3000 # precio del arma
+    bullets: 20
+    rate_of_fire: 60
+    precision: 1
+    max_range: 200
+    max_damage: 90
+
+bomb:
+  time_to_explode: 15 # tiempo hasta que explota (en segundos)
+
+window:
+  width: 640 # ancho de la ventana
+  height: 420 # alto de la ventana
+  fullscreen: 0 # 0 para ventana, 1 para pantalla completa
+
+fov:
+  active: 0 # 0 para desactivar fov, 1 para activar fov
+  circle_radius: 32 #radio del del circulo de vision alrededor del player (en px)
+  angle: 55 # amplitud del cono de visión (en grados de 0 a 360)
+  visibility_distance: 0 # distancia de vision en px (si vale 0 se adapta a las dimensiones de la ventana)
+  transparency: 0.3 # porcentaje de transparencia (de 0 a 1). 1 es mas opaco (oscuro)
+

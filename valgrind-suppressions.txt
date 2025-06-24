@@ -1,0 +1,86 @@
+# Supresiones para SDL2
+{
+   SDL_Init_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:SDL_Init
+   ...
+}
+
+{
+   SDL_CreateWindow_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:SDL_CreateWindow
+   ...
+}
+
+{
+   SDL_CreateRenderer_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:SDL_CreateRenderer
+   ...
+}
+
+# Supresiones para Qt
+{
+   Qt_QApplication_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN12QApplicationC1ERiPPci
+   ...
+}
+
+{
+   Qt_QWidget_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN7QWidgetC1EPS_6QFlagsIN2Qt10WindowTypeEE
+   ...
+}
+
+{
+   Qt_QMediaPlayer_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN12QMediaPlayerC1EP7QObject
+   ...
+}
+
+# Supresiones para OpenGL/Mesa
+{
+   OpenGL_Init_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   obj:*/libGL.so*
+   ...
+}
+
+# Supresiones para X11
+{
+   X11_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   obj:*/libX11.so*
+   ...
+}
+
+# Supresiones para libstdc++
+{
+   libstdcpp_leak
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   obj:*/libstdc++.so*
+   ...
+}
