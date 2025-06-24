@@ -80,17 +80,13 @@ void Game::start() {
         // Lógica de juego (usa delta time)
         // eventHandler.handleEvents(is_running, gameInfo.gamePhase);
         eventHandler.handleEvents(is_running, currGamePhase);
-        auto start = std::chrono::steady_clock::now();
+        // auto start = std::chrono::steady_clock::now();
         update(frame_time.count());  // en segundos. O quizas para actualizar las animaciones
                                      // deberia utilizar el clock del servidor?
-        auto afterUpdate = std::chrono::steady_clock::now();
+        // auto afterUpdate = std::chrono::steady_clock::now();
         render();
-        auto afterRender = std::chrono::steady_clock::now();
-        std::cout << "[Update took]: "
-                  << std::chrono::duration<float>(afterUpdate - start).count() * 1000 << " ms\n";
-        std::cout << "[Render took]: "
-                  << std::chrono::duration<float>(afterRender - afterUpdate).count() * 1000
-                  << " ms\n";
+        // auto afterRender = std::chrono::steady_clock::now();
+
 
         // Esperar el tiempo restante del frame
         const auto post_logic = clock::now();
@@ -103,7 +99,7 @@ void Game::start() {
         // FPS debug cada 1 segundo
         ++frame_count;
         if ((clock::now() - fps_timer) >= seconds(1.0f)) {
-            std::cout << "FPS: " << frame_count << std::endl;
+            // std::cout << "FPS: " << frame_count << std::endl;
             frame_count = 0;
             fps_timer = clock::now();
         }

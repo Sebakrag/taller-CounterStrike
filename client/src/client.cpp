@@ -149,8 +149,15 @@ void Client::changeWeapon(const TypeWeapon& typeWeapon) {
     send_queue.try_push(GameAction(GameActionType::ChangeWeapon, typeWeapon));
 }
 
-
 void Client::pickUpItem() { send_queue.try_push(GameAction(GameActionType::PickUp)); }
+
+void Client::buyWeapon(const Weapon weapon) {
+    send_queue.try_push(GameAction(GameActionType::BuyWeapon, weapon));
+}
+
+void Client::buyAmmo(const AmmoType ammoType) {
+    send_queue.try_push(GameAction(GameActionType::BuyAmmo, ammoType, 10));
+}
 
 Client::~Client() {}
 

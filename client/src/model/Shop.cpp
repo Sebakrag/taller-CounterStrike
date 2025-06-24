@@ -117,10 +117,11 @@ void Shop::handleClick(const int mouseX, const int mouseY) {
     // Check ammo click
     for (const auto& ammo: ammos) {
         if (ammo.rect.Contains(mouseX, mouseY)) {
-            if (ammo.ammoType == AmmoType::Primary)
+            if (ammo.ammoType == AmmoType::Primary) {
                 selectedPrimaryAmmo = true;
-            else if (ammo.ammoType == AmmoType::Secondary)
+            } else if (ammo.ammoType == AmmoType::Secondary) {
                 selectedSecondaryAmmo = true;
+            }
             return;
         }
     }

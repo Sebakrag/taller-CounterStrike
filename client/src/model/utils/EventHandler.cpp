@@ -18,29 +18,20 @@ void EventHandler::handleEvents(bool& gameIsRunning, const GamePhase gamePhase) 
         // Si estamos en fase de preparacion y hay shop, solo permitir interacción con la tienda
         if (gamePhase == GamePhase::Preparation) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                shop.handleClick(e.button.x, e.button.y);
-
                 if (shop.isBuyButtonClicked(e.button.x, e.button.y)) {
-                    ShopSelection selection = shop.getSelectionType();
-
-                    switch (selection) {
+                    switch (shop.getSelectionType()) {
                         case ShopSelection::WeaponSelected:
-                            std::cout << "[COMPRO ARMA]" << std::endl;
-                            // TODO: implementar el metodo de cliente
-                            // client.buyWeapon(shop.getSelectedWeapon());
-                            break;
+                            client.buyWeapon(shop.getSelectedWeapon());
+                            return;
                         case ShopSelection::PrimaryAmmoSelected:
                         case ShopSelection::SecondaryAmmoSelected:
-                            std::cout << "[COMPRO BALAS]" << std::endl;
-                            // TODO: implementar el metodo de cliente
-                            // client.buyAmmo(shop.getSelectedAmmoType());
-                            break;
+                            client.buyAmmo(shop.getSelectedAmmoType());
+                            return;
                         default:
-                            break;
+                            return;
                     }
-
-                    // shop.resetSelection();
                 }
+                shop.handleClick(e.button.x, e.button.y);
             }
             return;  // Evitamos manejar cualquier otro evento en fase preparacion
         }

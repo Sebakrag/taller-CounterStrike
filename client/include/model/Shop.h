@@ -56,6 +56,7 @@ private:
 
     void createWeaponItems(const ShopInfo& shopInfo, Font& font, int& currentY, int itemX);
     void createAmmoItems(const ShopInfo& shopInfo, Font& font, int& currentY, int itemX);
+    void resetSelection();
     // TODO: esta deberia ser una funcion helper (en utils).
     std::string toString(Weapon w) const;
     std::string toString(AmmoType a) const;
@@ -70,7 +71,6 @@ public:
     Weapon getSelectedWeapon() const;
     AmmoType getSelectedAmmoType() const;
     bool isBuyButtonClicked(int mouseX, int mouseY) const;
-    void resetSelection();
 };
 
 #endif  // SHOP_H
