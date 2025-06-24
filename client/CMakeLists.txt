@@ -30,6 +30,7 @@ target_sources(taller_client
         src/model/Shop.cpp
         src/model/Graphics.cpp
         src/model/HUD.cpp
+        src/model/StatisticsPanel.cpp
         src/model/World.cpp
         src/model/EC/AudioSystem.cpp
         src/model/EC/ComponentUpdater.cpp
@@ -44,6 +45,7 @@ target_sources(taller_client
         src/model/EC/components/WeaponSpriteComponent.cpp
         src/model/utils/DynamicStencil.cpp
         src/model/utils/EventHandler.cpp
+        src/model/utils/Mouse.cpp
         src/model/utils/NumberRenderer.cpp
         src/model/utils/SoundLibrary.cpp
         src/model/utils/SpriteMetadaProvider.cpp
@@ -85,6 +87,7 @@ target_sources(taller_client
         include/model/HUD.h
         include/model/Map.h
         include/model/Shop.h
+        include/model/StatisticsPanel.h
         include/model/World.h
         include/model/EC/AudioSystem.h
         include/model/EC/Entity.h
@@ -104,6 +107,7 @@ target_sources(taller_client
         include/model/EC/components/WeaponSpriteComponent.h
         include/model/utils/DynamicStencil.h
         include/model/utils/EventHandler.h
+        include/model/utils/Mouse.h
         include/model/utils/NumberRenderer.h
         include/model/utils/SoundEvent.h
         include/model/utils/SoundLibrary.h

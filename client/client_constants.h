@@ -102,5 +102,9 @@
 #define SHOP_FONT_SIZE 24
 #define SHOP_MUSIC_FILE_NAME (MUSIC_SOUNDS_PATH + "/unrealsoftware.wav")
 
+// Mouse pointer
+#define MOUSE_POINTER_IMG std::string("client/assets/gfx/mouse/mouse_pointer.png")
+#define MOUSE_POINTER_SIZE_ON_SCREEN 25  // in pixels
+#define MOUSE_POINTER_SPRITE_SIZE 46     // in pixels
 
 #endif  // CLIENTCONSTANTS_H
