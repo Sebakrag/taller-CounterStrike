@@ -157,9 +157,9 @@ install_project() {
     mkdir -p /etc/$PROJECT_NAME/maps
 
     # Copiar binarios
-    cp build/client/taller_client /usr/bin/$PROJECT_NAME-client
-    cp build/server/taller_server /usr/bin/$PROJECT_NAME-server
-    cp build/editor/taller_editor /usr/bin/$PROJECT_NAME-editor
+    cp build/taller_client /usr/bin/$PROJECT_NAME-client
+    cp build/taller_server /usr/bin/$PROJECT_NAME-server
+    cp build/taller_editor /usr/bin/$PROJECT_NAME-editor
 
     # Copiar carpeta de assets
     cp -r client/assets/* /var/$PROJECT_NAME/assets/
@@ -173,6 +173,10 @@ install_project() {
     chmod +x /usr/bin/$PROJECT_NAME-editor
 
     # Crear enlaces simbólicos para que la aplicación encuentre los recursos
+    ln -sf /var/$PROJECT_NAME/assets /usr/bin/assets
+    ln -sf /etc/$PROJECT_NAME/maps /usr/bin/maps
+    
+    # Crear enlaces simbólicos adicionales en las rutas donde el código los busca
     mkdir -p /usr/bin/client
     ln -sf /var/$PROJECT_NAME/assets /usr/bin/client/assets
     
