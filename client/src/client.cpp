@@ -75,15 +75,22 @@ std::vector<std::string> Client::getScenarioList() {
 
 // in Lobby.
 void Client::LeaveMatch() {
-    protocol.sendLobbyAction(LobbyAction(LobbyAction::QuitMatch));
-    bool left = protocol.recvConfirmation();
-    if (left) {
-        std::cout << "Abandonaste la partida." << std::endl;
+    try {
+        protocol.sendLobbyAction(LobbyAction(LobbyAction::QuitMatch));
+        bool left = protocol.recvConfirmation();
+        if (left) {
+            std::cout << "Abandonaste la partida." << std::endl;
+            status = InMenu;
+            player_creator = false;
+            match_name = "";
+        } else {
+            std::cout << "No pudiste abandonar la partida." << std::endl;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[client] ERROR: error leaving the match" << e.what() << std::endl;
         status = InMenu;
         player_creator = false;
         match_name = "";
-    } else {
-        std::cout << "No pudiste abandonar la partida." << std::endl;
     }
 }
 void Client::StartMatch() {

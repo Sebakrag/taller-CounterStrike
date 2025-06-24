@@ -35,3 +35,7 @@ bool Map::isBombZone(int x, int y) {
 Vec2D Map::getPositionTZone() { return posZoneTerrorist; }
 
 Vec2D Map::getPositionCTZone() { return posZoneCounterTerrorist; }
+
+const std::map<Vec2D, Weapon>& Map::getWeaponPositions() const {
+    return tileMap.getWeaponPositions();
+}
