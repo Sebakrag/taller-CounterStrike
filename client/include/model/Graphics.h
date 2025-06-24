@@ -45,6 +45,7 @@ public:
     void clear();
     void present();
     void fillRect(const Rect& rect, const Color& color);
+    void fillRectBlended(const Rect& rect, const Color& color);
     void draw(Texture& tex, const Optional<Rect>& srcRect = NullOpt,
               const Optional<Rect>& dstRect = NullOpt);
     void draw(Texture& tex, const Optional<Rect>& srcRect, const Optional<Rect>& dstRect,

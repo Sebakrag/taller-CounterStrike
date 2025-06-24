@@ -24,8 +24,7 @@ private:
     World world;
     Shop shop;
     EventHandler eventHandler;
-    // GameInfo lastGameInfo;
-    GamePhase currGamePhase;
+    GameInfo lastGameInfo;
 
     bool is_running;
     void update(float dt);

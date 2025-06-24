@@ -4,6 +4,8 @@
 #include <thread>
 
 #include "client/client_constants.h"
+#include "client/include/model/StatisticsPanel.h"
+#include "server/include/types2.h"
 
 Game::Game(Client& client, const MatchInfo& match_info):
         client(client),
@@ -20,13 +22,11 @@ void Game::update(const float dt) {
     // De esta forma independizamos los FPS del gameloop del cliente del tickrate del servidor.
     auto maybeNewGameInfo = client.tryGetGameInfo();
     if (maybeNewGameInfo.has_value()) {
-        GameInfo gameInfo(maybeNewGameInfo.value());
-        world.update(gameInfo, dt);
-        currGamePhase = gameInfo.gamePhase;
+        lastGameInfo = maybeNewGameInfo.value();
+        world.update(lastGameInfo, dt);
     }
 
-    // switch (gameInfo.gamePhase) {
-    switch (currGamePhase) {
+    switch (lastGameInfo.gamePhase) {
         case GamePhase::Combat:
             if (audio.isMusicPlaying())
                 audio.haltMusic();
@@ -44,11 +44,21 @@ void Game::update(const float dt) {
 void Game::render() {
     graphics.clear();
     world.render();
-    // if (gameInfo.gamePhase == GamePhase::Preparation) {
-    //     shop.render();
-    // }
-    if (currGamePhase == GamePhase::Preparation) {
-        shop.render();
+
+    switch (lastGameInfo.gamePhase) {
+        case GamePhase::Preparation: {
+            shop.render();
+            break;
+        }
+        case GamePhase::EndOfMatch: {
+            StatisticsPanel stats(graphics, lastGameInfo.stats, SHOP_FONT_FILE_NAME);
+            stats.render();
+            break;
+        }
+        case GamePhase::Combat:
+            break;
+        default:
+            break;
     }
     // graphics.renderMouse(); // El mouse debe ser lo ultimo que renderizamos.
     graphics.present();
@@ -78,15 +88,13 @@ void Game::start() {
         previous = current;
 
         // Lógica de juego (usa delta time)
-        // eventHandler.handleEvents(is_running, gameInfo.gamePhase);
-        eventHandler.handleEvents(is_running, currGamePhase);
+        eventHandler.handleEvents(is_running, lastGameInfo.gamePhase);
         // auto start = std::chrono::steady_clock::now();
         update(frame_time.count());  // en segundos. O quizas para actualizar las animaciones
                                      // deberia utilizar el clock del servidor?
         // auto afterUpdate = std::chrono::steady_clock::now();
         render();
         // auto afterRender = std::chrono::steady_clock::now();
-
 
         // Esperar el tiempo restante del frame
         const auto post_logic = clock::now();
