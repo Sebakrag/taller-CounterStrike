@@ -4,7 +4,8 @@
 // unsigned char == byte --> This is to make the SpriteType as tiny as possible.
 enum class SpriteType : unsigned char {
     // Players sprite types:
-    PHEONIX = 1,
+    RANDOM_PLAYER = 1,
+    PHEONIX,
     L337_KREW,
     ARTIC_AVENGER,
     GUERRILLA,

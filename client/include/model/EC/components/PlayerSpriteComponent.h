@@ -8,11 +8,11 @@
 class PlayerSpriteComponent: public SpriteComponent {
 private:
     PlayerState state = PlayerState::Idle;
+    SpriteType skin = SpriteType::RANDOM_PLAYER;
 
 public:
-    void init(SpriteType type, PlayerState state, TypeWeapon weapon_type);
-    void update(PlayerState state, TypeWeapon weapon_type);
-    // void setTypeWeaponEquipped(TypeWeapon weapon_type);
+    void init(SpriteType initialSkin, PlayerState initialState, TypeWeapon initialWeaponType);
+    void update(SpriteType newSkin, PlayerState state, TypeWeapon weapon_type);
     PlayerState getState() const;
 };
 

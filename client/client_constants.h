@@ -18,6 +18,7 @@
 #define MUSIC_SOUNDS_PATH std::string("client/assets/sfx/music")
 
 // Player skins
+#define RANDOM_PLAYER_IMG (PLAYER_PATH + "/randomplayer.png")
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix_spritesheet.png")
 #define L377_KREW_IMG (PLAYER_PATH + "/t_L377_krew_spritesheet.png")
 #define ARTIC_AVENGER_IMG (PLAYER_PATH + "/t_artic_avenger_spritesheet.png")

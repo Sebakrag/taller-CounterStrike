@@ -16,6 +16,7 @@ void TextureManager::init(Renderer& ren) {
 
     // Players textures
     constexpr Color playerColorKey = {255, 0, 255, SDL_ALPHA_OPAQUE};
+    loadTexture(SpriteType::RANDOM_PLAYER, RANDOM_PLAYER_IMG, playerColorKey);
     loadTexture(SpriteType::PHEONIX, PHOENIX_IMG, playerColorKey);
     loadTexture(SpriteType::L337_KREW, L377_KREW_IMG, playerColorKey);
     loadTexture(SpriteType::ARTIC_AVENGER, ARTIC_AVENGER_IMG, playerColorKey);
