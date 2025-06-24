@@ -79,6 +79,7 @@ private:
     void setPosSpawnPlayer(Player& p);
     bool isFriendlyFire(const std::string& shooterId, Team targetTeam) const;
     void rankPlayers();
+    StatsInfo generateStatsInfo() const;
 
 
     // CONSTANTES static para inicializar en server.cpp.

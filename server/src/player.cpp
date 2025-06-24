@@ -212,6 +212,8 @@ void Player::addMoney(int amount) {
     stats.addMoney(amount);
 }
 
+const Statistics& Player::getStats() const { return stats; }
+
 LocalPlayerInfo Player::generateLocalPlayerInfo() const {
     PlayerSkin currentSkin = (team == Team::CounterTerrorist) ? skinCT : skinT;
     int ammo = 0;
@@ -232,3 +234,5 @@ PlayerInfo Player::generatePlayerInfo() const {
     return PlayerInfo(serverId, name, team, currentSkin, state, Vec2D(posX, posY), angle,
                       equippedWeapon, getSpecificEquippedWeapon(), id_weapon);
 }
+
+
