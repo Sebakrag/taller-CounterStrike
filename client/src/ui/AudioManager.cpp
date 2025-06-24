@@ -30,30 +30,41 @@ AudioManager::AudioManager() : musicPlaying(false) {
 
 AudioManager::~AudioManager() {
     // Detener la reproducción antes de destruir
-    if (mediaPlayer && mediaPlayer->playbackState() == QMediaPlayer::PlayingState) {
+    if (mediaPlayer) {
         mediaPlayer->stop();
     }
+    
+    // Asegurarse de que audioOutput se destruya después de que mediaPlayer deje de usarlo
+    mediaPlayer.reset();
+    audioOutput.reset();
 }
 
 void AudioManager::playMenuMusic() {
-    if (!mediaPlayer) return;
+    if (!mediaPlayer || !audioOutput) return;
 
-    // Verificar si el archivo existe como recurso
-    QFile file("client/assets/sfx/music/menu.wav");
+    // Detener cualquier reproducción actual primero
+    mediaPlayer->stop();
+
+    // Verificar si el archivo existe
+    QString resourcePath = "client/assets/sfx/music/menu.wav";
+    QFile file(resourcePath);
     if (!file.exists()) {
-        std::cerr << "[AudioManager] ERROR: El archivo de audio NO EXISTE como recurso en la ruta indicada" << std::endl;
+        std::cerr << "[AudioManager] ERROR: El archivo de audio no existe en: " << resourcePath.toStdString() << std::endl;
+        return; // No continuar si el archivo no existe
     }
 
-    // Establecer la fuente de la música (Probamos ambas opciones)
-    QString resourcePath = "client/assets/sfx/music/menu.wav";
+    // Establecer la fuente usando QUrl::fromLocalFile para archivos locales
+    mediaPlayer->setSource(QUrl::fromLocalFile(resourcePath));
 
-    // Intenta primero con la ruta de recurso
-    mediaPlayer->setSource(QUrl(resourcePath));
+    // Verificar que la fuente se haya establecido correctamente
+    if (mediaPlayer->source().isEmpty()) {
+        std::cerr << "[AudioManager] ERROR: No se pudo establecer la fuente de audio" << std::endl;
+        return;
+    }
 
     // Iniciar reproducción
     mediaPlayer->play();
-    musicPlaying = true;
-
+    musicPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
 }
 
 void AudioManager::stopMusic() {
