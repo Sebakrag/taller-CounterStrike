@@ -17,7 +17,7 @@ private:
 
     std::unordered_map<Entity, std::unordered_map<SoundEvent, int>> activeLoops;
 
-    float calculateVolume(const Vec2D& soundPos, const Vec2D& listenerPos) const;
+    float calculateVolumePercentage(const Vec2D& soundPos, const Vec2D& listenerPos) const;
 
 public:
     AudioSystem(ComponentManager& cm, Audio& m);

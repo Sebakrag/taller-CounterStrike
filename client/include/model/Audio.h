@@ -17,13 +17,13 @@ private:
 public:
     Audio();
     // for Chunk
-    int playChannel(int channel, const Chunk& chunk);
-    int playLoopChannel(int channel, const Chunk& chunk);
+    int playChannel(int channel, const Chunk& chunk, float volumePercentage = 1);
+    int playLoopChannel(int channel, const Chunk& chunk, float volumePercentage = 1);
     int setVolume(int channel, int volume);
     void haltChannel(int channel);
     void haltAllChannels();
     // for Music
-    void playLoopMusic(float vol_percentage);
+    void playLoopMusic(float volumePercentage = 1);
     int setMusicVolume(int volume);
     void haltMusic();
     bool isMusicPlaying() const;

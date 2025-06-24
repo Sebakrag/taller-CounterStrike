@@ -26,8 +26,9 @@ void AudioSystem::update(const Vec2D& listenerPos) {
         const auto* transform = comp_mgr.getComponent<TransformComponent>(e);
         const Vec2D soundPos = transform ? transform->getPosition() : listenerPos;
 
-        const int volume = static_cast<int>(calculateVolume(soundPos, listenerPos));
-        if (volume == 0)
+        const int volumePercent =
+                static_cast<int>(calculateVolumePercentage(soundPos, listenerPos));
+        if (volumePercent == 0)
             return;
 
         std::unordered_set<SoundEvent> currentLoops;
@@ -40,16 +41,14 @@ void AudioSystem::update(const Vec2D& listenerPos) {
                 auto it = activeLoops[e].find(ev);
                 if (it == activeLoops[e].end()) {
                     if (const auto chunk = sound_lib.get(ev)) {
-                        const int channel = audio.playLoopChannel(-1, *chunk);
-                        audio.setVolume(channel, volume);
+                        const int channel = audio.playLoopChannel(-1, *chunk, volumePercent);
                         activeLoops[e][ev] = channel;
                     }
                 }
             } else if (soundsPlayed < MAX_SOUNDS_PER_FRAME) {
                 // One-shot sound: solo reproducimos si no nos pasamos del límite global
                 if (const auto chunk = sound_lib.get(ev)) {
-                    const int channel = audio.playChannel(-1, *chunk);
-                    audio.setVolume(channel, volume);
+                    audio.playChannel(-1, *chunk, volumePercent);
                     ++soundsPlayed;
                 }
             }
@@ -80,12 +79,13 @@ void AudioSystem::update(const Vec2D& listenerPos) {
     }
 }
 
-float AudioSystem::calculateVolume(const Vec2D& soundPos, const Vec2D& listenerPos) const {
+float AudioSystem::calculateVolumePercentage(const Vec2D& soundPos,
+                                             const Vec2D& listenerPos) const {
     const float distSquared = (soundPos - listenerPos).calculateNormSquared();
     if (distSquared >= MAX_SOUND_DISTANCE * MAX_SOUND_DISTANCE)
         return 0.0f;
 
     // Lineal: volumen máximo si dist = 0, 0 si >= max
     const float dist = std::sqrt(distSquared);
-    return (1.0f - (dist / MAX_SOUND_DISTANCE)) * MIX_MAX_VOLUME;
+    return 1.0f - (dist / MAX_SOUND_DISTANCE);
 }

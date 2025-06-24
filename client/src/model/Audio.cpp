@@ -14,12 +14,16 @@ Audio::Audio():
     mixer.AllocateChannels(MAX_CHANNELS_ALLOCATED);
 }
 
-int Audio::playChannel(const int channel, const Chunk& chunk) {
-    return mixer.PlayChannel(channel, chunk);
+int Audio::playChannel(const int channel, const Chunk& chunk, const float volumePercentage) {
+    const int ch = mixer.PlayChannel(channel, chunk);
+    mixer.SetVolume(ch, volumePercentage * MIX_MAX_VOLUME);
+    return ch;
 }
 
-int Audio::playLoopChannel(const int channel, const Chunk& chunk) {
-    return mixer.PlayChannel(channel, chunk, -1);  // -1 = loop infinito
+int Audio::playLoopChannel(const int channel, const Chunk& chunk, const float volumePercentage) {
+    const int ch = mixer.PlayChannel(channel, chunk, -1);  // -1 = loop infinito
+    mixer.SetVolume(ch, volumePercentage * MIX_MAX_VOLUME);
+    return ch;
 }
 
 int Audio::setVolume(const int channel, const int volume) {
@@ -32,8 +36,8 @@ void Audio::haltAllChannels() {
     mixer.HaltChannel(-1);  // -1 to halt all channels.
 }
 
-void Audio::playLoopMusic(const float vol_percentage) {
-    setMusicVolume(MIX_MAX_VOLUME * vol_percentage);
+void Audio::playLoopMusic(const float volumePercentage) {
+    setMusicVolume(MIX_MAX_VOLUME * volumePercentage);
     mixer.PlayMusic(music, -1);  // -1 = loop infinito
 }
 
