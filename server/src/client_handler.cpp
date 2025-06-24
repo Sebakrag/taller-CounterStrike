@@ -1,5 +1,5 @@
 #include "../include/client_handler.h"
-#include "../include/scenario_registry.h"
+
 #include <iostream>
 #include <list>
 #include <memory>
@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+
+#include "../include/scenario_registry.h"
 
 ClientHandler::ClientHandler(ServerProtocol&& serverProtocol, const std::string& username,
                              GameManager& gameManager):
@@ -98,17 +100,18 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
     switch (menuAction.type) {
         case MenuActionType::Create: {
             std::string selectedScenario = menuAction.scenario_name;
-            
+
             if (!ScenarioRegistry::existsScenario(selectedScenario)) {
-                ScenarioRegistry::loadMapFromYaml(selectedScenario);       
+                ScenarioRegistry::loadMapFromYaml(selectedScenario);
             }
-            
+
             if (ScenarioRegistry::existsScenario(selectedScenario)) {
-                aux = gameManager.createMatch(menuAction.name_match, username, senderQueue, selectedScenario);
+                aux = gameManager.createMatch(menuAction.name_match, username, senderQueue,
+                                              selectedScenario);
             } else {
                 aux = gameManager.createMatch(menuAction.name_match, username, senderQueue, "demo");
             }
-            
+
             protocol.sendConfirmation(aux);
             break;
         }

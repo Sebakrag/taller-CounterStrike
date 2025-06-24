@@ -22,10 +22,12 @@ target_sources(taller_client
         src/ui/StyledMessageBox.cpp
         src/ui/AudioManager.cpp
         # model:
+        src/model/Audio.cpp
         src/model/Camera.cpp
         src/model/FieldOfView.cpp
         src/model/Game.cpp
         src/model/Map.cpp
+        src/model/Shop.cpp
         src/model/Graphics.cpp
         src/model/HUD.cpp
         src/model/World.cpp
@@ -75,12 +77,14 @@ target_sources(taller_client
         include/ui/UIConstants.h
         include/ui/AudioManager.h
         # model:
+        include/model/Audio.h
         include/model/Camera.h
         include/model/FieldOfView.h
         include/model/Game.h
         include/model/Graphics.h
         include/model/HUD.h
         include/model/Map.h
+        include/model/Shop.h
         include/model/World.h
         include/model/EC/AudioSystem.h
         include/model/EC/Entity.h

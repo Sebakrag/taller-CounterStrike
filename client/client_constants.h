@@ -9,13 +9,16 @@
 #define TILE_SETS_PATH std::string("client/assets/gfx/tiles")
 #define WEAPON_PATH std::string("client/assets/gfx/weapons")
 #define HUD_PATH std::string("client/assets/gfx/hud")
+#define FONT_PATH std::string("client/assets/gfx/fonts")
 
 // Paths (sounds)
 #define PLAYER_SOUNDS_PATH std::string("client/assets/sfx/player")
 #define RADIO_SOUNDS_PATH std::string("client/assets/sfx/radio")
 #define WEAPON_SOUNDS_PATH std::string("client/assets/sfx/weapon")
+#define MUSIC_SOUNDS_PATH std::string("client/assets/sfx/music")
 
 // Player skins
+#define RANDOM_PLAYER_IMG (PLAYER_PATH + "/randomplayer.png")
 #define PHOENIX_IMG (PLAYER_PATH + "/t_phoenix_spritesheet.png")
 #define L377_KREW_IMG (PLAYER_PATH + "/t_L377_krew_spritesheet.png")
 #define ARTIC_AVENGER_IMG (PLAYER_PATH + "/t_artic_avenger_spritesheet.png")
@@ -93,5 +96,11 @@
 #define GO_SOUND (RADIO_SOUNDS_PATH + "/go.ogg")
 #define TERRORIST_WIN_SOUND (RADIO_SOUNDS_PATH + "/terwin.ogg")
 #define CT_WIN_SOUND (RADIO_SOUNDS_PATH + "/ctwin.ogg")
+
+// Shop
+#define SHOP_FONT_FILE_NAME (FONT_PATH + "/OpenSans-Light.ttf")
+#define SHOP_FONT_SIZE 16
+#define SHOP_MUSIC_FILE_NAME (MUSIC_SOUNDS_PATH + "/unrealsoftware.wav")
+
 
 #endif  // CLIENTCONSTANTS_H

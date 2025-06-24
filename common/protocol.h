@@ -62,6 +62,7 @@ public:
     static uint8_t encodeBool(bool value);
     static uint8_t encodeTypeWeapon(const TypeWeapon& typeWeapon);
     static uint8_t encodeWeapon(const Weapon& weapon);
+    static uint8_t encodeAmmoType(const AmmoType& ammoType);
     static uint8_t encodeWeaponState(const WeaponState& state);
     static uint8_t encodeMenuActionType(const MenuActionType& gameActionType);
     static uint8_t encodeLobbyAction(const LobbyAction& lobbyAction);
@@ -77,6 +78,7 @@ public:
     static bool decodeBool(uint8_t byte);
     static TypeWeapon decodeTypeWeapon(uint8_t byte);
     static Weapon decodeWeapon(uint8_t byte);
+    static AmmoType decodeAmmoType(uint8_t byte);
     static WeaponState decodeWeaponState(uint8_t byte);
     static MenuActionType decodeMenuActionType(uint8_t byte);
     static LobbyAction decodeLobbyAction(uint8_t byte);

@@ -2,24 +2,28 @@
 
 #include "server/include/player.h"
 
-PlayerStatsInfo::PlayerStatsInfo(const std::string& username, int kills, int deaths, int moneyEarned)
-    : username(username), kills(kills), deaths(deaths), moneyEarned(moneyEarned) {}
+PlayerStatsInfo::PlayerStatsInfo(const std::string& username, int kills, int deaths,
+                                 int moneyEarned):
+        username(username), kills(kills), deaths(deaths), moneyEarned(moneyEarned) {}
 
-PlayerStatsInfo::PlayerStatsInfo(const std::vector<uint8_t> &bytes) {
+PlayerStatsInfo::PlayerStatsInfo(const std::vector<uint8_t>& bytes) {
     size_t index = 0;
 
-    //leo la longitud del username y luego el username
+    // leo la longitud del username y luego el username
     int lengthName = Protocol_::getValueBigEndian16(bytes[index], bytes[index + 1]);
     index += 2;
 
     username = std::string(bytes.begin() + index, bytes.begin() + index + lengthName);
     index += lengthName;
 
-    kills = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
+    kills = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2],
+                                      bytes[index + 3]);
     index += 4;
-    deaths = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
+    deaths = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2],
+                                       bytes[index + 3]);
     index += 4;
-    moneyEarned = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3]);
+    moneyEarned = Protocol_::getBigEndian32(bytes[index], bytes[index + 1], bytes[index + 2],
+                                            bytes[index + 3]);
     index += 4;
 }
 

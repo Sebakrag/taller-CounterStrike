@@ -17,7 +17,7 @@
 GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float timeLeft,
                    const LocalPlayerInfo& localPlayer, const std::vector<PlayerInfo>& otherPlayers,
                    const std::vector<BulletInfo>& bullets, const std::vector<WeaponInfo>& items,
-                   const ShopInfo& shop, const StatsInfo& stats):
+                   const StatsInfo& stats):
         gamePhase(gamePhase),
         bomb(bomb),
         timeLeft(timeLeft),
@@ -25,7 +25,6 @@ GameInfo::GameInfo(const GamePhase gamePhase, const BombInfo& bomb, const float 
         otherPlayers(otherPlayers),
         bullets(bullets),
         weapons(items),
-        shop(shop),
         stats(stats) {}
 
 // TODO: modularizar. (Hacer 4 metodos privados)
@@ -74,7 +73,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
         std::vector<uint8_t> playerBytes(bytes.begin() + index, bytes.begin() + index + size);
 
         PlayerInfo p(playerBytes);
-        otherPlayers.emplace_back(p);
+        // otherPlayers.emplace_back(p);
         const float x = p.position.getX();
         const float y = p.position.getY();
 
@@ -95,7 +94,7 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                          bytes.begin() + index + SIZE_BULLET_INFO);
 
         BulletInfo b(bulletBytes);
-        bullets.emplace_back(b);
+        // bullets.emplace_back(b);
         EntitySnapshot entity(b.id, EntityType::BULLET, SpriteType::BULLET, b.pos_x, b.pos_y,
                               b.direction.calculateAngleDegrees(), b.active);
         entities.emplace_back(entity);
@@ -112,17 +111,12 @@ GameInfo::GameInfo(const std::vector<uint8_t>& bytes) {
                                          bytes.begin() + index + SIZE_ITEM_INFO);
 
         WeaponInfo weapon(weaponBytes);
-        weapons.emplace_back(weapon);
+        // weapons.emplace_back(weapon)
         EntitySnapshot entity(weapon.server_entt_id, EntityType::WEAPON, weapon.getSpriteType(),
                               weapon.pos_x, weapon.pos_y, 0, true, weapon.state);
         entities.emplace_back(entity);
         index += SIZE_ITEM_INFO;
     }
-
-    // shop
-    std::vector<uint8_t> shopBytes(bytes.begin() + index, bytes.end());
-    shop = ShopInfo(shopBytes);
-    index += SIZE_SHOP_INFO;
 
     // stats
     if (gamePhase == GamePhase::EndOfMatch) {
@@ -175,10 +169,6 @@ std::vector<uint8_t> GameInfo::toBytes() const {
         auto item_bytes = item.toBytes();
         buffer.insert(buffer.end(), item_bytes.begin(), item_bytes.end());
     }
-
-    //shop
-    std::vector<uint8_t> shopBytes = shop.toBytes();
-    buffer.insert(buffer.end(), shopBytes.begin(), shopBytes.end());
 
     if (gamePhase == GamePhase::EndOfMatch) {
         std::vector<uint8_t> statsBytes = stats.toBytes();

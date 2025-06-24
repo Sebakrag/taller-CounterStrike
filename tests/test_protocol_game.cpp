@@ -34,7 +34,7 @@ void server_thread_buy_weapon(Weapon w) {
     listener.close();
 }
 
-void server_thread_buy_ammo(TypeWeapon typeWeapon, int count) {
+void server_thread_buy_ammo(AmmoType ammoType, int count) {
     Socket listener(std::to_string(TEST_PORT).c_str());
     Socket peer = listener.accept();
     ServerProtocol proto(std::move(peer));
@@ -44,7 +44,7 @@ void server_thread_buy_ammo(TypeWeapon typeWeapon, int count) {
 
     GameAction ga = proto.recvGameAction();
     EXPECT_EQ(ga.type, BuyAmmo);
-    EXPECT_EQ(ga.typeWeapon, typeWeapon);
+    EXPECT_EQ(ga.ammoType, ammoType);
     EXPECT_EQ(ga.count_ammo, count);
     listener.close();
 }
@@ -64,7 +64,7 @@ void server_thread_attack_walk(GameActionType type, float x, float y) {
     listener.close();
 }
 
-void server_thread_change_weapon(TypeWeapon typeWeapon, int count) {
+void server_thread_change_weapon(TypeWeapon typeWeapon) {
     Socket listener(std::to_string(TEST_PORT).c_str());
     Socket peer = listener.accept();
     ServerProtocol proto(std::move(peer));
@@ -75,7 +75,6 @@ void server_thread_change_weapon(TypeWeapon typeWeapon, int count) {
     GameAction ga = proto.recvGameAction();
     EXPECT_EQ(ga.type, ChangeWeapon);
     EXPECT_EQ(ga.typeWeapon, typeWeapon);
-    EXPECT_EQ(ga.count_ammo, count);
     listener.close();
 }
 
@@ -123,13 +122,13 @@ TEST(ProtocoloGameAction, ComprarArma) {
 }
 
 TEST(ProtocoloGameAction, ComprarMunicion) {
-    std::thread srv([] { server_thread_buy_ammo(TypeWeapon::Primary, 42); });
+    std::thread srv([] { server_thread_buy_ammo(AmmoType::Primary, 42); });
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
     ClientProtocol client(TEST_IP, std::to_string(TEST_PORT), "Tester");
     client.recvConfirmation();
 
-    client.sendGameAction(GameAction(BuyAmmo, TypeWeapon::Primary, 42));
+    client.sendGameAction(GameAction(BuyAmmo, AmmoType::Primary, 42));
 
     srv.join();
 }
@@ -161,13 +160,13 @@ TEST(ProtocoloGameAction, Caminar) {
 }
 
 TEST(ProtocoloGameAction, CambiarArma) {
-    std::thread srv([] { server_thread_change_weapon(TypeWeapon::Secondary, 5); });
+    std::thread srv([] { server_thread_change_weapon(TypeWeapon::Secondary); });
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
     ClientProtocol client(TEST_IP, std::to_string(TEST_PORT), "Tester");
     client.recvConfirmation();
 
-    client.sendGameAction(GameAction(ChangeWeapon, TypeWeapon::Secondary, 5));
+    client.sendGameAction(GameAction(ChangeWeapon, TypeWeapon::Secondary));
 
     srv.join();
 }

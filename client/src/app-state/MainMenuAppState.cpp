@@ -38,25 +38,26 @@ std::optional<AppStateCode> MainMenuAppState::update() {
                 return AppStateCode::MAIN_MENU;
             }
             QString gameName = nid.textValue().trimmed();
-            
+
             // Solicitar la lista de escenarios al servidor
             std::vector<std::string> scenarios = controller->getClient()->getScenarioList();
-            
+
             if (scenarios.empty()) {
                 showStyledWarning("Error", "No hay escenarios disponibles en el servidor.");
                 return AppStateCode::MAIN_MENU;
             }
-            
+
             // Mostrar el diálogo de selección de escenarios
             ScenarioSelectionDialog scenarioDialog(nullptr, scenarios);
             if (scenarioDialog.exec() != QDialog::Accepted) {
                 return AppStateCode::MAIN_MENU;
             }
-            
+
             std::string selectedScenario = scenarioDialog.getSelectedScenario();
-            
+
             // Crear la partida con el nombre y escenario seleccionados
-            bool success = controller->getClient()->CreateMatch(gameName.toStdString(), selectedScenario);
+            bool success =
+                    controller->getClient()->CreateMatch(gameName.toStdString(), selectedScenario);
 
             if (!success) {
                 showStyledWarning("Error", "No se pudo crear la partida. Es posible que ya exista "
