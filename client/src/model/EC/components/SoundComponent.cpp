@@ -10,7 +10,6 @@ SoundComponent::SoundComponent() { eventsToPlay.reserve(DEFAULT_NUM_ENTT_SOUNDS_
 void SoundComponent::addEvent(const SoundEvent ev) {
     if (std::find(eventsToPlay.begin(), eventsToPlay.end(), ev) == eventsToPlay.end()) {
         eventsToPlay.push_back(ev);
-        std::cout << "evento añadido." << contador++ << std::endl;
     }
 }
 

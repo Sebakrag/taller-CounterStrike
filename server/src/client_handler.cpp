@@ -39,7 +39,6 @@ void ClientHandler::run() {
                 receiver->start();
                 sender->start();
                 receiver->join();
-                std::cout << "reciever joineado" << std::endl;
 
                 // if (status != Disconnected) {
                 //                    receiver->join();
@@ -53,12 +52,10 @@ void ClientHandler::run() {
                     } catch (...) {}
                 }
                 sender->join();
-                std::cout << "sender joineado" << std::endl;
                 // sender->join();
                 delete sender;
                 sender = nullptr;
                 senderQueue = std::make_shared<Queue<GameInfo>>();  // reseteo la sender queue
-                std::cout << "sender joineado" << std::endl;
 
                 status = InMenu;
                 // delete receiver;
@@ -68,14 +65,11 @@ void ClientHandler::run() {
     } catch (const std::exception& e) {
         std::cerr << "ClientHandler: " << e.what() << std::endl;
     }
-    std::cout << "client handler out" << std::endl;
 }
 
 void ClientHandler::kill() {
-    std::cout << "KILL client handler" << std::endl;
     try {
         protocol.shutDown(2);
-        std::cout << "hice shutdown" << std::endl;
     } catch (...) {}
 
     status = Disconnected;
@@ -136,7 +130,6 @@ void ClientHandler::handleMenuActions(const MenuAction& menuAction) {
             break;
     }
     if (aux) {
-        std::cout << username << " entro al lobby" << std::endl;
         status = InLobby;
         myMatch = menuAction.name_match;
         // MatchInfo matchInfo = gameManager.getMatchInfo(myMatch);

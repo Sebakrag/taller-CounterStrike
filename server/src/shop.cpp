@@ -65,7 +65,6 @@ bool Shop::buyAmmo(Player& player, AmmoType selectedAmmo, int /*amount*/) {
 
     auto* fireWeapon = dynamic_cast<FireWeapon*>(weapon);
     if (!fireWeapon) {
-        std::cout << "Esta arma no admite munición\n";
         return false;
     }
 

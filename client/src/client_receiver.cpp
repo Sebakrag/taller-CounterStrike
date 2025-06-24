@@ -8,7 +8,6 @@ ClientReceiver::ClientReceiver(ClientProtocol& protocol, Queue<GameInfo>& recv_q
         protocol(protocol), recv_queue(recv_queue) {}
 
 void ClientReceiver::run() {
-    std::cout << "Receiver start" << std::endl;
     // double seconds = 0;
     try {
         while (should_keep_running()) {

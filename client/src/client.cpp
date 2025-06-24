@@ -16,7 +16,6 @@ Client::Client(const std::string& ip, const std::string& port, const std::string
         throw std::runtime_error(
                 "No se pudo ingresar. Posiblemente el nombre de usuario ya está en uso.");
     }
-    std::cout << "Bienvenido " << user_name << ". Ya estás conectado al servidor." << std::endl;
     status = InMenu;
 }
 
@@ -36,12 +35,11 @@ bool Client::CreateMatch(const std::string& match_name, const std::string& scena
     protocol.sendMenuAction(MenuAction(MenuActionType::Create, match_name, scenario_name));
     bool created = protocol.recvConfirmation();
     if (created) {
-        std::cout << "La partida se creó correctamente." << std::endl;
         status = InLobby;
         player_creator = true;
         this->match_name = match_name;
     } else {
-        std::cout << "La partida No se pudo crear." << std::endl;
+        std::cerr << "La partida No se pudo crear." << std::endl;
     }
     return created;
 }
@@ -49,12 +47,11 @@ void Client::JoinMatch(const std::string& match_name) {
     protocol.sendMenuAction(MenuAction(MenuActionType::Join, match_name));
     bool united = protocol.recvConfirmation();
     if (united) {
-        std::cout << "Te uniste a la partida!" << std::endl;
         status = InLobby;
         player_creator = false;
         this->match_name = match_name;
     } else {
-        std::cout << "No pudiste unirte a la partida." << std::endl;
+        std::cerr << "No pudiste unirte a la partida." << std::endl;
     }
 }
 std::vector<std::string> Client::refreshMatchList() {
@@ -79,12 +76,11 @@ void Client::LeaveMatch() {
         protocol.sendLobbyAction(LobbyAction(LobbyAction::QuitMatch));
         bool left = protocol.recvConfirmation();
         if (left) {
-            std::cout << "Abandonaste la partida." << std::endl;
             status = InMenu;
             player_creator = false;
             match_name = "";
         } else {
-            std::cout << "No pudiste abandonar la partida." << std::endl;
+            std::cerr << "No pudiste abandonar la partida." << std::endl;
         }
     } catch (const std::exception& e) {
         std::cerr << "[client] ERROR: error leaving the match" << e.what() << std::endl;
@@ -97,10 +93,9 @@ void Client::StartMatch() {
     protocol.sendLobbyAction(LobbyAction::StartMatch);
     bool ok = protocol.recvConfirmation();
     if (ok) {
-        std::cout << "Empezó la partida" << std::endl;
         startThreads();
     } else {
-        std::cout << "No empezó la partida. No sos el anfitrion." << std::endl;
+        std::cerr << "No empezó la partida. No sos el anfitrion." << std::endl;
     }
 }
 

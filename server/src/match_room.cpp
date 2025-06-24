@@ -46,7 +46,6 @@ void MatchRoom::removePlayer(const std::string& username) {
     players.erase(username);
     match.removePlayer(username);
     if (players.empty()) {
-        std::cout << "partida vacía." << std::endl;
         return;
     }
     if (username == player_host) {

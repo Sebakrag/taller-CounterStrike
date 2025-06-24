@@ -6,7 +6,6 @@ Sender::Sender(ServerProtocol& protocol, std::shared_ptr<Queue<GameInfo>> sender
         protocol(protocol), senderQueue(senderQueue) {}
 
 void Sender::run() {
-    std::cout << "Sender run..." << std::endl;
     try {
         while (should_keep_running()) {
             GameInfo gameInfo = senderQueue->pop();
@@ -22,7 +21,6 @@ void Sender::run() {
         protocol.shutDown(2);
         stop();
     }
-    std::cout << "Sender out." << std::endl;
 }
 
 void Sender::kill() {

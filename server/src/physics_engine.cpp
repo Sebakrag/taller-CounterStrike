@@ -56,12 +56,8 @@ bool PhysicsEngine::shotHitPlayer(float projX, float projY, const Player& shoote
         float roll = dist(rng);
 
         if (roll <= precision) {
-            std::cout << "Disparo ACERTADO  - distancia: " << impactDistance
-                      << " - precision: " << precision << ", roll: " << roll << std::endl;
             hitByPrecision = true;
         } else {
-            std::cout << "Disparo FALLADO - distancia: " << impactDistance
-                      << " - precision: " << precision << ", roll: " << roll << std::endl;
             hitByPrecision = false;
         }
         return true;

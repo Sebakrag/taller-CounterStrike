@@ -51,8 +51,6 @@ void AudioSystem::update(const Vec2D& listenerPos) {
                     audio.playChannel(-1, *chunk, volumePercent);
                     ++soundsPlayed;
                 }
-            } else {
-                std::cout << "Límite global alcanzado, se salta evento: " << static_cast<int>(ev) << " de entidad " << e << std::endl;
             }
         }
 

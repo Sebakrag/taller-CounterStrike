@@ -41,13 +41,11 @@ void BombSpriteComponent::setFrameForState(const BombState state, int timeLeft) 
             return;
     }
     int col = 0;
-    std::cout << "timeLeft: " << timeLeft <<std::endl;
     if (state == BombState::Planted) {
         //beep cada 2 segundos
         if (timeLeft > 5) {
             if (timeLeft %2 == 0) {
                 col = 1;
-                std::cout << "titilo" <<std::endl;
             }
             else {
                 col = 0;

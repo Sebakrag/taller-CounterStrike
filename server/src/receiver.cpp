@@ -7,12 +7,10 @@ Receiver::Receiver(const std::string& username, ServerProtocol& protocol,
         username(username), protocol(protocol), queueActionsPlayers(queueActionsPlayers) {}
 
 void Receiver::run() {
-    std::cout << "Receiver run..." << std::endl;
     try {
         while (should_keep_running()) {
             GameAction gameAction = protocol.recvGameAction();  // bloqueante
             if (gameAction.type == GameActionType::ExitMatch) {
-                std::cout << "jugador " << username << " se fue de la partida." << std::endl;
                 stop();
             }
             //            std::cout << "Recibí una acción de " << username << std::endl;
@@ -31,7 +29,6 @@ void Receiver::run() {
         // protocol.shutDown(2);
         // stop();
     }
-    std::cout << "Receiver out." << std::endl;
 }
 
 void Receiver::kill() {

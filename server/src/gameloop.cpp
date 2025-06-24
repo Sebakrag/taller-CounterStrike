@@ -13,7 +13,6 @@ GameLoop::GameLoop(Match& match,
         queuesPlayers(queuesPlayers) {}
 
 void GameLoop::run() {
-    std::cout << "Gameloop Start." << std::endl;
     std::chrono::milliseconds time_expected = std::chrono::milliseconds(1000 / ITR_PER_SEC);
     int it = 0;  //(ver si esto lo necesito)
     int seconds = 0;

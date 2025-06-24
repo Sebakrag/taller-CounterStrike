@@ -13,7 +13,6 @@ std::optional<AppStateCode> GameMatchAppState::update() {
     try {
         const auto client = controller->getClient();
         const auto matchInfo = client->getMatchInfo();
-        matchInfo.print();  // TODO: eliminar
 
         Game game(*client, matchInfo);
 

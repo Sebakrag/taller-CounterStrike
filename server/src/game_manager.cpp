@@ -27,9 +27,6 @@ bool GameManager::createMatch(const std::string& matchName, const std::string& u
     }
     lobbies.try_emplace(matchName, matchName, username, playerQueue, id_scenary);
 
-    std::cout << username << " creó la partida " << matchName << std::endl;
-    std::cout << std::endl;
-
     return true;
 }
 
@@ -46,7 +43,6 @@ bool GameManager::JoinMatch(const std::string& matchName, const std::string& use
     }
 
     it->second.addPlayer(username, playerQueue);
-    std::cout << username << " se unió a partida " << matchName << std::endl;
     return true;
 }
 
@@ -83,14 +79,13 @@ bool GameManager::StartMatch(const std::string& username, const std::string& mat
         return false;
     }
     if (it->second.containsPlayer(username) && it->second.isPlayerHost(username)) {
-        std::cout << "Inicia Partida." << std::endl;
         auto gameloop = it->second.createGameLoop();
         gameloop->start();
         gameLoops.try_emplace(matchName, std::move(gameloop));
         // lobbies.erase(matchName);
         return true;
     }
-    std::cout << "No comenzó la partida porque no es el anfitrión." << std::endl;
+
     return false;
 }
 
@@ -133,7 +128,6 @@ void GameManager::reapDeadGameloops() {
             deleteMatchRoom(nameMatch);
             // borro gameloop
             it->second->join();
-            std::cout << "gameloop cosechado" << std::endl;
             it = gameLoops.erase(it);  // borra y avanza el iterador
         } else {
             ++it;
@@ -145,21 +139,16 @@ void GameManager::deleteMatchRoom(const std::string& matchName) {
     auto it = lobbies.find(matchName);
     if (it != lobbies.end()) {
         lobbies.erase(it);
-        std::cout << "Lobby '" << matchName << "' eliminado.\n";
-    } else {
-        std::cout << "deleteMatchRoom: no existe el lobby '" << matchName << "'.\n";
     }
 }
 
 
 // asegurarse de que solo la clase server pueda llamar a este metodo.
 void GameManager::killAllMatchs() {
-    std::cout << "killeo todas los gameloops" << std::endl;
     std::lock_guard<std::mutex> lock(m);
     reapDeadGameloops();
     for (auto& [matchName, gameLoop]: gameLoops) {
         gameLoop->kill();
-        std::cout << "gameloop killeado." << std::endl;
         gameLoop->join();
     }
     gameLoops.clear();

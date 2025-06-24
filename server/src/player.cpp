@@ -41,10 +41,7 @@ Player::Player(const std::string& name, const Team team, const Vec2D& position):
         id_weapon(knife->getServerId()),
         money(INITIAL_MONEY),
         skinT(PlayerSkin::Terrorist3),
-        skinCT(PlayerSkin::CounterTerrorist3) {
-    std::cout << "Server ID del Player: " << serverId << std::endl;
-    std::cout << "Server ID de la weapon: " << id_weapon << std::endl;
-}
+        skinCT(PlayerSkin::CounterTerrorist3) {}
 
 
 void Player::setPrimaryWeapon(std::unique_ptr<Weapon_> weapon) {

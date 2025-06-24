@@ -10,17 +10,14 @@ Acceptor::Acceptor(const std::string& port, GameManager& gameManager):
         skt_server(port.c_str()), gameManager(gameManager) {}
 
 void Acceptor::run() {
-    std::cout << "Server listening.." << std::endl;
 
     try {
         while (should_keep_running()) {
             Socket peer = skt_server.accept();
             reapDeadClients();
 
-            std::cout << "New client connected. " << std::endl;
             ServerProtocol protocol(std::move(peer));
             std::string username = protocol.recvUsername();
-            std::cout << "username received: " << username << std::endl;
 
             // chequeo si el nombre de usuario está disponible
             bool user_avaiable = true;
@@ -34,8 +31,6 @@ void Acceptor::run() {
 
             if (user_avaiable) {
                 clients.emplace_back(std::move(protocol), username, gameManager);
-            } else {
-                std::cout << "username ya existe. Cliente no aceptado" << std::endl;
             }
             reapDeadClients();
         }

@@ -19,8 +19,6 @@ void AppStateController::update() {
 
     if (maybe_new_state.has_value()) {
         transition_to(maybe_new_state.value());
-    } else {
-        std::cout << "[AppStateController] No state transition requested" << std::endl;
     }
 }
 
@@ -71,8 +69,10 @@ void AppStateController::setClient(std::unique_ptr<Client> c) {
     } catch (const std::exception& e) {
         std::cerr << "[AppStateController] ERROR: Exception in setClient: " << e.what()
                   << std::endl;
+        return;
     } catch (...) {
-        std::cerr << "[AppStateController] ERROR: Unknown exception in setClient" << std::endl;
+        // std::cerr << "[AppStateController] ERROR: Unknown exception in setClient" << std::endl;
+        return;
     }
 }
 

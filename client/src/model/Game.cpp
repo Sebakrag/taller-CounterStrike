@@ -74,8 +74,8 @@ void Game::start() {
             0.25f);  // Saltea como máximo 0.25s de lógica para no congelarse
 
     auto previous = clock::now();
-    int frame_count = 0;
-    auto fps_timer = clock::now();
+    // int frame_count = 0;
+    // auto fps_timer = clock::now();
 
     while (is_running) {
         const auto current = clock::now();
@@ -89,12 +89,9 @@ void Game::start() {
 
         // Lógica de juego (usa delta time)
         eventHandler.handleEvents(is_running, lastGameInfo.gamePhase);
-        // auto start = std::chrono::steady_clock::now();
         update(frame_time.count());  // en segundos. O quizas para actualizar las animaciones
                                      // deberia utilizar el clock del servidor?
-        // auto afterUpdate = std::chrono::steady_clock::now();
         render();
-        // auto afterRender = std::chrono::steady_clock::now();
 
         // Esperar el tiempo restante del frame
         const auto post_logic = clock::now();
@@ -105,44 +102,13 @@ void Game::start() {
         }
 
         // FPS debug cada 1 segundo
-        ++frame_count;
-        if ((clock::now() - fps_timer) >= seconds(1.0f)) {
-            // std::cout << "FPS: " << frame_count << std::endl;
-            frame_count = 0;
-            fps_timer = clock::now();
-        }
+        // ++frame_count;
+        // if ((clock::now() - fps_timer) >= seconds(1.0f)) {
+        //     std::cout << "FPS: " << frame_count << std::endl;
+        //     frame_count = 0;
+        //     fps_timer = clock::now();
+        // }
     }
 }
 
 Game::~Game() {}
-
-// void Game::start() {
-//     using clock = std::chrono::high_resolution_clock;
-//     using time_point = clock::time_point;
-//
-//     const std::chrono::duration<float> target_frame_duration(1.0f / FPS);
-//
-//     time_point previous = clock::now();
-//
-//     while (is_running) {
-//         time_point start = clock::now();
-//
-//         eventHandler.handleEvents(is_running);
-//
-//         // Aquí asumimos que el snapshot ya fue recibido por el cliente.
-//         const auto now = clock::now();
-//         const float dt = std::chrono::duration<float>(now - previous).count();
-//         previous = now;
-//
-//         update(dt);   // Recibe el snapshot y actualiza mundo local
-//         render();     // Renderiza mundo interpolado si querés
-//
-//         // Sleep si terminó antes del target
-//         const auto end = clock::now();
-//         const auto frame_time = end - start;
-//
-//         if (frame_time < target_frame_duration) {
-//             std::this_thread::sleep_for(target_frame_duration - frame_time);
-//         }
-//     }
-// }

@@ -151,20 +151,19 @@ void ComponentUpdater::updateBombSoundComponent(SoundComponent& soundComp,
         if (currentTimeLeft > 5) {
             if (currentTimeLeft != previusTimeLeft && currentTimeLeft % 2 == 0) {
                 soundComp.addEvent(SoundEvent::BombBeep);
-                std::cout << "BEEP1 "  << currentTimeLeft<< std::endl;
             }
         }
         // beep cada 1 segundo
         else if (currentTimeLeft <= 5) {
             if (currentTimeLeft != previusTimeLeft) {
                 soundComp.addEvent(SoundEvent::BombBeep);
-                std::cout << "BEEP2 "  << currentTimeLeft<< std::endl;
             }
         }
     }
-    if (currentState == BombState::Exploded && previusBombState != BombState::Exploded) {
-        soundComp.addEvent(SoundEvent::BombExploded);
-    }
+    // if (currentState == BombState::Exploded && previusBombState != BombState::Exploded) {
+    //     std::cout << "exposion aniadida" << std::endl;
+    //     soundComp.addEvent(SoundEvent::BombExploded);
+    // }
     if (currentState == BombState::Defused && previusBombState != BombState::Defused) {
         soundComp.addEvent(SoundEvent::DefuseBomb);
     }
