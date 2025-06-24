@@ -18,7 +18,7 @@ NC='\033[0m' # Sin color
 # Nombre del proyecto
 PROJECT_NAME="CounterStrike"
 
-# Verificar si se está ejecutando como root
+# Verificar si se está ejecutando como root 
 if [ "$EUID" -ne 0 ]; then
   echo -e "${RED}Este script debe ejecutarse como root${NC}"
   echo "Por favor, ejecutar como: sudo $0"
@@ -90,12 +90,13 @@ install_dependencies() {
 compile_project() {
     echo -e "${BLUE}Compilando el proyecto...${NC}"
     
-    # Crear y entrar al directorio de compilación
-    mkdir -p build
-    cd build
+    # Ejecutar make compile-debug desde el directorio raíz
+    echo -e "${BLUE}Ejecutando make compile-debug desde directorio raíz...${NC}"
+    make compile-debug
     
-    # Configurar con CMake
-    cmake .. -DCMAKE_BUILD_TYPE=Release
+    # Entrar al directorio build y compilar
+    echo -e "${BLUE}Entrando al directorio build y ejecutando make...${NC}"
+    cd build
     
     # Compilar utilizando todos los núcleos disponibles
     if [[ "$OS" == "Darwin" ]]; then
