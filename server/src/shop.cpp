@@ -7,11 +7,12 @@ const std::unordered_map<Weapon, int> weaponPrices = {
         {Weapon::Awp, 450},
 };
 
-// const std::unordered_map<Weapon, int> ammoPrices = {
-//          {Weapon::Ak47, 20},
-//          {Weapon::M3, 30},
-//          {Weapon::Awp, 50},
-// };
+const std::unordered_map<Weapon, int> bulletsPerCartridge = {
+    {Weapon::Ak47, 15},
+    {Weapon::M3, 10},
+    {Weapon::Awp, 5},
+    {Weapon::Glock, 10},
+};
 
 const std::unordered_map<AmmoType, int> ammoPrices = {
         {AmmoType::Primary, 20},
@@ -40,7 +41,7 @@ bool Shop::buyPrimaryWeapon(Player& player, Weapon weaponToBuy,
     return true;
 }
 
-bool Shop::buyAmmo(Player& player, AmmoType selectedAmmo, int amount) {
+bool Shop::buyAmmo(Player& player, AmmoType selectedAmmo, int /*amount*/) {
     if (!ammoPrices.contains(selectedAmmo))
         return false;
 
@@ -68,11 +69,15 @@ bool Shop::buyAmmo(Player& player, AmmoType selectedAmmo, int amount) {
         return false;
     }
 
-    int price = ammoPrices.at(selectedAmmo) * amount;
+    Weapon weaponType = fireWeapon->getWeaponType();
+    if (!bulletsPerCartridge.contains(weaponType))
+        return false;
+    int bulletsToAdd = bulletsPerCartridge.at(weaponType);
+    int price = ammoPrices.at(selectedAmmo);
     if (!player.spendMoney(price))
         return false;
 
-    fireWeapon->addBullets(amount);
+    fireWeapon->addBullets(bulletsToAdd);
     return true;
 }
 
