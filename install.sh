@@ -46,7 +46,21 @@ install_dependencies() {
         apt-get update
         
         # Instalar dependencias básicas de desarrollo
-        apt-get install -y build-essential git cmake pkg-config wget
+        apt-get install -y build-essential pkg-config wget
+        
+        # Instalar CMake versión específica
+        CMAKE_VERSION="3.28.3"
+        echo -e "${BLUE}Instalando CMake ${CMAKE_VERSION}...${NC}"
+        cd /tmp
+        wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz
+        tar -zxf cmake-${CMAKE_VERSION}.tar.gz
+        cd cmake-${CMAKE_VERSION}
+        ./bootstrap
+        make -j$(nproc)
+        make install
+        cd ..
+        rm -rf cmake-${CMAKE_VERSION} cmake-${CMAKE_VERSION}.tar.gz
+        cd - > /dev/null
         
         # Instalar las dependencias de Qt
         apt-get install -y qt6-base-dev qt6-base-dev-tools qt6-multimedia-dev libqt6opengl6-dev
@@ -71,7 +85,7 @@ install_dependencies() {
         
     elif [[ "$OS" == *"Fedora"* ]]; then
         # Para Fedora
-        dnf install -y git cmake gcc g++ make pkg-config wget
+        dnf install -y gcc g++ make pkg-config wget
         dnf install -y qt6-qtbase-devel qt6-qttools-devel qt6-qtmultimedia-devel
         dnf install -y SDL2-devel SDL2_image-devel SDL2_ttf-devel SDL2_mixer-devel
         dnf install -y opus-devel opusfile-devel fluidsynth-devel wavpack-devel freetype-devel xmp-devel
@@ -81,7 +95,7 @@ install_dependencies() {
         
     elif [[ "$OS" == *"Arch"* ]]; then
         # Para Arch
-        pacman -Sy --noconfirm git cmake gcc make pkg-config wget
+        pacman -Sy --noconfirm gcc make pkg-config wget
         pacman -Sy --noconfirm qt6-base qt6-tools qt6-multimedia
         pacman -Sy --noconfirm sdl2 sdl2_image sdl2_ttf sdl2_mixer
         pacman -Sy --noconfirm opus opusfile fluidsynth wavpack freetype2 libxmp
@@ -91,7 +105,7 @@ install_dependencies() {
     else
         echo -e "${RED}Sistema operativo no soportado: $OS${NC}"
         echo "Por favor, instale las dependencias manualmente:"
-        echo "- git, cmake, compilador C++"
+        echo "- compilador C++"
         echo "- Qt6 (Widgets, Core, Gui, Multimedia)"
         echo "- SDL2 y extensiones (image, ttf, mixer)"
         echo "- libopus, libopusfile, fluidsynth, wavpack, freetype, libxmp"
