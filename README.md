@@ -155,7 +155,7 @@ Modificando este archivo podrás personalizar muchas características del juego.
 
 5. **Partida**
 
-   ![Screenshot1](./imagen1.png)
+   ![Screenshot1](./Imagen1.png)
 
    - **Objetivos:**
      - Terroristas: plantar y defender la bomba.
@@ -168,7 +168,7 @@ Modificando este archivo podrás personalizar muchas características del juego.
      1. **Preparación:** compra armas y munición.
      2. **Combate:** libre movimiento y combate.
         
-    ![Screenshot2](./imagen2.png)
+    ![Screenshot2](./Imagen2.png)
 
 6. **Controles en combate**
    - `WASD`: moverte.
